@@ -1,0 +1,360 @@
+[
+{
+  "aliases": [
+    "ZombieMummyDefault"
+  ],
+  "objclass": "ZombiePropertySheet",
+  "objdata": {
+    "ArtCenter": {
+      "x": 90,
+      "y": 125
+    },
+    "AttackRect": {
+      "mHeight": 95,
+      "mWidth": 20,
+      "mX": 15,
+      "mY": 0
+    },
+    "CanSpawnPlantFood": true,
+    "Cost": 150,
+    "EatDPS": 100,
+    "GroundTrackName": "ground_swatch",
+    "HitRect": {
+      "mHeight": 95,
+      "mWidth": 32,
+      "mX": 10,
+      "mY": 10
+    },
+    "Hitpoints": 190,
+    "ScaledProps": [
+      {
+        "Arg1": 1.3,
+        "Arg2": 0.05,
+        "Formula": "standard",
+        "Key": "Hitpoints"
+      },
+      {
+        "Arg1": 1.3,
+        "Arg2": 0.05,
+        "Formula": "standard",
+        "Key": "EatDPS"
+      },
+      {
+        "Formula": "constant",
+        "Key": "Speed"
+      },
+      {
+        "Formula": "constant",
+        "Key": "WavePointCost"
+      }
+    ],
+    "ShadowOffset": {
+      "x": 5,
+      "y": 0,
+      "z": 1.4
+    },
+    "Speed": 0.185,
+    "WavePointCost": 100,
+    "Weight": 1000,
+    "ZombieStats": [
+      {
+        "Type": "toughness",
+        "Value": "toughness1"
+      },
+      {
+        "Type": "speed",
+        "Value": "speed2"
+      }
+    ]
+  }
+},
+{
+"aliases": [
+"ZombieMummyArmor1Default"
+],
+"objclass": "ZombiePropertySheet",
+"objdata": {
+"ArtCenter": {
+"x": 90,
+"y": 125
+},
+"AttackRect": {
+"mHeight": 95,
+"mWidth": 20,
+"mX": 15,
+"mY": 0
+},
+"CanSpawnPlantFood": true,
+"Cost": 150,
+"EatDPS": 100,
+"GroundTrackName": "ground_swatch",
+"HitRect": {
+"mHeight": 95,
+"mWidth": 32,
+"mX": 10,
+"mY": 10
+},
+"Hitpoints": 190,
+"ScaledProps": [
+{
+"Arg1": 1.3,
+"Arg2": 0.05,
+"Formula": "standard",
+"Key": "Hitpoints"
+},
+{
+"Arg1": 1.3,
+"Arg2": 0.05,
+"Formula": "standard",
+"Key": "EatDPS"
+},
+{
+"Formula": "constant",
+"Key": "Speed"
+},
+{
+"Formula": "constant",
+"Key": "WavePointCost"
+}
+],
+"ShadowOffset": {
+"x": 0,
+"y": 0,
+"z": 1.2
+},
+"Speed": 0.185,
+"WavePointCost": 200,
+"Weight": 3000,
+"ZombieArmorProps": [
+"RTID(ConeDefault@ArmorTypes)"
+],
+"ZombieStats": [
+{
+"Type": "toughness",
+"Value": "toughness3"
+},
+{
+"Type": "speed",
+"Value": "speed2"
+}
+]
+}
+},
+{
+"aliases": [
+"ZombieMummyArmor2Default"
+],
+"objclass": "ZombiePropertySheet",
+"objdata": {
+"ArtCenter": {
+"x": 90,
+"y": 125
+},
+"AttackRect": {
+"mHeight": 95,
+"mWidth": 20,
+"mX": 15,
+"mY": 0
+},
+"CanSpawnPlantFood": true,
+"Cost": 150,
+"EatDPS": 100,
+"GroundTrackName": "ground_swatch",
+"HitRect": {
+"mHeight": 95,
+"mWidth": 32,
+"mX": 10,
+"mY": 10
+},
+"Hitpoints": 190,
+"ScaledProps": [
+{
+"Arg1": 1.3,
+"Arg2": 0.05,
+"Formula": "standard",
+"Key": "Hitpoints"
+},
+{
+"Arg1": 1.3,
+"Arg2": 0.05,
+"Formula": "standard",
+"Key": "EatDPS"
+},
+{
+"Formula": "constant",
+"Key": "Speed"
+},
+{
+"Formula": "constant",
+"Key": "WavePointCost"
+}
+],
+"ShadowOffset": {
+"x": 0,
+"y": 0,
+"z": 1.2
+},
+"Speed": 0.185,
+"WavePointCost": 400,
+"Weight": 4000,
+"ZombieArmorProps": [
+"RTID(BucketDefault@ArmorTypes)"
+],
+"ZombieStats": [
+{
+"Type": "toughness",
+"Value": "toughness5"
+},
+{
+"Type": "speed",
+"Value": "speed2"
+}
+]
+}
+},
+{
+"aliases": [
+"ZombieMummyArmor4Default"
+],
+"objclass": "ZombiePropertySheet",
+"objdata": {
+"ArtCenter": {
+"x": 90,
+"y": 125
+},
+"AttackRect": {
+"mHeight": 95,
+"mWidth": 20,
+"mX": 15,
+"mY": 0
+},
+"CanSpawnPlantFood": true,
+"Cost": 150,
+"EatDPS": 100,
+"GroundTrackName": "ground_swatch",
+"HitRect": {
+"mHeight": 95,
+"mWidth": 32,
+"mX": 10,
+"mY": 10
+},
+"Hitpoints": 190,
+"ScaledProps": [
+{
+"Arg1": 1.3,
+"Arg2": 0.05,
+"Formula": "standard",
+"Key": "Hitpoints"
+},
+{
+"Arg1": 1.3,
+"Arg2": 0.05,
+"Formula": "standard",
+"Key": "EatDPS"
+},
+{
+"Formula": "constant",
+"Key": "Speed"
+},
+{
+"Formula": "constant",
+"Key": "WavePointCost"
+}
+],
+"ShadowOffset": {
+"x": 0,
+"y": 0,
+"z": 1.2
+},
+"Speed": 0.185,
+"WavePointCost": 700,
+"Weight": 3000,
+"ZombieArmorProps": [
+"RTID(BrickDefault@ArmorTypes)"
+],
+"ZombieStats": [
+{
+"Type": "toughness",
+"Value": "toughness6"
+},
+{
+"Type": "speed",
+"Value": "speed2"
+}
+]
+}
+},
+{
+"aliases": [
+"ZombieDarkArmor3Default"
+],
+"objclass": "ZombiePropertySheet",
+"objdata": {
+"ArtCenter": {
+"x": 100,
+"y": 130
+},
+"AttackRect": {
+"mHeight": 95,
+"mWidth": 20,
+"mX": 15,
+"mY": 0
+},
+"CanSpawnPlantFood": true,
+"Cost": 150,
+"EatDPS": 100,
+"GroundTrackName": "ground_swatch",
+"HitRect": {
+"mHeight": 95,
+"mWidth": 32,
+"mX": 10,
+"mY": 10
+},
+"Hitpoints": 190,
+"ScaledProps": [
+{
+"Arg1": 1.3,
+"Arg2": 0.05,
+"Formula": "standard",
+"Key": "Hitpoints"
+},
+{
+"Arg1": 1.3,
+"Arg2": 0.05,
+"Formula": "standard",
+"Key": "EatDPS"
+},
+{
+"Formula": "constant",
+"Key": "Speed"
+},
+{
+"Formula": "constant",
+"Key": "WavePointCost"
+}
+],
+"ShadowOffset": {
+"x": 0,
+"y": 0,
+"z": 1.2
+},
+"Speed": 0.185,
+"WavePointCost": 550,
+"Weight": 4500,
+"ZombieArmorProps": [
+"RTID(ShoulderArmorDefault@ArmorTypes)",
+"RTID(CrownDefault@ArmorTypes)"
+],
+"ZombieStats": [
+{
+"Type": "toughness",
+"Value": "toughness6"
+},
+{
+"Type": "speed",
+"Value": "speed2"
+}
+]
+}
+}
+]
