@@ -1,4 +1,7 @@
 package views;
 
-public class NetWork {
+import java.util.Scanner;
+
+public class NetWork implements AppMenu {
+    public void checkCommand(Scanner scanner) {}
 }

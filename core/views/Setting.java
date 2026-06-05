@@ -1,4 +1,7 @@
 package views;
 
-public class Setting {
+import java.util.Scanner;
+
+public class Setting implements AppMenu {
+    public void checkCommand(Scanner scanner) {}
 }
