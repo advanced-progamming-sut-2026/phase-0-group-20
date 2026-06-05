@@ -1,4 +1,7 @@
 package views;
 
-public class GreenHouse {
+import java.util.Scanner;
+
+public class GreenHouse implements AppMenu {
+    public void checkCommand(Scanner scanner) {}
 }

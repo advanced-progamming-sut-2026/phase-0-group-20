@@ -1,4 +1,7 @@
 package views;
 
-public class PlantSelectionMenu {
+import java.util.Scanner;
+
+public class PlantSelectionMenu implements AppMenu {
+    public void checkCommand(Scanner scanner) {}
 }
