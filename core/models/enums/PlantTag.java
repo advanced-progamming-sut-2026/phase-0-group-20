@@ -1,4 +1,4 @@
 package models.enums;
 
-public enum Tag {
+public enum PlantTag {
 }

@@ -1,4 +1,4 @@
 package models.enums.commands;
 
-public enum NetWorkCommands {
+public enum NetworkCommands {
 }
