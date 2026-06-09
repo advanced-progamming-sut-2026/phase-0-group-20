@@ -5,7 +5,11 @@ import models.enums.plants.PlantTag;
 
 import java.util.List;
 
-public abstract class Plant implements IPlant {
+import models.timeManager.Ticker;
+
+public abstract class Plant implements IPlant, Ticker {
+    @Override
+    public abstract void  onTick(int currentTick);
 
     protected int id;
     protected String name;
