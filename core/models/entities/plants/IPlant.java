@@ -1,7 +1,7 @@
 package models.entities.plants;
 
 import models.enums.plants.PlantCategory;
-import models.enums.plants.PlantTags;
+import models.enums.plants.PlantTag;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface IPlant {
 
     PlantCategory getCategory();
 
-    List<PlantTags> getTags();
+    List<PlantTag> getTags();
 
     int getCost();
 

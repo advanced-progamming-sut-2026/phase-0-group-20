@@ -1,7 +1,7 @@
 package models.entities.plants;
 
 import models.enums.plants.PlantCategory;
-import models.enums.plants.PlantTags;
+import models.enums.plants.PlantTag;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public abstract class Plant implements IPlant {
     protected int y;
 
     protected PlantCategory category;
-    protected List<PlantTags> tags;
+    protected List<PlantTag> tags;
     protected String baseAbility;
 
 
@@ -41,7 +41,7 @@ public abstract class Plant implements IPlant {
 
 
     @Override
-    public List<PlantTags> getTags() {
+    public List<PlantTag> getTags() {
         return tags;
     }
 
