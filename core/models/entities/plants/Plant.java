@@ -1,4 +1,72 @@
 package models.entities.plants;
 
+import models.enums.plants.PlantCategory;
+import models.enums.plants.PlantTags;
+
+import java.util.List;
+
 public abstract class Plant implements IPlant {
+
+    protected int id;
+    protected String name;
+    protected int cost;
+    protected int baseHp;
+    protected int currentHp;
+    protected int damage;
+
+    protected int x;
+    protected int y;
+
+    protected PlantCategory category;
+    protected List<PlantTags> tags;
+    protected String baseAbility;
+
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+
+    @Override
+    public PlantCategory getCategory() {
+        return category;
+    }
+
+
+    @Override
+    public List<PlantTags> getTags() {
+        return tags;
+    }
+
+
+    @Override
+    public int getCost() {
+        return cost;
+    }
+
+
+    @Override
+    public int getBaseHp() {
+        return baseHp;
+    }
+
+
+    @Override
+    public int getDamage() {
+        return damage;
+    }
+
+
+    @Override
+    public String getBaseAbility() {
+        return baseAbility;
+    }
+
 }

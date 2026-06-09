@@ -1,4 +1,4 @@
-package models.enums;
+package models.enums.plants;
 
 public enum PlantBluePrint {
 }
