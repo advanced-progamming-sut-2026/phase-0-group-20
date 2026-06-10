@@ -1,6 +1,6 @@
 package models.game.adventure.levels.conditions;
 
-public class NightOpsCondition extends AdventureWinCondition {
+public class NormalWinCondition extends AdventureWinCondition {
     @Override
     public void isMet() {
 

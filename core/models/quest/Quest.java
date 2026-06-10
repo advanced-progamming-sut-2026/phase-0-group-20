@@ -9,7 +9,7 @@ public class Quest {
     private  String id;
     private  String title;
     private  QuestCategory category;
-    private  Priority priority;
+    private  QuestPriority priority;
     private IQuestCondition condition;
     private  Reward reward;
     private boolean isCompleted;
@@ -28,7 +28,7 @@ public class Quest {
     public String getId() { return id; }
     public String getTitle() { return title; }
     public QuestCategory getCategory() { return category; }
-    public Priority getPriority() { return priority; }
+    public QuestPriority getPriority() { return priority; }
     public IQuestCondition getCondition() { return condition; }
     public Reward getReward() { return reward; }
     public boolean isCompleted() { return isCompleted; }
