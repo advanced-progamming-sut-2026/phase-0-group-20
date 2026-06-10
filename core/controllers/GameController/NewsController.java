@@ -21,4 +21,10 @@ public class NewsController {
         return null;
     }
 
+
+    public Result changeMenu(String newMenu) {
+        return null;
+    }
+
+
 }

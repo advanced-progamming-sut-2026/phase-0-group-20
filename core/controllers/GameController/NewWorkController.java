@@ -2,13 +2,9 @@ package controllers.GameController;
 
 import models.Result;
 
-public class MiniGameController {
+public class NewWorkController {
 
     public Result changeMenu(String newMenu) {
-        return null;
-    }
-
-    public Result handleRule(String newMenu) {
         return null;
     }
 

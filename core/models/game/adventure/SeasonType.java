@@ -1,4 +1,4 @@
-package models.fields;
+package models.game.adventure;
 
 public enum SeasonType {
     FROZEN_CAVES,

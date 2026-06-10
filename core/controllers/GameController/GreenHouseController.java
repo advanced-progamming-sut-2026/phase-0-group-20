@@ -9,25 +9,20 @@ public class GreenHouseController {
         return null;
     }
 
-
     public Result plantPot(String coordinate) {
         return null;
     }
-
 
     public Result collect(String coordinate) {
         return null;
     }
 
-
     public Result grow(String coordinate) {
         return null;
     }
 
-
     public Result enterShop() {
         return null;
     }
-
 
 }

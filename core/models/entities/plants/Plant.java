@@ -19,8 +19,6 @@ public abstract class Plant implements IPlant, Ticker {
     protected int currentHp;
     protected int damage;
     protected Tile placedTile;
-    protected int x;
-    protected int y;
 
     protected PlantCategory category;
     protected List<PlantTag> tags;

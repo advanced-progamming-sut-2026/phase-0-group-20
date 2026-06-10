@@ -1,7 +1,7 @@
 package controllers.MenuController;
 
 import models.Result;
-import models.enums.plants.SecurityQuestion;
+import models.enums.SecurityQuestion;
 
 public class LoginMenuController {
 

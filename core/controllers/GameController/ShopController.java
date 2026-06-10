@@ -9,7 +9,6 @@ public class ShopController {
         return null;
     }
 
-
     public Result buy(String id, String count, String type) {
         return null;
     }

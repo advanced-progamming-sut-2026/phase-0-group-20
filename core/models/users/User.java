@@ -1,7 +1,7 @@
 package models.users;
 
 import models.enums.Gender;
-import models.enums.plants.SecurityQuestion;
+import models.enums.SecurityQuestion;
 
 public class User {
     private String username;

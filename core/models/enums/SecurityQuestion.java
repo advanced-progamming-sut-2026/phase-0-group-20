@@ -1,4 +1,4 @@
-package models.enums.plants;
+package models.enums;
 
 public enum SecurityQuestion {
 
