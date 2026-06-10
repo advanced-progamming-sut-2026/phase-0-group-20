@@ -1,4 +1,4 @@
-package models.map;
+package models.fields;
 
 public class Map {
 
