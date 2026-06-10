@@ -5,7 +5,7 @@ import models.enums.plants.PlantTag;
 
 import java.util.List;
 
-import models.fields.Tile;
+import models.fields.tiles.Tile;
 import models.timeManager.Ticker;
 
 public abstract class Plant implements IPlant, Ticker {

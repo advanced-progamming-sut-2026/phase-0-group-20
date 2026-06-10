@@ -1,7 +1,11 @@
 package models.users;
 
+import models.entities.plants.Plant;
+import models.entities.zombies.Zombie;
 import models.enums.Gender;
 import models.enums.SecurityQuestion;
+
+import java.util.ArrayList;
 
 public class User {
     private String username;
@@ -16,7 +20,9 @@ public class User {
     private int gamesPlayed;
     private int levelsCompleted;
     private boolean stayLoggedIn;
-
+    private Inventory inventory;
+    private ArrayList<Zombie> unlockedZombies;
+    private ArrayList<Plant> unlockedPlants;
     public User(String username, String passwordHash,
                 String nickname, String email, Gender gender,
                 SecurityQuestion securityQuestion, String securityAnswerHash) {
