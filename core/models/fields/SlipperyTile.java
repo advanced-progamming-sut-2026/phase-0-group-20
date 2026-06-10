@@ -1,4 +1,7 @@
 package models.fields;
 
-public class SlipperyTile {
+public class SlipperyTile extends Tile {
+    @Override
+    public void onTick(int currentTick) {
+    }
 }
