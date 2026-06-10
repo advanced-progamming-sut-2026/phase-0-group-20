@@ -5,6 +5,7 @@ import models.enums.plants.PlantTag;
 
 import java.util.List;
 
+import models.fields.Tile;
 import models.timeManager.Ticker;
 
 public abstract class Plant implements IPlant, Ticker {
@@ -17,7 +18,7 @@ public abstract class Plant implements IPlant, Ticker {
     protected int baseHp;
     protected int currentHp;
     protected int damage;
-
+    protected Tile placedTile;
     protected int x;
     protected int y;
 
