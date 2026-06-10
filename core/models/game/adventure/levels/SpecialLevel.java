@@ -1,4 +1,4 @@
 package models.game.adventure.levels;
 
-public class SpecialLevel extends Level {
+public abstract class SpecialLevel extends Level {
 }
