@@ -1,4 +1,4 @@
-package models.fields;
+package models.fields.tiles;
 
 public class SlipperyTile extends Tile {
     @Override

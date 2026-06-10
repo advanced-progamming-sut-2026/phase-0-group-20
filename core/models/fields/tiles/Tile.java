@@ -1,7 +1,8 @@
-package models.fields;
+package models.fields.tiles;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.fields.SeasonType;
 import models.timeManager.Ticker;
 
 public abstract class Tile implements Ticker {

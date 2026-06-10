@@ -1,5 +1,7 @@
 package models.fields;
 
+import models.fields.tiles.Tile;
+
 public class Map {
     // map is ALWAYS created before the mission start
     private int rows;
@@ -10,6 +12,5 @@ public class Map {
         this.columns = columns;
         Tile[][] tiles = new Tile[rows][columns];
     }
-
 
 }
