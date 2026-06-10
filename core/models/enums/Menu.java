@@ -1,4 +1,15 @@
 package models.enums;
 
 public enum Menu {
+    SIGNUP_MENU,
+    LOGIN_MENU,
+    SETTINGS_MENU,
+    MAIN_MENU,
+    COLLECTION_MENU,
+    LEADERBOARD_MENU,
+    GREENHOUSE_MENU,
+    PLANTSELLECTION_MENU,
+    PROFILE_MENU,
+    SHOP_MENU,
+    TRAVELLOG_MENU,
 }
