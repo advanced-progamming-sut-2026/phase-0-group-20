@@ -7,7 +7,7 @@ public enum SignUpCommands {
             "-c\\s+(?<confirm>.+)$");
 
     private final String pattern;
-    
+
     SignUpCommands(String pattern) {
         this.pattern = pattern;
     }

@@ -7,6 +7,7 @@ public class Map {
     private int rows;
     private int columns;
     private Tile[][] tiles;
+
     public Map(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;

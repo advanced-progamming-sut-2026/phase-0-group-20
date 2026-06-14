@@ -1,6 +1,6 @@
 package models.entities.plants;
 
-public class WallNut extends  Plant {
+public class WallNut extends Plant {
 
     public WallNut(PlantData data) {
         this.id = data.id();

@@ -7,7 +7,7 @@ import java.util.List;
 public class QuestManager {
     private List<Quest> activeQuests;
 
-    public void checkAllEvents(GameEvent event){
+    public void checkAllEvents(GameEvent event) {
 
     }
 }

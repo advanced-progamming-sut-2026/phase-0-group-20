@@ -23,6 +23,7 @@ public class User {
     private Inventory inventory;
     private ArrayList<Zombie> unlockedZombies;
     private ArrayList<Plant> unlockedPlants;
+
     public User(String username, String passwordHash,
                 String nickname, String email, Gender gender,
                 SecurityQuestion securityQuestion, String securityAnswerHash) {

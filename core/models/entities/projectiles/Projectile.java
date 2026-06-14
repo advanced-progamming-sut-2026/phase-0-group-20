@@ -2,7 +2,7 @@ package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
 import models.enums.plants.ProjectileType;
-import models.fields.Tile;
+import models.fields.tiles.Tile;
 import models.timeManager.Ticker;
 
 public class Projectile implements Ticker {

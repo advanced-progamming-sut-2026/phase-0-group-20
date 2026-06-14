@@ -1,6 +1,7 @@
 package models.collection;
 
 public interface ICollection {
-     void showAllItems();
-     void showUnlockedItems();
+    void showAllItems();
+
+    void showUnlockedItems();
 }

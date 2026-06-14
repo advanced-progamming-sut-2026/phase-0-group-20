@@ -10,17 +10,21 @@ public class AreaOfEffect implements ProjectileEffect {
         this.inner = inner;
     }
 
-    public void applyEffect(Zombie z, Arena board) {
+    @Override
+    public void applyEffect(Zombie zombie, Arena board) {
     }
 
+    @Override
     public int getDamageMultiplier() {
         return 0;
     }
 
+    @Override
     public boolean ignoresArmor() {
         return false;
     }
 
+    @Override
     public boolean meltsIce() {
         return false;
     }

@@ -1,6 +1,6 @@
 package models.entities.plants;
 
-public class Lobber extends  Plant {
+public class Lobber extends Plant {
 
     public Lobber(PlantData data) {
         this.id = data.id();

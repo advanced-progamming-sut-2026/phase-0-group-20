@@ -5,17 +5,21 @@ import models.game.Arena;
 
 public class NormalEffect implements ProjectileEffect {
 
+    @Override
     public void applyEffect(Zombie zombie, Arena board) {
     }
 
+    @Override
     public int getDamageMultiplier() {
         return 0;
     }
 
+    @Override
     public boolean ignoresArmor() {
         return false;
     }
 
+    @Override
     public boolean meltsIce() {
         return false;
     }

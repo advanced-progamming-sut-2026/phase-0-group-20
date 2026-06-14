@@ -4,7 +4,6 @@ import models.Result;
 
 public class MainMenuController {
 
-
     public Result changeMenu(String newMenu) {
         return null;
     }
@@ -12,6 +11,5 @@ public class MainMenuController {
     public Result logout() {
         return null;
     }
-
 
 }

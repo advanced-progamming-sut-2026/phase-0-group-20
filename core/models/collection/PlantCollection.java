@@ -12,14 +12,16 @@ public class PlantCollection implements ICollection {
     public void showUnlockedItems() {
 
     }
-    public void showSpecificPlant(Plant plant){
+
+    public void showSpecificPlant(Plant plant) {
 
     }
 
-    public void upgradePlant(Plant plant){
+    public void upgradePlant(Plant plant) {
 
     }
-    public void purchasePlant(Plant plant){
+
+    public void purchasePlant(Plant plant) {
     }
 
 }

@@ -12,28 +12,30 @@ public class Shop {
     ArrayList<Item> items;
     Item dailyItem;
 
-    public void buildShopPermanentItems(){
-
-    }
-    public void buildDailyItem(){
-
-    }
-    public void unlockPot(){
+    public void buildShopPermanentItems() {
 
     }
 
-    public void buyPlantFood(){
+    public void buildDailyItem() {
 
     }
 
-    public void buyRandomPlantSeed(){
+    public void unlockPot() {
 
     }
 
-    public void buyChoosablePlantSeed(){
+    public void buyPlantFood() {
 
     }
 
-    public void changeCurrency(){
+    public void buyRandomPlantSeed() {
+
+    }
+
+    public void buyChoosablePlantSeed() {
+
+    }
+
+    public void changeCurrency() {
     }
 }

@@ -2,15 +2,14 @@ package models.entities.plants;
 
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
-
-import java.util.List;
-
 import models.fields.tiles.Tile;
 import models.timeManager.Ticker;
 
+import java.util.List;
+
 public abstract class Plant implements IPlant, Ticker {
     @Override
-    public abstract void  onTick(int currentTick);
+    public abstract void onTick(int currentTick);
 
     protected int id;
     protected String name;

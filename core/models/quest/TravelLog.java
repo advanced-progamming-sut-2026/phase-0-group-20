@@ -6,11 +6,11 @@ import java.util.Map;
 public class TravelLog {
     private Map<QuestCategory, List<Quest>> pages;
 
-    public void changePage(){
+    public void changePage() {
 
     }
 
-    public void displayQuests(){
+    public void displayQuests() {
 
     }
 

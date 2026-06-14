@@ -9,7 +9,7 @@ public enum ProfileCommands {
 
     private final String pattern;
 
-    ProfileCommands(String pattern){
+    ProfileCommands(String pattern) {
         this.pattern = pattern;
     }
 

@@ -10,10 +10,12 @@ public class Message {
     public static Message zombieUnlockedMessage(Zombie z) {
         return null;
     }
+
     public static Message plantUnlockedMessage(Plant p) {
         return null;
     }
-    public static Message levelUnlockedMessage(){
+
+    public static Message levelUnlockedMessage() {
         return null;
     }
 }

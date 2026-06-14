@@ -1,4 +1,4 @@
 package models.items;
 
-public class FoodPlant implements Item{
+public class FoodPlant implements Item {
 }

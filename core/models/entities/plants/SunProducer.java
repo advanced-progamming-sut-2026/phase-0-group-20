@@ -1,6 +1,6 @@
 package models.entities.plants;
 
-public class SunProducer extends  Plant {
+public class SunProducer extends Plant {
 
     public SunProducer(PlantData data) {
         this.id = data.id();

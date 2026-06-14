@@ -5,7 +5,7 @@ import models.enums.plants.PlantTag;
 
 import java.util.List;
 
-public record PlantData (
+public record PlantData(
         int id,
         String name,
         PlantCategory category,
@@ -13,4 +13,5 @@ public record PlantData (
         int cost,
         int baseHp,
         int damage
-) {}
+) {
+}

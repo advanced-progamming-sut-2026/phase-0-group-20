@@ -1,4 +1,4 @@
-package models.game.adventure.levels;
+package models.game;
 
 import models.enums.GameState;
 

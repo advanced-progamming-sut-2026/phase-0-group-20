@@ -14,7 +14,7 @@ public enum GameMenuCommands {
         this.pattern = pattern;
     }
 
-    public  String getPattern() {
+    public String getPattern() {
         return pattern;
     }
 }
