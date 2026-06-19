@@ -1,13 +1,16 @@
 package models.users;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.Gender;
 import models.enums.SecurityQuestion;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
     private final String id;
     private String username;
@@ -46,11 +49,20 @@ public class User {
 
     }
 
-    // Constructor for database
-    public User(String id, String username, String passwordHash,
-                String nickname, String email, Gender gender,
-                SecurityQuestion securityQuestion, String securityAnswerHash,
-                int coin, int diamond, int gamesPlayed, int levelsCompleted, boolean stayLoggedIn) {
+    @JsonCreator
+    public User(@JsonProperty("id") String id,
+                @JsonProperty("username") String username,
+                @JsonProperty("passwordHash") String passwordHash,
+                @JsonProperty("nickname") String nickname,
+                @JsonProperty("email") String email,
+                @JsonProperty("gender") Gender gender,
+                @JsonProperty("securityQuestion") SecurityQuestion securityQuestion,
+                @JsonProperty("securityAnswerHash") String securityAnswerHash,
+                @JsonProperty("coin") int coin,
+                @JsonProperty("diamond") int diamond,
+                @JsonProperty("gamesPlayed") int gamesPlayed,
+                @JsonProperty("levelsCompleted") int levelsCompleted,
+                @JsonProperty("stayLoggedIn") boolean stayLoggedIn) {
 
         this.id = id;
         this.username = username;
@@ -165,5 +177,21 @@ public class User {
 
     public void setStayLoggedIn(boolean stayLoggedIn) {
         this.stayLoggedIn = stayLoggedIn;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+}
+
+    public ArrayList<Zombie> getUnlockedZombies() {
+        return unlockedZombies;
+    }
+
+    public ArrayList<Plant> getUnlockedPlants() {
+        return unlockedPlants;
     }
 }
