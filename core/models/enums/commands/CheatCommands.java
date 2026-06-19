@@ -1,6 +1,6 @@
 package models.enums.commands;
 
-public enum CheatCommands {
+public enum CheatCommands implements Commands {
     ADD_DIAMOND("^(?:\\s+)?menu\\s+cheat\\s+add\\s+(?<amount>\\S+)\\s+diamond(?:\\s+)?$"),
     ADD_COIN("^(?:\\s+)?menu\\s+cheat\\s+add\\s+(?<amount>\\S+)\\s+coin(?:\\s+)?$");
 

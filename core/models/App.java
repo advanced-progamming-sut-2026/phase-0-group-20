@@ -8,8 +8,8 @@ import models.users.User;
 import java.util.ArrayList;
 
 public class App {
-    private static User activeUser;
-    private static Menu activeMenu;
-    private ArrayList<Zombie> unlockedZombies;
-    private ArrayList<Plant> unlockedPlants;
+    public static User activeUser;
+    public static Menu activeMenu;
+    public ArrayList<Zombie> unlockedZombies;
+    public ArrayList<Plant> unlockedPlants;
 }

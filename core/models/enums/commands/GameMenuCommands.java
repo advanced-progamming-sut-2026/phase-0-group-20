@@ -1,6 +1,6 @@
 package models.enums.commands;
 
-public enum GameMenuCommands {
+public enum GameMenuCommands implements Commands {
     ENTER_CHAPTER("^(?:\\s+)?menu\\s+enter\\s+chapter\\s+-c\\s+(?<chaptername>\\S+)(?:\\s+)$"),
     ENTER_GREEN_HOUSE("^(?:\\s+)?menu\\s+greenhouse(?:\\s+)?$"),
     ENTER_TRAVEL_LOG("^(?:\\s+)?menu\\s+travel-log(?:\\s+)?$"),

@@ -1,6 +1,6 @@
 package models.enums.commands;
 
-public enum MainMenuCommands {
+public enum MainMenuCommands implements Commands {
     LOGOUT("^(?:\\s+)?menu\\s+logout(?:\\s+)$");
 
     private final String pattern;

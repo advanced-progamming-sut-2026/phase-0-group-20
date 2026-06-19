@@ -1,4 +1,10 @@
 package models.enums.commands;
 
-public enum CollectionCommands {
+public enum CollectionCommands implements Commands {
+    ;
+
+    @Override
+    public String getPattern() {
+        return "";
+    }
 }

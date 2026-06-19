@@ -1,6 +1,6 @@
 package models.enums.commands;
 
-public enum SettingCommands {
+public enum SettingCommands implements Commands {
     CHANGE_DIFFICULTY("^(?:\\s+)?menu\\s+settings\\s+change-difficulty\\s+-l\\s+(?<level>\\S+)(?:\\s+)?$");
 
     private final String pattern;

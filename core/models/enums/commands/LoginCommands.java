@@ -1,6 +1,6 @@
 package models.enums.commands;
 
-public enum LoginCommands {
+public enum LoginCommands implements Commands {
     LOGIN("^(?:\\s+)?login\\s+-u\\s+(?<username>\\S+)\\s+-p\\s+(?<password>\\S+)\\s+-stay-logged-in(?:\\s+)?$"),
     FORGOT_PASSWORD("^(?:\\s+)?forget\\s+password\\s+-u\\s+(?<username>\\S+)\\s+-e\\s+(?<email>\\S+)(?:\\s+)?$"),
     ANSWER_QUESTION("^(?:\\s+)?answer\\s+-a\\s+(?<answer>.+)$");

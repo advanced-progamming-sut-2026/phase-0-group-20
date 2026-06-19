@@ -1,6 +1,6 @@
 package models.enums.commands;
 
-public enum ProfileCommands {
+public enum ProfileCommands implements Commands{
     CHANGE_USERNAME("^(?:\\s+)?menu\\s+profile\\s+change-username\\s+-u\\s+(?<username>\\S+)(?:\\s+)?$"),
     CHANGE_NICKNAME("^(?:\\s+)?menu\\s+profile\\s+change-nickname\\s+-u\\s+(?<nickname>.+)$"),
     CHANGE_EMAIL("^(?:\\s+)?menu\\s+profile\\s+change-email\\s+-e\\s+(?<email>\\S+)(?:\\s+)?$"),

@@ -3,5 +3,9 @@ package views;
 import java.util.Scanner;
 
 public interface AppMenu {
-    void checkCommand(Scanner scanner);
+    void check(Scanner scanner);
+
+    default void invalidCommands() {
+        System.out.println("Invalid command");
+    }
 }
