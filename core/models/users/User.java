@@ -6,8 +6,10 @@ import models.enums.Gender;
 import models.enums.SecurityQuestion;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class User {
+    private final String id;
     private String username;
     private String passwordHash;
     private String nickname;
@@ -21,13 +23,14 @@ public class User {
     private int levelsCompleted;
     private boolean stayLoggedIn;
     private Inventory inventory;
-    private ArrayList<Zombie> unlockedZombies;
-    private ArrayList<Plant> unlockedPlants;
+    private final ArrayList<Zombie> unlockedZombies = new ArrayList<>();
+    private final ArrayList<Plant> unlockedPlants = new ArrayList<>();
 
-    public User(String username, String passwordHash,
+    public User(String id, String username, String passwordHash,
                 String nickname, String email, Gender gender,
                 SecurityQuestion securityQuestion, String securityAnswerHash) {
 
+        this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
         this.nickname = nickname;
@@ -40,8 +43,33 @@ public class User {
         this.gamesPlayed = 0;
         this.levelsCompleted = 0;
         this.stayLoggedIn = false;
+
     }
 
+    // Constructor for database
+    public User(String id, String username, String passwordHash,
+                String nickname, String email, Gender gender,
+                SecurityQuestion securityQuestion, String securityAnswerHash,
+                int coin, int diamond, int gamesPlayed, int levelsCompleted, boolean stayLoggedIn) {
+
+        this.id = id;
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.nickname = nickname;
+        this.email = email;
+        this.gender = gender;
+        this.securityQuestion = securityQuestion;
+        this.securityAnswerHash = securityAnswerHash;
+        this.coin = coin;
+        this.diamond = diamond;
+        this.gamesPlayed = gamesPlayed;
+        this.levelsCompleted = levelsCompleted;
+        this.stayLoggedIn = stayLoggedIn;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public String getPasswordHash() {
         return passwordHash;
