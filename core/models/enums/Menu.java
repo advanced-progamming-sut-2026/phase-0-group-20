@@ -2,28 +2,66 @@ package models.enums;
 
 import views.*;
 
+import java.util.EnumSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public enum Menu {
-    SIGNUP_MENU(new SignUpMenu()),
-    LOGIN_MENU(new LoginMenu()),
-    SETTINGS_MENU(new Setting()),
-    MAIN_MENU(new MainMenu()),
-    COLLECTION_MENU(new CollectionMenu()),
-    LEADERBOARD_MENU(new LeaderBoard()),
-    GREENHOUSE_MENU(new GreenHouse()),
-    PLANTSELLECTION_MENU(new PlantSelectionMenu()),
-    PROFILE_MENU(new ProfileMenu()),
-    SHOP_MENU(new ShopMenu()),
-    TRAVELLOG_MENU(new TravelLogMenu());
+    SIGNUP_MENU(new SignUpMenu(), "signup menu"),
+    LOGIN_MENU(new LoginMenu(), "login menu"),
+    SETTINGS_MENU(new Setting(), "setting menu"),
+    MAIN_MENU(new MainMenu(), "main menu"),
+    COLLECTION_MENU(new CollectionMenu(), "collection menu"),
+    LEADERBOARD_MENU(new LeaderBoard(), "leaderboard menu"),
+    GREENHOUSE_MENU(new GreenHouse(), "greenhouse menu"),
+    PLANTSELLECTION_MENU(new PlantSelectionMenu(), "plant selection menu"),
+    PROFILE_MENU(new ProfileMenu(), "profile menu"),
+    SHOP_MENU(new ShopMenu(), "shop menu"),
+    TRAVELLOG_MENU(new TravelLogMenu(), "travel log menu"),
+    GAME_MENU(new GameMenu(), "game menu"),
+    NEWS_MENU(new NewsMenu(), "news menu"),
+    ;
 
     private final AppMenu menu;
+    private final String name;
 
-    Menu(AppMenu menu) {
+    Menu(AppMenu menu, String name) {
         this.menu = menu;
+        this.name = name;
     }
 
     public void checkCommand(Scanner sc) {
         this.menu.check(sc);
+    }
+
+    public Set<Menu> getAllowedEntryTargets() {
+        return switch (this) {
+            case SIGNUP_MENU -> EnumSet.of(LOGIN_MENU);
+            case LOGIN_MENU -> EnumSet.of(SIGNUP_MENU);
+            case SETTINGS_MENU, NEWS_MENU, SHOP_MENU, GREENHOUSE_MENU, LEADERBOARD_MENU, COLLECTION_MENU,
+                 TRAVELLOG_MENU -> null;
+            case MAIN_MENU -> EnumSet.of(GAME_MENU, PROFILE_MENU, SETTINGS_MENU);
+
+            case PLANTSELLECTION_MENU -> EnumSet.of(GAME_MENU);
+            case PROFILE_MENU -> EnumSet.of(PLANTSELLECTION_MENU);
+            case GAME_MENU -> EnumSet.of(COLLECTION_MENU, LEADERBOARD_MENU,
+                    GREENHOUSE_MENU, PLANTSELLECTION_MENU,
+                    SHOP_MENU, TRAVELLOG_MENU, NEWS_MENU);
+        };
+    }
+
+    public Menu getExitTarget() {
+        return switch (this) {
+            case SIGNUP_MENU -> null;
+            case LOGIN_MENU -> SIGNUP_MENU;
+            case SETTINGS_MENU, GAME_MENU, MAIN_MENU, PROFILE_MENU -> MAIN_MENU;
+            case COLLECTION_MENU, NEWS_MENU, LEADERBOARD_MENU, GREENHOUSE_MENU, PLANTSELLECTION_MENU, SHOP_MENU,
+                 TRAVELLOG_MENU -> GAME_MENU;
+        };
+    }
+
+
+    public String getName() {
+        return name;
     }
 }

@@ -17,6 +17,7 @@ public abstract class Level {
     protected List<LoseCondition> loseConditions;
 
     public abstract void onStart();
+
     public abstract void onTick(int tick);
 
     public void checkResult(GameState state) {
