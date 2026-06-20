@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import models.users.PasswordUtils;
 import models.users.User;
 
-
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
@@ -14,7 +13,8 @@ public class UserRepository extends JsonRepository<User, String> {
     private static final String FILE_PATH = "data/users.json";
 
     public UserRepository() {
-        super(FILE_PATH, User::getId, new TypeReference<LinkedHashMap<String, User>>() {});
+        super(FILE_PATH, User::getId, new TypeReference<LinkedHashMap<String, User>>() {
+        });
     }
 
     public Optional<User> findLoggedInUser() {

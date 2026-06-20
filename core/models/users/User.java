@@ -3,12 +3,14 @@ package models.users;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.Gender;
 import models.enums.SecurityQuestion;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
@@ -29,11 +31,11 @@ public class User {
     private final ArrayList<Zombie> unlockedZombies = new ArrayList<>();
     private final ArrayList<Plant> unlockedPlants = new ArrayList<>();
 
-    public User(String id, String username, String passwordHash,
+    public User(String username, String passwordHash,
                 String nickname, String email, Gender gender,
                 SecurityQuestion securityQuestion, String securityAnswerHash) {
 
-        this.id = id;
+        this.id = UUID.randomUUID().toString();
         this.username = username;
         this.passwordHash = passwordHash;
         this.nickname = nickname;
@@ -185,10 +187,26 @@ public class User {
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
-}
+    }
+
+    @JsonSetter
+    public void setUnlockedZombies(ArrayList<Zombie> zombies) {
+        if (zombies != null) {
+            this.unlockedZombies.clear();
+            this.unlockedZombies.addAll(zombies);
+        }
+    }
 
     public ArrayList<Zombie> getUnlockedZombies() {
         return unlockedZombies;
+    }
+
+    @JsonSetter
+    public void setUnlockedPlants(ArrayList<Plant> plants) {
+        if (plants != null) {
+            this.unlockedPlants.clear();
+            this.unlockedPlants.addAll(plants);
+        }
     }
 
     public ArrayList<Plant> getUnlockedPlants() {

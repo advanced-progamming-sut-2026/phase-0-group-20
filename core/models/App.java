@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class App {
     public static User activeUser;
-    public static Menu activeMenu;
+    public static Menu activeMenu = Menu.SIGNUP_MENU;
     public ArrayList<Zombie> unlockedZombies;
     public ArrayList<Plant> unlockedPlants;
 }
