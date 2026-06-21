@@ -73,4 +73,8 @@ public class DataBaseManager {
         System.out.println("Password updated");
         return true;
     }
+
+    public static boolean usernameExists(String username) {
+        return userRepository.findByUsername(username).isPresent();
+    }
 }

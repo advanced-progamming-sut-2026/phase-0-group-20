@@ -1,0 +1,12 @@
+# IntelliJ IDEA Target and configuration files
+.idea/
+*.iml
+
+# Maven target directory (Compiled bytecode)
+**/target/
+**/data/
+**/out/
+
+# OS generated files (Optional but good to have)
+.DS_Store
+Thumbs.db

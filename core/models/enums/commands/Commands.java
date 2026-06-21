@@ -8,12 +8,6 @@ public interface Commands {
 
     default Matcher getMatcher(String input) {
         Matcher matcher = Pattern.compile(getPattern()).matcher(input);
-
-        matcher.matches();
-        return matcher;
-    }
-
-    default boolean matches(String input) {
-        return getMatcher(input).matches();
+        return matcher.matches() ? matcher : null;
     }
 }
