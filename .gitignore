@@ -1,6 +1,7 @@
 # IntelliJ IDEA Target and configuration files
 .idea/
 *.iml
+*.json
 
 # Maven target directory (Compiled bytecode)
 **/target/
