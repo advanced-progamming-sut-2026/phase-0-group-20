@@ -15,13 +15,13 @@ public class AppView {
         User stayedUser = DataBaseManager.getLoggedInUser();
 
         if (stayedUser != null) {
-            App.activeUser = stayedUser;
-            App.activeMenu = Menu.MAIN_MENU;
+            App.setActiveUser(stayedUser);
+            App.setActiveMenu(Menu.MAIN_MENU);
             System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
         }
 
         while (true) {
-            App.activeMenu.checkCommand(sc);
+            App.getActiveMenu().checkCommand(sc);
         }
     }
 }

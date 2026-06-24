@@ -81,8 +81,7 @@ public class SignupMenuController {
 
         DataBaseManager.saveOrUpdateUser(newUser);
         pendingRegistration = null;
-        App.activeMenu = Menu.LOGIN_MENU;
-
+        App.setActiveMenu(Menu.LOGIN_MENU);
         return new Result(true, "registration was successful, you can now login to your account");
     }
 

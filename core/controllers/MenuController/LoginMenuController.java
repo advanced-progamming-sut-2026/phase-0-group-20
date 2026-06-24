@@ -28,8 +28,8 @@ public class LoginMenuController {
 
         user.setStayLoggedIn(stayLoggedIn);
         DataBaseManager.saveOrUpdateUser(user);
-        App.activeUser = user;
-        App.activeMenu = Menu.MAIN_MENU;
+        App.setActiveUser(user);
+        App.setActiveMenu(Menu.MAIN_MENU);
 
         return new Result(true, "welcome " + user.getNickname());
     }

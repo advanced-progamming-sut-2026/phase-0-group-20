@@ -15,16 +15,16 @@ public final class NavigationController {
         if (target == null)
             return new Result(false, "no such menu exists");
 
-        Menu current = App.activeMenu;
+        Menu current = App.getActiveMenu();
         if (!current.getAllowedEntryTargets().contains(target))
             return new Result(false, "you cannot enter this menu from here");
 
-        App.activeMenu = target;
+        App.setActiveMenu( target);
         return new Result(true, "entered " + targetMenuName);
     }
 
     public static Result exitMenu() {
-        Menu current = App.activeMenu;
+        Menu current = App.getActiveMenu();
 
         if (current == Menu.MAIN_MENU)
             return new Result(false, "use the logout command to exit the main menu");
@@ -34,11 +34,11 @@ public final class NavigationController {
             System.exit(0);
         }
 
-        App.activeMenu = target;
-        return new Result(true, "exited to " + target);
+        App.setActiveMenu(target);
+        return new Result(true, "exited to " + target.getName());
     }
 
     public static Result showCurrentMenu() {
-        return new Result(true, App.activeMenu.getName());
+        return new Result(true, App.getActiveMenu().getName());
     }
 }
