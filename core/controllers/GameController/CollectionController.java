@@ -95,7 +95,12 @@ public class CollectionController {
                 .filter(plant->plant.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
-        if(foundPlant == null){
+        boolean exist = App.getAllPlants().stream()
+                .anyMatch(plant -> plant.getName().equalsIgnoreCase(name));
+        if(exist&& foundPlant ==null){
+            return new Result(false, "You haven't unlocked this plant yet");
+        }
+        else if(foundPlant == null){
             return new Result(false, "Your desired plant doesn't exist.");
         }
         HashMap<String, Integer> seeds = activeUser.getInventory().getSeedPackets();
@@ -168,16 +173,16 @@ public class CollectionController {
     }
 
     private String getZombieInfo(Zombie zombie){
-        StringBuilder result = new StringBuilder();
-        result.append("-------------------------------\n");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("-------------------------------\n");
         String format = "%-15s : %s%n";
-        result.append(String.format(format, "Name", zombie.getName()));
-        result.append(String.format(format, "Health", zombie.getBaseHp()));
-        result.append(String.format(format, "Speed",zombie.getSpeed()));
-        result.append("-------------------------------\n\n");
+        stringBuilder.append(String.format(format, "Name", zombie.getName()));
+        stringBuilder.append(String.format(format, "Health", zombie.getBaseHp()));
+        stringBuilder.append(String.format(format, "Speed",zombie.getSpeed()));
+        stringBuilder.append("-------------------------------\n\n");
         // not full
-        result.deleteCharAt(result.length() - 1);
-        return result.toString();
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        return stringBuilder.toString();
     }
 
 }
