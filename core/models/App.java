@@ -40,16 +40,8 @@ public class App {
         return allZombies;
     }
 
-    public static void setAllZombies(ArrayList<Zombie> allZombies) {
-        this.allZombies = allZombies;
-    }
-
     public static ArrayList<Plant> getAllPlants() {
         return allPlants;
-    }
-
-    public static void setAllPlants(ArrayList<Plant> allPlants) {
-        this.allPlants = allPlants;
     }
 
     public static Settings getSettings() {

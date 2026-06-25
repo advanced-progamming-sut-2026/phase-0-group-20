@@ -22,6 +22,8 @@ public class Setting implements AppMenu {
             System.out.println(NavigationController.enterMenu(matcher.group("name")));
         } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
             System.out.println(NavigationController.showCurrentMenu());
+        } else {
+            invalidCommands();
         }
     }
 }
