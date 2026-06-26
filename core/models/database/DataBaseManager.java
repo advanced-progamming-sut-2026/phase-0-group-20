@@ -6,7 +6,7 @@ import models.users.User;
 
 public class DataBaseManager {
 
-    private static final UserRepository userRepository = new UserRepository();
+    private static UserRepository userRepository = new UserRepository();
 
     public static void initializeDatabase() {
 
@@ -49,32 +49,35 @@ public class DataBaseManager {
     public static void updateEmail(User currentUser, String newEmail) {
         currentUser.setEmail(newEmail);
         userRepository.save(currentUser);
-        System.out.println("email updated");
     }
 
     public static void updateNickname(User currentUser, String newNickname) {
         currentUser.setNickname(newNickname);
         userRepository.save(currentUser);
-        System.out.println("Nickname updated");
     }
 
     public static boolean updatePassword(User currentUser, String oldPasswordInput, String newPasswordInput) {
         String oldPasswordHash = PasswordUtils.hashPassword(oldPasswordInput);
 
-        if (!oldPasswordHash.equals(currentUser.getPasswordHash())) {
-            System.out.println("Old password does not match");
+        if (!oldPasswordHash.equals(currentUser.getPasswordHash()))
             return false;
-        }
 
         String newPasswordHash = PasswordUtils.hashPassword(newPasswordInput);
         currentUser.setPasswordHash(newPasswordHash);
         userRepository.save(currentUser);
-
-        System.out.println("Password updated");
         return true;
     }
 
     public static boolean usernameExists(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
+
+    public static void setRepositoryForTest(UserRepository repository) {
+        DataBaseManager.userRepository = repository;
+    }
+
+    public static void resetRepositoryToDefault() {
+        DataBaseManager.userRepository = new UserRepository();
+    }
+
 }

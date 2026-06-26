@@ -19,8 +19,9 @@ public final class NavigationController {
         if (!current.getAllowedEntryTargets().contains(target))
             return new Result(false, "you cannot enter this menu from here");
 
-        App.setActiveMenu( target);
-        return new Result(true, "entered " + targetMenuName);
+        App.setActiveMenu(target);
+
+        return new Result(true, "entered " + target.getName());
     }
 
     public static Result exitMenu() {
@@ -41,4 +42,6 @@ public final class NavigationController {
     public static Result showCurrentMenu() {
         return new Result(true, App.getActiveMenu().getName());
     }
+
+
 }

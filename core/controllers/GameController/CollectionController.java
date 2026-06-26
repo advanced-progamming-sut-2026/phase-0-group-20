@@ -14,8 +14,9 @@ import java.util.List;
 public class CollectionController {
     private static final int MAX_LEVEL = 3;
     private static final int BASE_COST = 200;
-    private static final int BASE_SEED_PACKETS =1;
+    private static final int BASE_SEED_PACKETS = 1;
     private static final int PURCHASE_COST = 2000;
+
     public Result showPlants() {
         User activeUser = App.getActiveUser();
         ArrayList<Plant> unlockedPlants = activeUser.getUnlockedPlants();
@@ -40,9 +41,9 @@ public class CollectionController {
 
     public Result showZombies() {
         User activeUser = App.getActiveUser();
-        ArrayList <Zombie> zombies = activeUser.getUnlockedZombies();
+        ArrayList<Zombie> zombies = activeUser.getUnlockedZombies();
         StringBuilder result = new StringBuilder();
-        for(Zombie zombie : zombies){
+        for (Zombie zombie : zombies) {
             result.append(getZombieInfo(zombie));
         }
         result.deleteCharAt(result.length() - 1);
@@ -52,7 +53,7 @@ public class CollectionController {
     public Result showAllZombies() {
         ArrayList<Zombie> zombies = App.getAllZombies();
         StringBuilder result = new StringBuilder();
-        for(Zombie zombie : zombies){
+        for (Zombie zombie : zombies) {
             result.append(getZombieInfo(zombie));
         }
         result.deleteCharAt(result.length() - 1);
@@ -66,60 +67,59 @@ public class CollectionController {
                 .filter(plant -> plant.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
-        if(foundPlant == null){
+        if (foundPlant == null) {
             return new Result(false, "Your desired plant doesn't exist.");
         }
         String rawText = getPlantInfo(foundPlant);
         String text = rawText.substring(0, rawText.length() - 1);
-        return new Result(true,text);
+        return new Result(true, text);
     }
 
     public Result showZombieInfo(String name) {
         ArrayList<Zombie> zombies = App.getAllZombies();
         Zombie foundZombie = zombies.stream()
-                .filter(zombie->zombie.getName().equalsIgnoreCase(name))
+                .filter(zombie -> zombie.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
-        if(foundZombie == null){
+        if (foundZombie == null) {
             return new Result(false, "Your desired zombie doesn't exist.");
         }
         String rawText = getZombieInfo(foundZombie);
         String text = rawText.substring(0, rawText.length() - 1);
-        return new Result(true,text);
+        return new Result(true, text);
     }
 
     public Result upgradePlant(String name) {
         User activeUser = App.getActiveUser();
         ArrayList<Plant> plants = activeUser.getUnlockedPlants();
         Plant foundPlant = plants.stream()
-                .filter(plant->plant.getName().equalsIgnoreCase(name))
+                .filter(plant -> plant.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
         boolean exist = App.getAllPlants().stream()
                 .anyMatch(plant -> plant.getName().equalsIgnoreCase(name));
-        if(exist&& foundPlant ==null){
+        if (exist && foundPlant == null) {
             return new Result(false, "You haven't unlocked this plant yet");
-        }
-        else if(foundPlant == null){
+        } else if (foundPlant == null) {
             return new Result(false, "Your desired plant doesn't exist.");
         }
         HashMap<String, Integer> seeds = activeUser.getInventory().getSeedPackets();
         int cost = BASE_COST * foundPlant.getLevel();
         int seedPacketCost = BASE_SEED_PACKETS * foundPlant.getLevel();
-        if(!seeds.containsKey(name)||seedPacketCost > seeds.get(name)){
+        if (!seeds.containsKey(name) || seedPacketCost > seeds.get(name)) {
             return new Result(false, "You don't have enough seed packets to upgrade this plant.");
         }
-        if(cost>activeUser.getCoin()){
+        if (cost > activeUser.getCoin()) {
             return new Result(false, "You don't have enough coin to upgrade this plant.");
         }
-        if(foundPlant.getLevel() == MAX_LEVEL){
-            return new Result (false, "The plant is already at max level.");
+        if (foundPlant.getLevel() == MAX_LEVEL) {
+            return new Result(false, "The plant is already at max level.");
         }
         foundPlant.upgrade();
         activeUser.costCoin(cost);
         seeds.computeIfPresent("Sunflower", (k, v) -> Math.max(0, v - seedPacketCost));
 
-        return new Result(true, "You successfully upgraded "+foundPlant.getName()+" to level "+foundPlant.getLevel()+".");
+        return new Result(true, "You successfully upgraded " + foundPlant.getName() + " to level " + foundPlant.getLevel() + ".");
     }
 
     public Result purchasePlant(String name) {
@@ -127,21 +127,21 @@ public class CollectionController {
         ArrayList<Plant> userPlants = activeUser.getUnlockedPlants();
         ArrayList<Plant> plants = App.getAllPlants();
         Plant foundPlant = plants.stream()
-                .filter(plant->plant.getName().equalsIgnoreCase(name))
+                .filter(plant -> plant.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
-        if(foundPlant == null){
+        if (foundPlant == null) {
             return new Result(false, "Your desired plant doesn't exist.");
         }
-        if(userPlants.contains(foundPlant)){
-            return new Result(false,"You already have this plant.");
+        if (userPlants.contains(foundPlant)) {
+            return new Result(false, "You already have this plant.");
         }
-        if(activeUser.getCoin()<BASE_COST){
-            return new Result(false,"You don't have enough coin to purchase this plant.");
+        if (activeUser.getCoin() < BASE_COST) {
+            return new Result(false, "You don't have enough coin to purchase this plant.");
         }
         activeUser.costCoin(PURCHASE_COST);
         userPlants.add(foundPlant);
-        return new Result(true , "You successfully purchased "+foundPlant.getName()+" .");
+        return new Result(true, "You successfully purchased " + foundPlant.getName() + " .");
 
     }
 
@@ -172,13 +172,13 @@ public class CollectionController {
         return plantInfo.toString();
     }
 
-    private String getZombieInfo(Zombie zombie){
+    private String getZombieInfo(Zombie zombie) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("-------------------------------\n");
         String format = "%-15s : %s%n";
         stringBuilder.append(String.format(format, "Name", zombie.getName()));
         stringBuilder.append(String.format(format, "Health", zombie.getBaseHp()));
-        stringBuilder.append(String.format(format, "Speed",zombie.getSpeed()));
+        stringBuilder.append(String.format(format, "Speed", zombie.getSpeed()));
         stringBuilder.append("-------------------------------\n\n");
         // not full
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);

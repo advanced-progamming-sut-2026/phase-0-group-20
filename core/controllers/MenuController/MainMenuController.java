@@ -14,8 +14,7 @@ public class MainMenuController {
         if (currentUser == null)
             return new Result(false, "no user is currently logged in");
 
-        currentUser.setStayLoggedIn(false);
-        DataBaseManager.saveOrUpdateUser(currentUser);
+        DataBaseManager.logoutUser(currentUser.getId());
 
         App.setActiveUser(null);
         App.setActiveMenu(Menu.LOGIN_MENU);

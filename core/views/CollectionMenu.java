@@ -6,9 +6,6 @@ import models.enums.commands.CollectionCommands;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
-import java.util.Scanner;
-import java.util.regex.Matcher;
-
 public class CollectionMenu implements AppMenu {
     private final CollectionController controller = new CollectionController();
 
