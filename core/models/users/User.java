@@ -150,7 +150,7 @@ public class User {
         this.coin = coin;
     }
 
-    public void costCoin(int amount){
+    public void costCoin(int amount) {
         this.coin = Math.max(0, this.coin - amount);
     }
 

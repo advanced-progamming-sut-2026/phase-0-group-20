@@ -13,7 +13,11 @@ public class UserRepository extends JsonRepository<User, String> {
     private static final String FILE_PATH = "data/users.json";
 
     public UserRepository() {
-        super(FILE_PATH, User::getId, new TypeReference<LinkedHashMap<String, User>>() {
+        this(FILE_PATH);
+    }
+
+    public UserRepository(String filePath) {
+        super(filePath, User::getId, new TypeReference<LinkedHashMap<String, User>>() {
         });
     }
 

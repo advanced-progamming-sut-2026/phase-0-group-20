@@ -11,12 +11,12 @@ import java.util.ArrayList;
 public class App {
     private static User activeUser;
     private static Menu activeMenu = Menu.SIGNUP_MENU;
-    private static Settings settings = Settings.getInstance();
-    private static News news = News.getInstance();
+    private static final Settings settings = Settings.getInstance();
+    private static final News news = News.getInstance();
     private static ArrayList<Zombie> allZombies;
     private static ArrayList<Plant> allPlants;
 
-    public static void changeDifficulty(int difficulty){
+    public static void changeDifficulty(int difficulty) {
         return; // We need to implement the Zombies and Plants Mechanism before make this
     }
 

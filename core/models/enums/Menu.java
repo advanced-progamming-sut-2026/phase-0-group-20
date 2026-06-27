@@ -61,16 +61,29 @@ public enum Menu {
     }
 
 
-    public static Menu getByName(String name) {
-         for (Menu menu : Menu.values())
-             if (menu.name.equalsIgnoreCase(name))
-                 return menu;
-         return null;
+    public static Menu getByName(String menuName) {
+        String name = getMenuNameOnly(menuName) + " menu";
+        for (Menu menu : Menu.values())
+            if (menu.name.equalsIgnoreCase(name))
+                return menu;
+        return null;
     }
 
 
     public String getName() {
         return name;
+    }
+
+
+    private static String getMenuNameOnly(String menuName) {
+        if (menuName == null)
+            return "";
+        StringBuilder name = new StringBuilder();
+        for (String part : menuName.split(" ")) {
+            if (part.trim().equalsIgnoreCase("menu")) break;
+            name.append(part).append(" ");
+        }
+        return name.toString().trim().toLowerCase();
     }
 
 

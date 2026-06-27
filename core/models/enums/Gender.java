@@ -7,6 +7,7 @@ public enum Gender {
     PREFERRED_NOT_TO_SAY("preferred not to say");
 
     private final String value;
+
     Gender(String value) {
         this.value = value;
     }
@@ -16,8 +17,8 @@ public enum Gender {
     }
 
     public static Gender findByValue(String value) {
-        for(Gender gender : Gender.values()) {
-            if(gender.getValue().equalsIgnoreCase(value))
+        for (Gender gender : Gender.values()) {
+            if (gender.getValue().equalsIgnoreCase(value.trim()))
                 return gender;
         }
         return null;

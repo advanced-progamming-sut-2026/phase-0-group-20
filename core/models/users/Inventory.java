@@ -1,23 +1,31 @@
 package models.users;
 
 import models.entities.plants.Plant;
+
 import java.util.HashMap;
 
 public class Inventory {
     private HashMap<String, Integer> foodPlants = new HashMap<>();
     private HashMap<String, Integer> seedPackets = new HashMap<>();
 
-    public Inventory() {}
+    public Inventory() {
+    }
 
     public void setFoodPlants(HashMap<String, Integer> foodPlants) {
         this.foodPlants = foodPlants;
     }
+
     public void setSeedPackets(HashMap<String, Integer> seedPackets) {
         this.seedPackets = seedPackets;
     }
 
-    public HashMap<String, Integer> getFoodPlants() { return foodPlants; }
-    public HashMap<String, Integer> getSeedPackets() { return seedPackets; }
+    public HashMap<String, Integer> getFoodPlants() {
+        return foodPlants;
+    }
+
+    public HashMap<String, Integer> getSeedPackets() {
+        return seedPackets;
+    }
 
     public void addFoodPlant(Plant plant) {
         String key = plant.getClass().getSimpleName();

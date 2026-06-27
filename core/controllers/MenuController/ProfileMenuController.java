@@ -89,15 +89,15 @@ public class ProfileMenuController {
             return new Result(false, "no user is currently logged in");
 
         String userInfo = """
-                    ╔══════════════ User Information ══════════════╗
-                    👤 Username         : %s
-                    📛 Name             : %s
-                    🎮 Games Played     : %d
-                    🪙 Coins            : %d
-                    💎 Diamonds         : %d
-                    🏆 Levels Completed : %d
-                    ╚══════════════════════════════════════════════╝
-        """.formatted(
+                            ╔══════════════ User Information ══════════════╗
+                            👤 Username         : %s
+                            📛 Name             : %s
+                            🎮 Games Played     : %d
+                            🪙 Coins            : %d
+                            💎 Diamonds         : %d
+                            🏆 Levels Completed : %d
+                            ╚══════════════════════════════════════════════╝
+                """.formatted(
                 current.getUsername(),
                 current.getNickname(),
                 current.getGamesPlayed(),
