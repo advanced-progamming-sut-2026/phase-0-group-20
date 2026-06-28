@@ -18,10 +18,11 @@ public class SignupMenuController {
     public Result register(String username, String password, String repeatPassword,
                            String nickname, String email, String genderStr) {
 
-        username = username.trim();
-        nickname = nickname.trim();
-        email = email.trim();
-        genderStr = genderStr.trim();
+        if (username != null) username = username.trim();
+        if (nickname != null) nickname = nickname.trim();
+        if (email != null) email = email.trim();
+        if (genderStr != null) genderStr = genderStr.trim();
+
 
         Result validation = validateRegistration(username, password, repeatPassword, nickname, email, genderStr);
         if (!validation.isSuccessful())

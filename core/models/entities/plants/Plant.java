@@ -18,7 +18,7 @@ public abstract class Plant implements IPlant, Ticker {
     protected int currentHp;
     protected int damage;
     protected Tile placedTile;
-
+    protected int level = 1;
     protected PlantCategory category;
     protected List<PlantTag> tags;
     protected String baseAbility;
@@ -70,5 +70,15 @@ public abstract class Plant implements IPlant, Ticker {
     public String getBaseAbility() {
         return baseAbility;
     }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void upgrade() {
+        this.level += 1;
+        // later we implement the effects
+    }
+
 
 }

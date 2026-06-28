@@ -3,17 +3,21 @@ package models.news;
 import java.util.ArrayList;
 
 public class News {
+
     private static News instance;
-    private News(){
+
+    private final ArrayList<Message> messages = new ArrayList<>();
+
+    private News() {
 
     }
+
     public static News getInstance() {
         if (instance == null) {
             instance = new News();
         }
         return instance;
     }
-    private ArrayList<Message> messages;
 
     public ArrayList<Message> getMessages() {
         return messages;

@@ -58,6 +58,7 @@ public class User {
                 @JsonProperty("nickname") String nickname,
                 @JsonProperty("email") String email,
                 @JsonProperty("gender") Gender gender,
+                @JsonProperty("inventory") Inventory inventory,
                 @JsonProperty("securityQuestion") SecurityQuestion securityQuestion,
                 @JsonProperty("securityAnswerHash") String securityAnswerHash,
                 @JsonProperty("coin") int coin,
@@ -147,6 +148,10 @@ public class User {
 
     public void setCoin(int coin) {
         this.coin = coin;
+    }
+
+    public void costCoin(int amount) {
+        this.coin = Math.max(0, this.coin - amount);
     }
 
     public int getDiamond() {

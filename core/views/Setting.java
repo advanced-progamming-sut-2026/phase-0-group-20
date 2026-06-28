@@ -4,7 +4,7 @@ import controllers.GameController.SettingController;
 import controllers.NavigationController;
 import models.enums.commands.MainCommands;
 import models.enums.commands.SettingCommands;
-//CHECK
+
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
