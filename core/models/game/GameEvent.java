@@ -7,5 +7,6 @@ public enum GameEvent {
     PLANT_LOST,
     WAVE_STARTED,
     WAVE_COMPLETED,
-    LEVEL_COMPLETED;
+    LEVEL_COMPLETED,
+    LAWNMOWER_TRIGGERED;
 }
