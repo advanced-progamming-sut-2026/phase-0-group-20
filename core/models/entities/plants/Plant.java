@@ -1,84 +1,93 @@
 package models.entities.plants;
 
+import models.entities.plants.PlantFoodStrategy.PlantFoodStrategy;
+import models.entities.plants.strategy.IPlantStrategy;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 import models.fields.tiles.Tile;
 import models.timeManager.Ticker;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Plant implements IPlant, Ticker {
-    @Override
-    public abstract void onTick(int currentTick);
-
-    protected int id;
-    protected String name;
-    protected int cost;
-    protected int baseHp;
+    protected final PlantData data;
     protected int currentHp;
-    protected int damage;
     protected Tile placedTile;
     protected int level = 1;
-    protected PlantCategory category;
-    protected List<PlantTag> tags;
-    protected String baseAbility;
+    protected final List<IPlantStrategy> strategies = new ArrayList<>();
+    protected PlantFoodStrategy plantFoodStrategy;
 
 
-    @Override
-    public int getId() {
-        return id;
+    public Plant(PlantData data) {
+        this.data = data;
+        this.currentHp = data.baseHp();
+    }
+
+    public void addStrategy(IPlantStrategy strategy) {
+        this.strategies.add(strategy);
+    }
+
+    public List<IPlantStrategy> getStrategies() {
+        return strategies;
+    }
+
+    public void setPlantFoodStrategy(PlantFoodStrategy plantFoodStrategy) {
+        this.plantFoodStrategy = plantFoodStrategy;
+    }
+
+    public PlantFoodStrategy getPlantFoodStrategy() {
+        return plantFoodStrategy;
+    }
+
+    /** Called when the player feeds this plant with Plant Food. */
+    public void useFood() {
+        if (plantFoodStrategy != null) {
+            plantFoodStrategy.executeStrategy(this);
+        } else {
+            System.out.println(getName() + " has no Plant Food effect wired up yet!");
+        }
     }
 
 
     @Override
-    public String getName() {
-        return name;
+    public void onTick(int currentTick) {
+        for (IPlantStrategy strategy : strategies) {
+            strategy.execute(this, currentTick);
+        }
     }
 
-
-    @Override
-    public PlantCategory getCategory() {
-        return category;
+    public void takeDamage(int amount) {
+        this.currentHp -= amount;
+        if (this.currentHp <= 0) {
+            die();
+        }
     }
 
+    protected abstract void die();
 
-    @Override
-    public List<PlantTag> getTags() {
-        return tags;
-    }
+    @Override public int getId() { return data.id(); }
+    @Override public String getName() { return data.name(); }
+    @Override public PlantCategory getCategory() { return data.category(); }
+    @Override public List<PlantTag> getTags() { return data.tags(); }
+    @Override public int getCost() { return data.cost(); }
+    @Override public int getBaseHp() { return data.baseHp(); }
+    @Override public String getDamage() { return data.damage(); }
+    @Override public String getBaseAbility() { return data.baseAbility(); }
+    @Override public String getPlantFoodEffect() { return data.plantFoodEffect(); }
+    @Override public String getLvl2() { return data.lvl2(); }
+    @Override public String getLvl3() { return data.lvl3(); }
+    @Override public String getLvl4() { return data.lvl4(); }
+    @Override public float getActionInterval() { return data.actionInterval(); }
+    @Override public int getRecharge() { return data.recharge(); }
 
-
-    @Override
-    public int getCost() {
-        return cost;
-    }
-
-
-    @Override
-    public int getBaseHp() {
-        return baseHp;
-    }
-
-
-    @Override
-    public int getDamage() {
-        return damage;
-    }
-
-
-    @Override
-    public String getBaseAbility() {
-        return baseAbility;
-    }
-
-    public int getLevel() {
-        return level;
-    }
+    public int getLevel() { return level; }
+    public int getCurrentHp() { return currentHp; }
+    public Tile getPlacedTile() { return placedTile; }
+    public void setPlacedTile(Tile placedTile) { this.placedTile = placedTile; }
 
     public void upgrade() {
         this.level += 1;
-        // later we implement the effects
+        // implement the effect of levels
     }
-
-
 }

@@ -12,6 +12,12 @@ public record PlantData(
         List<PlantTag> tags,
         int cost,
         int baseHp,
-        int damage
-) {
-}
+        String damage,
+        String baseAbility,
+        String plantFoodEffect,
+        String lvl2,
+        String lvl3,
+        String lvl4,
+        float actionInterval,
+        int recharge
+) {}
