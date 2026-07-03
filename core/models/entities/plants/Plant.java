@@ -5,6 +5,7 @@ import models.entities.plants.strategy.IPlantStrategy;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 import models.fields.tiles.Tile;
+import models.game.GameSession;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -17,11 +18,13 @@ public abstract class Plant implements IPlant, Ticker {
     protected int level = 1;
     protected final List<IPlantStrategy> strategies = new ArrayList<>();
     protected PlantFoodStrategy plantFoodStrategy;
+    protected GameSession gameSession;
 
 
-    public Plant(PlantData data) {
+    public Plant(PlantData data, GameSession gameSession) {
         this.data = data;
         this.currentHp = data.baseHp();
+        this.gameSession = gameSession;
     }
 
     public void addStrategy(IPlantStrategy strategy) {
@@ -53,7 +56,7 @@ public abstract class Plant implements IPlant, Ticker {
     @Override
     public void onTick(int currentTick) {
         for (IPlantStrategy strategy : strategies) {
-            strategy.execute(this, currentTick);
+            strategy.execute(this, currentTick, gameSession);
         }
     }
 

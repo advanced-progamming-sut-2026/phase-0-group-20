@@ -2,6 +2,7 @@ package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
 import models.game.Arena;
+import models.game.GameSession;
 
 public class AreaOfEffect implements ProjectileEffect {
     private ProjectileEffect inner;
@@ -11,7 +12,8 @@ public class AreaOfEffect implements ProjectileEffect {
     }
 
     @Override
-    public void applyEffect(Zombie zombie, Arena board) {
+    public void applyEffect(GameSession gameSession) {
+
     }
 
     @Override

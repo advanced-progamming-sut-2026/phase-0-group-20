@@ -6,15 +6,18 @@ import models.entities.plants.strategy.*;
 import models.entities.plants.strategy.category_strategy.*;
 import models.entities.plants.strategy.tag_strategy.*;
 import models.enums.plants.PlantTag;
+import models.game.GameSession;
 
 import java.util.Map;
 
 public class PlantFactory {
 
     private final Map<Integer, PlantData> plantRegistry;
+    private final GameSession gameSession;
 
-    public PlantFactory(Map<Integer, PlantData> plantRegistry) {
+    public PlantFactory(Map<Integer, PlantData> plantRegistry, GameSession gameSession) {
         this.plantRegistry = plantRegistry;
+        this.gameSession = gameSession;
     }
 
     public Plant create(int id) {
@@ -23,7 +26,7 @@ public class PlantFactory {
             throw new IllegalArgumentException(String.format("No plants with id %d", id));
         }
 
-        Plant plant = new GamePlant(data);
+        Plant plant = new GamePlant(data, gameSession);
         String nameKey = data.name().toLowerCase();
 
         boolean hasTrap = data.tags().contains(PlantTag.TRAP);
@@ -221,8 +224,8 @@ public class PlantFactory {
 
     private static class GamePlant extends Plant { // this class will implement in game
 
-        public GamePlant(PlantData data) {
-            super(data);
+        public GamePlant(PlantData data, GameSession gameSession) {
+            super(data, gameSession);
         }
 
         @Override
