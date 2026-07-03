@@ -1,7 +1,6 @@
 package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
-import models.game.Arena;
 import models.game.GameSession;
 
 import java.util.List;

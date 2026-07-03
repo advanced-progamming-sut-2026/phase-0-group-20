@@ -18,11 +18,11 @@ public class TurquoiseMove implements MoveBehavior {
         }
     }
 
-    public void setChanneling(boolean channeling) { // call in attack behavior
-        this.isChanneling = channeling;
-    }
-
     public boolean isChanneling() {
         return isChanneling;
+    }
+
+    public void setChanneling(boolean channeling) { // call in attack behavior
+        this.isChanneling = channeling;
     }
 }

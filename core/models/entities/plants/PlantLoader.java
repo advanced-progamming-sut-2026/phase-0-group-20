@@ -43,7 +43,8 @@ public class PlantLoader {
                 if (!data[12].equals("-") && !data[12].isEmpty()) {
                     try {
                         actionInterval = Float.parseFloat(data[12]);
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
 
                 int recharge = Integer.parseInt(data[13]);
@@ -74,7 +75,8 @@ public class PlantLoader {
         for (String t : tagArray) {
             try {
                 tags.add(PlantTag.valueOf(normalizeTag(t.trim())));
-            } catch (IllegalArgumentException ignored) {}
+            } catch (IllegalArgumentException ignored) {
+            }
         }
         return tags;
     }

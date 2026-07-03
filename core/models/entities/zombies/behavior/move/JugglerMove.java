@@ -4,8 +4,8 @@ import models.entities.zombies.Zombie;
 
 public class JugglerMove implements MoveBehavior {
     private final Zombie zombie;
-    private boolean isSpinning;
     private final float spinSpeedMultiplier = 2.5f;
+    private boolean isSpinning;
 
     public JugglerMove(Zombie zombie) {
         this.zombie = zombie;

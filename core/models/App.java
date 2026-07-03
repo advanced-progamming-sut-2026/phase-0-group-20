@@ -9,10 +9,10 @@ import models.users.User;
 import java.util.ArrayList;
 
 public class App {
-    private static User activeUser;
-    private static Menu activeMenu = Menu.SIGNUP_MENU;
     private static final Settings settings = Settings.getInstance();
     private static final News news = News.getInstance();
+    private static User activeUser;
+    private static Menu activeMenu = Menu.SIGNUP_MENU;
     private static ArrayList<Zombie> allZombies;
     private static ArrayList<Plant> allPlants;
 

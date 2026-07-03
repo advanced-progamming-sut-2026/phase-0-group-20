@@ -15,6 +15,10 @@ public class TimeManager {
         this.listeners = new ArrayList<>();
     }
 
+    public static boolean isEveryNTicks(int currentTick, int n) {
+        return currentTick % n == 0;
+    }
+
     public void registerNewTicker(Ticker newTicker) {
         if (newTicker != null && !listeners.contains(newTicker)) {
             listeners.add(newTicker);
@@ -49,9 +53,5 @@ public class TimeManager {
 
     public int getElapsedSeconds() {
         return currentTick / TICKS_PER_SECOND;
-    }
-
-    public static boolean isEveryNTicks(int currentTick, int n) {
-        return currentTick % n == 0;
     }
 }

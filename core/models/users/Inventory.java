@@ -11,20 +11,20 @@ public class Inventory {
     public Inventory() {
     }
 
-    public void setFoodPlants(HashMap<String, Integer> foodPlants) {
-        this.foodPlants = foodPlants;
-    }
-
-    public void setSeedPackets(HashMap<String, Integer> seedPackets) {
-        this.seedPackets = seedPackets;
-    }
-
     public HashMap<String, Integer> getFoodPlants() {
         return foodPlants;
     }
 
+    public void setFoodPlants(HashMap<String, Integer> foodPlants) {
+        this.foodPlants = foodPlants;
+    }
+
     public HashMap<String, Integer> getSeedPackets() {
         return seedPackets;
+    }
+
+    public void setSeedPackets(HashMap<String, Integer> seedPackets) {
+        this.seedPackets = seedPackets;
     }
 
     public void addFoodPlant(Plant plant) {

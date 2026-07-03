@@ -1,6 +1,8 @@
 package models.game;
 
 public enum GameEvent {
+    GAME_STARTED,
+    GAME_OVER,
     ZOMBIE_KILLED,
     SUN_COLLECTED,
     PLANT_PLACED,

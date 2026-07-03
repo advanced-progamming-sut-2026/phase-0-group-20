@@ -30,15 +30,41 @@ public class ZombieData {
         this.armorProps = armorProps;
     }
 
-    public String getAlias() { return alias; }
-    public int getHitpoints() { return hitpoints; }
-    public float getSpeed() { return speed; }
-    public int getEatDps() { return eatDps; }
-    public int getWaveCost() { return waveCost; }
-    public boolean canSpawnPlantFood() { return canSpawnPlantFood; }
-    public int getSmashDamage() { return smashDamage; }
-    public String getImpType() { return impType; }
-    public List<String> getArmorProps() { return armorProps; }
+    public String getAlias() {
+        return alias;
+    }
+
+    public int getHitpoints() {
+        return hitpoints;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public int getEatDps() {
+        return eatDps;
+    }
+
+    public int getWaveCost() {
+        return waveCost;
+    }
+
+    public boolean canSpawnPlantFood() {
+        return canSpawnPlantFood;
+    }
+
+    public int getSmashDamage() {
+        return smashDamage;
+    }
+
+    public String getImpType() {
+        return impType;
+    }
+
+    public List<String> getArmorProps() {
+        return armorProps;
+    }
 
     @Override
     public String toString() {

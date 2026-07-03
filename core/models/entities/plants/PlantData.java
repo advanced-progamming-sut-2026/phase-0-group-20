@@ -20,4 +20,5 @@ public record PlantData(
         String lvl4,
         float actionInterval,
         int recharge
-) {}
+) {
+}

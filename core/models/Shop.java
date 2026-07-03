@@ -5,12 +5,12 @@ import models.items.Item;
 import java.util.ArrayList;
 
 public class Shop {
+    ArrayList<Item> items;
+    Item dailyItem;
     private int potLimit;
     private boolean potLimitReached;
     private int plantFoodLimit;
     private boolean plantFoodLimitReached;
-    ArrayList<Item> items;
-    Item dailyItem;
 
     public void buildShopPermanentItems() {
 

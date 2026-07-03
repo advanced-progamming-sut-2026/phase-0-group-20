@@ -17,8 +17,8 @@ import static org.junit.Assert.*;
 public class DatabaseManageUnitTest {
 
     private final String TEST_FILE_PATH = "core/test/resources/test_users.json";
-    private User testUser;
     UserRepository testRepo;
+    private User testUser;
 
     @Before
     public void setUp() throws Exception {

@@ -3,7 +3,7 @@ package models.entities.zombies.behavior.defense;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.behavior.move.JugglerMove;
 
-public class JugglerDefense implements  DefenseBehavior {
+public class JugglerDefense implements DefenseBehavior {
 
     private final Zombie zombie;
 

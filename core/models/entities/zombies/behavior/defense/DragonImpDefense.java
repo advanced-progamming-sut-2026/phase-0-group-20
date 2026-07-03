@@ -1,6 +1,6 @@
 package models.entities.zombies.behavior.defense;
 
-public class DragonImpDefense implements  DefenseBehavior {
+public class DragonImpDefense implements DefenseBehavior {
     @Override
     public int mitigateDamage(int damage, String damageType) {
         if (damageType.equals("FIRE")) {

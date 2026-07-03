@@ -12,8 +12,8 @@ import models.entities.plants.strategy.IPlantStrategy;
 
 public class ExplosiveStrategy implements IPlantStrategy {
 
-    private int startTick = -1;
     private final int EXPLOSION_DELAY_TICKS = 10; // 1 sec delay for animation
+    private int startTick = -1;
 
     @Override
     public void execute(Plant context, int currentTick) {

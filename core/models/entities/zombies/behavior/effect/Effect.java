@@ -14,6 +14,7 @@ public abstract class Effect implements ZombieEffect {
     }
 
     public abstract void onApply();
+
     public abstract void onRemove();
 
     @Override

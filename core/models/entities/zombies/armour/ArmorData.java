@@ -15,9 +15,17 @@ public class ArmorData {
         this.flags = flags;
     }
 
-    public String getAlias() { return alias; }
-    public String getArmorType() { return armorType; }
-    public int getBaseHealth() { return baseHealth; }
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getArmorType() {
+        return armorType;
+    }
+
+    public int getBaseHealth() {
+        return baseHealth;
+    }
 
 
     public boolean hasFlag(String flag) {

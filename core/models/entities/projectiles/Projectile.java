@@ -3,7 +3,6 @@ package models.entities.projectiles;
 import models.entities.zombies.Zombie;
 import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
-import models.game.Arena;
 import models.game.GameSession;
 import models.timeManager.Ticker;
 
@@ -84,16 +83,16 @@ public class Projectile implements Ticker {
         return false;
     }
 
-    public void setEffect(ProjectileEffect newEffect) {
-        this.effect = newEffect;
-    }
-
     public ProjectileType getType() {
         return type;
     }
 
     public ProjectileEffect getEffect() {
         return effect;
+    }
+
+    public void setEffect(ProjectileEffect newEffect) {
+        this.effect = newEffect;
     }
 
     public GameSession getBoard() {

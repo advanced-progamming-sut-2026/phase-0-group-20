@@ -4,8 +4,8 @@ import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 
 public class FireEffectStrategy implements IPlantStrategy {
-    private int lastWarmUpTick = 0;
     private final int WARM_UP_INTERVAL_TICKS = 5;
+    private int lastWarmUpTick = 0;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -13,7 +13,7 @@ public class FireEffectStrategy implements IPlantStrategy {
 
             // Logic to warm up adjacent tiles (3x3 grid around the plant)
 
-             System.out.println(context.getName() + " is radiating heat to adjacent tiles!");
+            System.out.println(context.getName() + " is radiating heat to adjacent tiles!");
 
             lastWarmUpTick = currentTick;
         }
