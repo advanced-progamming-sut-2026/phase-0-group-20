@@ -178,7 +178,7 @@ public class CollectionController {
         String format = "%-15s : %s%n";
         stringBuilder.append(String.format(format, "Name", zombie.getName()));
         stringBuilder.append(String.format(format, "Health", zombie.getBaseHp()));
-        stringBuilder.append(String.format(format, "Speed", zombie.getSpeed()));
+        stringBuilder.append(String.format(format, "Speed", zombie.getBaseSpeed()));
         stringBuilder.append("-------------------------------\n\n");
         // not full
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);

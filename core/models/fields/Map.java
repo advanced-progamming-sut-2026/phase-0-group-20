@@ -14,4 +14,11 @@ public class Map {
         Tile[][] tiles = new Tile[rows][columns];
     }
 
+    public Tile[][] getTiles() {
+        return tiles;
+    }
+
+    public void setTiles(Tile[][] tiles) {
+        this.tiles = tiles;
+    }
 }
