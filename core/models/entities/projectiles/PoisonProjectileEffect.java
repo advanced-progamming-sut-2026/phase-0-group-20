@@ -1,13 +1,18 @@
 package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
+import models.entities.zombies.behavior.effect.PoisonEffect;
 import models.game.Arena;
 
-public class NormalEffect implements ProjectileEffect {
+public class PoisonProjectileEffect implements ProjectileEffect {
+
+    private static final int POISON_DURATION_TICKS = 50;
+    private static final int POISON_DPS = 10;
 
     @Override
     public void applyEffect(Zombie zombie, Arena board, Projectile projectile) {
-        // no effect
+        zombie.addEffect(new PoisonEffect(
+                zombie, POISON_DURATION_TICKS, POISON_DPS));
     }
 
     @Override
@@ -17,7 +22,7 @@ public class NormalEffect implements ProjectileEffect {
 
     @Override
     public boolean ignoresArmor() {
-        return false;
+        return true;
     }
 
     @Override

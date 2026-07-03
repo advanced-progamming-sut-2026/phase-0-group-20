@@ -3,99 +3,131 @@ package models.entities.projectiles;
 import models.entities.zombies.Zombie;
 import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
-import models.game.GameSession;
+import models.game.Arena;
 import models.timeManager.Ticker;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Projectile implements Ticker {
 
     private ProjectileType type;
-    private GameSession gameSession;
+    private ProjectileEffect effect;
+    private Arena board;
     private int damage;
-    private int row;
-    private int startCol;
-    private int directionX;
-    private int directionY;
+    private int column;
+    private int lane;
+    private int speedX;
+    private int speedY;
     private boolean piercing;
     private boolean canPassObstacles; // for lobber
+    private boolean isDestroyed;
 
-    private List<ProjectileEffect> effects;
-
-    public Projectile(ProjectileType type, int damage, int row,int startCol, boolean canPassObstacles, GameSession gameSession) {
+    public Projectile(ProjectileType type, ProjectileEffect effect, Arena board, int damage,
+                      int column, int lane, int speedX, int speedY,
+                      boolean piercing, boolean canPassObstacles) {
         this.type = type;
+        this.effect = effect;
+        this.board = board;
         this.damage = damage;
-        this.row = row;
-        this.startCol = startCol;
+        this.column = column;
+        this.lane = lane;
+        this.speedX = speedX;
+        this.speedY = speedY;
+        this.piercing = piercing;
         this.canPassObstacles = canPassObstacles;
-        this.gameSession = gameSession;
-    }
-
-    public void addEffect(ProjectileEffect effect) {
-        if (effects == null) {
-            effects = new ArrayList<>();
-        }
-        effects.add(effect);
+        this.isDestroyed = false;
     }
 
     @Override
     public void onTick(int currentTick) {
-        for (ProjectileEffect effect : effects) {
-            effect.applyEffect(gameSession);
+        if (isDestroyed) return;
+
+        move();
+
+        if (isOutOfBounds()) {
+            isDestroyed = true;
         }
     }
 
     public void move() {
+        column += speedX;
+        lane += speedY;
     }
 
     public void onHit(Zombie z) {
+        if (isDestroyed || z == null || z.isDead()) return;
+
+        int finalDamage = damage * effect.getDamageMultiplier();
+
+        if (effect.ignoresArmor()) {
+            z.takeDirectDamage(finalDamage);
+        } else {
+            z.takeDamage(finalDamage);
+        }
+
+        effect.applyEffect(z, board, this);
+
+        if (!piercing) {
+            isDestroyed = true;
+        }
     }
 
     public void onHitObstacle(Tile tile) {
+        if (!canPassObstacles) {
+            isDestroyed = true;
+        }
     }
 
     public boolean isOutOfBounds() {
+        if (column < 0 || column >= board.getCols()
+                || lane < 0 || lane >= board.getRows())
+            return true;
         return false;
+    }
+
+    public void setEffect(ProjectileEffect newEffect) {
+        this.effect = newEffect;
     }
 
     public ProjectileType getType() {
         return type;
     }
 
-    public GameSession getGameSession() {
-        return gameSession;
+    public ProjectileEffect getEffect() {
+        return effect;
     }
 
-    public int getRow() {
-        return row;
+    public Arena getBoard() {
+        return board;
     }
 
     public int getDamage() {
         return damage;
     }
 
-    public int getStartCol() {
-        return startCol;
+    public int getColumn() {
+        return column;
     }
 
-    public int getDirectionX() {
-        return directionX;
+    public int getLane() {
+        return lane;
     }
 
-    public int getDirectionY() {
-        return directionY;
+    public int getspeedX() {
+        return speedX;
+    }
+
+    public int getspeedY() {
+        return speedY;
     }
 
     public boolean isPiercing() {
         return piercing;
     }
 
-    public boolean isCanPassObstacles() {
+    public boolean canPassObstacles() {
         return canPassObstacles;
     }
 
-    public List<ProjectileEffect> getEffects() {
-        return effects;
+    public boolean isDestroyed() {
+        return isDestroyed;
     }
 }
