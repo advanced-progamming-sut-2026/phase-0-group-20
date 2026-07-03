@@ -19,6 +19,7 @@ public abstract class Plant implements IPlant, Ticker {
     protected final List<IPlantStrategy> strategies = new ArrayList<>();
     protected PlantFoodStrategy plantFoodStrategy;
     protected GameSession gameSession;
+    private int stackCount = 1;
 
 
     public Plant(PlantData data, GameSession gameSession) {
@@ -65,6 +66,18 @@ public abstract class Plant implements IPlant, Ticker {
         if (this.currentHp <= 0) {
             die();
         }
+    }
+
+    public int getStackCount() {
+        return stackCount;
+    }
+
+    public boolean addStack() {
+        if (this.getName().equals("Pea Pod") && stackCount < 5) {
+            stackCount++;
+            return true;
+        }
+        return false;
     }
 
     protected abstract void die();

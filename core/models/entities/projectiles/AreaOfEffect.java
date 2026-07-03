@@ -2,6 +2,7 @@ package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
 import models.game.Arena;
+import models.game.GameSession;
 
 import java.util.List;
 
@@ -17,14 +18,14 @@ public class AreaOfEffect implements ProjectileEffect {
     }
 
     @Override
-    public void applyEffect(Zombie mainZombie, Arena board, Projectile projectile) {
-        if (inner != null) inner.applyEffect(mainZombie, board, projectile);
+    public void applyEffect(Zombie mainZombie, GameSession gameSession, Projectile projectile) {
+        if (inner != null) inner.applyEffect(mainZombie, gameSession, projectile);
 
-        List<Zombie> nearby = board.getZombiesInRadius(projectile.getColumn(), projectile.getLane(), radius);
+        List<Zombie> nearby = gameSession.getArena().getZombiesInRadius(projectile.getColumn(), projectile.getLane(), radius);
         for (Zombie zombie : nearby) {
             if (zombie == mainZombie) continue;
             zombie.takeDamage(splashDamage);
-            if (inner != null) inner.applyEffect(zombie, board, projectile);
+            if (inner != null) inner.applyEffect(zombie, gameSession, projectile);
         }
     }
 

@@ -22,18 +22,34 @@ public class ShootingStrategy implements IPlantStrategy {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
-            List<Integer> targetLines = projectileInLine(context.getName(), context.getPlacedTile().getRow());
             boolean shouldShoot = false;
+            int plantRow = context.getPlacedTile().getRow();
+            int plantCol = context.getPlacedTile().getCol();
 
-            for (int line : targetLines) {
-                if (!gameSession.zombieInRow(line).isEmpty()) {
-                    shouldShoot = true;
-                    break;
+            if (context.getName().equals("Rotobaga")) {
+                for (Zombie z : gameSession.getActiveZombies()) {
+                    int rowDiff = Math.abs(z.getRow() - plantRow);
+//                    int colDiff = Math.abs(z.getX() - plantCol);
+
+//                    if (rowDiff == colDiff && rowDiff > 0) {
+//                        shouldShoot = true;
+//                        break;
+//                    }
+                }
+            } else {
+                List<Integer> targetLines = projectileInLine(context.getName(), context.getPlacedTile().getRow());
+                for (int line : targetLines) {
+                    if (!gameSession.zombieInRow(line).isEmpty()) {
+                        shouldShoot = true;
+                        break;
+                    }
                 }
             }
 
+
+
             if (shouldShoot) {
-                int burstCount = getBurstCount(context.getName());
+                int burstCount = getBurstCount(context);
                 for (int i = 0; i < burstCount; i++) {
                     executeNewProjectile(context, gameSession);
                 }
@@ -48,19 +64,25 @@ public class ShootingStrategy implements IPlantStrategy {
         ProjectileType type = getProjectileType(context.getName());
 
         if (damage != -1 && type != null) {
-            List<Integer> targetLines = projectileInLine(context.getName(), context.getPlacedTile().getRow());
+            List<int[]> directions = getShootDirections(context.getName());
 
-            for (int line : targetLines) {
+            for (int[] dir : directions) {
+                int dirX = dir[0];
+                int dirY = dir[1];
+
                 Projectile projectile = new Projectile(
                         type,
+                        projectileEffect(type),
+                        gameSession,
                         damage,
-                        line,
+                        context.getPlacedTile().getRow(),
                         context.getPlacedTile().getCol(),
+                        dirX,
+                        dirY,
                         false,
-                        gameSession
+                        false
                 );
 
-                projectile.addEffect(projectileEffect(projectile.getType()));
                 gameSession.addProjectile(projectile);
             }
         }
@@ -72,9 +94,12 @@ public class ShootingStrategy implements IPlantStrategy {
             case "Peashooter":
             case "Repeater":
             case "Threepeater":
+            case "Pea Pod":
                 return ProjectileType.PEA;
             case "Snow Pea":
                 return ProjectileType.ICE_PEA;
+            case "Rotobaga":
+                return ProjectileType.ROTOBAGA_SEED;
             default:
                 return null;
         }
@@ -86,6 +111,7 @@ public class ShootingStrategy implements IPlantStrategy {
             case "Peashooter":
             case "Repeater":
             case "Snow Pea":
+            case "Pea Pod":
                 lines.add(placedRow);
                 break;
             case "Threepeater":
@@ -98,6 +124,26 @@ public class ShootingStrategy implements IPlantStrategy {
         return lines;
     }
 
+    private List<int[]> getShootDirections(String name) {
+        List<int[]> directions = new ArrayList<>();
+        switch (name) {
+            case "Peashooter":
+            case "Repeater":
+            case "Threepeater":
+            case "Snow Pea":
+            case "Pea Pod":
+                directions.add(new int[]{1, 0});
+                break;
+            case "Rotobaga":
+                directions.add(new int[]{1, -1});  // up-right
+                directions.add(new int[]{1, 1});   // bottom-right
+                directions.add(new int[]{-1, -1}); // up-left
+                directions.add(new int[]{-1, 1}); // bottom-left
+                break;
+        }
+        return directions;
+    }
+
     private int parseDamage(String damage) {
         if (damage.matches("(-)?\\d+"))
             return Integer.parseInt(damage);
@@ -107,6 +153,7 @@ public class ShootingStrategy implements IPlantStrategy {
     private ProjectileEffect projectileEffect(ProjectileType projectileType) {
         switch (projectileType) {
             case PEA:
+            case ROTOBAGA_SEED:
                 return new NormalEffect();
             case ICE_PEA:
                 return new IceEffect();
@@ -115,10 +162,14 @@ public class ShootingStrategy implements IPlantStrategy {
         }
     }
 
-    private int getBurstCount(String name) {
-        switch (name) {
+    private int getBurstCount(Plant context) {
+        switch (context.getName()) {
+            case "Rotobaga":
+                return 3;
             case "Repeater":
                 return 2;
+            case "Pea Pod":
+                return context.getStackCount();
             default:
                 return 1;
         }

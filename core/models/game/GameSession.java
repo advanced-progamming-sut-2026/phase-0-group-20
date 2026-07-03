@@ -66,6 +66,8 @@ public class GameSession {
         return zombies;
     }
 
+    public void checkCollisions() {}
+
     public void addProjectile(Projectile p) { activeProjectiles.add(p); }
     public void removeZombie(Zombie z) { activeZombies.remove(z); }
 

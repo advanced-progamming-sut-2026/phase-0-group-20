@@ -2,10 +2,11 @@ package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
 import models.game.Arena;
+import models.game.GameSession;
 
 public interface ProjectileEffect {
 
-    void applyEffect(Zombie zombie, Arena board, Projectile projectile);
+    void applyEffect(Zombie zombie, GameSession gameSession, Projectile projectile);
 
     int getDamageMultiplier();
 

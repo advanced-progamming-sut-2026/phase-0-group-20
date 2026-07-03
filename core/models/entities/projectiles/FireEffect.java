@@ -2,11 +2,12 @@ package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
 import models.game.Arena;
+import models.game.GameSession;
 
 public class FireEffect implements ProjectileEffect {
 
     @Override
-    public void applyEffect(Zombie zombie, Arena board, Projectile projectile) {
+    public void applyEffect(Zombie zombie, GameSession gameSession, Projectile projectile) {
         zombie.removeChillEffect();
     }
 
