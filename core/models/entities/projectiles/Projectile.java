@@ -4,13 +4,14 @@ import models.entities.zombies.Zombie;
 import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
 import models.game.Arena;
+import models.game.GameSession;
 import models.timeManager.Ticker;
 
 public class Projectile implements Ticker {
 
     private ProjectileType type;
     private ProjectileEffect effect;
-    private Arena board;
+    private GameSession gameSession;
     private int damage;
     private int column;
     private int lane;
@@ -20,12 +21,12 @@ public class Projectile implements Ticker {
     private boolean canPassObstacles; // for lobber
     private boolean isDestroyed;
 
-    public Projectile(ProjectileType type, ProjectileEffect effect, Arena board, int damage,
+    public Projectile(ProjectileType type, ProjectileEffect effect, GameSession gameSession, int damage,
                       int column, int lane, int speedX, int speedY,
                       boolean piercing, boolean canPassObstacles) {
         this.type = type;
         this.effect = effect;
-        this.board = board;
+        this.gameSession = gameSession;
         this.damage = damage;
         this.column = column;
         this.lane = lane;
@@ -63,7 +64,7 @@ public class Projectile implements Ticker {
             z.takeDamage(finalDamage);
         }
 
-        effect.applyEffect(z, board, this);
+        effect.applyEffect(z, gameSession, this);
 
         if (!piercing) {
             isDestroyed = true;
@@ -77,8 +78,8 @@ public class Projectile implements Ticker {
     }
 
     public boolean isOutOfBounds() {
-        if (column < 0 || column >= board.getCols()
-                || lane < 0 || lane >= board.getRows())
+        if (column < 0 || column >= gameSession.getArena().getCols()
+                || lane < 0 || lane >= gameSession.getArena().getRows())
             return true;
         return false;
     }
@@ -95,8 +96,8 @@ public class Projectile implements Ticker {
         return effect;
     }
 
-    public Arena getBoard() {
-        return board;
+    public GameSession getBoard() {
+        return gameSession;
     }
 
     public int getDamage() {
