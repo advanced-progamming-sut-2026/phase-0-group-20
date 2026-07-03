@@ -2,7 +2,8 @@
 .idea/
 *.iml
 *.json
-
+!assets/zombies.json
+!assets/ArmorTypeData.json
 # Maven target directory (Compiled bytecode)
 **/target/
 **/data/
