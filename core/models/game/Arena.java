@@ -27,6 +27,17 @@ public class Arena {
         activePlants.add(plant);
     }
 
+    public List<Zombie> getZombiesInRadius(int column, int lane, double radius) {
+        List<Zombie> result = new ArrayList<>();
+        for (Zombie zombie : activeZombies) {
+            if (zombie.isDead()) continue;
+            double dx = zombie.getX() - column;
+            double dy = zombie.getRow() - lane;
+            if (Math.sqrt(dx * dx + dy * dy) <= radius) result.add(zombie);
+        }
+        return result;
+    }
+
     public List<Plant> getActivePlants() { return activePlants; }
     public List<Zombie> getActiveZombies() { return activeZombies; }
     public int getRows() { return ROWS; }

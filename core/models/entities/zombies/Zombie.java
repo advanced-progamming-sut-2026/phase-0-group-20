@@ -3,6 +3,8 @@ package models.entities.zombies;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.behavior.attack.AttackBehavior;
 import models.entities.zombies.behavior.defense.DefenseBehavior;
+import models.entities.zombies.behavior.effect.ChillEffect;
+import models.entities.zombies.behavior.effect.FreezeEffect;
 import models.entities.zombies.behavior.effect.ZombieEffect;
 import models.entities.zombies.behavior.move.MoveBehavior;
 import models.timeManager.Ticker;
@@ -100,12 +102,30 @@ public class Zombie implements Ticker {
         return false;
     }
 
+
+    public boolean takeDirectDamage(int damage) {
+        if (dead) return false;
+
+        health -= damage;
+        if (health <= 0) {
+            health = 0;
+            dead = true;
+            return true;
+        }
+        return false;
+    }
+
     public void addArmor(Armor armor) {
         armorPieces.add(armor);
     }
 
     public void addEffect(ZombieEffect effect) {
         activeEffects.add(effect);
+    }
+
+    public void removeChillEffect() {
+        activeEffects.removeIf(e -> e instanceof ChillEffect || e instanceof FreezeEffect);
+        resetSpeed();
     }
 
     public void applySpeedMultiplier(float multiplier) {

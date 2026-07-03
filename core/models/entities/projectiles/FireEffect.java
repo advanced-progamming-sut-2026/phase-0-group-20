@@ -6,12 +6,13 @@ import models.game.Arena;
 public class FireEffect implements ProjectileEffect {
 
     @Override
-    public void applyEffect(Zombie zombie, Arena board) {
+    public void applyEffect(Zombie zombie, Arena board, Projectile projectile) {
+        zombie.removeChillEffect();
     }
 
     @Override
     public int getDamageMultiplier() {
-        return 0;
+        return 2;
     }
 
     @Override
@@ -21,6 +22,6 @@ public class FireEffect implements ProjectileEffect {
 
     @Override
     public boolean meltsIce() {
-        return false;
+        return true;
     }
 }
