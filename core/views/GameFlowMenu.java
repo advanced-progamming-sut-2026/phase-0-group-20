@@ -22,9 +22,7 @@ public class GameFlowMenu implements AppMenu {
             System.out.println(NavigationController.enterMenu(matcher.group("name")));
         } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
             System.out.println(NavigationController.showCurrentMenu());
-        }
-
-        else if ((matcher = GameFlowCommands.ADVANCE_TIME.getMatcher(input)) != null) {
+        } else if ((matcher = GameFlowCommands.ADVANCE_TIME.getMatcher(input)) != null) {
             System.out.println(controller.advanceTime(matcher.group("count")));
 
         } else if ((matcher = GameFlowCommands.COLLECT_SUN.getMatcher(input)) != null) {

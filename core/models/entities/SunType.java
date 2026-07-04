@@ -13,6 +13,11 @@ public enum SunType {
         this.label = label;
     }
 
-    public int getValue() { return value; }
-    public String getLabel() { return label; }
+    public int getValue() {
+        return value;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }

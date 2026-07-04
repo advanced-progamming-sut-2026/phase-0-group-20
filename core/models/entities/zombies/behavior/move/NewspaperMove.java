@@ -5,8 +5,8 @@ import models.entities.zombies.armour.Armor;
 
 public class NewspaperMove implements MoveBehavior {
     private final Zombie zombie;
-    private boolean isEnraged;
     private final float enragedSpeedMultiplier = 3.0f; // it can change
+    private boolean isEnraged;
 
     public NewspaperMove(Zombie zombie) {
         this.zombie = zombie;

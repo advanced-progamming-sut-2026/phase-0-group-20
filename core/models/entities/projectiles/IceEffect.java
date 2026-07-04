@@ -2,7 +2,6 @@ package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
 import models.entities.zombies.behavior.effect.ChillEffect;
-import models.game.Arena;
 import models.game.GameSession;
 
 public class IceEffect implements ProjectileEffect {

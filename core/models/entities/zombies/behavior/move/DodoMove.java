@@ -2,11 +2,11 @@ package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
 
-public class DodoMove implements MoveBehavior{
+public class DodoMove implements MoveBehavior {
     private final Zombie zombie;
+    private final int FLY_DURATION_TICKS = 45; // it will change
     private boolean isFlying;
     private int flyTicks;
-    private final int FLY_DURATION_TICKS = 45; // it will change
 
     public DodoMove(Zombie zombie) {
         this.zombie = zombie;

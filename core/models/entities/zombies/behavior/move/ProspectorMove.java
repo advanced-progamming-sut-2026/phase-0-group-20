@@ -4,10 +4,10 @@ import models.entities.zombies.Zombie;
 
 public class ProspectorMove implements MoveBehavior {
     private final Zombie zombie;
+    private final int EXPLOSION_TICK_THRESHOLD = 10 * 60;
     private boolean dynamiteActive;
     private boolean isBlownToBack;
     private int ticksAlive;
-    private final int EXPLOSION_TICK_THRESHOLD = 10 * 60;
 
     public ProspectorMove(Zombie zombie) {
         this.zombie = zombie;

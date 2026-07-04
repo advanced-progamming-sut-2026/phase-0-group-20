@@ -21,13 +21,12 @@ import static org.junit.Assert.*;
 public class SignupMenuControllerUnitTest {
 
     private final String TEST_FILE_PATH = "core/test/resources/test_users_signup.json";
-    private SignupMenuController controller;
-
     private final String VALID_USERNAME = "newUser123";
     private final String VALID_PASSWORD = "Secure1!";
     private final String VALID_NICKNAME = "Ali";
     private final String VALID_EMAIL = "ali@example.com";
     private final String VALID_GENDER = "male";
+    private SignupMenuController controller;
 
     @Before
     public void setUp() {

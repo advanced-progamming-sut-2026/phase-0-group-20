@@ -41,14 +41,14 @@ public enum ZombieType {
         this.jsonAlias = jsonAlias;
     }
 
-    public String getJsonAlias() {
-        return jsonAlias;
-    }
-
     public static ZombieType fromAlias(String alias) {
         for (ZombieType t : values()) {
             if (t.jsonAlias.equalsIgnoreCase(alias)) return t;
         }
         throw new IllegalArgumentException("Unknown zombie alias: " + alias);
+    }
+
+    public String getJsonAlias() {
+        return jsonAlias;
     }
 }

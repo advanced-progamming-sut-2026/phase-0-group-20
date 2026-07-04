@@ -16,22 +16,20 @@ import java.util.Random;
 public class Zombie implements Ticker {
 
     private static final Random RAND = new Random();
+    private final List<Armor> armorPieces;
+    private final List<ZombieEffect> activeEffects;
+    private final int waveCost;
     private String name;
     private MoveBehavior moveBehavior;
     private DefenseBehavior defenseBehavior;
     private AttackBehavior attackBehavior;
     private ZombieEffect effect;
-
-    private final List<Armor> armorPieces;
-    private final List<ZombieEffect> activeEffects;
-
     private int health;
     private int baseHp;
     private int eatDPS;
     private boolean dead;
     private float baseSpeed;
     private float currentSpeed;
-    private final int waveCost;
     private ZombieType type;
     private ZombieState state = ZombieState.WALKING;
     private boolean canSpawnPlantFood;
@@ -216,16 +214,16 @@ public class Zombie implements Ticker {
         return moveBehavior;
     }
 
+    public void setMoveBehavior(MoveBehavior m) {
+        this.moveBehavior = m;
+    }
+
     public DefenseBehavior getDefenseBehavior() {
         return defenseBehavior;
     }
 
     public void setDefenseBehavior(DefenseBehavior defenseBehavior) {
         this.defenseBehavior = defenseBehavior;
-    }
-
-    public void setMoveBehavior(MoveBehavior m) {
-        this.moveBehavior = m;
     }
 
     public AttackBehavior getAttackBehavior() {

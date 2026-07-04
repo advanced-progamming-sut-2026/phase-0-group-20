@@ -9,8 +9,8 @@ import models.entities.plants.Plant;
  */
 
 public class GraveBusterStrategy implements IPlantStrategy {
-    private int startTick = -1;
     private final int BUSTING_DURATION_TICKS = 4 * 10;
+    private int startTick = -1;
 
     @Override
     public void execute(Plant context, int currentTick) {

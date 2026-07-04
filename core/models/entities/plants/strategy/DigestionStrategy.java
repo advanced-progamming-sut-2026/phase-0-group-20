@@ -9,9 +9,9 @@ import models.entities.plants.Plant;
  */
 
 public class DigestionStrategy implements IPlantStrategy {
+    private final int DIGESTION_DURATION_TICKS = 40 * 10;
     private boolean isDigesting = false;
     private int digestionStartTick = -1;
-    private final int DIGESTION_DURATION_TICKS = 40 * 10;
 
     @Override
     public void execute(Plant context, int currentTick) {
