@@ -1,15 +1,16 @@
 package models.fields.tiles;
 
 import models.entities.plants.Plant;
+import models.enums.plants.PlantTag;
 import models.game.adventure.SeasonType;
 import models.timeManager.Ticker;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Tile implements Ticker {
     protected SeasonType currentSeason;
-    protected List<Plant> plants = null;
+    protected List<Plant> plants = new ArrayList<>();
     protected int row;
     protected int col;
 
@@ -32,8 +33,8 @@ public abstract class Tile implements Ticker {
         return plants;
     }
 
-    public void setPlants(Plant plants) {
-        this.plants = Collections.singletonList(plants);
+    public void addPlant(Plant plant) {
+        this.plants.add(plant);
     }
 
     public SeasonType getCurrentSeason() {
@@ -42,5 +43,13 @@ public abstract class Tile implements Ticker {
 
     public void setCurrentSeason(SeasonType currentSeason) {
         this.currentSeason = currentSeason;
+    }
+
+    public boolean isPlantable(Plant plantToPlant) {
+        boolean isWaterPlant = plantToPlant.getTags().contains(PlantTag.WATER);
+
+        if (isWaterPlant) return false;
+
+        return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK);
     }
 }
