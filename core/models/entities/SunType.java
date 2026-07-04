@@ -1,8 +1,11 @@
 package models.entities;
 
 public enum SunType {
-    NORMAL_SUN(25, "normal"),
+    TINY_SUN(25, "tiny"),
+    NORMAL_SUN(50, "normal"),
+    LARGE_SUN(75, "large"),
     SPECIAL_SUN(100, "special"),
+    HUGE_SUN(375, "huge"),
     RADIOACTIVE_SUN(25, "radioactive");
 
     private final int value;

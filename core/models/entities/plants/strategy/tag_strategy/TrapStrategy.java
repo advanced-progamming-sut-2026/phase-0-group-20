@@ -2,6 +2,11 @@ package models.entities.plants.strategy.tag_strategy;
 
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.zombies.Zombie;
+import models.game.GameSession;
+import models.timeManager.TimeManager;
+
+import java.util.List;
 
 
 /**
@@ -12,22 +17,84 @@ import models.entities.plants.strategy.IPlantStrategy;
  */
 
 public class TrapStrategy implements IPlantStrategy {
-    private final int ARMING_TIME_TICKS = 14 * 10;
     private int startTick = -1;
     private boolean isArmed = false;
+    private boolean initialized = false;
+    private int armingTimeTicks = 0;
 
     @Override
-    public void execute(Plant context, int currentTick) {
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
+        String name = context.getName();
+
+        if (!initialized) {
+            if (name.equals("Potato Mine")) {
+                armingTimeTicks = 15 * TimeManager.TICKS_PER_SECOND;
+            } else if (name.equals("Primal Potato Mine")) {
+                armingTimeTicks = 5 * TimeManager.TICKS_PER_SECOND;
+            } else {
+                armingTimeTicks = 0;
+            }
+            initialized = true;
+        }
         if (startTick == -1) startTick = currentTick;
 
-        if (!isArmed && (currentTick - startTick) >= ARMING_TIME_TICKS) {
+        if (!isArmed && (currentTick - startTick) >= armingTimeTicks) {
             isArmed = true;
-            System.out.println(context.getName() + " is now armed and ready!");
+            if (armingTimeTicks > 0) {
+                System.out.println("💣 " + name + " is now armed and ready!");
+            }
         }
 
-        if (isArmed) {
-            // Logic to check collision with zombies on this tile
-            // If zombie detected -> Explode and kill the trap plant
+        if (!isArmed) return;
+
+        int plantRow = context.getPlacedTile().getRow();
+        double plantCol = context.getPlacedTile().getCol();
+        Zombie target = null;
+
+        double detectionRadius = name.equals("Squash") ? 1.5 : 0.5;
+
+        for (Zombie z : gameSession.zombieInRow(plantRow)) {
+            if (z.isDead()) continue;
+
+            double dist = Math.abs(z.getX() - plantCol);
+            if (dist <= detectionRadius) {
+                target = z;
+                break;
+            }
+        }
+
+        if (target != null) {
+            System.out.println("🚨 " + name + " TRAP TRIGGERED!");
+
+            switch (name) {
+                case "Potato Mine":
+                    target.takeDirectDamage(1800);
+                    break;
+
+                case "Primal Potato Mine":
+                    List<Zombie> aoeTargets = gameSession.getArena().getZombiesInRadius(plantCol, plantRow, 1.5);
+                    for (Zombie z : aoeTargets) {
+                        if (!z.isDead()) z.takeDirectDamage(2400);
+                    }
+                    System.out.println("💥 Primal Potato Mine dealt massive AoE damage!");
+                    break;
+
+                case "Squash":
+                    target.takeDirectDamage(1800);
+                    System.out.println("🪨 Squash crushed " + target.getName() + "!");
+                    break;
+
+                case "Tangle Kelp":
+                    target.takeDirectDamage(9999);
+                    System.out.println("🌊 Tangle Kelp pulled " + target.getName() + " underwater!");
+                    break;
+
+                case "Iceberg Lettuce":
+                    // freeze zombie
+                    System.out.println("❄️ Iceberg Lettuce completely froze " + target.getName() + "!");
+                    break;
+            }
+            context.takeDamage(context.getCurrentHp());
         }
     }
 }

@@ -31,69 +31,70 @@ public class PlantFactory {
 
         boolean hasTrap = data.tags().contains(PlantTag.TRAP);
         boolean hasCharge = data.tags().contains(PlantTag.CHARGE);
+        boolean isMint = nameKey.endsWith("-mint");
 
-        boolean ownsItsOwnDetonation = nameKey.equals("grave buster") || nameKey.equals("ice-shroom");
+        boolean ownsItsOwnDetonation = nameKey.equals("grave buster")
+                || nameKey.equals("ice-shroom")
+                || nameKey.equals("hot potato");
 
         switch (data.category()) {
-            case SUN_PRODUCER -> plant.addStrategy(new SunProductionStrategy());
+            case SUN_PRODUCER -> {
+                if (!isMint) plant.addStrategy(new SunProductionStrategy());
+            }
 
             case SHOOTER -> {
-                if (!hasCharge) plant.addStrategy(new ShootingStrategy());
+                if (!hasCharge && !isMint) plant.addStrategy(new ShootingStrategy());
             }
 
             case HOMING -> {
-                if (!hasCharge) plant.addStrategy(new HomingStrategy());
+                if (!hasCharge && !nameKey.equals("magnet-shroom") && !isMint) {
+                    plant.addStrategy(new HomingStrategy());
+                }
             }
 
             case STRIKE_THROUGH -> {
-                if (!hasCharge) plant.addStrategy(new StrikeThroughStrategy());
+                if (!hasCharge && !isMint) plant.addStrategy(new StrikeThroughStrategy());
             }
 
-            case LOBBER -> plant.addStrategy(new LobberStrategy());
+            case LOBBER -> {
+                if (!isMint) plant.addStrategy(new LobberStrategy());
+            }
 
             case EXPLOSIVE -> {
-                if (!hasTrap && !ownsItsOwnDetonation) plant.addStrategy(new ExplosiveStrategy());
+                if (!hasTrap && !ownsItsOwnDetonation && !isMint) plant.addStrategy(new ExplosiveStrategy());
             }
 
-            case MELEE -> plant.addStrategy(new MeleeStrategy());
-            case MODIFIER -> plant.addStrategy(new ModifierStrategy());
-            case WALL_NUT -> {
+            case MELEE -> {
+                if (!isMint && !nameKey.equals("chomper")) plant.addStrategy(new MeleeStrategy());
+            }
+
+            case WALL_NUT, MODIFIER -> {
                 // null - passive defensive plants have no autonomous attack/produce loop
             }
         }
 
         for (PlantTag tag : data.tags()) {
             switch (tag) {
-                case WRAMP_UP -> plant.addStrategy(new WrampUpStrategy());
-                case ICE -> plant.addStrategy(new IceEffectStrategy());
-                case FIRE -> plant.addStrategy(new FireEffectStrategy());
-                case POISON -> plant.addStrategy(new PoisonEffectStrategy());
-                case SUN -> plant.addStrategy(new SunDropOnDeathStrategy());
+                case SUN -> plant.addStrategy(new SunOnHitStrategy());
                 case TRAP -> plant.addStrategy(new TrapStrategy());
                 case CHARGE -> plant.addStrategy(new ChargeStrategy());
-                case AOE -> plant.addStrategy(new AoEStrategy());
                 case MOVE_ZOMBIES -> plant.addStrategy(new MoveZombiesStrategy());
                 case NIGHT -> plant.addStrategy(new SleepStrategy());
                 case EXPLOSIVE -> {
-                    if (!hasTrap) plant.addStrategy(new ExplosiveStrategy());
+                    if (!hasTrap && !nameKey.equals("explode-o-nut")) plant.addStrategy(new ExplosiveStrategy());
                 }
                 case STACK, WATER, PEA, DAY, SHROOM, MAGIC -> {
                 }
             }
         }
 
-        if (data.name().toLowerCase().endsWith("-mint")) {
+        if (isMint) {
             plant.addStrategy(new MintBuffStrategy());
-            plant.addStrategy(new GlobalEffectStrategy());
         }
 
         switch (nameKey) {
             case "chomper":
                 plant.addStrategy(new DigestionStrategy());
-                break;
-
-            case "hypno-shroom", "caulipower":
-                plant.addStrategy(new HypnotizeStrategy());
                 break;
 
             case "magnet-shroom":
@@ -108,16 +109,12 @@ public class PlantFactory {
                 plant.addStrategy(new AntiJumpStrategy());
                 break;
 
-            case "ice-shroom", "gold bloom":
+            case "ice-shroom":
                 plant.addStrategy(new GlobalEffectStrategy());
                 break;
 
             case "grave buster":
                 plant.addStrategy(new GraveBusterStrategy());
-                break;
-
-            case "sun bean":
-                plant.addStrategy(new SunOnHitStrategy());
                 break;
 
             case "doom-shroom":
@@ -157,7 +154,7 @@ public class PlantFactory {
             case "sun-shroom", "primal sunflower" -> plant.setPlantFoodStrategy(new SunBurstFoodStrategy(225));
             case "gold bloom", "enlighten-mint" -> plant.setPlantFoodStrategy(new NoFoodEffectStrategy());
 
-            case "peashooter", "appease-mint", "goo peashooter", "fire peashooter", "cat-tail", "cattail-mint" ->
+            case "peashooter", "goo peashooter", "fire peashooter", "cat-tail" ->
                     plant.setPlantFoodStrategy(new RapidFireFoodStrategy());
             case "repeater" -> plant.setPlantFoodStrategy(new RapidFireFoodStrategy(1));
             case "snow pea" -> plant.setPlantFoodStrategy(new IcyRapidFireFoodStrategy());
@@ -231,7 +228,7 @@ public class PlantFactory {
                  "hot potato", "grave buster", "imitater" -> plant.setPlantFoodStrategy(new NoFoodEffectStrategy());
 
 
-            case "arma-mint", "bombard-mint", "enchant-mint" -> plant.setPlantFoodStrategy(new NoFoodEffectStrategy());
+            case "arma-mint", "bombard-mint", "enchant-mint", "appease-mint", "cattail-mint" -> plant.setPlantFoodStrategy(new NoFoodEffectStrategy());
 
             default -> {
                 System.out.println("WARNING: no PlantFoodStrategy mapped for '" + data.name()

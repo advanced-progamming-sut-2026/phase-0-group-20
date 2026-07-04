@@ -1,6 +1,8 @@
 package models.entities.plants.strategy;
 
+import models.entities.Sun;
 import models.entities.plants.Plant;
+import models.game.GameSession;
 
 /**
  * Sun On Hit Strategy:
@@ -10,24 +12,36 @@ import models.entities.plants.Plant;
 
 public class SunOnHitStrategy implements IPlantStrategy {
     private int lastRecordedHp = -1;
+    private int sunPerHit = 5;
 
     @Override
-    public void execute(Plant context, int currentTick) {
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
         // Initialize the HP tracker on the first tick
         if (lastRecordedHp == -1) {
             lastRecordedHp = context.getCurrentHp();
             return;
         }
 
+        int currentHp = context.getCurrentHp();
+
         // Check if the plant has taken damage since the last tick
-        if (context.getCurrentHp() < lastRecordedHp) {
-            // int damageTaken = lastRecordedHp - context.getCurrentHp();
+        if (currentHp < lastRecordedHp) {
 
-            System.out.println(context.getName() + " was bitten! Dropped 5 sun.");
-            // Logic to spawn 5 sun resources in the game world
+            int spawnX = context.getPlacedTile().getCol();
+            int spawnY = context.getPlacedTile().getRow();
 
-            // Update the tracker
-            lastRecordedHp = context.getCurrentHp();
+            Sun newSun = new Sun(sunPerHit, spawnX, spawnY, currentTick);
+            gameSession.getArena().addSun(newSun);
+            gameSession.getTimeManager().registerNewTicker(newSun);
+
+            lastRecordedHp = currentHp;
+            System.out.println("☀️ " + context.getName() + " was bitten! Dropped " + sunPerHit + " sun.");
+        } else if (currentHp > lastRecordedHp) {
+            lastRecordedHp = currentHp;
         }
+    }
+
+    public void addSunPerHitMultiplier(int extraSun) {
+        this.sunPerHit += extraSun;
     }
 }

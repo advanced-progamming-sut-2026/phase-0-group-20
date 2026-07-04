@@ -1,6 +1,7 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
+import models.game.GameSession;
 
 /**
  * Anti-Jump Strategy:
@@ -11,7 +12,7 @@ import models.entities.plants.Plant;
 
 public class AntiJumpStrategy implements IPlantStrategy {
     @Override
-    public void execute(Plant context, int currentTick) {
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
         // This is a passive marker.
         // The jumping zombie's logic will check if the plant has this strategy
         // before attempting to jump over the tile.

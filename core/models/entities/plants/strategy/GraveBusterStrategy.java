@@ -1,6 +1,10 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
+import models.fields.tiles.GraveStoneTile;
+import models.fields.tiles.Tile;
+import models.game.GameSession;
+import models.timeManager.TimeManager;
 
 /**
  * Grave Buster Strategy:
@@ -9,22 +13,24 @@ import models.entities.plants.Plant;
  */
 
 public class GraveBusterStrategy implements IPlantStrategy {
-    private final int BUSTING_DURATION_TICKS = 4 * 10;
+    private final int BUST_DELAY = 4 * TimeManager.TICKS_PER_SECOND;
     private int startTick = -1;
 
     @Override
-    public void execute(Plant context, int currentTick) {
-        if (startTick == -1) {
-            startTick = currentTick;
-            System.out.println(context.getName() + " started busting a grave!");
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
+        if (startTick == -1) startTick = currentTick;
+
+        Tile currentTile = context.getPlacedTile();
+
+        if (!(currentTile instanceof GraveStoneTile)) {
+            System.out.println("❌ Grave Buster must be planted on a GraveStone!");
+            context.takeDamage(context.getCurrentHp());
+            return;
         }
 
-        if (currentTick - startTick >= BUSTING_DURATION_TICKS) {
-            System.out.println(context.getName() + " successfully destroyed the grave!");
-
-            // Logic to remove the Grave object from the placed tile
-
-            // The Grave Buster consumes itself in the process
+        if (currentTick - startTick >= BUST_DELAY) {
+            System.out.println("🪦 Grave Buster successfully destroyed the grave!");
+            // change type of tile
             context.takeDamage(context.getCurrentHp());
         }
     }

@@ -1,6 +1,8 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
+import models.game.GameSession;
+import models.timeManager.TimeManager;
 
 /**
  * Lifespan Strategy:
@@ -13,26 +15,22 @@ import models.entities.plants.Plant;
 
 public class LifespanStrategy implements IPlantStrategy {
     private final int lifespanTicks;
-    private int startTick = -1;
+    private int aliveTicks = 0;
 
-    public LifespanStrategy(int lifespanSeconds) {
-        this.lifespanTicks = lifespanSeconds * 10;
+    public LifespanStrategy(int seconds) {
+        this.lifespanTicks = seconds * TimeManager.TICKS_PER_SECOND;
     }
 
     @Override
-    public void execute(Plant context, int currentTick) {
-        if (startTick == -1) {
-            startTick = currentTick;
-            return;
-        }
-
-        if (currentTick - startTick >= lifespanTicks) {
-            System.out.println(context.getName() + "'s lifespan expired and it wilted away.");
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
+        aliveTicks++;
+        if (aliveTicks >= lifespanTicks) {
             context.takeDamage(context.getCurrentHp());
+            System.out.println(context.getName() + " vanished due to limited lifespan!");
         }
     }
 
-    public void resetLifespan(int currentTick) {
-        this.startTick = currentTick;
+    public void resetLifespan() {
+        this.aliveTicks = 0;
     }
 }

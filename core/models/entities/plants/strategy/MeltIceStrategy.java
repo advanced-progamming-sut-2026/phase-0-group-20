@@ -1,6 +1,10 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
+import models.fields.tiles.FrozenTile;
+import models.fields.tiles.Tile;
+import models.game.GameSession;
+import models.timeManager.TimeManager;
 
 /**
  * Melt Ice Strategy:
@@ -9,20 +13,23 @@ import models.entities.plants.Plant;
  */
 
 public class MeltIceStrategy implements IPlantStrategy {
-    private boolean hasMelted = false;
+    private final int MELT_DELAY = (int) (0.5 * TimeManager.TICKS_PER_SECOND);
+    private int startTick = -1;
 
     @Override
-    public void execute(Plant context, int currentTick) {
-        if (!hasMelted) {
-            System.out.println(context.getName() + " instantly melted the ice block!");
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
+        if (startTick == -1) startTick = currentTick;
 
-            if (context.getPlacedTile() != null) {
-                // Logic to remove the ice status from the tile/plant
+        if (currentTick - startTick >= MELT_DELAY) {
+            Tile currentTile = context.getPlacedTile();
+
+            if (currentTile instanceof FrozenTile) {
+                System.out.println("🔥 Hot Potato melted the ice on its tile!");
+                // change type of tile
+            } else {
+                System.out.println("🔥 Hot Potato was planted, but there was no ice to melt!");
             }
 
-            hasMelted = true;
-
-            // The Hot Potato is consumed instantly after doing its job
             context.takeDamage(context.getCurrentHp());
         }
     }

@@ -1,6 +1,9 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
+import models.entities.zombies.Zombie;
+import models.game.GameSession;
+import models.timeManager.TimeManager;
 
 /**
  * Digestion Strategy:
@@ -9,27 +12,42 @@ import models.entities.plants.Plant;
  */
 
 public class DigestionStrategy implements IPlantStrategy {
-    private final int DIGESTION_DURATION_TICKS = 40 * 10;
+    private final int DIGESTION_DURATION_TICKS = 40 * TimeManager.TICKS_PER_SECOND;
     private boolean isDigesting = false;
     private int digestionStartTick = -1;
 
     @Override
-    public void execute(Plant context, int currentTick) {
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
         if (isDigesting) {
-            // Check if digestion is complete
             if (currentTick - digestionStartTick >= DIGESTION_DURATION_TICKS) {
                 isDigesting = false;
-                System.out.println(context.getName() + " finished digesting and is ready to attack again!");
+                System.out.println("🦷 " + context.getName() + " finished digesting and is hungry again!");
             }
         } else {
-            // Logic to check for a zombie in the adjacent tile
-            boolean zombieInRange = false; // Replace with actual collision check
+            int plantRow = context.getPlacedTile().getRow();
+            int plantCol = context.getPlacedTile().getCol();
+            Zombie target = null;
+            double minDistance = Double.MAX_VALUE;
 
-            if (zombieInRange) {
-                System.out.println(context.getName() + " swallowed a zombie!");
+            for (Zombie z : gameSession.zombieInRow(plantRow)) {
+                if (z.isDead()) continue;
+
+                double dist = z.getX() - plantCol;
+
+                if (dist >= -0.5 && dist <= 1.5) {
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                        target = z;
+                    }
+                }
+            }
+
+            if (target != null) {
+                System.out.println("🦖 " + context.getName() + " swallowed " + target.getName() + " whole!");
+                target.takeDirectDamage(9999);
+
                 isDigesting = true;
                 digestionStartTick = currentTick;
-                // Code to instantly kill the zombie goes here
             }
         }
     }

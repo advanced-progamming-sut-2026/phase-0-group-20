@@ -3,6 +3,14 @@ package models.entities.plants.strategy.category_strategy;
 
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.projectiles.*;
+import models.entities.zombies.Zombie;
+import models.enums.plants.ProjectileType;
+import models.game.GameSession;
+import models.timeManager.TimeManager;
+
+import java.util.List;
+import java.util.Random;
 
 /**
  * Homing Strategy:
@@ -12,16 +20,85 @@ import models.entities.plants.strategy.IPlantStrategy;
 
 public class HomingStrategy implements IPlantStrategy {
     private int lastShotTick = 0;
+    private final Random random = new Random();
 
     @Override
-    public void execute(Plant context, int currentTick) {
-        int intervalInTicks = (int) (context.getActionInterval() * 10);
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
+        int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
-            // Logic to find the nearest zombie on the entire board
-            System.out.println(context.getName() + " locked onto a target and fired a homing projectile!");
+            List<Zombie> activeZombies = gameSession.getArena().getActiveZombies();
+            List<Zombie> validTargets = activeZombies.stream().filter(z -> !z.isDead()).toList();
 
-            lastShotTick = currentTick;
+            if (!validTargets.isEmpty()) {
+                String plantName = context.getName();
+                Zombie target = null;
+
+                if (plantName.equals("Cat-tail")) {
+                    double minDistance = Double.MAX_VALUE;
+                    int plantRow = context.getPlacedTile().getRow();
+                    int plantCol = context.getPlacedTile().getCol();
+
+                    for (Zombie z : validTargets) {
+                        double dx = z.getX() - plantCol;
+                        double dy = z.getRow() - plantRow;
+                        double distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            target = z;
+                        }
+                    }
+                } else {
+                    target = validTargets.get(random.nextInt(validTargets.size()));
+                }
+
+                if (target != null) {
+                    shootHomingProjectile(context, target, gameSession);
+                    System.out.println(context.getName() + " locked onto " + target.getName() + "!");
+                    lastShotTick = currentTick;
+                }
+            }
+        }
+    }
+
+    private void shootHomingProjectile(Plant context, Zombie target, GameSession gameSession) {
+        float spawnX = context.getPlacedTile().getCol();
+        float spawnY = context.getPlacedTile().getRow();
+        String name = context.getName();
+
+        ProjectileEffect effect = null;
+        ProjectileType type = null;
+        int damage = 0;
+        int burstCount = 1;
+
+        if (name.equals("Caulipower")) {
+            effect = new HypnotizeEffect();
+            type = ProjectileType.MAGIC_BEAM;
+            damage = 0;
+        } else if (name.equals("Electric Blueberry")) {
+            effect = new LightningEffect();
+            type = ProjectileType.LIGHTNING_CLOUD;
+            damage = 5000;
+        } else if (name.equals("Cat-tail")) {
+            effect = new NormalEffect();
+            type = ProjectileType.PEA;
+            damage = 15;
+            burstCount = 2;
+        }
+
+        if (effect != null) {
+            for (int i = 0; i < burstCount; i++) {
+                int offset = -i;
+
+                Projectile projectile = new Projectile(
+                        type, effect, gameSession, damage,
+                        spawnX + offset, spawnY, 0, 0,
+                        true, true
+                );
+
+                projectile.setHomingTarget(target, 1.5f);
+                gameSession.addProjectile(projectile);
+            }
         }
     }
 }
