@@ -12,16 +12,16 @@ public enum Gender {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static Gender findByValue(String value) {
         for (Gender gender : Gender.values()) {
             if (gender.getValue().equalsIgnoreCase(value.trim()))
                 return gender;
         }
         return null;
+    }
+
+    public String getValue() {
+        return value;
     }
 
 

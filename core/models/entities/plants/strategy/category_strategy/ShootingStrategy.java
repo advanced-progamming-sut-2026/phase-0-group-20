@@ -27,7 +27,7 @@ public class ShootingStrategy implements IPlantStrategy {
             int plantCol = context.getPlacedTile().getCol();
 
             if (context.getName().equals("Rotobaga")) {
-                for (Zombie z : gameSession.getActiveZombies()) {
+                for (Zombie z : gameSession.getChosenZombies()) {
                     int rowDiff = Math.abs(z.getRow() - plantRow);
 //                    int colDiff = Math.abs(z.getX() - plantCol);
 
@@ -45,7 +45,6 @@ public class ShootingStrategy implements IPlantStrategy {
                     }
                 }
             }
-
 
 
             if (shouldShoot) {

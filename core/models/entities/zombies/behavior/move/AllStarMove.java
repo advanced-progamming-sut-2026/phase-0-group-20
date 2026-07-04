@@ -2,10 +2,10 @@ package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
 
-public class AllStarMove implements  MoveBehavior {
+public class AllStarMove implements MoveBehavior {
     private final Zombie zombie;
-    private boolean isRunning;
     private final float runSpeedMultiplier = 3.0f; // it can be different
+    private boolean isRunning;
 
 
     public AllStarMove(Zombie zombie) {

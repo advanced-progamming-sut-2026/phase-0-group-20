@@ -12,9 +12,9 @@ import models.entities.plants.strategy.IPlantStrategy;
  */
 
 public class TrapStrategy implements IPlantStrategy {
+    private final int ARMING_TIME_TICKS = 14 * 10;
     private int startTick = -1;
     private boolean isArmed = false;
-    private final int ARMING_TIME_TICKS = 14 * 10;
 
     @Override
     public void execute(Plant context, int currentTick) {

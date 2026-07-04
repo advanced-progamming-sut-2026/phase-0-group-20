@@ -15,6 +15,8 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
     private final String id;
+    private final ArrayList<Zombie> unlockedZombies = new ArrayList<>();
+    private final ArrayList<Plant> unlockedPlants = new ArrayList<>();
     private String username;
     private String passwordHash;
     private String nickname;
@@ -28,8 +30,6 @@ public class User {
     private int levelsCompleted;
     private boolean stayLoggedIn;
     private Inventory inventory;
-    private final ArrayList<Zombie> unlockedZombies = new ArrayList<>();
-    private final ArrayList<Plant> unlockedPlants = new ArrayList<>();
 
     public User(String username, String passwordHash,
                 String nickname, String email, Gender gender,
@@ -194,6 +194,10 @@ public class User {
         this.inventory = inventory;
     }
 
+    public ArrayList<Zombie> getUnlockedZombies() {
+        return unlockedZombies;
+    }
+
     @JsonSetter
     public void setUnlockedZombies(ArrayList<Zombie> zombies) {
         if (zombies != null) {
@@ -202,8 +206,8 @@ public class User {
         }
     }
 
-    public ArrayList<Zombie> getUnlockedZombies() {
-        return unlockedZombies;
+    public ArrayList<Plant> getUnlockedPlants() {
+        return unlockedPlants;
     }
 
     @JsonSetter
@@ -212,9 +216,5 @@ public class User {
             this.unlockedPlants.clear();
             this.unlockedPlants.addAll(plants);
         }
-    }
-
-    public ArrayList<Plant> getUnlockedPlants() {
-        return unlockedPlants;
     }
 }

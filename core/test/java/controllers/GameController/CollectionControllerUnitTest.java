@@ -2,7 +2,6 @@ package test.java.controllers.GameController;
 
 import controllers.GameController.CollectionController;
 import models.App;
-import models.Result;
 import models.database.DataBaseManager;
 import models.database.UserRepository;
 import models.enums.Gender;
@@ -11,11 +10,8 @@ import models.users.PasswordUtils;
 import models.users.User;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.io.File;
-
-import static org.junit.Assert.assertTrue;
 
 public class CollectionControllerUnitTest {
 

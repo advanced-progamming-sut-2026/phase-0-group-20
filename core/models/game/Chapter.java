@@ -26,5 +26,7 @@ public class Chapter {
         currentLevelIndex++;
     }
 
-    public String getChapterName() { return chapterName; }
+    public String getChapterName() {
+        return chapterName;
+    }
 }

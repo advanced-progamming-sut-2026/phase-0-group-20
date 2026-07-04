@@ -1,7 +1,5 @@
 package models.enums.commands;
 
-import java.util.regex.Matcher;
-
 public enum GameFlowCommands implements Commands {
     ADVANCE_TIME("^\\s*advance\\s+time\\s+t\\s+(?<count>\\S+)\\s+ticks\\s*$"),
 

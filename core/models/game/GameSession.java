@@ -1,57 +1,68 @@
 package models.game;
 
-import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
-import models.fields.LawnMower;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class GameSession {
     private static GameSession instance;
+    private final List<Plant> ChosenPlants;
+    private final List<Zombie> chosenZombies;
+    private final List<Projectile> activeProjectiles = new ArrayList<>();
     private TimeManager timeManager;
     private Arena arena;
     private Chapter currentChapter;
     private boolean isGameOver = false;
-
-    private final List<Plant> activePlants;
-    private final List<Zombie> activeZombies;
-    private final List<Projectile> activeProjectiles = new ArrayList<>();
-    private final List<LawnMower> lawnMowers = new ArrayList<>();
-    private final List <Sun> activeSuns = new ArrayList<>();
-
+    private int currentSun;
+    private GameEvent event = GameEvent.GAME_STARTED;
+    private SunManager sunManager;
     private List<WinCondition> winConditions;
     private List<LoseCondition> loseConditions;
+    private HashMap<Plant, Integer> plantsCooldown;
+
+    private boolean zombieBreached = false;
 
     private Wave waveManager;
 
 
-    private GameSession(Chapter chapter, Arena arena) {
+    private GameSession(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         this.currentChapter = chapter;
         this.arena = arena;
         this.timeManager = new TimeManager();
-        activePlants = arena.getActivePlants();
-        activeZombies = arena.getActiveZombies();
+        this.ChosenPlants = chosenPlants;// this should come from PlantSelectionMenu Not the arena
+        plantsCooldown = new HashMap<>();
+        instantiateCooldowns(chosenPlants);
+        this.chosenZombies = chosenZombies;// this should come from our level Modifiers or something else
+        this.currentSun = 0;
+        this.sunManager = new SunManager(this.arena);
+        this.timeManager.registerNewTicker(sunManager);
     }
 
-    public static GameSession getInstance(){
-        if(instance == null){
+    public static GameSession getInstance() {
+        if (instance == null) {
             System.out.println("Instance is null");
         }
         return instance;
     }
 
-    public static GameSession getInstance(Chapter chapter, Arena arena){
-        if(instance == null){
-            instance = new GameSession(chapter, arena);
+    public static GameSession getInstance(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
+        if (instance == null) {
+            instance = new GameSession(chapter, arena, chosenPlants, chosenZombies);
         }
         return instance;
     }
 
+    public void instantiateCooldowns(List<Plant> chosenPlants) {
+        for (Plant plant : chosenPlants) {
+            plantsCooldown.put(plant, 0);
+        }
+    }
 
     public void spawnZombie(Zombie z, int lane) {
 
@@ -66,8 +77,8 @@ public class GameSession {
             timeManager.tick();
 
 
-            for (Plant p : activePlants) p.onTick(timeManager.getCurrentTick());
-            for (Zombie z : activeZombies) z.onTick(timeManager.getCurrentTick());
+            for (Plant p : ChosenPlants) p.onTick(timeManager.getCurrentTick());
+            for (Zombie z : chosenZombies) z.onTick(timeManager.getCurrentTick());
             for (Projectile proj : activeProjectiles) proj.move();
 
             checkCollisions();
@@ -76,7 +87,7 @@ public class GameSession {
 
     public List<Zombie> zombieInRow(int row) {
         List<Zombie> zombies = new ArrayList<>();
-        for (Zombie z : activeZombies) {
+        for (Zombie z : chosenZombies) {
             if (z.getRow() == row) {
                 zombies.add(z);
             }
@@ -85,7 +96,7 @@ public class GameSession {
     }
 
     public void update(int timeAmount) {
-        for(int i = 0; i < timeAmount; i++){
+        for (int i = 0; i < timeAmount; i++) {
 
             timeManager.tick();
             removeDeadEntities();
@@ -113,6 +124,10 @@ public class GameSession {
         });
     }
 
+    public void addSun(int amount) {
+        this.currentSun += amount;
+    }
+
     private void checkGameConditions() { // check for win or lose to end the game
         for (LoseCondition lose : loseConditions) {
 //            if (lose.isLost(this)) {
@@ -129,10 +144,16 @@ public class GameSession {
         }
     }
 
-    public void checkCollisions() {}
+    public void checkCollisions() {
+    }
 
-    public void addProjectile(Projectile p) { activeProjectiles.add(p); }
-    public void removeZombie(Zombie z) { activeZombies.remove(z); }
+    public void addProjectile(Projectile p) {
+        activeProjectiles.add(p);
+    }
+
+    public void removeZombie(Zombie z) {
+        chosenZombies.remove(z);
+    }
 
     public TimeManager getTimeManager() {
         return timeManager;
@@ -147,20 +168,16 @@ public class GameSession {
     }
 
 
-    public List<LawnMower> getLawnMowers() {
-        return lawnMowers;
-    }
-
     public List<Projectile> getActiveProjectiles() {
         return activeProjectiles;
     }
 
-    public List<Zombie> getActiveZombies() {
-        return activeZombies;
+    public List<Zombie> getChosenZombies() {
+        return chosenZombies;
     }
 
-    public List<Plant> getActivePlants() {
-        return activePlants;
+    public List<Plant> getChosenPlants() {
+        return ChosenPlants;
     }
 
     public boolean isGameOver() {
@@ -169,5 +186,29 @@ public class GameSession {
 
     public Chapter getCurrentChapter() {
         return currentChapter;
+    }
+
+    public GameEvent getEvent() {
+        return event;
+    }
+
+    public void setEvent(GameEvent event) {
+        this.event = event;
+    }
+
+    public boolean isZombieBreached() {
+        return zombieBreached;
+    }
+
+    public void setZombieBreached(boolean zombieBreached) {
+        this.zombieBreached = zombieBreached;
+    }
+
+    public int getCurrentSun() {
+        return currentSun;
+    }
+
+    public void setCurrentSun(int currentSun) {
+        this.currentSun = currentSun;
     }
 }
