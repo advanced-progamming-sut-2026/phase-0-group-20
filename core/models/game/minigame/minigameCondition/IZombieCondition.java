@@ -1,8 +1,11 @@
 package models.game.minigame.minigameCondition;
 
-public class IZombieCondition extends MiniGameWinCondition {
-    @Override
-    public void isMet() {
+import models.game.GameSession;
 
+public class IZombieCondition extends MiniGameWinCondition {
+
+    @Override
+    public boolean isWon(GameSession session) {
+        return false;
     }
 }

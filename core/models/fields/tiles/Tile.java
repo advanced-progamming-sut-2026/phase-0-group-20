@@ -1,14 +1,15 @@
 package models.fields.tiles;
 
 import models.entities.plants.Plant;
-import models.entities.zombies.Zombie;
 import models.game.adventure.SeasonType;
 import models.timeManager.Ticker;
 
+import java.util.Collections;
+import java.util.List;
+
 public abstract class Tile implements Ticker {
     protected SeasonType currentSeason;
-    protected Plant plantedPlant = null;
-    protected Zombie zombieOnTheTile = null;
+    protected List<Plant> plants = null;
     protected int row;
     protected int col;
 
@@ -19,16 +20,6 @@ public abstract class Tile implements Ticker {
 
     public abstract void onTick(int currentTick);
 
-    public void plantThePlant(Plant plant) {
-    }
-
-    public void produceSun() {
-    }
-
-    public void pluckThePlant() {
-
-    }
-
     public int getCol() {
         return col;
     }
@@ -37,20 +28,12 @@ public abstract class Tile implements Ticker {
         return row;
     }
 
-    public Zombie getZombieOnTheTile() {
-        return zombieOnTheTile;
+    public List<Plant> getPlants() {
+        return plants;
     }
 
-    public void setZombieOnTheTile(Zombie zombieOnTheTile) {
-        this.zombieOnTheTile = zombieOnTheTile;
-    }
-
-    public Plant getPlantedPlant() {
-        return plantedPlant;
-    }
-
-    public void setPlantedPlant(Plant plantedPlant) {
-        this.plantedPlant = plantedPlant;
+    public void setPlants(Plant plants) {
+        this.plants = Collections.singletonList(plants);
     }
 
     public SeasonType getCurrentSeason() {
