@@ -12,23 +12,30 @@ public class Projectile implements Ticker {
     private ProjectileEffect effect;
     private GameSession gameSession;
     private int damage;
-    private int column;
-    private int lane;
-    private int speedX;
-    private int speedY;
+    private double x;
+    private double y;
+    private double speedX;
+    private double speedY;
     private boolean piercing;
     private boolean canPassObstacles; // for lobber
     private boolean isDestroyed;
 
+    private Zombie target;
+    private float baseSpeed;
+
+    private int bouncesLeft = 0;
+    private int lifespanTicks = -1;
+    private int pierceCount = 999;
+
     public Projectile(ProjectileType type, ProjectileEffect effect, GameSession gameSession, int damage,
-                      int column, int lane, int speedX, int speedY,
+                      double x, double y, double speedX, double speedY,
                       boolean piercing, boolean canPassObstacles) {
         this.type = type;
         this.effect = effect;
         this.gameSession = gameSession;
         this.damage = damage;
-        this.column = column;
-        this.lane = lane;
+        this.x = x;
+        this.y = y;
         this.speedX = speedX;
         this.speedY = speedY;
         this.piercing = piercing;
@@ -40,6 +47,14 @@ public class Projectile implements Ticker {
     public void onTick(int currentTick) {
         if (isDestroyed) return;
 
+        if (lifespanTicks > 0) {
+            lifespanTicks--;
+            if (lifespanTicks == 0) {
+                isDestroyed = true;
+                return;
+            }
+        }
+
         move();
 
         if (isOutOfBounds()) {
@@ -48,8 +63,45 @@ public class Projectile implements Ticker {
     }
 
     public void move() {
-        column += speedX;
-        lane += speedY;
+        if (target != null && !target.isDead()) {
+            double dx = target.getX() - x;
+            double dy = target.getRow() - y;
+            double distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 0) {
+                speedX = (dx / distance) * baseSpeed;
+                speedY = (dy / distance) * baseSpeed;
+            }
+        }
+
+        x += speedX;
+        y += speedY;
+
+        if (bouncesLeft > 0) {
+            boolean bounced = false;
+            if (x >= gameSession.getArena().getCols() && speedX > 0) {
+                speedX = -speedX;
+                bounced = true;
+            } else if (x < 0 && speedX < 0) {
+                speedX = -speedX;
+                bounced = true;
+            }
+
+            if (y >= gameSession.getArena().getRows() && speedY > 0) {
+                speedY = -speedY;
+                bounced = true;
+            } else if (y < 0 && speedY < 0) {
+                speedY = -speedY;
+                bounced = true;
+            }
+
+            if (bounced) bouncesLeft--;
+        }
+    }
+
+    public void setHomingTarget(Zombie target, float baseSpeed) {
+        this.target = target;
+        this.baseSpeed = baseSpeed;
     }
 
     public void onHit(Zombie z) {
@@ -65,7 +117,12 @@ public class Projectile implements Ticker {
 
         effect.applyEffect(z, gameSession, this);
 
-        if (!piercing) {
+        if (piercing) {
+            pierceCount--;
+            if (pierceCount <= 0) {
+                isDestroyed = true;
+            }
+        } else {
             isDestroyed = true;
         }
     }
@@ -77,10 +134,9 @@ public class Projectile implements Ticker {
     }
 
     public boolean isOutOfBounds() {
-        if (column < 0 || column >= gameSession.getArena().getCols()
-                || lane < 0 || lane >= gameSession.getArena().getRows())
-            return true;
-        return false;
+        if (bouncesLeft > 0) return false;
+        return x < 0 || x >= gameSession.getArena().getCols()
+                || y < 0 || y >= gameSession.getArena().getRows();
     }
 
     public ProjectileType getType() {
@@ -103,24 +159,17 @@ public class Projectile implements Ticker {
         return damage;
     }
 
-    public int getColumn() {
-        return column;
-    }
-
-    public int getLane() {
-        return lane;
-    }
-
-    public int getspeedX() {
-        return speedX;
-    }
-
-    public int getspeedY() {
-        return speedY;
-    }
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public double getspeedX() { return speedX; }
+    public double getspeedY() { return speedY; }
 
     public boolean isPiercing() {
         return piercing;
+    }
+
+    public void setPierceCount(int count) {
+        this.pierceCount = count;
     }
 
     public boolean canPassObstacles() {
@@ -130,4 +179,10 @@ public class Projectile implements Ticker {
     public boolean isDestroyed() {
         return isDestroyed;
     }
+
+    public void setBouncesLeft(int bounces) { this.bouncesLeft = bounces; }
+    public void setLifespanTicks(int ticks) { this.lifespanTicks = ticks; }
+
+    public void setDamage(int damage) { this.damage = damage; }
+    public void setType(ProjectileType type) { this.type = type; }
 }

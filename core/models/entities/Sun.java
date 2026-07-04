@@ -22,6 +22,14 @@ public class Sun implements Ticker {
         this.amountProduced = type.getValue();
     }
 
+    public Sun(int amount, int x, int y, int currentTick) {
+        this.type = null;
+        this.x = x;
+        this.y = y;
+        this.productionTime = currentTick;
+        this.amountProduced = amount;
+    }
+
     @Override
     public void onTick(int currentTick) {
         if (isCollected || !isFalling) return;

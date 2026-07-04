@@ -7,6 +7,7 @@ import models.entities.zombies.behavior.effect.ChillEffect;
 import models.entities.zombies.behavior.effect.FreezeEffect;
 import models.entities.zombies.behavior.effect.ZombieEffect;
 import models.entities.zombies.behavior.move.MoveBehavior;
+import models.fields.tiles.Tile;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class Zombie implements Ticker {
     private boolean canSpawnPlantFood;
     private int weight;
     private boolean attacking;
+    private Tile tile;
 
     private int row;
     private double x;
@@ -49,7 +51,7 @@ public class Zombie implements Ticker {
         this.eatDPS = data.getEatDps();
         this.waveCost = data.getWaveCost();
         this.row = row;
-        this.x = -1; // initial state
+        this.x = 10.0f;// initial state
         this.moveBehavior = moveBehavior;
         this.defenseBehavior = defenseBehavior;
         this.attackBehavior = attackBehavior;
@@ -146,13 +148,9 @@ public class Zombie implements Ticker {
         return type;
     }
 
-    public double getX() {
-        return x;
-    }
+    public double getX() { return x; }
 
-    public void setX(int x) {
-        this.x = x;
-    }
+    public void setX(double x) { this.x = x; }
 
     public int getRow() {
         return row;

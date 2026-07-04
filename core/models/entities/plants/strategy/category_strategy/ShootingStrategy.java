@@ -2,10 +2,7 @@ package models.entities.plants.strategy.category_strategy;
 
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
-import models.entities.projectiles.IceEffect;
-import models.entities.projectiles.NormalEffect;
-import models.entities.projectiles.Projectile;
-import models.entities.projectiles.ProjectileEffect;
+import models.entities.projectiles.*;
 import models.entities.zombies.Zombie;
 import models.enums.plants.ProjectileType;
 import models.game.GameSession;
@@ -22,125 +19,176 @@ public class ShootingStrategy implements IPlantStrategy {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
-            boolean shouldShoot = false;
+            boolean shootForward = false;
+            boolean shootBackward = false;
+
             int plantRow = context.getPlacedTile().getRow();
             int plantCol = context.getPlacedTile().getCol();
+            String plantName = context.getName();
 
-            if (context.getName().equals("Rotobaga")) {
+            if (plantName.equals("Rotobaga")) {
                 for (Zombie z : gameSession.getChosenZombies()) {
+                    if (z.isDead()) continue;
                     int rowDiff = Math.abs(z.getRow() - plantRow);
-//                    int colDiff = Math.abs(z.getX() - plantCol);
+                    int colDiff = (int) Math.abs(z.getX() - plantCol);
+                    if (rowDiff == colDiff && rowDiff > 0 && rowDiff <= 2) {
+                        shootForward = true;
+                        shootBackward = true;
+                        break;
+                    }
+                }
+            } else if (plantName.equals("Starfruit")) {
+                for (Zombie z : gameSession.getChosenZombies()) {
+                    if (z.isDead()) continue;
+                    int rowDiff = z.getRow() - plantRow;
+                    int colDiff = (int) (z.getX() - plantCol);
 
-//                    if (rowDiff == colDiff && rowDiff > 0) {
-//                        shouldShoot = true;
-//                        break;
-//                    }
+                    boolean isBackward = (rowDiff == 0 && colDiff < 0);
+                    boolean isUpOrDown = (colDiff == 0 && rowDiff != 0);
+                    boolean isDiagonalForward = (colDiff > 0 && Math.abs(rowDiff) == colDiff);
+
+                    if (isBackward || isUpOrDown || isDiagonalForward) {
+                        shootForward = true;
+                        shootBackward = true;
+                        break;
+                    }
                 }
             } else {
-                List<Integer> targetLines = projectileInLine(context.getName(), context.getPlacedTile().getRow());
+                List<Integer> targetLines = projectileInLine(plantName, plantRow);
                 for (int line : targetLines) {
-                    if (!gameSession.zombieInRow(line).isEmpty()) {
-                        shouldShoot = true;
-                        break;
+                    for (Zombie z : gameSession.zombieInRow(line)) {
+                        if (z.isDead()) continue;
+
+                        int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom")) ? 3 : 999;
+
+                        if (z.getX() >= plantCol && z.getX() <= plantCol + maxRange) shootForward = true;
+
+                        if (z.getX() < plantCol) shootBackward = true;
                     }
                 }
             }
 
-
-            if (shouldShoot) {
-                int burstCount = getBurstCount(context);
-                for (int i = 0; i < burstCount; i++) {
-                    executeNewProjectile(context, gameSession);
-                }
-                System.out.println(context.getName() + " fired projectiles!");
+            if (shootForward || shootBackward) {
+                executeNewProjectile(context, gameSession, shootForward, shootBackward);
+                System.out.println(plantName + " fired projectiles!");
                 lastShotTick = currentTick;
             }
         }
     }
 
-    private void executeNewProjectile(Plant context, GameSession gameSession) {
+    private void executeNewProjectile(Plant context, GameSession gameSession, boolean shootForward, boolean shootBackward) {
         int damage = parseDamage(context.getDamage());
         ProjectileType type = getProjectileType(context.getName());
+        int plantRow = context.getPlacedTile().getRow();
+        int plantCol = context.getPlacedTile().getCol();
 
         if (damage != -1 && type != null) {
-            List<int[]> directions = getShootDirections(context.getName());
+            List<double[]> shotConfigs = getShotConfigurations(context);
 
-            for (int[] dir : directions) {
-                int dirX = dir[0];
-                int dirY = dir[1];
+            for (double[] config : shotConfigs) {
+                double spawnCol = plantCol + config[0];
+                double spawnRow = plantRow + config[1];
+                double speedX = config[2];
+                double speedY = config[3];
 
-                Projectile projectile = new Projectile(
-                        type,
-                        projectileEffect(type),
-                        gameSession,
-                        damage,
-                        context.getPlacedTile().getRow(),
-                        context.getPlacedTile().getCol(),
-                        dirX,
-                        dirY,
-                        false,
-                        false
-                );
+                if (speedX > 0 && !shootForward) continue;
+                if (speedX < 0 && !shootBackward) continue;
 
-                gameSession.addProjectile(projectile);
+                if (spawnRow >= 0 && spawnRow < gameSession.getArena().getRows()) {
+                    Projectile projectile = new Projectile(
+                            type,
+                            projectileEffect(type),
+                            gameSession,
+                            damage,
+                            spawnCol,
+                            spawnRow,
+                            speedX,
+                            speedY,
+                            false,
+                            false
+                    );
+                    gameSession.addProjectile(projectile);
+                }
             }
         }
-
     }
 
     private ProjectileType getProjectileType(String name) {
-        switch (name) {
-            case "Peashooter":
-            case "Repeater":
-            case "Threepeater":
-            case "Pea Pod":
-                return ProjectileType.PEA;
-            case "Snow Pea":
-                return ProjectileType.ICE_PEA;
-            case "Rotobaga":
-                return ProjectileType.ROTOBAGA_SEED;
-            default:
-                return null;
-        }
+        return switch (name) {
+            case "Snow Pea" -> ProjectileType.ICE_PEA;
+            case "Rotobaga" -> ProjectileType.ROTOBAGA_SEED;
+            case "Fire Peashooter" -> ProjectileType.FIRE_PEA;
+            case "Goo Peashooter" -> ProjectileType.GOO_PEA;
+            case "Peashooter", "Repeater", "Threepeater", "Pea Pod",
+                 "Split Pea", "Starfruit", "Mega Gatling Pea",
+                 "Sea-shroom", "Puff-shroom" -> ProjectileType.PEA;
+            default -> null;
+        };
     }
 
     private List<Integer> projectileInLine(String name, int placedRow) {
         List<Integer> lines = new ArrayList<>();
-        switch (name) {
-            case "Peashooter":
-            case "Repeater":
-            case "Snow Pea":
-            case "Pea Pod":
-                lines.add(placedRow);
-                break;
-            case "Threepeater":
-                if (placedRow - 1 >= 0) lines.add(placedRow - 1);
-                lines.add(placedRow);
-                if (placedRow + 1 < 5) lines.add(placedRow + 1);
-                break;
+        lines.add(placedRow);
+        if (name.equals("Threepeater")) {
+            lines.add(placedRow - 1);
+            lines.add(placedRow + 1);
         }
-
         return lines;
     }
 
-    private List<int[]> getShootDirections(String name) {
-        List<int[]> directions = new ArrayList<>();
+    private List<double[]> getShotConfigurations(Plant context) {
+        List<double[]> configs = new ArrayList<>(); // [offsetCol - offsetRow - speedX - speedY]
+        String name = context.getName();
+
         switch (name) {
             case "Peashooter":
-            case "Repeater":
-            case "Threepeater":
             case "Snow Pea":
+            case "Fire Peashooter":
+            case "Goo Peashooter":
+            case "Sea-shroom":
+            case "Puff-shroom":
+                configs.add(new double[]{0, 0, 1, 0});
+                break;
+            case "Repeater":
+                configs.add(new double[]{0, 0, 1, 0});
+                configs.add(new double[]{-1, 0, 1, 0});
+                break;
             case "Pea Pod":
-                directions.add(new int[]{1, 0});
+                for (int i = 0; i < context.getStackCount(); i++) {
+                    configs.add(new double[]{-i, 0, 1, 0});
+                }
+                break;
+            case "Threepeater":
+                configs.add(new double[]{0, -1, 1, 0}); // top line
+                configs.add(new double[]{0, 0, 1, 0});  // middle line
+                configs.add(new double[]{0, 1, 1, 0});  // bottom line
                 break;
             case "Rotobaga":
-                directions.add(new int[]{1, -1});  // up-right
-                directions.add(new int[]{1, 1});   // bottom-right
-                directions.add(new int[]{-1, -1}); // up-left
-                directions.add(new int[]{-1, 1}); // bottom-left
+                configs.add(new double[]{0, 0, 1, -1});  // top-right
+                configs.add(new double[]{0, 0, 1, 1});   // bottom-right
+                configs.add(new double[]{0, 0, -1, -1}); // top-left
+                configs.add(new double[]{0, 0, -1, 1});  // bottom-left
+                break;
+            case "Split Pea":
+                configs.add(new double[]{0, 0, 1, 0}); //forward
+                configs.add(new double[]{0, 0, -1, 0}); // one backward
+                configs.add(new double[]{1, 0, -1, 0}); // two backward
+                break;
+            case "Starfruit":
+                configs.add(new double[]{0, 0, -1, 0});  // backward
+                configs.add(new double[]{0, 0, 0, -1});  // up
+                configs.add(new double[]{0, 0, 0, 1});   // down
+                configs.add(new double[]{0, 0, 1, -1});  // up-right
+                configs.add(new double[]{0, 0, 1, 1});   // down-right
+                break;
+            case "Mega Gatling Pea":
+                configs.add(new double[]{0, 0, 1, 0});
+                configs.add(new double[]{-1, 0, 1, 0});
+                configs.add(new double[]{-2, 0, 1, 0});
+                configs.add(new double[]{-3, 0, 1, 0});
                 break;
         }
-        return directions;
+        return configs;
     }
 
     private int parseDamage(String damage) {
@@ -156,6 +204,10 @@ public class ShootingStrategy implements IPlantStrategy {
                 return new NormalEffect();
             case ICE_PEA:
                 return new IceEffect();
+            case FIRE_PEA:
+                return new FireEffect();
+            case GOO_PEA:
+                return new PoisonProjectileEffect();
             default:
                 return null;
         }

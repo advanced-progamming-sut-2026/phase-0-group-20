@@ -1,26 +1,49 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
+import models.entities.zombies.Zombie;
+import models.game.GameSession;
+import models.timeManager.TimeManager;
+
+import java.util.List;
 
 /**
- * Spike Strategy:
- * Plants with this strategy cannot be eaten by normal walking zombies.
- * Instead, they deal continuous physical damage to any zombie stepping on their tile.
+ * Spike Strategy (Adapted for Endurian):
+ * Defensive plants with this strategy act as a wall but also deal continuous
+ * physical damage to zombies that are close enough to attack/eat them.
  */
 
 public class SpikeStrategy implements IPlantStrategy {
-    private final int DAMAGE_INTERVAL = 5;
+    private final int DAMAGE_INTERVAL = TimeManager.TICKS_PER_SECOND;
     private int lastDamageTick = 0;
 
     @Override
-    public void execute(Plant context, int currentTick) {
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
         if (currentTick - lastDamageTick >= DAMAGE_INTERVAL) {
-            // Logic to get all zombies currently standing on this plant's tile
+            int plantRow = context.getPlacedTile().getRow();
+            double plantCol = context.getPlacedTile().getCol();
+            boolean dealtDamage = false;
 
-            // For each zombie, apply damage
-            System.out.println(context.getName() + " is damaging zombies stepping on it!");
+            List<Zombie> attackingZombies = gameSession.getArena().getZombiesInRadius(plantCol, plantRow, 0.8);
 
-            lastDamageTick = currentTick;
+            for (Zombie z : attackingZombies) {
+                if (!z.isDead()) {
+                    int damage = 20;
+                    try {
+                        damage = Integer.parseInt(context.getDamage());
+                    } catch (NumberFormatException e) {
+                        damage = 20;
+                    }
+
+                    z.takeDamage(damage);
+                    dealtDamage = true;
+                }
+            }
+
+            if (dealtDamage) {
+                System.out.println("🦔 " + context.getName() + " reflected " + context.getDamage() + " damage to attacking zombies!");
+                lastDamageTick = currentTick;
+            }
         }
     }
 }

@@ -2,6 +2,12 @@ package models.entities.plants.strategy.category_strategy;
 
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.projectiles.NormalEffect;
+import models.entities.projectiles.Projectile;
+import models.entities.zombies.Zombie;
+import models.enums.plants.ProjectileType;
+import models.game.GameSession;
+import models.timeManager.TimeManager;
 
 /**
  * Strike-Through Strategy:
@@ -13,14 +19,71 @@ public class StrikeThroughStrategy implements IPlantStrategy {
     private int lastShotTick = 0;
 
     @Override
-    public void execute(Plant context, int currentTick) {
-        int intervalInTicks = (int) (context.getActionInterval() * 10);
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
+        int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
-            // Logic to fire a penetrating projectile
-            System.out.println(context.getName() + " fired a strike-through attack!");
+            int plantRow = context.getPlacedTile().getRow();
+            double plantCol = context.getPlacedTile().getCol();
+            boolean zombieFound = false;
 
-            lastShotTick = currentTick;
+            for (Zombie z : gameSession.zombieInRow(plantRow)) {
+                if (!z.isDead() && z.getX() >= plantCol) {
+                    if (context.getName().equals("Fume-shroom")) {
+                        if (z.getX() <= plantCol + 4.0) {
+                            zombieFound = true;
+                            break;
+                        }
+                    } else {
+                        zombieFound = true;
+                        break;
+                    }
+                }
+            }
+
+            if (zombieFound) {
+                shootPiercingProjectile(context, gameSession);
+                lastShotTick = currentTick;
+            }
+        }
+    }
+
+    private void shootPiercingProjectile(Plant context, GameSession gameSession) {
+        String name = context.getName();
+        double spawnX = context.getPlacedTile().getCol();
+        double spawnY = context.getPlacedTile().getRow();
+
+        ProjectileType type = null;
+        int damage = 0;
+        int pierceLimit = 999;
+        int lifespan = -1;
+
+        if (name.equals("Cactus")) {
+            type = ProjectileType.SPIKE;
+            damage = 30;
+            pierceLimit = 3;
+        } else if (name.equals("Fume-shroom")) {
+            type = ProjectileType.FUME;
+            damage = 20;
+            lifespan = 40;
+        }
+
+        if (type != null) {
+            Projectile projectile = new Projectile(
+                    type, new NormalEffect(), gameSession, damage,
+                    spawnX, spawnY,
+                    0.1, 0,
+                    true,
+                    false
+            );
+
+            projectile.setPierceCount(pierceLimit);
+            if (lifespan > 0) {
+                projectile.setLifespanTicks(lifespan);
+            }
+
+            gameSession.addProjectile(projectile);
+            System.out.println("💨 " + name + " fired a strike-through attack!");
         }
     }
 }
