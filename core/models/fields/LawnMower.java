@@ -32,7 +32,7 @@ public class LawnMower implements Ticker {
                 } else {
                     // we lost the game and it depends on how we implement the Win and Lose Conditions.
                     System.out.println("The zombie ate your brain; LOSER!!!\n");
-
+                    GameSession.getInstance().setZombieBreached(true);
                 }
             }
         }
@@ -52,6 +52,7 @@ public class LawnMower implements Ticker {
         for (String zombieName : killedZombiesNames) {
             sb.append(zombieName + "\n");
         }
+
         sb.deleteCharAt(sb.length() - 1);
 
         System.out.println(sb.toString()); // not done

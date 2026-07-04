@@ -4,6 +4,8 @@ import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
+import models.enums.GameState;
+import models.game.adventure.levels.Level;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -21,10 +23,10 @@ public class GameSession {
     private boolean isGameOver = false;
     private int currentSun;
     private GameEvent event = GameEvent.GAME_STARTED;
+    private GameState state = GameState.RUNNING;
     private SunManager sunManager;
-    private List<WinCondition> winConditions;
-    private List<LoseCondition> loseConditions;
     private HashMap<Plant, Integer> plantsCooldown;
+    private GameMode currentMode;
 
     private boolean zombieBreached = false;
 
@@ -76,7 +78,6 @@ public class GameSession {
         while (!isGameOver) {
             timeManager.tick();
 
-
             for (Plant p : ChosenPlants) p.onTick(timeManager.getCurrentTick());
             for (Zombie z : chosenZombies) z.onTick(timeManager.getCurrentTick());
             for (Projectile proj : activeProjectiles) proj.move();
@@ -96,11 +97,16 @@ public class GameSession {
     }
 
     public void update(int timeAmount) {
-        for (int i = 0; i < timeAmount; i++) {
+        if (this.state != GameState.RUNNING) return;
 
+        for (int i = 0; i < timeAmount; i++) {
             timeManager.tick();
+            if (this.currentMode != null)
+                this.currentMode.onTick(this, timeManager.getCurrentTick());
+
             removeDeadEntities();
             checkGameConditions();
+            if (this.state == GameState.WON || this.state == GameState.LOST) break;
         }
     }
 
@@ -128,19 +134,21 @@ public class GameSession {
         this.currentSun += amount;
     }
 
-    private void checkGameConditions() { // check for win or lose to end the game
-        for (LoseCondition lose : loseConditions) {
-//            if (lose.isLost(this)) {
-//                isGameOver = false;
-//                return;
-//            }
-        }
+    private void checkGameConditions() {
+        if (this.currentMode == null) return;
+        GameState result = this.currentMode.checkResult(this);
 
-        for (WinCondition win : winConditions) {
-//            if (win.isWon(this)) {
-//                isGameOver   = false;
-//                return;
-//            }
+        if (result == GameState.LOST) {
+            this.state = GameState.LOST;
+            this.isGameOver = true;
+            this.event = GameEvent.GAME_OVER;
+            System.out.println("Zombies ate your brains! GAME OVER.");
+        }
+        else if (result == GameState.WON) {
+            this.state = GameState.WON;
+            this.isGameOver = true;
+            this.event = GameEvent.LEVEL_COMPLETED;
+            System.out.println("You survived! LEVEL COMPLETED.");
         }
     }
 

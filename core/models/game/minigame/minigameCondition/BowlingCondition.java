@@ -1,8 +1,11 @@
 package models.game.minigame.minigameCondition;
 
-public class BowlingCondition extends MiniGameWinCondition {
-    @Override
-    public void isMet() {
+import models.game.GameSession;
 
+public class BowlingCondition extends MiniGameWinCondition {
+
+    @Override
+    public boolean isWon(GameSession session) {
+        return false;
     }
 }
