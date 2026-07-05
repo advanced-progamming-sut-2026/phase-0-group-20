@@ -1,11 +1,12 @@
 package models.game;
 
+import models.entities.PlantFood;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
-import models.game.adventure.levels.Level;
+import models.items.SeedPacket;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class GameSession {
     private SunManager sunManager;
     private HashMap<Plant, Integer> plantsCooldown;
     private GameMode currentMode;
+    private final List<PlantFood> plantFoods = new ArrayList<>();
 
     private boolean zombieBreached = false;
 
@@ -143,8 +145,7 @@ public class GameSession {
             this.isGameOver = true;
             this.event = GameEvent.GAME_OVER;
             System.out.println("Zombies ate your brains! GAME OVER.");
-        }
-        else if (result == GameState.WON) {
+        } else if (result == GameState.WON) {
             this.state = GameState.WON;
             this.isGameOver = true;
             this.event = GameEvent.LEVEL_COMPLETED;
@@ -218,5 +219,36 @@ public class GameSession {
 
     public void setCurrentSun(int currentSun) {
         this.currentSun = currentSun;
+    }
+
+    public void spawnPlantFood(int row, int col) {
+        PlantFood pf = new PlantFood(row, col);
+        this.plantFoods.add(pf);
+        this.getTimeManager().registerNewTicker(pf);
+    }
+
+    public boolean collectPlantFoodAt(int row, int col) {
+        for (PlantFood pf : plantFoods) {
+            if (pf.getRow() == row && pf.getCol() == col && !pf.isCollected() && !pf.isExpired()) {
+                pf.collect();
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public void cleanUpExpiredPlantFoods() {
+        plantFoods.removeIf(pf -> pf.isCollected() || pf.isExpired());
+    }
+
+
+    public List<PlantFood> getPlantFoods() {
+        return plantFoods;
+    }
+
+    public void consumePlantFood() {
+        if (plantFoods.isEmpty()) return;
+        plantFoods.remove(plantFoods.size() - 1);
     }
 }

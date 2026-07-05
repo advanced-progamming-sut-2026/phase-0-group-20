@@ -91,4 +91,18 @@ public class Arena {
         return lawnMowers;
     }
 
+    public Tile[][] getTiles() {
+        return tiles;
+    }
+
+    public Tile getTile(int row, int col) {
+        if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return null;
+        return tiles[row][col];
+    }
+
+    public void changeTile(int row, int col, Tile tile) {
+        if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return;
+        tiles[row][col] = tile;
+    }
+
 }
