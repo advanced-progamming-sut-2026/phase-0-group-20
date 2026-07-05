@@ -20,11 +20,10 @@ public class WaterTile extends Tile {
 
         Plant topPlant = plants.isEmpty() ? null : plants.get(plants.size() - 1);
 
+        if (isWaterPlant) return plants.isEmpty();
+
         if (isStackable)
             return !plants.isEmpty() && !topPlant.getTags().contains(PlantTag.STACK);
-
-
-        if (isWaterPlant) return plants.isEmpty();
 
         return plants.size() == 1 && topPlant.getTags().contains(PlantTag.WATER);
     }

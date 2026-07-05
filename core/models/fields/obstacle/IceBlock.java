@@ -1,41 +1,70 @@
-package models.fields.tiles;
+package models.fields.obstacle;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.enums.plants.PlantTag;
+import models.fields.tiles.Tile;
 import models.game.GameSession;
+import models.timeManager.Ticker;
 
-public class IceBlock {
+public class IceBlock implements Ticker {
     public static final int MELT_RATE_PER_TICK = 6;
     private int iceHp = 600;
+    private int row;
+    private int col;
 
     private Plant frozenPlant;
     private Zombie frozenZombie;
 
-    public IceBlock(Plant frozenPlant) {
+    public IceBlock(Plant frozenPlant, int row, int col) {
         this.frozenPlant = frozenPlant;
+        this.row = row;
+        this.col = col;
     }
 
-    public IceBlock(Zombie frozenZombie) {
+    public IceBlock(Zombie frozenZombie, int row, int col) {
         this.frozenZombie = frozenZombie;
+        this.row = row;
+        this.col = col;
     }
 
-    public void takeDamage(int amount, int row, int col) {
-        iceHp -= amount;
-        if (iceHp <= 0) melt(row, col);
+    @Override
+    public void onTick(int currentTick) {
+        if (hasAdjacentFirePlant()) takeDamage(MELT_RATE_PER_TICK);
     }
 
-    public void melt(int row, int col) {
+    private boolean hasAdjacentFirePlant() {
         GameSession session = GameSession.getInstance();
+        if (session == null || session.getArena() == null) return false;
 
-        // آزاد کردن گیاه
+        for (Plant plant : session.getArena().getActivePlants()) {
+            if (plant.getCurrentHp() <= 0 || plant.getPlacedTile() == null) continue;
+            if (!plant.getTags().contains(PlantTag.FIRE)) continue;
+
+            int dRow = Math.abs(plant.getPlacedTile().getRow() - row);
+            int dCol = Math.abs(plant.getPlacedTile().getCol() - col);
+            if (dRow <= 1 && dCol <= 1 && (dRow != 0 || dCol != 0)) return true;
+        }
+        return false;
+    }
+
+    public void takeDamage(int amount) {
+        iceHp -= amount;
+        if (iceHp <= 0) melt();
+    }
+
+    public void melt() {
+        GameSession session = GameSession.getInstance();
+        Tile thisTile = session.getArena().getTile(row, col);
+
         if (frozenPlant != null) {
-            session.getArena().getTile(row, col).addPlant(frozenPlant);
+            thisTile.addPlant(frozenPlant);
             session.getArena().addPlant(frozenPlant);
+            frozenPlant.setPlacedTile(thisTile);
             session.getTimeManager().registerNewTicker(frozenPlant);
             frozenPlant = null;
         }
 
-        // آزاد کردن زامبی
         if (frozenZombie != null) {
             frozenZombie.setRow(row);
             frozenZombie.setX(col);
@@ -43,10 +72,57 @@ public class IceBlock {
             session.getTimeManager().registerNewTicker(frozenZombie);
             frozenZombie = null;
         }
+
+        session.getTimeManager().unregisterTicker(this);
         System.out.println("IceBlock melted at [" + row + "][" + col + "]!");
     }
 
-    public boolean hasFrozenPlant() { return frozenPlant != null; }
-    public boolean hasFrozenZombie() { return frozenZombie != null; }
-    // گترها و سترهای لازم...
+    public boolean hasFrozenPlant() {
+        return frozenPlant != null;
+    }
+
+    public boolean hasFrozenZombie() {
+        return frozenZombie != null;
+    }
+
+    public int getIceHp() {
+        return iceHp;
+    }
+
+    public void setIceHp(int iceHp) {
+        this.iceHp = iceHp;
+    }
+
+    public Plant getFrozenPlant() {
+        return frozenPlant;
+    }
+
+    public void setFrozenPlant(Plant frozenPlant) {
+        this.frozenPlant = frozenPlant;
+    }
+
+    public Zombie getFrozenZombie() {
+        return frozenZombie;
+    }
+
+    public void setFrozenZombie(Zombie frozenZombie) {
+        this.frozenZombie = frozenZombie;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public void setCol(int col) {
+        this.col = col;
+    }
+
 }

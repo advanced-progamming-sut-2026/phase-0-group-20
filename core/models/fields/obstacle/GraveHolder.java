@@ -1,4 +1,4 @@
-package models.fields.tiles;
+package models.fields.obstacle;
 
 import models.game.GameSession;
 
