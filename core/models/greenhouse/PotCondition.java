@@ -2,7 +2,7 @@ package models.greenhouse;
 
 public enum PotCondition {
     EMPTY,
-    FULL,
+    COLLECTABLE,
     PLANTED,
     LOCKED;
 }

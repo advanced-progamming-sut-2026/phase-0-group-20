@@ -19,8 +19,8 @@ import java.util.Random;
  */
 
 public class ChargeStrategy implements IPlantStrategy {
-    private int chargeStartTick = -1;
     private final Random random = new Random();
+    private int chargeStartTick = -1;
 
     @Override
     public void execute(Plant context, int currentTick, GameSession gameSession) {

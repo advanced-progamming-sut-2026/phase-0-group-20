@@ -148,9 +148,13 @@ public class Zombie implements Ticker {
         return type;
     }
 
-    public double getX() { return x; }
+    public double getX() {
+        return x;
+    }
 
-    public void setX(double x) { this.x = x; }
+    public void setX(double x) {
+        this.x = x;
+    }
 
     public int getRow() {
         return row;

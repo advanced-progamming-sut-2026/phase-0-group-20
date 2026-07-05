@@ -13,10 +13,10 @@ public enum Menu {
     MAIN_MENU(new MainMenu(), "main menu"),
     COLLECTION_MENU(new CollectionMenu(), "collection menu"),
     LEADERBOARD_MENU(new LeaderBoard(), "leaderboard menu"),
-    GREENHOUSE_MENU(new GreenHouse(), "greenhouse menu"),
+    GREENHOUSE_MENU(new GreenHouseMenu(), "greenhouse menu"),
     PLANTSELLECTION_MENU(new PlantSelectionMenu(), "plant selection menu"),
     PROFILE_MENU(new ProfileMenu(), "profile menu"),
-    SHOP_MENU(new ShopMenu(), "shop menu"),
+    SHOP_MENU(new ShopMenu(), "shop"),
     TRAVELLOG_MENU(new TravelLogMenu(), "travel log menu"),
     GAME_MENU(new GameMenu(), "game menu"),
     NEWS_MENU(new NewsMenu(), "news menu"),
@@ -57,7 +57,7 @@ public enum Menu {
         return switch (this) {
             case SIGNUP_MENU -> EnumSet.of(LOGIN_MENU);
             case LOGIN_MENU -> EnumSet.of(SIGNUP_MENU);
-            case SETTINGS_MENU, NEWS_MENU, SHOP_MENU, GREENHOUSE_MENU, LEADERBOARD_MENU, COLLECTION_MENU,
+            case SETTINGS_MENU, NEWS_MENU, SHOP_MENU, LEADERBOARD_MENU, COLLECTION_MENU,
                  TRAVELLOG_MENU -> null;
             case MAIN_MENU -> EnumSet.of(GAME_MENU, PROFILE_MENU, SETTINGS_MENU);
 
@@ -66,6 +66,7 @@ public enum Menu {
             case GAME_MENU -> EnumSet.of(COLLECTION_MENU, LEADERBOARD_MENU,
                     GREENHOUSE_MENU, PLANTSELLECTION_MENU,
                     SHOP_MENU, TRAVELLOG_MENU, NEWS_MENU);
+            case GREENHOUSE_MENU ->  EnumSet.of(SHOP_MENU);
         };
     }
 

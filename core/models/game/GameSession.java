@@ -6,7 +6,6 @@ import models.entities.projectiles.Projectile;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
-import models.items.SeedPacket;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -14,10 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GameSession {
+    private static final int PLANT_COOLDOWN = 50;
     private static GameSession instance;
     private final List<Plant> ChosenPlants;
     private final List<Zombie> chosenZombies;
     private final List<Projectile> activeProjectiles = new ArrayList<>();
+    private final List<PlantFood> plantFoods = new ArrayList<>();
     private TimeManager timeManager;
     private Arena arena;
     private Chapter currentChapter;
@@ -28,10 +29,7 @@ public class GameSession {
     private SunManager sunManager;
     private HashMap<Plant, Integer> plantsCooldown;
     private GameMode currentMode;
-    private final List<PlantFood> plantFoods = new ArrayList<>();
-
     private boolean zombieBreached = false;
-
     private Wave waveManager;
 
 
@@ -247,8 +245,20 @@ public class GameSession {
         return plantFoods;
     }
 
+    public void addPlantFood(PlantFood pf) {
+        plantFoods.add(pf);
+    }
+
     public void consumePlantFood() {
         if (plantFoods.isEmpty()) return;
         plantFoods.remove(plantFoods.size() - 1);
+    }
+
+    public void setPlantCooldown(Plant plant) {
+        plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
+    }
+
+    public HashMap<Plant, Integer> getPlantsCooldown() {
+        return plantsCooldown;
     }
 }

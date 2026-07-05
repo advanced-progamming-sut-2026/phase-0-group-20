@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Random;
 
 public class MoveZombiesStrategy implements IPlantStrategy {
+    private final Random random = new Random();
     private int lastRecordedHp = -1;
     private int lastPullTick = 0;
-    private final Random random = new Random();
 
     @Override
     public void execute(Plant context, int currentTick, GameSession gameSession) {

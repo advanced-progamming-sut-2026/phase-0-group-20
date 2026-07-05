@@ -10,7 +10,7 @@ public class MagnetStrategy implements IPlantStrategy {
     private int lastStealTick = 0;
 
     @Override
-    public void execute(Plant context, int currentTick , GameSession gameSession) {
+    public void execute(Plant context, int currentTick, GameSession gameSession) {
 
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 

@@ -143,6 +143,10 @@ public class Projectile implements Ticker {
         return type;
     }
 
+    public void setType(ProjectileType type) {
+        this.type = type;
+    }
+
     public ProjectileEffect getEffect() {
         return effect;
     }
@@ -159,10 +163,25 @@ public class Projectile implements Ticker {
         return damage;
     }
 
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double getspeedX() { return speedX; }
-    public double getspeedY() { return speedY; }
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getspeedX() {
+        return speedX;
+    }
+
+    public double getspeedY() {
+        return speedY;
+    }
 
     public boolean isPiercing() {
         return piercing;
@@ -180,9 +199,11 @@ public class Projectile implements Ticker {
         return isDestroyed;
     }
 
-    public void setBouncesLeft(int bounces) { this.bouncesLeft = bounces; }
-    public void setLifespanTicks(int ticks) { this.lifespanTicks = ticks; }
+    public void setBouncesLeft(int bounces) {
+        this.bouncesLeft = bounces;
+    }
 
-    public void setDamage(int damage) { this.damage = damage; }
-    public void setType(ProjectileType type) { this.type = type; }
+    public void setLifespanTicks(int ticks) {
+        this.lifespanTicks = ticks;
+    }
 }

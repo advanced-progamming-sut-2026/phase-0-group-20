@@ -1,9 +1,9 @@
 package models.fields.tiles;
 
 public class GraveStone {
-    private int hp = 700;
     private final boolean hasSun;
     private final boolean hasPlantFood;
+    private int hp = 700;
 
     public GraveStone() {
         this.hasSun = false;

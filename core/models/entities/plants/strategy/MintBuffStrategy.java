@@ -2,7 +2,6 @@ package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
 import models.enums.plants.PlantCategory;
-import models.enums.plants.PlantTag;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 
@@ -13,10 +12,9 @@ import models.timeManager.TimeManager;
  */
 
 public class MintBuffStrategy implements IPlantStrategy {
+    private final int lifespanInTicks = 10 * TimeManager.TICKS_PER_SECOND;
     private boolean isActivated = false;
     private int aliveTicks = 0;
-
-    private final int lifespanInTicks = 10 * TimeManager.TICKS_PER_SECOND;
 
     @Override
     public void execute(Plant context, int currentTick, GameSession gameSession) {

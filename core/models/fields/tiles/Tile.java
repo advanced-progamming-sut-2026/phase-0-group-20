@@ -33,6 +33,10 @@ public abstract class Tile implements Ticker {
         return plants;
     }
 
+    public void setPlants(List<Plant> plants) {
+        this.plants = plants;
+    }
+
     public void addPlant(Plant plant) {
         this.plants.add(plant);
     }
