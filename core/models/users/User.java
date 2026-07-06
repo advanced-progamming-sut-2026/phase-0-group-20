@@ -8,6 +8,7 @@ import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.Gender;
 import models.enums.SecurityQuestion;
+import models.greenhouse.GreenHouse;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class User {
     private int levelsCompleted;
     private boolean stayLoggedIn;
     private Inventory inventory;
+    private GreenHouse greenHouse;
 
     public User(String username, String passwordHash,
                 String nickname, String email, Gender gender,
@@ -48,6 +50,8 @@ public class User {
         this.gamesPlayed = 0;
         this.levelsCompleted = 0;
         this.stayLoggedIn = false;
+        this.inventory = new Inventory();
+        this.greenHouse = new GreenHouse();
 
     }
 
@@ -65,7 +69,8 @@ public class User {
                 @JsonProperty("diamond") int diamond,
                 @JsonProperty("gamesPlayed") int gamesPlayed,
                 @JsonProperty("levelsCompleted") int levelsCompleted,
-                @JsonProperty("stayLoggedIn") boolean stayLoggedIn) {
+                @JsonProperty("stayLoggedIn") boolean stayLoggedIn,
+                @JsonProperty("greenHouse") GreenHouse greenHouse) {
 
         this.id = id;
         this.username = username;
@@ -80,6 +85,7 @@ public class User {
         this.gamesPlayed = gamesPlayed;
         this.levelsCompleted = levelsCompleted;
         this.stayLoggedIn = stayLoggedIn;
+        this.greenHouse = (greenHouse != null) ? greenHouse : new GreenHouse();
     }
 
     public String getId() {
@@ -154,12 +160,24 @@ public class User {
         this.coin = Math.max(0, this.coin - amount);
     }
 
+    public void earnCoin(int amount) {
+        this.coin += amount;
+    }
+
     public int getDiamond() {
         return diamond;
     }
 
     public void setDiamond(int diamond) {
         this.diamond = diamond;
+    }
+
+    public void costDiamond(int amount) {
+        this.diamond = Math.max(0, this.diamond - amount);
+    }
+
+    public void earnDiamond(int amount) {
+        this.diamond += amount;
     }
 
     public int getGamesPlayed() {
@@ -192,6 +210,14 @@ public class User {
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
+    }
+
+    public GreenHouse getGreenHouse() {
+        return greenHouse;
+    }
+
+    public void setGreenHouse(GreenHouse greenHouse) {
+        this.greenHouse = greenHouse;
     }
 
     public ArrayList<Zombie> getUnlockedZombies() {

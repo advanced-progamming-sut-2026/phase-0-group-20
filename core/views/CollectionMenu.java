@@ -1,7 +1,9 @@
 package views;
 
 import controllers.GameController.CollectionController;
+import controllers.NavigationController;
 import models.enums.commands.CollectionCommands;
+import models.enums.commands.MainCommands;
 
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -14,8 +16,13 @@ public class CollectionMenu implements AppMenu {
         String input = scanner.nextLine();
         Matcher matcher;
 
-
-        if ((matcher = CollectionCommands.SHOW_PLANTS.getMatcher(input)) != null) {
+        if ((matcher = MainCommands.EXIT_MENU.getMatcher(input)) != null) {
+            System.out.println(NavigationController.exitMenu());
+        } else if ((matcher = MainCommands.ENTER_MENU.getMatcher(input)) != null) {
+            System.out.println(NavigationController.enterMenu(matcher.group("name")));
+        } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
+            System.out.println(NavigationController.showCurrentMenu());}
+        else if ((matcher = CollectionCommands.SHOW_PLANTS.getMatcher(input)) != null) {
             System.out.println(controller.showPlants());
         } else if ((matcher = CollectionCommands.SHOW_ALL_PLANTS.getMatcher(input)) != null) {
             System.out.println(controller.showAllPlants());

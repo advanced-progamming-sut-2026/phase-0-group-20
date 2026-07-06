@@ -3,7 +3,7 @@ package models.entities.projectiles;
 import models.entities.zombies.Zombie;
 import models.game.GameSession;
 
-public class HypnotizeEffect implements ProjectileEffect{
+public class HypnotizeEffect implements ProjectileEffect {
     @Override
     public void applyEffect(Zombie zombie, GameSession gameSession, Projectile projectile) {
         System.out.println("🌀 " + zombie.getName() + " HAS BEEN HYPNOTIZED! 🌀");

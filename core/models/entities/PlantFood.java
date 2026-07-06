@@ -1,6 +1,5 @@
 package models.entities;
 
-import models.game.GameSession;
 import models.timeManager.Ticker;
 
 public class PlantFood implements Ticker {

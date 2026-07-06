@@ -21,13 +21,6 @@ public class Chapter {
         this.isUnlocked = false;
     }
 
-    public Level getCurrentLevel() {
-        if (currentLevelIndex < levels.size()) {
-            return levels.get(currentLevelIndex);
-        }
-        return null;
-    }
-
     public static SeasonModifier createModifier(SeasonType type) {
         return switch (type) {
             case ANCIENT_EGYPT -> new EgyptModifier();
@@ -44,6 +37,13 @@ public class Chapter {
             case BIG_WAVE_BEACH -> "Big Wave Beach";
             case DARK_AGES -> "Dark Ages";
         };
+    }
+
+    public Level getCurrentLevel() {
+        if (currentLevelIndex < levels.size()) {
+            return levels.get(currentLevelIndex);
+        }
+        return null;
     }
 
     public boolean isNight() {

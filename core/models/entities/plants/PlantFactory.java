@@ -4,7 +4,10 @@ package models.entities.plants;
 import models.entities.plants.PlantFoodStrategy.*;
 import models.entities.plants.strategy.*;
 import models.entities.plants.strategy.category_strategy.*;
-import models.entities.plants.strategy.tag_strategy.*;
+import models.entities.plants.strategy.tag_strategy.ChargeStrategy;
+import models.entities.plants.strategy.tag_strategy.MoveZombiesStrategy;
+import models.entities.plants.strategy.tag_strategy.SleepStrategy;
+import models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import models.enums.plants.PlantTag;
 import models.game.GameSession;
 
@@ -228,7 +231,8 @@ public class PlantFactory {
                  "hot potato", "grave buster", "imitater" -> plant.setPlantFoodStrategy(new NoFoodEffectStrategy());
 
 
-            case "arma-mint", "bombard-mint", "enchant-mint", "appease-mint", "cattail-mint" -> plant.setPlantFoodStrategy(new NoFoodEffectStrategy());
+            case "arma-mint", "bombard-mint", "enchant-mint", "appease-mint", "cattail-mint" ->
+                    plant.setPlantFoodStrategy(new NoFoodEffectStrategy());
 
             default -> {
                 System.out.println("WARNING: no PlantFoodStrategy mapped for '" + data.name()

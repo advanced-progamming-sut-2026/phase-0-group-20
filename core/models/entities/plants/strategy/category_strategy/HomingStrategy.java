@@ -19,8 +19,8 @@ import java.util.Random;
  */
 
 public class HomingStrategy implements IPlantStrategy {
-    private int lastShotTick = 0;
     private final Random random = new Random();
+    private int lastShotTick = 0;
 
     @Override
     public void execute(Plant context, int currentTick, GameSession gameSession) {

@@ -13,12 +13,11 @@ import java.util.List;
 public class Arena {
     private final int ROWS = 5;
     private final int COLS = 9;
-    private Tile[][] tiles;
-
     private final List<Plant> activePlants;// these are the plants that are already in the arena.(placed and not dead)
     private final List<Zombie> activeZombies;//these are the zombies that are already in the arena and moving/attacking.
-    private List<Sun> activeSuns = new ArrayList<>();
     private final LawnMower[] lawnMowers;
+    private Tile[][] tiles;
+    private List<Sun> activeSuns = new ArrayList<>();
 
     public Arena() {
         this.tiles = new Tile[ROWS][COLS];

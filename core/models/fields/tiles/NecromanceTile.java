@@ -2,11 +2,9 @@ package models.fields.tiles;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
-import models.fields.obstacle.GraveHolder;
-import models.fields.obstacle.GraveStone;
 import models.game.GameSession;
 
-public class NecromanceTile extends Tile implements GraveHolder {
+public class NecromanceTile extends Tile {
 
     GraveStone graveStone = null;
 
@@ -33,6 +31,23 @@ public class NecromanceTile extends Tile implements GraveHolder {
         session.getTimeManager().registerNewTicker(zombie);
     }
 
+    public void takeDamage(int damage) {
+        if (graveStone == null) return;
+        graveStone.takeDamage(damage);
+
+        if (graveStone.getHp() <= 0) {
+            System.out.println("Grave destroyed at row: " + row + ", col: " + col);
+            GameSession session = GameSession.getInstance();
+            if (graveStone.hasSun())
+                session.addSun(50);
+
+            if (graveStone.hasPlantFood())
+                session.spawnPlantFood(row, col);
+
+            this.graveStone = null;
+        }
+    }
+
     @Override
     public boolean isPlantable(Plant plantToPlant) {
         if (graveStone != null) return false;
@@ -41,15 +56,5 @@ public class NecromanceTile extends Tile implements GraveHolder {
 
     public void setGraveStone(GraveStone graveStone) {
         this.graveStone = graveStone;
-    }
-
-    @Override
-    public GraveStone getGraveStone() {
-        return graveStone;
-    }
-
-    @Override
-    public void removeGrave() {
-        graveStone = null;
     }
 }

@@ -6,8 +6,6 @@ import models.game.GameSession;
 
 public class SlipperyTile extends Tile {
 
-    public enum SlideDirection {UP, DOWN}
-
     private final SlideDirection direction;
 
     public SlipperyTile(int row, int col, SlideDirection direction) {
@@ -37,4 +35,6 @@ public class SlipperyTile extends Tile {
     public boolean isPlantable(Plant plantToPlant) {
         return false;
     }
+
+    public enum SlideDirection {UP, DOWN}
 }

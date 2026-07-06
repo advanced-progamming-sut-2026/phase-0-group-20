@@ -53,7 +53,7 @@ public class LobberStrategy implements IPlantStrategy {
                 if (Math.random() < 0.25) {
                     type = ProjectileType.BUTTER;
                     damage = 40;
-                     effect = new ButterEffect();
+                    effect = new ButterEffect();
                 } else {
                     type = ProjectileType.CORN;
                     damage = 20;
