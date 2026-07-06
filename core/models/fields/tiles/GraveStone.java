@@ -5,7 +5,6 @@ public class GraveStone {
     private final boolean hasSun;
     private final boolean hasPlantFood;
     
-
     public GraveStone() {
         this.hasSun = false;
         this.hasPlantFood = false;
