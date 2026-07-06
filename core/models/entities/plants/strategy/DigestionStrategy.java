@@ -29,7 +29,7 @@ public class DigestionStrategy implements IPlantStrategy {
             Zombie target = null;
             double minDistance = Double.MAX_VALUE;
 
-            for (Zombie z : gameSession.zombieInRow(plantRow)) {
+            for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
                 if (z.isDead()) continue;
 
                 double dist = z.getX() - plantCol;

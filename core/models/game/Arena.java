@@ -54,6 +54,32 @@ public class Arena {
         return result;
     }
 
+    public List<Zombie> zombieInRow(int row) {
+        List<Zombie> zombies = new ArrayList<>();
+        for (Zombie z : activeZombies) {
+            if (z.getRow() == row) {
+                zombies.add(z);
+            }
+        }
+        return zombies;
+    }
+
+    public Plant nearestPlantInRow(Zombie zombie, int row) {
+        Plant target = null;
+        int maxCol = -1;
+
+        for (Plant p : GameSession.getInstance().getArena().getActivePlants()) {
+            if (p.getPlacedTile() != null && p.getPlacedTile().getRow() == row) {
+                int pCol = p.getPlacedTile().getCol();
+                if (pCol <= zombie.getCol() && pCol > maxCol) {
+                    maxCol = pCol;
+                    target = p;
+                }
+            }
+        }
+        return target;
+    }
+
     public Sun getSunInCoordinate(int x, int y) {
         for (Sun sun : activeSuns) {
             if (!sun.isCollected() && sun.getX() == x && sun.getY() == y) return sun;

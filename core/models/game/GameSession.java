@@ -15,7 +15,7 @@ import java.util.List;
 public class GameSession {
     private static final int PLANT_COOLDOWN = 50;
     private static GameSession instance;
-    private final List<Plant> ChosenPlants;
+    private final List<Plant> chosenPlants;
     private final List<Zombie> chosenZombies;
     private final List<Projectile> activeProjectiles = new ArrayList<>();
     private final List<PlantFood> plantFoods = new ArrayList<>();
@@ -37,7 +37,7 @@ public class GameSession {
         this.currentChapter = chapter;
         this.arena = arena;
         this.timeManager = new TimeManager();
-        this.ChosenPlants = chosenPlants;// this should come from PlantSelectionMenu Not the arena
+        this.chosenPlants = chosenPlants;// this should come from PlantSelectionMenu Not the arena
         plantsCooldown = new HashMap<>();
         instantiateCooldowns(chosenPlants);
         this.chosenZombies = chosenZombies;// this should come from our level Modifiers or something else
@@ -78,22 +78,12 @@ public class GameSession {
         while (!isGameOver) {
             timeManager.tick();
 
-            for (Plant p : ChosenPlants) p.onTick(timeManager.getCurrentTick());
+            for (Plant p : chosenPlants) p.onTick(timeManager.getCurrentTick());
             for (Zombie z : chosenZombies) z.onTick(timeManager.getCurrentTick());
             for (Projectile proj : activeProjectiles) proj.move();
 
             checkCollisions();
         }
-    }
-
-    public List<Zombie> zombieInRow(int row) {
-        List<Zombie> zombies = new ArrayList<>();
-        for (Zombie z : chosenZombies) {
-            if (z.getRow() == row) {
-                zombies.add(z);
-            }
-        }
-        return zombies;
     }
 
     public void update(int timeAmount) {
@@ -184,7 +174,7 @@ public class GameSession {
     }
 
     public List<Plant> getChosenPlants() {
-        return ChosenPlants;
+        return chosenPlants;
     }
 
     public boolean isGameOver() {

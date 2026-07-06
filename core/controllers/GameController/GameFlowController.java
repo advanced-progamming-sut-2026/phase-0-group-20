@@ -217,8 +217,8 @@ public class GameFlowController {
                 mapDisplay.append("Tile ").append(row).append(" / ").append(col).append(":\n");
 
                 java.util.List<Zombie> zombiesInTile = new java.util.ArrayList<>();
-                if (session.zombieInRow(row) != null) {
-                    for (Zombie z : session.zombieInRow(row)) {
+                if (session.getArena().zombieInRow(row) != null) {
+                    for (Zombie z : session.getArena().zombieInRow(row)) {
                         if (!z.isDead() && (int) z.getX() == col) {
                             zombiesInTile.add(z);
                         }
@@ -341,8 +341,8 @@ public class GameFlowController {
 
         statusDisplay.append("- Zombies:\n");
         boolean zombieFound = false;
-        if (session.zombieInRow(row) != null) {
-            for (Zombie z : session.zombieInRow(row)) {
+        if (session.getArena().zombieInRow(row) != null) {
+            for (Zombie z : session.getArena().zombieInRow(row)) {
                 if (!z.isDead() && (int) z.getX() == col) {
                     zombieFound = true;
                     statusDisplay.append("    - Name: ").append(z.getName()).append("\n");

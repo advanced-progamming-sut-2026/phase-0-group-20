@@ -2,6 +2,7 @@ package models.entities.zombies;
 
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.behavior.attack.AttackBehavior;
+import models.entities.zombies.behavior.attack.LaserAttack;
 import models.entities.zombies.behavior.defense.DefenseBehavior;
 import models.entities.zombies.behavior.effect.ChillEffect;
 import models.entities.zombies.behavior.effect.FreezeEffect;
@@ -100,7 +101,12 @@ public class Zombie implements Ticker {
         if (health <= 0) {
             health = 0;
             dead = true;
-            return true;
+            if (this.attackBehavior instanceof LaserAttack laserAttack) {
+                int sunsToDrop = laserAttack.getStolenSuns() / 2;
+                if (sunsToDrop > 0) {
+                    System.out.println(this.getName() + " died and dropped " + sunsToDrop + " stolen suns!");
+                }
+            }
         }
         return false;
     }

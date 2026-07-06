@@ -2,6 +2,7 @@ package models.fields.tiles;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.fields.obstacle.GraveStone;
 import models.game.GameSession;
 
 public class NecromanceTile extends Tile {

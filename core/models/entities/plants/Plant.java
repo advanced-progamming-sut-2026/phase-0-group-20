@@ -1,6 +1,7 @@
 package models.entities.plants;
 
 import models.entities.plants.PlantFoodStrategy.PlantFoodStrategy;
+import models.entities.plants.effect.PlantEffect;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
@@ -20,6 +21,10 @@ public abstract class Plant implements IPlant, Ticker {
     protected PlantFoodStrategy plantFoodStrategy;
     protected GameSession gameSession;
     private int stackCount = 1;
+
+    protected final List<PlantEffect> activeEffects = new ArrayList<>();
+    protected boolean frozen = false;
+    protected boolean stunned = false;
 
 
     public Plant(PlantData data, GameSession gameSession) {
@@ -44,6 +49,11 @@ public abstract class Plant implements IPlant, Ticker {
         this.plantFoodStrategy = plantFoodStrategy;
     }
 
+    public void addEffect(PlantEffect effect) {
+        activeEffects.add(effect);
+        effect.apply(this);
+    }
+
     /**
      * Called when the player feeds this plant with Plant Food.
      */
@@ -58,6 +68,19 @@ public abstract class Plant implements IPlant, Ticker {
 
     @Override
     public void onTick(int currentTick) {
+        activeEffects.removeIf(effect -> {
+            if (effect.isExpired()) {
+                effect.remove(this);
+                return true;
+            }
+            effect.execute(this, currentTick);
+            return false;
+        });
+
+        if (stunned || frozen) {
+            return;
+        }
+
         for (IPlantStrategy strategy : strategies) {
             strategy.execute(this, currentTick, gameSession);
         }
@@ -169,6 +192,16 @@ public abstract class Plant implements IPlant, Ticker {
     public void setPlacedTile(Tile placedTile) {
         this.placedTile = placedTile;
     }
+
+    public boolean isFrozen() { return frozen; }
+
+    public void setFrozen(boolean frozen) { this.frozen = frozen; }
+
+    public boolean isStunned() { return stunned; }
+
+    public void setStunned(boolean stunned) { this.stunned = stunned; }
+
+    public List<PlantEffect> getActiveEffects() { return activeEffects; }
 
     public void upgrade() {
         this.level += 1;

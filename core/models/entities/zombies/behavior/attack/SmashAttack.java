@@ -1,6 +1,10 @@
 package models.entities.zombies.behavior.attack;
 
+import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.entities.zombies.ZombieState;
+import models.fields.tiles.Tile;
+import models.timeManager.TimeManager;
 
 public class SmashAttack implements AttackBehavior {
     private final Zombie zombie;
@@ -20,7 +24,24 @@ public class SmashAttack implements AttackBehavior {
             return;
         }
 
+        Tile currentTile = zombie.getTile();
 
-        // TODO : execute a big damage to target plant
+        if (currentTile == null || currentTile.getPlants().isEmpty()) {
+            zombie.setAttacking(false);
+            zombie.setState(ZombieState.WALKING);
+            return;
+        }
+
+        Plant targetPlant = currentTile.getPlants().get(0);
+        targetPlant.takeDamage(smashDamage);
+
+        System.out.println(zombie.getName() + " smashed " + targetPlant.getName() + " for " + smashDamage + " damage!");
+
+        if (targetPlant.getCurrentHp() <= 0) {
+            currentTile.getPlants().remove(targetPlant);
+            System.out.println(targetPlant.getName() + " was crushed!");
+        }
+
+        cooldownTicks = 10 * TimeManager.TICKS_PER_SECOND;
     }
 }
