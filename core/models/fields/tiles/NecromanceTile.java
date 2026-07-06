@@ -42,7 +42,7 @@ public class NecromanceTile extends Tile {
                 session.addSun(50);
 
             if (graveStone.hasPlantFood())
-                session.spawnPlantFood(row, col);
+                session.spawnPlantFood(row,col);
 
             this.graveStone = null;
         }
