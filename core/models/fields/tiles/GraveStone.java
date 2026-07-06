@@ -1,10 +1,10 @@
-package models.fields.tiles;
+package models.fields.obstacle;
 
 public class GraveStone {
     private int hp = 700;
     private final boolean hasSun;
     private final boolean hasPlantFood;
-    
+
     public GraveStone() {
         this.hasSun = false;
         this.hasPlantFood = false;
