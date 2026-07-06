@@ -38,10 +38,11 @@ public class LowShoreTile extends Tile {
 
         Plant topPlant = plants.isEmpty() ? null : plants.get(plants.size() - 1);
 
-        if (isStackable)
-            return (plants.isEmpty() && !isFlooded) || !topPlant.getTags().contains(PlantTag.STACK);
-
         if (isWaterPlant) return isFlooded && plants.isEmpty();
+
+        if (isStackable)
+            return (plants.isEmpty() && !isFlooded) ||
+                    (!plants.isEmpty() && !topPlant.getTags().contains(PlantTag.STACK));
 
         if (plants.isEmpty())
             return !isFlooded;

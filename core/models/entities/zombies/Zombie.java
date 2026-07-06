@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Zombie implements Ticker {
+    public enum SpawnEffect {NORMAL, SANDSTORM, WATER_SPLASH}
 
     private static final Random RAND = new Random();
     private final List<Armor> armorPieces;
@@ -37,8 +38,10 @@ public class Zombie implements Ticker {
     private int weight;
     private boolean attacking;
     private Tile tile;
+    private SpawnEffect spawnEffect = SpawnEffect.NORMAL;
 
     private int row;
+    private int col;
     private double x;
 
     public Zombie(ZombieType type, ZombieData data, int row, MoveBehavior moveBehavior, AttackBehavior attackBehavior, DefenseBehavior defenseBehavior) {
@@ -148,9 +151,13 @@ public class Zombie implements Ticker {
         return type;
     }
 
-    public double getX() { return x; }
+    public double getX() {
+        return x;
+    }
 
-    public void setX(double x) { this.x = x; }
+    public void setX(double x) {
+        this.x = x;
+    }
 
     public int getRow() {
         return row;
@@ -232,8 +239,95 @@ public class Zombie implements Ticker {
         this.attackBehavior = a;
     }
 
+    public void setSpawnEffect(SpawnEffect effect) {
+        this.spawnEffect = effect;
+    }
+
+    public SpawnEffect getSpawnEffect() {
+        return spawnEffect;
+    }
 
     public void moveForward() {
         this.x -= this.currentSpeed;
+    }
+
+    public Tile getTile() {
+        return tile;
+    }
+
+    public void setTile(Tile tile) {
+        this.tile = tile;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public void setCol(int col) {
+        this.col = col;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public boolean isCanSpawnPlantFood() {
+        return canSpawnPlantFood;
+    }
+
+    public void setCanSpawnPlantFood(boolean canSpawnPlantFood) {
+        this.canSpawnPlantFood = canSpawnPlantFood;
+    }
+
+    public ZombieState getState() {
+        return state;
+    }
+
+    public void setState(ZombieState state) {
+        this.state = state;
+    }
+
+    public void setType(ZombieType type) {
+        this.type = type;
+    }
+
+    public void setCurrentSpeed(float currentSpeed) {
+        this.currentSpeed = currentSpeed;
+    }
+
+    public void setBaseSpeed(float baseSpeed) {
+        this.baseSpeed = baseSpeed;
+    }
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
+    }
+
+    public int getEatDPS() {
+        return eatDPS;
+    }
+
+    public void setEatDPS(int eatDPS) {
+        this.eatDPS = eatDPS;
+    }
+
+    public void setBaseHp(int baseHp) {
+        this.baseHp = baseHp;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public ZombieEffect getEffect() {
+        return effect;
+    }
+
+    public void setEffect(ZombieEffect effect) {
+        this.effect = effect;
     }
 }

@@ -1,4 +1,4 @@
-package models.fields.tiles;
+package models.fields.obstacle;
 
 public class GraveStone {
     private int hp = 700;

@@ -1,7 +1,7 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
-import models.fields.tiles.FrozenTile;
+import models.fields.obstacle.IceHolder;
 import models.fields.tiles.Tile;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
@@ -23,7 +23,7 @@ public class MeltIceStrategy implements IPlantStrategy {
         if (currentTick - startTick >= MELT_DELAY) {
             Tile currentTile = context.getPlacedTile();
 
-            if (currentTile instanceof FrozenTile) {
+            if (currentTile instanceof IceHolder && ((IceHolder) currentTile).isBlockedByIce()) {
                 System.out.println("🔥 Hot Potato melted the ice on its tile!");
                 // change type of tile
             } else {
