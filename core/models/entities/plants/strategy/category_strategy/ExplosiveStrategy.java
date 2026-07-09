@@ -65,7 +65,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
                     break;
 
                 case "Jalapeno":
-                    for (Zombie z : gameSession.zombieInRow(plantRow)) {
+                    for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
                         if (!z.isDead()) {
                             z.removeChillEffect();
                             z.takeDirectDamage(damage);

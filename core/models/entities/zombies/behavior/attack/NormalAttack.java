@@ -1,6 +1,11 @@
 package models.entities.zombies.behavior.attack;
 
+import models.entities.plants.Plant;
+import models.entities.plants.effect.CatEffect;
 import models.entities.zombies.Zombie;
+import models.entities.zombies.ZombieState;
+import models.fields.tiles.Tile;
+import models.timeManager.TimeManager;
 
 public class NormalAttack implements AttackBehavior {
     private final Zombie zombie;
@@ -11,8 +16,39 @@ public class NormalAttack implements AttackBehavior {
 
     @Override
     public void execute() {
-        int damagePerTick = zombie.getEatDps() / 10;
+        Tile currentTile = zombie.getTile();
+        if (currentTile == null || currentTile.getPlants().isEmpty()) {
+            resumeWalking();
+            return;
+        }
 
-        // TODO: logic for eating plant
+        int damagePerTick = zombie.getEatDps() / TimeManager.TICKS_PER_SECOND;
+        Plant targetPlant = currentTile.getPlants().get(0);
+        for (Plant p : currentTile.getPlants()) {
+            boolean isCat = p.getActiveEffects().stream().anyMatch(e -> e instanceof CatEffect);
+            if (!isCat) {
+                targetPlant = p;
+                break;
+            }
+        }
+
+        if (targetPlant == null) {
+            resumeWalking();
+            return;
+        }
+        targetPlant.takeDamage(damagePerTick);
+
+        if (targetPlant.getCurrentHp() <= 0) {
+            currentTile.getPlants().remove(targetPlant);
+
+            if (currentTile.getPlants().isEmpty()) {
+                resumeWalking();
+            }
+        }
+    }
+
+    private void resumeWalking() {
+        zombie.setAttacking(false);
+        zombie.setState(ZombieState.WALKING);
     }
 }

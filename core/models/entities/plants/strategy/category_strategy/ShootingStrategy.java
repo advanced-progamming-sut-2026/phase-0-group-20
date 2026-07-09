@@ -56,7 +56,7 @@ public class ShootingStrategy implements IPlantStrategy {
             } else {
                 List<Integer> targetLines = projectileInLine(plantName, plantRow);
                 for (int line : targetLines) {
-                    for (Zombie z : gameSession.zombieInRow(line)) {
+                    for (Zombie z : gameSession.getArena().zombieInRow(line)) {
                         if (z.isDead()) continue;
 
                         int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom")) ? 3 : 999;

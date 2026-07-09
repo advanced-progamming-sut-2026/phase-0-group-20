@@ -1,7 +1,9 @@
 package models.entities.zombies.behavior.defense;
 
-public interface DefenseBehavior {
-    int mitigateDamage(int damage, String damageType); // return damage after defense
+import models.enums.plants.ProjectileType;
 
-    boolean deflectProjectile(String projectileType);
+public interface DefenseBehavior {
+    int mitigateDamage(int damage, ProjectileType damageType); // return damage after defense
+
+    boolean deflectProjectile(ProjectileType projectileType);
 }

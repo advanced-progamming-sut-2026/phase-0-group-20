@@ -1,6 +1,12 @@
 package models.entities.zombies.behavior.attack;
 
 import models.entities.zombies.Zombie;
+import models.entities.zombies.armour.Armor;
+import models.entities.zombies.armour.ArmorData;
+import models.entities.zombies.armour.ArmorLoader;
+import models.game.GameSession;
+
+import java.util.List;
 
 public class KingAttack implements AttackBehavior {
     private final Zombie zombie;
@@ -11,6 +17,23 @@ public class KingAttack implements AttackBehavior {
 
     @Override
     public void execute() {
-        // TODO : find near zombie with no armor and give them a darkArmor
+        GameSession session = GameSession.getInstance();
+
+        List<Zombie> nearbyZombies = session.getArena().getZombiesInRadius(zombie.getCol(), zombie.getRow(), 2.0);
+
+        for (Zombie target : nearbyZombies) {
+            if (target != zombie && !target.isDead() && target.getArmorPieces().isEmpty()) {
+
+                try {
+                    ArmorData knightArmorData = ArmorLoader.getInstance().get("ZombieDarkArmor3");
+                    target.addArmor(new Armor(knightArmorData));
+
+                    System.out.println(zombie.getName() + " granted knighthood to a zombie in row " + target.getRow() + "!");
+                    break;
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Warning: Knight armor data not found in loader.");
+                }
+            }
+        }
     }
 }

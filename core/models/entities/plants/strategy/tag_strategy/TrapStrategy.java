@@ -53,7 +53,7 @@ public class TrapStrategy implements IPlantStrategy {
 
         double detectionRadius = name.equals("Squash") ? 1.5 : 0.5;
 
-        for (Zombie z : gameSession.zombieInRow(plantRow)) {
+        for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
             if (z.isDead()) continue;
 
             double dist = Math.abs(z.getX() - plantCol);

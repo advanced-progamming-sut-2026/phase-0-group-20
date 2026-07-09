@@ -1,5 +1,8 @@
 package models.entities.zombies;
 
+import models.entities.plants.Plant;
+import models.entities.plants.effect.CatEffect;
+import models.entities.plants.effect.PlantEffect;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.armour.ArmorData;
 import models.entities.zombies.armour.ArmorLoader;
@@ -7,8 +10,12 @@ import models.entities.zombies.behavior.attack.*;
 import models.entities.zombies.behavior.defense.*;
 import models.entities.zombies.behavior.effect.SunAbsorber;
 import models.entities.zombies.behavior.move.*;
+import models.game.GameSession;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class ZombieFactory {
     public static void init(String jsonPath) {
@@ -58,7 +65,25 @@ public class ZombieFactory {
                 // logic for shoot octopus
             });
             case WIZARD -> new PeriodicActionMove(zombie, 5 * 10, true, () -> {
-                // logic for this
+                GameSession session = GameSession.getInstance();
+                List<Plant> activePlants = session.getArena().getActivePlants();
+
+                List<Plant> validTargets = new ArrayList<>();
+                for (Plant p : activePlants) {
+                    boolean isCat = false;
+                    for (PlantEffect effect : p.getActiveEffects()) {
+                        if (effect instanceof CatEffect) {
+                            isCat = true;
+                            break;
+                        }
+                    }
+                    if (!isCat) validTargets.add(p);
+                }
+
+                if (!validTargets.isEmpty()) {
+                    Plant target = validTargets.get(new Random().nextInt(validTargets.size()));
+                    target.addEffect(new CatEffect(zombie));
+                }
             });
             case PIANIST -> new PeriodicActionMove(zombie, 4 * 10, true, () -> {
                 // logic for dance
