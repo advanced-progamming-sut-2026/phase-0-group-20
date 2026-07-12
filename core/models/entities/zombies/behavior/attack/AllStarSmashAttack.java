@@ -3,16 +3,15 @@ package models.entities.zombies.behavior.attack;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieState;
+import models.entities.zombies.behavior.move.AllStarMove;
+import models.entities.zombies.behavior.move.MoveBehavior;
 import models.fields.tiles.Tile;
-import models.timeManager.TimeManager;
 
-public class SmashAttack implements AttackBehavior {
+public class AllStarSmashAttack implements AttackBehavior {
     private final Zombie zombie;
-    private final int smashDamage;
 
-    public SmashAttack(Zombie zombie, int smashDamage) {
+    public AllStarSmashAttack(Zombie zombie) {
         this.zombie = zombie;
-        this.smashDamage = smashDamage;
     }
 
     @Override
@@ -25,12 +24,16 @@ public class SmashAttack implements AttackBehavior {
         }
 
         Plant targetPlant = currentTile.getPlants().get(0);
-
-        int lethalDamage = Math.max(smashDamage, targetPlant.getCurrentHp());
+        int lethalDamage = Math.max(targetPlant.getCurrentHp(), 1);
         targetPlant.takeDamage(lethalDamage);
         currentTile.getPlants().remove(targetPlant);
 
-        System.out.println(zombie.getName() + " smashed " + targetPlant.getName() + " to bits!");
+        System.out.println(zombie.getName() + " trampled " + targetPlant.getName() + " instantly!");
+
+        MoveBehavior move = zombie.getMoveBehavior();
+        if (move instanceof AllStarMove allStarMove) {
+            allStarMove.stopRunning();
+        }
 
         resumeWalking();
     }

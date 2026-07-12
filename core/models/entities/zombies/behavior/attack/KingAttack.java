@@ -1,6 +1,7 @@
 package models.entities.zombies.behavior.attack;
 
 import models.entities.zombies.Zombie;
+import models.entities.zombies.ZombieType;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.armour.ArmorData;
 import models.entities.zombies.armour.ArmorLoader;
@@ -22,11 +23,14 @@ public class KingAttack implements AttackBehavior {
         List<Zombie> nearbyZombies = session.getArena().getZombiesInRadius(zombie.getCol(), zombie.getRow(), 2.0);
 
         for (Zombie target : nearbyZombies) {
-            if (target != zombie && !target.isDead() && target.getArmorPieces().isEmpty()) {
+            if (target != zombie && !target.isDead()
+                    && target.getType() == ZombieType.NORMAL
+                    && target.getArmorPieces().isEmpty()) {
 
                 try {
                     ArmorData knightArmorData = ArmorLoader.getInstance().get("ZombieDarkArmor3");
                     target.addArmor(new Armor(knightArmorData));
+                    target.setType(ZombieType.DARK_ARMOR);
 
                     System.out.println(zombie.getName() + " granted knighthood to a zombie in row " + target.getRow() + "!");
                     break;

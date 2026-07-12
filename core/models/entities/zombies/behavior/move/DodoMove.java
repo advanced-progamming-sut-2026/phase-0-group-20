@@ -1,10 +1,13 @@
 package models.entities.zombies.behavior.move;
 
+import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.fields.tiles.Tile;
 
 public class DodoMove implements MoveBehavior {
     private final Zombie zombie;
     private final int FLY_DURATION_TICKS = 45; // it will change
+    private static final int HIGH_HP_OBSTACLE_THRESHOLD = 1000; // Wall-nut tier HP
     private boolean isFlying;
     private int flyTicks;
 
@@ -24,10 +27,43 @@ public class DodoMove implements MoveBehavior {
                 isFlying = false;
             }
         } else {
+            if (shouldFlyOverCurrentTile()) {
+                startFlying();
+            }
             zombie.moveForward();
-
-            // TODO: add logic for fly and call (star flying)
         }
+    }
+
+    private boolean shouldFlyOverCurrentTile() {
+        Tile tile = zombie.getTile();
+        if (tile == null || tile.getPlants().isEmpty()) {
+            return false;
+        }
+
+        for (Plant plant : tile.getPlants()) {
+            if (isTallNut(plant)) {
+                return false; // Tall-nut always blocks flight, regardless of anything else on the tile
+            }
+        }
+        for (Plant plant : tile.getPlants()) {
+            if (isFlyableObstacle(plant)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isFlyableObstacle(Plant plant) {
+        String name = plant.getName();
+        return plant.getCurrentHp() >= HIGH_HP_OBSTACLE_THRESHOLD
+                || "WallNut".equalsIgnoreCase(name)
+                || name.toLowerCase().contains("mine")
+                || name.toLowerCase().contains("spikeweed")
+                || name.toLowerCase().contains("magnetshroom"); //WARNING
+    }
+
+    private boolean isTallNut(Plant plant) {
+        return "TallNut".equalsIgnoreCase(plant.getName());
     }
 
     public void startFlying() {

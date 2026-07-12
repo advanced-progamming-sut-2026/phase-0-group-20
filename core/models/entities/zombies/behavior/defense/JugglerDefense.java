@@ -19,6 +19,14 @@ public class JugglerDefense implements DefenseBehavior {
 
     @Override
     public boolean deflectProjectile(ProjectileType projectileType) {
+        if (projectileType == null) {
+            return false;
+        }
+
+        if (zombie.getMoveBehavior() instanceof JugglerMove jugglerMove) {
+            jugglerMove.onProjectileIncoming();
+        }
+
         try {
             return switch (projectileType) {
                 case PEA, ICE_PEA, ROTOBAGA_SEED, FIRE_PEA, GOO_PEA,

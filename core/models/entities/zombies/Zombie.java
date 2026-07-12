@@ -8,6 +8,7 @@ import models.entities.zombies.behavior.effect.ChillEffect;
 import models.entities.zombies.behavior.effect.FreezeEffect;
 import models.entities.zombies.behavior.effect.ZombieEffect;
 import models.entities.zombies.behavior.move.MoveBehavior;
+import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
 import models.timeManager.Ticker;
 
@@ -83,10 +84,22 @@ public class Zombie implements Ticker {
         }
     }
 
-    public boolean takeDamage(int damage) {
+    public boolean takeDamage(int damage, ProjectileType projectileType) {
         if (dead) return false;
 
+        if (defenseBehavior != null && defenseBehavior.deflectProjectile(projectileType)) {
+            return false;
+        }
+
         int remaining = damage;
+        if (defenseBehavior != null) {
+            remaining = defenseBehavior.mitigateDamage(remaining, projectileType);
+        }
+        if (remaining <= 0) return false;
+
+        if (isArmorBypassingProjectile(projectileType)) {
+            return applyHealthDamage(remaining);
+        }
 
         for (int i = 0; i < armorPieces.size(); i++) {
             Armor a = armorPieces.get(i);
@@ -97,6 +110,15 @@ public class Zombie implements Ticker {
             }
         }
 
+        return applyHealthDamage(remaining);
+    }
+
+
+    private boolean isArmorBypassingProjectile(ProjectileType projectileType) {
+        return projectileType == ProjectileType.GOO_PEA;
+    }
+
+    private boolean applyHealthDamage(int remaining) {
         health -= remaining;
         if (health <= 0) {
             health = 0;
@@ -107,6 +129,7 @@ public class Zombie implements Ticker {
                     System.out.println(this.getName() + " died and dropped " + sunsToDrop + " stolen suns!");
                 }
             }
+            return true;
         }
         return false;
     }
@@ -123,6 +146,21 @@ public class Zombie implements Ticker {
         }
         return false;
     }
+
+    private float eatSpeedMultiplier = 1f;
+
+    public void applyEatSpeedMultiplier(float multiplier) {
+        this.eatSpeedMultiplier = multiplier;
+    }
+
+    public void resetEatSpeed() {
+        this.eatSpeedMultiplier = 1f;
+    }
+
+    public int getEffectiveEatDps() {
+        return Math.round(eatDPS * eatSpeedMultiplier);
+    }
+
 
     public void addArmor(Armor armor) {
         armorPieces.add(armor);

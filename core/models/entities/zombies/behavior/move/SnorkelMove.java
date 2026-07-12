@@ -14,7 +14,10 @@ public class SnorkelMove implements MoveBehavior {
 
     @Override
     public void execute() {
-        zombie.moveForward(); // under water
+        boolean hasPlantToEat = zombie.getTile() != null && !zombie.getTile().getPlants().isEmpty();
+        isSubmerged = !hasPlantToEat;
+
+        zombie.moveForward();  // under water
     }
 
     public boolean isSubmerged() {
