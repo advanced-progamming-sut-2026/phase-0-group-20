@@ -24,13 +24,14 @@ import models.game.adventure.SeasonType;
 
 public class GameEventPayload {
     private GameEvent type;
+    private Arena arena;
     private Zombie zombie;
     private SeasonType seasonType;
     private Plant plant;
     private int amount;
     private int row, col;
 
-    public GameEventPayload(GameEvent type, Zombie zombie, Plant plant, SeasonType seasonType, int amount, int row, int col) {
+    public GameEventPayload(GameEvent type, Zombie zombie, Plant plant, SeasonType seasonType, int amount, int row, int col , Arena arena) {
         this.type = type;
         this.zombie = zombie;
         this.plant = plant;
@@ -38,6 +39,7 @@ public class GameEventPayload {
         this.amount = amount;
         this.row = row;
         this.col = col;
+        this.arena = arena;
     }
 
     public GameEvent getType() {
@@ -66,5 +68,9 @@ public class GameEventPayload {
 
     public SeasonType getSeasonType() {
         return seasonType;
+    }
+
+    public Arena getArena() {
+        return arena;
     }
 }

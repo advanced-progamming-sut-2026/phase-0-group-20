@@ -57,7 +57,7 @@ public class QuestLoader {
 
     private static QuestCategory parseCategory(String categoryStr) {
         if (categoryStr.contains("روزانه")) return QuestCategory.DAILY;
-        if (categoryStr.contains("اصلی")) return // مقدار پیش‌فرض QuestCategory.MAIN;
+        if (categoryStr.contains("اصلی")) return QuestCategory.MAIN;
         if (categoryStr.contains("چالش")) return QuestCategory.EPIC_CHALLENGE;
         return QuestCategory.MINIGAME;
     }

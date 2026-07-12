@@ -197,18 +197,23 @@ public class GameSession {
 
             Tile targetTile = arena.getTile(row, targetCol);
             List<Plant> plantToEat = targetTile.getPlants();
+            Plant eatingPlant = null;
+            if(!plantToEat.isEmpty()){
+                 eatingPlant= plantToEat.get(plantToEat.size()-1);
+            }
 
-            if (plantToEat != null) {
+
+            if (eatingPlant!=null) {
                 if (!z.isAttacking()) {
                     z.setAttacking(true);
                     z.setTile(targetTile);
+                    eatingPlant.takeDamage(z.getEatDPS()/10);
                 }
             } else if (z.isAttacking()) {
                 z.setAttacking(false);
                 z.setTile(null);//plant got plucked.
             }
         }
-        // for explosive plants
     }
 
     public void addProjectile(Projectile p) {

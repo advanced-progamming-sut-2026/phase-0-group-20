@@ -4,6 +4,7 @@ public enum GameEvent {
     GAME_STARTED,
     GAME_OVER,
     ZOMBIE_KILLED,
+    ZOMBIE_KILLED_LAWN_MOWER,
     SUN_COLLECTED,
     PLANT_PLACED,
     PLANT_LOST,

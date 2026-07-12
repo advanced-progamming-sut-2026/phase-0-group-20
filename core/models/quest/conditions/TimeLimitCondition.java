@@ -1,11 +1,22 @@
 package models.quest.conditions;
 
 import models.game.GameEvent;
+import models.game.GameEventPayload;
 
 public class TimeLimitCondition extends QuestCondition {
+    private int timeLimit;
+    private int timer = 0;
+
+    public TimeLimitCondition(int timeLimit, int target) {
+        this.timeLimit = timeLimit;
+        this.targetProgress = target;
+    }
 
     @Override
-    public void updateProgress(GameEvent event) {
-
+    public void updateProgress(GameEventPayload payload) {
+        timer++;
+        if (timer <= timeLimit && payload.getType() == GameEvent.ZOMBIE_KILLED) {
+            currentProgress++;
+        }
     }
 }

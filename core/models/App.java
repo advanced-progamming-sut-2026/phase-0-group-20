@@ -51,4 +51,13 @@ public class App {
     public static News getNews() {
         return news;
     }
+
+    public static Plant findPlantByName(String name) {
+        for (Plant plant : allPlants) {
+            if (plant.getName().equals(name)) {
+                return plant;
+            }
+        }
+        return null;
+    }
 }

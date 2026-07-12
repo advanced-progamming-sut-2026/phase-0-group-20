@@ -1,7 +1,12 @@
 package models.quest;
 
+import models.enums.plants.PlantCategory;
+import models.enums.plants.PlantTag;
 import models.quest.conditions.*;
-import models.quest.reward.*;
+import models.quest.reward.CurrencyReward;
+import models.quest.reward.Reward;
+import models.quest.reward.SeedPackReward;
+import models.quest.reward.UnlockableReward;
 
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -23,8 +28,8 @@ public class QuestFactory {
                 return new KillZombieCondition(50, chapter);
             }
             case 2 -> {
-                String randomPlant = "Shooter";
-                return new KillZombieCondition(10, randomPlant);
+                String plantCategory = "Shooter";
+                return new KillZombieCondition(10, plantCategory);
             }
             case 3 -> {
                 return new KillZombieCondition(10, "Cactus");
@@ -37,55 +42,59 @@ public class QuestFactory {
                 return new CertainAmountOfSunCondition(0);
             }
             case 6 -> {
-                return new SpeedKillCondition(10, 30);
+                return new TimeLimitCondition(30, 10);
             }
             case 7 -> {
-                return new UseExplosivePlantsCondition(3);
+                String plantCategory = "explosive";
+                return new PlantCategoryUseCondition(plantCategory, 3);
             }
             case 8 -> {
                 return new SymmetryLogicCondition(true);
             }
             case 9 -> {
-                String familyType = "Appease-mint";
-                return new OnlyFamilyKillCondition(familyType);
+                PlantCategory category = PlantCategory.getRandomPlantCategory();
+                return new WinWithThatCategoryCondition(category, true);
             }
             case 10 -> {
-                String familyType = "Enforce-mint";
-                return new NoFamilyUseCondition(familyType);
+                PlantCategory category = PlantCategory.getRandomPlantCategory();
+                return new WinWithThatCategoryCondition(category, false);
             }
             case 11 -> {
-                return new DayWithNightPlantsCondition();
+                PlantTag plantTag = PlantTag.SHROOM;
+                return new WinWithSpecificTagCondition(plantTag);
             }
             case 12 -> {
-                return new WinStreakMaxDifficultyCondition(5);
+//                return new WinStreakMaxDifficultyCondition(5);
+                //after difficulties
             }
             case 13 -> {
-                return new KillInFirstColumnNoMowerCondition(10);
+                return new KillWithNoLawnmowerCondition(10);
             }
             case 14 -> {
                 return new SymmetryLogicCondition(false);
             }
             case 15 -> {
-                return new MaxSunProducersCondition(3);
+                PlantCategory category = PlantCategory.SUN_PRODUCER;
+                return new MaxPlantUsedCondition(category, 3);
             }
             case 16 -> {
                 int colIndex = random.nextInt(9);
-                return new EmptyColumnCondition(colIndex);
+                return new EmptyLineCondition(-1, colIndex);
             }
             case 17 -> {
                 int rowIndexToEmpty = random.nextInt(5);
-                return new EmptyRowCondition(rowIndexToEmpty);
+                return new EmptyLineCondition(rowIndexToEmpty, -1);
             }
             case 18 -> {
                 int crossIndex = random.nextInt(5);
-                return new EmptyCrossCondition(crossIndex);
+                return new EmptyLineCondition(crossIndex, crossIndex);
             }
             case 19 -> {
                 int n = pickRandomFromDashSeparated(variableStr, 10);
-                return new LawnMowerKillCondition(n);
+                return new LawnMoverKillsCondition(n);
             }
         }
-        return new DummyCondition();
+        return null;
     }
 
     public static Reward createReward(int rowIndex, String rewardStr, String variableStr) {
@@ -101,7 +110,7 @@ public class QuestFactory {
             case 2 -> {
                 return new UnlockableReward(null);
             }
-            case 3 -> {
+            case 3, 11, 17 -> {
                 return new CurrencyReward(true, 20);
             }
             case 4 -> {
@@ -111,23 +120,17 @@ public class QuestFactory {
             case 5 -> {
                 return new CurrencyReward(true, 200);
             }
-            case 6 -> {
+            case 6, 8 -> {
                 return new CurrencyReward(false, 500);
             }
             case 7 -> {
                 return new CurrencyReward(false, 100);
-            }
-            case 8 -> {
-                return new CurrencyReward(false, 500);
             }
             case 9 -> {
                 return new CurrencyReward(false, 1000);
             }
             case 10 -> {
                 return new CurrencyReward(true, 100);
-            }
-            case 11 -> {
-                return new CurrencyReward(true, 20);
             }
             case 12 -> {
                 return new CurrencyReward(false, 5000);
@@ -138,14 +141,8 @@ public class QuestFactory {
             case 14 -> {
                 return new CurrencyReward(false, 800);
             }
-            case 15 -> {
+            case 15, 16 -> {
                 return new CurrencyReward(true, 10);
-            }
-            case 16 -> {
-                return new CurrencyReward(true, 10);
-            }
-            case 17 -> {
-                return new CurrencyReward(true, 20);
             }
             case 18 -> {
                 return new CurrencyReward(true, 25);
@@ -175,8 +172,11 @@ public class QuestFactory {
             if (matcher.find()) {
                 return Integer.parseInt(matcher.group());
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         return defaultValue;
     }
+
+
 }
