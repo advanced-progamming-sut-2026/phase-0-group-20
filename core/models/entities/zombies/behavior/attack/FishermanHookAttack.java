@@ -20,18 +20,28 @@ public class FishermanHookAttack implements AttackBehavior {
 
         Plant target = session.getArena().nearestPlantInRow(zombie, row);
 
-        if (target != null) {
-            int currentCol = target.getPlacedTile().getCol();
-            int newCol = currentCol + 1;
+        if (target == null) {
+            return;
+        }
 
-            if (newCol < session.getArena().getCols()) {
-                Tile newTile = session.getArena().getTile(row, newCol);
 
-                if (newTile.isPlantable(target)) {
-                    target.getPlacedTile().getPlants().remove(target);
-                    target.setPlacedTile(newTile);
-                    newTile.addPlant(target);
-                }
+        int currentCol = target.getPlacedTile().getCol();
+
+        if (currentCol == zombie.getCol() - 1) {
+            target.getPlacedTile().getPlants().remove(target);
+            System.out.println(zombie.getName() + " yanked " + target.getName() + " into the water!");
+            return;
+        }
+
+        int newCol = currentCol + 1;
+
+        if (newCol < session.getArena().getCols()) {
+            Tile newTile = session.getArena().getTile(row, newCol);
+
+            if (newTile.isPlantable(target)) {
+                target.getPlacedTile().getPlants().remove(target);
+                target.setPlacedTile(newTile);
+                newTile.addPlant(target);
             }
         }
     }

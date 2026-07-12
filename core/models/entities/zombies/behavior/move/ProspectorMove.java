@@ -1,6 +1,7 @@
 package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
+import models.game.GameSession;
 
 public class ProspectorMove implements MoveBehavior {
     private final Zombie zombie;
@@ -37,10 +38,17 @@ public class ProspectorMove implements MoveBehavior {
         isBlownToBack = true;
         dynamiteActive = false;
 
-        // TODO : move zombie to the end of the line
+        int lastCol = GameSession.getInstance().getArena().getCols() - 1;
+        zombie.setCol(lastCol);
+
+        System.out.println(zombie.getName() + "'s dynamite exploded! Now heading back the other way.");
     }
 
     public void defuseDynamite() { // if ice shoot -> it will call in defense logic
         dynamiteActive = false;
+    }
+
+    public boolean isBlownToBack() {
+        return isBlownToBack;
     }
 }

@@ -91,9 +91,8 @@ public class ZombieFactory {
             case FISHERMAN -> new PeriodicActionMove(zombie, 4 * 10, false, () -> {
                 // logic for this
             });
-            case KING -> new PeriodicActionMove(zombie, 3 * 10, false, () -> {
-                // logic for add darkArmor
-            }); // Parasol Zombie
+            case KING -> new PeriodicActionMove(zombie, 3 * 10, false,
+                    () -> zombie.getAttackBehavior().execute());
             default -> new NormalMove(zombie);
         };
     }
@@ -101,7 +100,8 @@ public class ZombieFactory {
     private static AttackBehavior getAttackAI(ZombieType type, Zombie zombie, ZombieData data) {
         return switch (type) {
             case ARCADE, BARREL_ROLLER, PIANIST -> new SquashHit(zombie);
-            case GARGANTUAR, ALL_STAR -> new SmashAttack(zombie, data.getSmashDamage());
+            case GARGANTUAR -> new SmashAttack(zombie, data.getSmashDamage());
+            case ALL_STAR -> new AllStarSmashAttack(zombie);
             case EXPLORER -> new TorchBurnAttack(zombie);
             case HUNTER -> new HunterFreezeAttack(zombie);
             case OCTOPUS -> new OctopusAttack(zombie);
@@ -119,6 +119,7 @@ public class ZombieFactory {
             case JANE -> new ParasolDefense();
             case JUGGLER -> new JugglerDefense(zombie);
             case IMP_DRAGON -> new DragonImpDefense();
+            case SNORKEL -> new SnorkelDefense(zombie);
             default -> new NormalDefense();
         };
     }

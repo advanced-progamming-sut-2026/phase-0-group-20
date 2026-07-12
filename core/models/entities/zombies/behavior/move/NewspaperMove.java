@@ -41,6 +41,7 @@ public class NewspaperMove implements MoveBehavior {
     private void enrage() {
         isEnraged = true;
         zombie.applySpeedMultiplier(enragedSpeedMultiplier);
+        zombie.applyEatSpeedMultiplier(enragedSpeedMultiplier);
 
         // TODO : add new func for increase the rate of DPS in Zombie Class and call it here
     }
