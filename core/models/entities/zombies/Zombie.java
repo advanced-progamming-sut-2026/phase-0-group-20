@@ -10,6 +10,8 @@ import models.entities.zombies.behavior.effect.ZombieEffect;
 import models.entities.zombies.behavior.move.MoveBehavior;
 import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
+import models.game.Arena;
+import models.game.GameSession;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
