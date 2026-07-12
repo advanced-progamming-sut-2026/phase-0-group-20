@@ -2,6 +2,7 @@ package models.game;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.game.adventure.SeasonType;
 
 /**
  * The GameEventPayload class acts as the core of our Event-Driven architecture (Observer pattern).
@@ -23,18 +24,22 @@ import models.entities.zombies.Zombie;
 
 public class GameEventPayload {
     private GameEvent type;
+    private Arena arena;
     private Zombie zombie;
+    private SeasonType seasonType;
     private Plant plant;
     private int amount;
     private int row, col;
 
-    public GameEventPayload(GameEvent type, Zombie zombie, Plant plant, int amount, int row, int col) {
+    public GameEventPayload(GameEvent type, Zombie zombie, Plant plant, SeasonType seasonType, int amount, int row, int col , Arena arena) {
         this.type = type;
         this.zombie = zombie;
         this.plant = plant;
+        this.seasonType = seasonType;
         this.amount = amount;
         this.row = row;
         this.col = col;
+        this.arena = arena;
     }
 
     public GameEvent getType() {
@@ -59,5 +64,13 @@ public class GameEventPayload {
 
     public int getCol() {
         return col;
+    }
+
+    public SeasonType getSeasonType() {
+        return seasonType;
+    }
+
+    public Arena getArena() {
+        return arena;
     }
 }

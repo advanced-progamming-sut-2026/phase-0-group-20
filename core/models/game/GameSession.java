@@ -6,6 +6,7 @@ import models.entities.projectiles.Projectile;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
+import models.fields.tiles.Tile;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -96,6 +97,7 @@ public class GameSession {
 
             removeDeadEntities();
             checkGameConditions();
+            checkCollisions();
             if (this.state == GameState.WON || this.state == GameState.LOST) break;
         }
     }
@@ -114,6 +116,14 @@ public class GameSession {
         arena.getActivePlants().removeIf(plant -> {
             if (plant.getCurrentHp() <= 0) {
                 timeManager.unregisterTicker(plant);
+                return true;
+            }
+            return false;
+        });
+
+        activeProjectiles.removeIf(proj->{
+            if(proj.isDestroyed()){
+                timeManager.unregisterTicker(proj);
                 return true;
             }
             return false;
@@ -142,6 +152,68 @@ public class GameSession {
     }
 
     public void checkCollisions() {
+        List<Plant> activePlants= arena.getActivePlants();
+        List<Zombie> activeZombies= arena.getActiveZombies();
+
+        //for projectiles
+        for(Projectile proj : activeProjectiles) {
+            if(proj.isDestroyed())continue;
+            float projectileHitRadius = 0.25f;
+            float zombieHitRadius = 0.25f;
+            int topRow = (int) (proj.getY() + projectileHitRadius);
+            int bottomRow = (int) (proj.getY() - projectileHitRadius);
+
+            topRow = Math.min(arena.getRows() - 1, Math.max(0, topRow));
+            bottomRow = Math.min(arena.getRows() - 1, Math.max(0, bottomRow));
+
+            List<Zombie> nearbyZombies = new ArrayList<>();
+            for (int row = bottomRow; row <= topRow; row++) {
+                nearbyZombies.addAll(arena.zombieInRow(row));
+            }
+
+            for (Zombie z : nearbyZombies) {
+                if (z.isDead()) continue;
+
+                double dx = proj.getX() - z.getX();
+                double dy = proj.getY() - z.getRow();
+                double distanceSquared = (dx * dx) + (dy * dy);
+
+                double combinedRadius = projectileHitRadius+zombieHitRadius;
+
+                if (distanceSquared <= (combinedRadius * combinedRadius)) {
+                    proj.onHit(z);
+                    if (!proj.isPiercing() || proj.isDestroyed()) {
+                        break;
+                    }
+                }
+            }
+        }
+        // for plants&zombies
+        for (Zombie z : chosenZombies) {
+            if (z.isDead()) continue;
+
+            int row = z.getRow();
+            int targetCol = (int) (z.getX() - 0.2);//mostly for phase 2... If you want You can remove the front threshold
+
+            Tile targetTile = arena.getTile(row, targetCol);
+            List<Plant> plantToEat = targetTile.getPlants();
+            Plant eatingPlant = null;
+            if(!plantToEat.isEmpty()){
+                 eatingPlant= plantToEat.get(plantToEat.size()-1);
+            }
+
+
+            if (eatingPlant!=null) {
+                if (!z.isAttacking()) {
+                    z.setAttacking(true);
+                    z.setTile(targetTile);
+                    eatingPlant.takeDamage(z.getEatDPS()/10);
+                }
+            } else if (z.isAttacking()) {
+                z.setAttacking(false);
+                z.setTile(null);//plant got plucked.
+            }
+        }
     }
 
     public void addProjectile(Projectile p) {
@@ -224,6 +296,7 @@ public class GameSession {
         }
         return false;
     }
+
 
 
     public void cleanUpExpiredPlantFoods() {

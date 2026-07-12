@@ -1,9 +1,12 @@
 package models.quest;
 
-import models.game.GameEvent;
+import models.App;
 import models.game.GameEventPayload;
 import models.quest.conditions.IQuestCondition;
 import models.quest.reward.Reward;
+import models.users.User;
+
+import java.util.UUID;
 
 public class Quest {
     private String id;
@@ -14,16 +17,35 @@ public class Quest {
     private Reward reward;
     private boolean isCompleted;
 
-    public void handleEventHappened(GameEvent event) {
-
-    }
-
-    public void complete() {
-
+    public Quest(String title, QuestCategory category, QuestPriority priority) {
+        this.id = UUID.randomUUID().toString();
+        this.title = title;
+        this.category = category;
+        this.priority = priority;
+        this.isCompleted = false;
     }
 
     public void onEvent(GameEventPayload payload) {
+        if (isCompleted || condition == null) {
+            return;
+        }
 
+        condition.updateProgress(payload);
+        if (condition.isHappened()) {
+            complete();
+        }
+    }
+
+    public void complete() {
+        if (!isCompleted) {
+            this.isCompleted = true;
+            System.out.println("Quest Completed: " + title + "!"); // for testing
+
+            User activeUser = App.getActiveUser();
+            if (activeUser != null && reward != null) {
+                reward.claimReward(activeUser);
+            }
+        }
     }
 
     public String getId() {
@@ -46,8 +68,16 @@ public class Quest {
         return condition;
     }
 
+    public void setCondition(IQuestCondition condition) {
+        this.condition = condition;
+    }
+
     public Reward getReward() {
         return reward;
+    }
+
+    public void setReward(Reward reward) {
+        this.reward = reward;
     }
 
     public boolean isCompleted() {

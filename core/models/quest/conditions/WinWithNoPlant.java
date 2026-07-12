@@ -1,10 +1,10 @@
 package models.quest.conditions;
 
-import models.game.GameEvent;
+import models.game.GameEventPayload;
 
 public class WinWithNoPlant extends QuestCondition {
     @Override
-    public void updateProgress(GameEvent event) {
+    public void updateProgress(GameEventPayload payload) {
 
     }
 }
