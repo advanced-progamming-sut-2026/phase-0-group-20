@@ -323,9 +323,10 @@ public class GameFlowController {
             tileShape = "Water";
         } else if (tile instanceof GraveStoneTile || tile instanceof NecromanceTile) {
             tileShape = "Grave";
-        } else if (tile instanceof FrozenTile) {
-            tileShape = "Frozen";
         }
+//        else if (tile instanceof FrozenTile) {
+//            tileShape = "Frozen";
+//        }
 
         statusDisplay.append("- Type: ").append(tileShape).append("\n");
 

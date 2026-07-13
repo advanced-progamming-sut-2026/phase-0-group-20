@@ -112,7 +112,7 @@ public class Projectile implements Ticker {
         if (effect.ignoresArmor()) {
             z.takeDirectDamage(finalDamage);
         } else {
-            z.takeDamage(finalDamage);
+            z.takeDamage(finalDamage, type);
         }
 
         effect.applyEffect(z, gameSession, this);

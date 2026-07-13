@@ -13,5 +13,6 @@ public class NormalWinCondition implements WinCondition {
         if (!currentLevel.allWavesSpawned()) {
             return false;
         }
+        return true;
     }
 }

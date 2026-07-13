@@ -11,6 +11,6 @@ public class NormalMove implements MoveBehavior {
 
     @Override
     public void execute() {
-        float currentSpeed= zombie.
+        zombie.moveForward();
     }
 }
