@@ -24,7 +24,7 @@ public class SpikeStrategy implements IPlantStrategy {
             double plantCol = context.getPlacedTile().getCol();
             boolean dealtDamage = false;
 
-            List<Zombie> attackingZombies = gameSession.getArena().getZombiesInRadius(plantCol, plantRow, 0.8);
+            List<Zombie> attackingZombies = gameSession.getArena().getZombiesInRadius((int) plantCol, plantRow, 0.8);
 
             for (Zombie z : attackingZombies) {
                 if (!z.isDead()) {

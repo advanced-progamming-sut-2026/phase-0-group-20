@@ -89,6 +89,10 @@ public class Zombie implements Ticker {
     public boolean takeDamage(int damage, ProjectileType projectileType) {
         if (dead) return false;
 
+        if (projectileType == null) { // for lawn
+            return applyHealthDamage(health);
+        }
+
         if (defenseBehavior != null && defenseBehavior.deflectProjectile(projectileType)) {
             return false;
         }
@@ -113,6 +117,14 @@ public class Zombie implements Ticker {
         }
 
         return applyHealthDamage(remaining);
+    }
+
+    public void takeDamage(int damage) {
+        health -= damage;
+        if (health <= 0) {
+            health = 0;
+            dead = true;
+        }
     }
 
 

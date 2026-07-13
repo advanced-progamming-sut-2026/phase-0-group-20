@@ -7,16 +7,16 @@ import models.greenhouse.GreenHouse;
 import models.greenhouse.Pot;
 import models.greenhouse.PotCondition;
 import models.users.User;
+import views.GreenHouseMenu;
 
 public class GreenHouseController {
     private final User user = App.getActiveUser();
-    private final GreenHouse greenHouse = user.getGreenHouse();
 
-    public Result showGreenHouse() {
+    public Result showGreenHouse(GreenHouse greenHouse) {
         return new Result(true , greenHouse.showGreenHouse());
     }
 
-    public Result plantPot(String x, String y) {
+    public Result plantPot(String x, String y, GreenHouse greenHouse) {
         int posX, posY;
         try {
             posX = Integer.parseInt(x);
@@ -38,7 +38,7 @@ public class GreenHouseController {
 
     }
 
-    public Result collect(String x, String y) {
+    public Result collect(String x, String y, GreenHouse greenHouse) {
         int posX, posY;
         try {
             posX = Integer.parseInt(x);
@@ -69,7 +69,7 @@ public class GreenHouseController {
         };
     }
 
-    public Result grow(String x, String y) {
+    public Result grow(String x, String y, GreenHouse greenHouse) {
         int posX, posY;
         try {
             posX = Integer.parseInt(x);
@@ -85,7 +85,7 @@ public class GreenHouseController {
             return new Result(false, "Not enough diamond for boost the growing.Get a job!");
         }
 
-        return collect(x, y);
+        return collect(x, y, greenHouse);
     }
 
 

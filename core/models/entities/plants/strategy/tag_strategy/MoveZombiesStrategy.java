@@ -29,7 +29,7 @@ public class MoveZombiesStrategy implements IPlantStrategy {
             int currentHp = context.getCurrentHp();
 
             if (currentHp < lastRecordedHp) {
-                List<Zombie> attackers = gameSession.getArena().getZombiesInRadius(plantCol, plantRow, 0.8);
+                List<Zombie> attackers = gameSession.getArena().getZombiesInRadius((int) plantCol, plantRow, 0.8);
 
                 for (Zombie z : attackers) {
                     if (!z.isDead() && z.getRow() == plantRow) {

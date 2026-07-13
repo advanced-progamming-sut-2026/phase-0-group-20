@@ -72,7 +72,7 @@ public class TrapStrategy implements IPlantStrategy {
                     break;
 
                 case "Primal Potato Mine":
-                    List<Zombie> aoeTargets = gameSession.getArena().getZombiesInRadius(plantCol, plantRow, 1.5);
+                    List<Zombie> aoeTargets = gameSession.getArena().getZombiesInRadius((int) plantCol, plantRow, 1.5);
                     for (Zombie z : aoeTargets) {
                         if (!z.isDead()) z.takeDirectDamage(2400);
                     }
