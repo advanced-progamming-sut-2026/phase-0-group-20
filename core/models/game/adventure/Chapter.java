@@ -1,7 +1,6 @@
-package models.game;
+package models.game.adventure;
 
 import models.fields.modifiers.*;
-import models.game.adventure.SeasonType;
 import models.game.adventure.levels.Level;
 
 import java.util.List;

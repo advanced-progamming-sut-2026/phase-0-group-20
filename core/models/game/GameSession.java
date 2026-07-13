@@ -7,6 +7,7 @@ import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
 import models.fields.tiles.Tile;
+import models.game.adventure.Chapter;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
