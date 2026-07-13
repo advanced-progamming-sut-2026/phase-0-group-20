@@ -1,5 +1,6 @@
 package models.entities.plants.strategy.category_strategy;
 
+import models.Position;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.*;
@@ -17,7 +18,7 @@ public class LobberStrategy implements IPlantStrategy {
 
         if (intervalInTicks > 0 && (currentTick - lastLobTick) >= intervalInTicks) {
             int plantRow = context.getPlacedTile().getRow();
-            double plantCol = context.getPlacedTile().getCol();
+            float plantCol = context.getPlacedTile().getCol();
             boolean zombieFound = false;
 
             for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
@@ -37,8 +38,8 @@ public class LobberStrategy implements IPlantStrategy {
 
     private void executeNewLobbedProjectile(Plant context, GameSession gameSession) {
         String name = context.getName();
-        double spawnX = context.getPlacedTile().getCol();
-        double spawnY = context.getPlacedTile().getRow();
+        float spawnX = context.getPlacedTile().getCol();
+        float spawnY = context.getPlacedTile().getRow();
 
         ProjectileType type = null;
         ProjectileEffect effect = new NormalEffect();
@@ -78,9 +79,10 @@ public class LobberStrategy implements IPlantStrategy {
 
         if (type != null) {
             Projectile projectile = new Projectile(
+                    context,
                     type, effect, gameSession, damage,
-                    spawnX, spawnY,
-                    1.5, 0,
+                    new Position(spawnX, spawnY),
+                    1.5f, 0,
                     false,
                     true
             );

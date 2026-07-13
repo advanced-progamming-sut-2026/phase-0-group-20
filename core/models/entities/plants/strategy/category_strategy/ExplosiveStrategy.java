@@ -1,5 +1,6 @@
 package models.entities.plants.strategy.category_strategy;
 
+import models.Position;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.NormalEffect;
@@ -39,19 +40,20 @@ public class ExplosiveStrategy implements IPlantStrategy {
             switch (name) {
                 case "Cherry Bomb":
                 case "Grapeshot":
-                    applyAreaDamage(gameSession, plantCol, plantRow, 1.5, damage);
+                    applyAreaDamage(gameSession, plantCol, plantRow, 1.5f, damage);
 
                     if (name.equals("Grapeshot")) {
-                        double[][] directions = {
+                        float[][] directions = {
                                 {1, 0}, {-1, 0}, {0, 1}, {0, -1},
-                                {0.707, 0.707}, {-0.707, 0.707}, {0.707, -0.707}, {-0.707, -0.707}
+                                {0.707f, 0.707f}, {-0.707f, 0.707f}, {0.707f, -0.707f}, {-0.707f, -0.707f}
                         };
 
-                        for (double[] dir : directions) {
+                        for (float[] dir : directions) {
                             Projectile grape = new Projectile(
+                                    context,
                                     ProjectileType.GRAPE, new NormalEffect(), gameSession, 60,
-                                    plantCol, plantRow,
-                                    dir[0] * 2.5, dir[1] * 2.5,
+                                    new Position(plantCol, plantRow),
+                                    dir[0] * 2.5f, dir[1] * 2.5f,
                                     false, false
                             );
 
@@ -75,7 +77,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
                     break;
 
                 case "Doom-shroom":
-                    applyAreaDamage(gameSession, plantCol, plantRow, 3.5, damage);
+                    applyAreaDamage(gameSession, plantCol, plantRow, 3.5f, damage);
                     // change tile type
                     System.out.println("🕳️ Doom-shroom left a massive crater behind!");
                     break;
@@ -84,7 +86,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
         }
     }
 
-    private void applyAreaDamage(GameSession gameSession, int col, int row, double radius, int damage) {
+    private void applyAreaDamage(GameSession gameSession, int col, int row, float radius, int damage) {
         List<Zombie> targets = gameSession.getArena().getZombiesInRadius(col, row, radius);
         for (Zombie z : targets) {
             if (!z.isDead()) {

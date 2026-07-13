@@ -18,13 +18,17 @@ public abstract class Plant implements IPlant, Ticker {
     protected int currentHp;
     protected Tile placedTile;
     protected int level = 1;
-    protected PlantFoodStrategy plantFoodStrategy;
+    protected final List<PlantFoodStrategy> plantFoodStrategy = new ArrayList<>();
     protected GameSession gameSession;
     private int stackCount = 1;
 
     protected final List<PlantEffect> activeEffects = new ArrayList<>();
     protected boolean frozen = false;
     protected boolean stunned = false;
+
+    protected int size = 1;
+    protected boolean boosted = false;
+    protected int boostTimer = 0;
 
 
     public Plant(PlantData data, GameSession gameSession) {
@@ -41,12 +45,12 @@ public abstract class Plant implements IPlant, Ticker {
         return strategies;
     }
 
-    public PlantFoodStrategy getPlantFoodStrategy() {
+    public List<PlantFoodStrategy> getPlantFoodStrategy() {
         return plantFoodStrategy;
     }
 
-    public void setPlantFoodStrategy(PlantFoodStrategy plantFoodStrategy) {
-        this.plantFoodStrategy = plantFoodStrategy;
+    public void addPlantFoodStrategy(PlantFoodStrategy plantFoodStrategy) {
+        this.plantFoodStrategy.add(plantFoodStrategy);
     }
 
     public void addEffect(PlantEffect effect) {
@@ -58,11 +62,10 @@ public abstract class Plant implements IPlant, Ticker {
      * Called when the player feeds this plant with Plant Food.
      */
     public void useFood() {
-        if (plantFoodStrategy != null) {
-            plantFoodStrategy.executeStrategy(this);
-        } else {
+        for (PlantFoodStrategy strategy : plantFoodStrategy)
+            strategy.executeStrategy(this);
+        if (plantFoodStrategy.isEmpty())
             System.out.println(getName() + " has no Plant Food effect wired up yet!");
-        }
     }
 
 
@@ -84,6 +87,8 @@ public abstract class Plant implements IPlant, Ticker {
         for (IPlantStrategy strategy : strategies) {
             strategy.execute(this, currentTick, gameSession);
         }
+
+
     }
 
     public void takeDamage(int amount) {
@@ -206,5 +211,37 @@ public abstract class Plant implements IPlant, Ticker {
     public void upgrade() {
         this.level += 1;
         // implement the effect of levels
+    }
+
+    public void setCurrentHp(int currentHp) {
+        this.currentHp = currentHp;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public int getMaxSize() {
+        return 3;
+    }
+
+    public int getBoostTimer() {
+        return boostTimer;
+    }
+
+    public void setBoostTimer(int boostTimer) {
+        this.boostTimer = boostTimer;
+    }
+
+    public boolean isBoosted() {
+        return boosted;
+    }
+
+    public void setBoosted(boolean boosted) {
+        this.boosted = boosted;
     }
 }

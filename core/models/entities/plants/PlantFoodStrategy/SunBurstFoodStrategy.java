@@ -1,6 +1,7 @@
 package models.entities.plants.PlantFoodStrategy;
 
 import models.entities.plants.Plant;
+import models.game.GameSession;
 
 /**
  * Instantly produces a fixed amount of sun.
@@ -18,6 +19,7 @@ public class SunBurstFoodStrategy implements PlantFoodStrategy {
 
     @Override
     public void executeStrategy(Plant plant) {
+        GameSession.getInstance().addSun(sunAmount);
         System.out.println(plant.getName() + " instantly produced " + sunAmount + " sun!");
     }
 }

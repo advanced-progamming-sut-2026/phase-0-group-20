@@ -1,5 +1,7 @@
 package models.entities.projectiles;
 
+import models.Position;
+import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
@@ -8,17 +10,19 @@ import models.timeManager.Ticker;
 
 public class Projectile implements Ticker {
 
+    private final Plant plant;
     private ProjectileType type;
     private ProjectileEffect effect;
-    private GameSession gameSession;
+    private final GameSession gameSession;
     private int damage;
-    private double x;
-    private double y;
-    private double speedX;
-    private double speedY;
+    private Position position;
+    private float speedX;
+    private float speedY;
     private boolean piercing;
     private boolean canPassObstacles; // for lobber
     private boolean isDestroyed;
+
+    private int size = 1;
 
     private Zombie target;
     private float baseSpeed;
@@ -27,15 +31,22 @@ public class Projectile implements Ticker {
     private int lifespanTicks = -1;
     private int pierceCount = 999;
 
-    public Projectile(ProjectileType type, ProjectileEffect effect, GameSession gameSession, int damage,
-                      double x, double y, double speedX, double speedY,
-                      boolean piercing, boolean canPassObstacles) {
+    public Projectile(Plant plant,
+                      ProjectileType type,
+                      ProjectileEffect effect,
+                      GameSession gameSession,
+                      int damage,
+                      Position position,
+                      float speedX,
+                      float speedY,
+                      boolean piercing,
+                      boolean canPassObstacles) {
+        this.plant = plant;
         this.type = type;
         this.effect = effect;
         this.gameSession = gameSession;
         this.damage = damage;
-        this.x = x;
-        this.y = y;
+        this.position = position;
         this.speedX = speedX;
         this.speedY = speedY;
         this.piercing = piercing;
@@ -62,11 +73,48 @@ public class Projectile implements Ticker {
         }
     }
 
+
+    public static Projectile spawnNewProjectile(Plant plant,
+                                                ProjectileType type,
+                                                GameSession gameSession,
+                                                int damage,
+                                                Position position,
+                                                int speedX,
+                                                int speedY,
+                                                boolean piercing,
+                                                boolean canPassObstacles) {
+        Projectile projectile = new Projectile(
+                plant,
+                type,
+                projectileEffect(type),
+                gameSession,
+                damage,
+                position,
+                speedX,
+                speedY,
+                false,
+                false
+        );
+        gameSession.addProjectile(projectile);
+        return projectile;
+    }
+
+
+    private static ProjectileEffect projectileEffect(ProjectileType projectileType) {
+        return switch (projectileType) {
+            case PEA, ROTOBAGA_SEED -> new NormalEffect();
+            case ICE_PEA -> new IceEffect();
+            case FIRE_PEA -> new FireEffect();
+            case GOO_PEA -> new PoisonProjectileEffect();
+            default -> null;
+        };
+    }
+
     public void move() {
         if (target != null && !target.isDead()) {
-            double dx = target.getX() - x;
-            double dy = target.getRow() - y;
-            double distance = Math.sqrt(dx * dx + dy * dy);
+            float dx = (float) (target.getX() - position.getX());
+            float dy = target.getRow() - position.getY();
+            float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
             if (distance > 0) {
                 speedX = (dx / distance) * baseSpeed;
@@ -74,23 +122,23 @@ public class Projectile implements Ticker {
             }
         }
 
-        x += speedX;
-        y += speedY;
+        position.moveX(speedX);
+        position.moveY(speedY);
 
         if (bouncesLeft > 0) {
             boolean bounced = false;
-            if (x >= gameSession.getArena().getCols() && speedX > 0) {
+            if (position.getX() >= gameSession.getArena().getCols() && speedX > 0) {
                 speedX = -speedX;
                 bounced = true;
-            } else if (x < 0 && speedX < 0) {
+            } else if (position.getX() < 0 && speedX < 0) {
                 speedX = -speedX;
                 bounced = true;
             }
 
-            if (y >= gameSession.getArena().getRows() && speedY > 0) {
+            if (position.getY() >= gameSession.getArena().getRows() && speedY > 0) {
                 speedY = -speedY;
                 bounced = true;
-            } else if (y < 0 && speedY < 0) {
+            } else if (position.getY() < 0 && speedY < 0) {
                 speedY = -speedY;
                 bounced = true;
             }
@@ -135,8 +183,8 @@ public class Projectile implements Ticker {
 
     public boolean isOutOfBounds() {
         if (bouncesLeft > 0) return false;
-        return x < 0 || x >= gameSession.getArena().getCols()
-                || y < 0 || y >= gameSession.getArena().getRows();
+        return position.getX() < 0 || position.getX() >= gameSession.getArena().getCols()
+                || position.getY() < 0 || position.getY() >= gameSession.getArena().getRows();
     }
 
     public ProjectileType getType() {
@@ -167,21 +215,58 @@ public class Projectile implements Ticker {
         this.damage = damage;
     }
 
-    public double getX() {
-        return x;
+    public float getX() {
+        return position.getX();
     }
 
-    public double getY() {
-        return y;
+    public float getY() {
+        return position.getY();
     }
 
-    public double getspeedX() {
+    public float getSpeedX() {
         return speedX;
     }
 
-    public double getspeedY() {
+    public float getSpeedY() {
         return speedY;
     }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    public float getSpeedXSpeed() {
+        return speedX;
+    }
+
+    public float getSpeedYSpeed() {
+        return speedY;
+    }
+
+    public float getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public Zombie getTarget() {
+        return target;
+    }
+
+    public void setTarget(Zombie target) {
+        this.target = target;
+    }
+
+    public Plant getPlant() {
+        return plant;
+    }
+
 
     public boolean isPiercing() {
         return piercing;
@@ -206,4 +291,6 @@ public class Projectile implements Ticker {
     public void setLifespanTicks(int ticks) {
         this.lifespanTicks = ticks;
     }
+
+
 }

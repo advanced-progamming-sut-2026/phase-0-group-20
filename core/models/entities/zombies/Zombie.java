@@ -1,5 +1,6 @@
 package models.entities.zombies;
 
+import models.entities.plants.Plant;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.behavior.attack.AttackBehavior;
 import models.entities.zombies.behavior.attack.LaserAttack;
@@ -45,6 +46,7 @@ public class Zombie implements Ticker {
     private boolean attacking;
     private Tile tile;
     private SpawnEffect spawnEffect = SpawnEffect.NORMAL;
+    private boolean isHypnotized = false;
     private GameEventMessenger messenger = GameEventMessenger.getInstance();
 
     private int row;
@@ -162,6 +164,29 @@ public class Zombie implements Ticker {
             return true;
         }
         return false;
+    }
+
+    public boolean takeDirectDamage(int damage, Plant plant) { //implement harchi lazeme
+        if (dead) return false;
+
+        health -= damage;
+        if (health <= 0) {
+            health = 0;
+            dead = true;
+            return true;
+        }
+        return false;
+    }
+
+    public void hypnotize() {
+        if (this.isHypnotized || this.dead) return;
+
+        this.isHypnotized = true;
+        this.currentSpeed = -Math.abs(this.baseSpeed);
+
+        //implement new behavior for hypnotizing
+
+        System.out.println(this.getName() + " has switched sides!");
     }
 
     private float eatSpeedMultiplier = 1f;
@@ -390,5 +415,9 @@ public class Zombie implements Ticker {
 
     public void setEffect(ZombieEffect effect) {
         this.effect = effect;
+    }
+
+    public boolean isHypnotized() {
+        return isHypnotized;
     }
 }

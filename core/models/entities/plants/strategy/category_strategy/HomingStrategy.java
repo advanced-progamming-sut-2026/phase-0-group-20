@@ -1,6 +1,7 @@
 package models.entities.plants.strategy.category_strategy;
 
 
+import models.Position;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.*;
@@ -35,14 +36,14 @@ public class HomingStrategy implements IPlantStrategy {
                 Zombie target = null;
 
                 if (plantName.equals("Cat-tail")) {
-                    double minDistance = Double.MAX_VALUE;
+                    float minDistance = Float.MAX_VALUE;
                     int plantRow = context.getPlacedTile().getRow();
                     int plantCol = context.getPlacedTile().getCol();
 
                     for (Zombie z : validTargets) {
-                        double dx = z.getX() - plantCol;
-                        double dy = z.getRow() - plantRow;
-                        double distance = Math.sqrt(dx * dx + dy * dy);
+                        float dx = (float) z.getX() - plantCol;
+                        float dy = z.getRow() - plantRow;
+                        float distance = (float) Math.sqrt(dx * dx + dy * dy);
                         if (distance < minDistance) {
                             minDistance = distance;
                             target = z;
@@ -53,52 +54,63 @@ public class HomingStrategy implements IPlantStrategy {
                 }
 
                 if (target != null) {
-                    shootHomingProjectile(context, target, gameSession);
+                    int burstCount = plantName.equals("Cat-tail") ? 2 : 1;
+                    for (int i = 0; i < burstCount; i++)
+                        ProjectileMechanism.executeTargetedProjectile(context, gameSession, target, i);
                     System.out.println(context.getName() + " locked onto " + target.getName() + "!");
                     lastShotTick = currentTick;
+
+//                    shootHomingProjectile(context, target, gameSession);
+//                    System.out.println(context.getName() + " locked onto " + target.getName() + "!");
+//                    lastShotTick = currentTick;
+
                 }
             }
         }
     }
 
-    private void shootHomingProjectile(Plant context, Zombie target, GameSession gameSession) {
-        float spawnX = context.getPlacedTile().getCol();
-        float spawnY = context.getPlacedTile().getRow();
-        String name = context.getName();
+//
+//    private void shootHomingProjectile(Plant context, Zombie target, GameSession gameSession) {
+//        float spawnX = context.getPlacedTile().getCol();
+//        float spawnY = context.getPlacedTile().getRow();
+//        String name = context.getName();
+//
+//        ProjectileEffect effect = null;
+//        ProjectileType type = null;
+//        int damage = 0;
+//        int burstCount = 1;
+//
+//        if (name.equals("Caulipower")) {
+//            effect = new HypnotizeEffect();
+//            type = ProjectileType.MAGIC_BEAM;
+//            damage = 0;
+//        } else if (name.equals("Electric Blueberry")) {
+//            effect = new LightningEffect();
+//            type = ProjectileType.LIGHTNING_CLOUD;
+//            damage = 5000;
+//        } else if (name.equals("Cat-tail")) {
+//            effect = new NormalEffect();
+//            type = ProjectileType.PEA;
+//            damage = 15;
+//            burstCount = 2;
+//        }
+//
+//        if (effect != null) {
+//            for (int i = 0; i < burstCount; i++) {
+//                int offset = -i;
+//
+//                Projectile projectile = new Projectile(
+//                        context,
+//                        type, effect, gameSession, damage,
+//                        new Position(spawnX + offset, spawnY),
+//                        0, 0,
+//                        true, true
+//                );
+//
+//                projectile.setHomingTarget(target, 1.5f);
+//                gameSession.addProjectile(projectile);
+//            }
+//        }
+//    }
 
-        ProjectileEffect effect = null;
-        ProjectileType type = null;
-        int damage = 0;
-        int burstCount = 1;
-
-        if (name.equals("Caulipower")) {
-            effect = new HypnotizeEffect();
-            type = ProjectileType.MAGIC_BEAM;
-            damage = 0;
-        } else if (name.equals("Electric Blueberry")) {
-            effect = new LightningEffect();
-            type = ProjectileType.LIGHTNING_CLOUD;
-            damage = 5000;
-        } else if (name.equals("Cat-tail")) {
-            effect = new NormalEffect();
-            type = ProjectileType.PEA;
-            damage = 15;
-            burstCount = 2;
-        }
-
-        if (effect != null) {
-            for (int i = 0; i < burstCount; i++) {
-                int offset = -i;
-
-                Projectile projectile = new Projectile(
-                        type, effect, gameSession, damage,
-                        spawnX + offset, spawnY, 0, 0,
-                        true, true
-                );
-
-                projectile.setHomingTarget(target, 1.5f);
-                gameSession.addProjectile(projectile);
-            }
-        }
-    }
 }
