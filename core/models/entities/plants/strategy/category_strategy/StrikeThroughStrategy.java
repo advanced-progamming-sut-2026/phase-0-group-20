@@ -1,5 +1,6 @@
 package models.entities.plants.strategy.category_strategy;
 
+import models.Position;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.NormalEffect;
@@ -24,7 +25,7 @@ public class StrikeThroughStrategy implements IPlantStrategy {
 
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
             int plantRow = context.getPlacedTile().getRow();
-            double plantCol = context.getPlacedTile().getCol();
+            int plantCol = context.getPlacedTile().getCol();
             boolean zombieFound = false;
 
             for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
@@ -50,8 +51,8 @@ public class StrikeThroughStrategy implements IPlantStrategy {
 
     private void shootPiercingProjectile(Plant context, GameSession gameSession) {
         String name = context.getName();
-        double spawnX = context.getPlacedTile().getCol();
-        double spawnY = context.getPlacedTile().getRow();
+        float spawnX = context.getPlacedTile().getCol();
+        float spawnY = context.getPlacedTile().getRow();
 
         ProjectileType type = null;
         int damage = 0;
@@ -70,9 +71,14 @@ public class StrikeThroughStrategy implements IPlantStrategy {
 
         if (type != null) {
             Projectile projectile = new Projectile(
-                    type, new NormalEffect(), gameSession, damage,
-                    spawnX, spawnY,
-                    0.1, 0,
+                    context,
+                    type,
+                    new NormalEffect(),
+                    gameSession,
+                    damage,
+                    new Position(spawnX, spawnY),
+                    0.1f,
+                    0,
                     true,
                     false
             );

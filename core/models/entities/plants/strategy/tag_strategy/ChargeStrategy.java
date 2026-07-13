@@ -1,5 +1,6 @@
 package models.entities.plants.strategy.tag_strategy;
 
+import models.Position;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.*;
@@ -33,7 +34,7 @@ public class ChargeStrategy implements IPlantStrategy {
 
         String name = context.getName();
         int plantRow = context.getPlacedTile().getRow();
-        double plantCol = context.getPlacedTile().getCol();
+        float plantCol = context.getPlacedTile().getCol();
 
         int chargedTicks = currentTick - chargeStartTick;
         boolean canFire = false;
@@ -93,9 +94,10 @@ public class ChargeStrategy implements IPlantStrategy {
 
             if (target != null && projType != null) {
                 Projectile projectile = new Projectile(
+                        context,
                         projType, effect, gameSession, currentDamage,
-                        plantCol, plantRow,
-                        isHoming ? 0 : 1.5,
+                        new Position(plantCol, plantRow),
+                        isHoming ? 0 : 1.5f,
                         0,
                         false, isHoming
                 );
