@@ -1,4 +1,4 @@
-package models.game;
+package models.game.events;
 
 public enum GameEvent {
     GAME_STARTED,

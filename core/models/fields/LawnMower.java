@@ -2,7 +2,7 @@ package models.fields;
 
 import models.entities.zombies.Zombie;
 import models.game.Arena;
-import models.game.GameEvent;
+import models.game.events.GameEvent;
 import models.game.GameSession;
 import models.timeManager.Ticker;
 

@@ -1,7 +1,9 @@
 package models.quest;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
-import models.game.GameEventPayload;
+import models.game.events.GameEventPayload;
 import models.quest.conditions.IQuestCondition;
 import models.quest.reward.Reward;
 import models.users.User;
@@ -23,6 +25,23 @@ public class Quest {
         this.category = category;
         this.priority = priority;
         this.isCompleted = false;
+    }
+
+    @JsonCreator
+    public Quest(@JsonProperty("id") String id,
+                 @JsonProperty("title") String title,
+                 @JsonProperty("category") QuestCategory category,
+                 @JsonProperty("priority") QuestPriority priority,
+                 @JsonProperty("condition") IQuestCondition condition,
+                 @JsonProperty("reward") Reward reward,
+                 @JsonProperty("completed") boolean isCompleted) {
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.priority = priority;
+        this.condition = condition;
+        this.reward = reward;
+        this.isCompleted = isCompleted;
     }
 
     public void onEvent(GameEventPayload payload) {

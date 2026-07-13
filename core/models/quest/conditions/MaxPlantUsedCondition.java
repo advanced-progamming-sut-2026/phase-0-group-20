@@ -2,8 +2,8 @@ package models.quest.conditions;
 
 import models.entities.plants.Plant;
 import models.enums.plants.PlantCategory;
-import models.game.GameEvent;
-import models.game.GameEventPayload;
+import models.game.events.GameEvent;
+import models.game.events.GameEventPayload;
 
 public class MaxPlantUsedCondition extends QuestCondition {
     PlantCategory plantCategory;

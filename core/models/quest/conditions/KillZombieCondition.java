@@ -4,7 +4,7 @@ import models.App;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.plants.PlantCategory;
-import models.game.GameEventPayload;
+import models.game.events.GameEventPayload;
 import models.game.adventure.SeasonType;
 
 import java.util.ArrayList;
