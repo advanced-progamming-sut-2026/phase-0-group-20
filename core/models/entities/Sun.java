@@ -13,6 +13,7 @@ public class Sun implements Ticker {
     private int fallTicksLeft = 50;
     private boolean isFalling = true;
     private boolean isCollected = false;
+    private boolean exploded = false ;
 
     public Sun(SunType type, int x, int y, int currentTick) {
         this.type = type;
@@ -79,5 +80,13 @@ public class Sun implements Ticker {
 
     public SunType getType() {
         return type;
+    }
+
+    public boolean isExploded() {
+        return exploded;
+    }
+
+    public void setExploded(boolean exploded) {
+        this.exploded = exploded;
     }
 }

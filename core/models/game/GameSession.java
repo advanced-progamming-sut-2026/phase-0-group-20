@@ -1,6 +1,8 @@
 package models.game;
 
 import models.entities.PlantFood;
+import models.entities.Sun;
+import models.entities.SunType;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Wave;
@@ -121,8 +123,8 @@ public class GameSession {
             return false;
         });
 
-        activeProjectiles.removeIf(proj->{
-            if(proj.isDestroyed()){
+        activeProjectiles.removeIf(proj -> {
+            if (proj.isDestroyed()) {
                 timeManager.unregisterTicker(proj);
                 return true;
             }
@@ -152,12 +154,12 @@ public class GameSession {
     }
 
     public void checkCollisions() {
-        List<Plant> activePlants= arena.getActivePlants();
-        List<Zombie> activeZombies= arena.getActiveZombies();
+        List<Plant> activePlants = arena.getActivePlants();
+        List<Zombie> activeZombies = arena.getActiveZombies();
 
         //for projectiles
-        for(Projectile proj : activeProjectiles) {
-            if(proj.isDestroyed())continue;
+        for (Projectile proj : activeProjectiles) {
+            if (proj.isDestroyed()) continue;
             float projectileHitRadius = 0.25f;
             float zombieHitRadius = 0.25f;
             int topRow = (int) (proj.getY() + projectileHitRadius);
@@ -178,7 +180,7 @@ public class GameSession {
                 double dy = proj.getY() - z.getRow();
                 double distanceSquared = (dx * dx) + (dy * dy);
 
-                double combinedRadius = projectileHitRadius+zombieHitRadius;
+                double combinedRadius = projectileHitRadius + zombieHitRadius;
 
                 if (distanceSquared <= (combinedRadius * combinedRadius)) {
                     proj.onHit(z);
@@ -198,20 +200,53 @@ public class GameSession {
             Tile targetTile = arena.getTile(row, targetCol);
             List<Plant> plantToEat = targetTile.getPlants();
             Plant eatingPlant = null;
-            if(!plantToEat.isEmpty()){
-                 eatingPlant= plantToEat.get(plantToEat.size()-1);
+            if (!plantToEat.isEmpty()) {
+                eatingPlant = plantToEat.get(plantToEat.size() - 1);
             }
 
 
-            if (eatingPlant!=null) {
+            if (eatingPlant != null) {
                 if (!z.isAttacking()) {
                     z.setAttacking(true);
                     z.setTile(targetTile);
-                    eatingPlant.takeDamage(z.getEatDPS()/10);
+                    eatingPlant.takeDamage(z.getEatDPS() / 10);
                 }
             } else if (z.isAttacking()) {
                 z.setAttacking(false);
                 z.setTile(null);//plant got plucked.
+            }
+        }
+
+        for (Sun sun : arena.getActiveSuns()) {
+            if (sun.isCollected() && sun.isFalling() && sun.getType() == SunType.RADIOACTIVE_SUN) {
+                Tile sunTile = arena.getTile(sun.getX(), sun.getY()); //damaging zombies
+                int rightTile = Math.min(sunTile.getCol() + 2, arena.getCols() - 1);
+                int leftTile = Math.max(sunTile.getCol() - 2, 0);
+                int upTile = Math.min(sunTile.getRow() + 2, arena.getRows() - 1);
+                int downTile = Math.max(sunTile.getRow() - 2, 0);
+                List<Tile> affectedTiles = new ArrayList<>();
+                for (int row = downTile; row <= upTile; row++) {
+                    for (int col = leftTile; col <= rightTile; col++) {
+                        affectedTiles.add(arena.getTile(row, col));
+                    }
+                }
+                for (Zombie z : arena.getActiveZombies()) {
+                    if (z.isDead() || !affectedTiles.contains(z.getTile())) continue;
+                    z.takeDamage(150);
+                }
+                rightTile = Math.min(sunTile.getCol() + 1, arena.getCols() - 1);
+                leftTile = Math.max(sunTile.getCol() - 1, 0);
+                upTile = Math.min(sunTile.getRow() + 1, arena.getRows() - 1);
+                downTile = Math.max(sunTile.getRow() - 1, 0);
+                for (int row = downTile; row <= upTile; row++) {
+                    for (int col = leftTile; col <= rightTile; col++) {
+                        List <Plant> tilePlants = arena.getTile(row, col).getPlants();
+                        Plant damagePlant = tilePlants.get(tilePlants.size() - 1);
+                        damagePlant.takeDamage(80);
+                    }
+                }
+
+                sun.setExploded(true);
             }
         }
     }
@@ -296,7 +331,6 @@ public class GameSession {
         }
         return false;
     }
-
 
 
     public void cleanUpExpiredPlantFoods() {
