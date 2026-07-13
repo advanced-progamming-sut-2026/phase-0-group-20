@@ -2,8 +2,8 @@ package models.quest.conditions;
 
 import models.fields.tiles.Tile;
 import models.game.Arena;
-import models.game.GameEvent;
-import models.game.GameEventPayload;
+import models.game.events.GameEvent;
+import models.game.events.GameEventPayload;
 
 public class EmptyLineCondition extends QuestCondition {
     int row;

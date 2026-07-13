@@ -9,6 +9,7 @@ import models.entities.zombies.Zombie;
 import models.enums.Gender;
 import models.enums.SecurityQuestion;
 import models.greenhouse.GreenHouse;
+import models.quest.QuestManager;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -32,6 +33,7 @@ public class User {
     private boolean stayLoggedIn;
     private Inventory inventory;
     private GreenHouse greenHouse;
+    private QuestManager questManager;
 
     public User(String username, String passwordHash,
                 String nickname, String email, Gender gender,
@@ -52,6 +54,7 @@ public class User {
         this.stayLoggedIn = false;
         this.inventory = new Inventory();
         this.greenHouse = new GreenHouse();
+        this.questManager = new QuestManager();
 
     }
 
@@ -70,7 +73,8 @@ public class User {
                 @JsonProperty("gamesPlayed") int gamesPlayed,
                 @JsonProperty("levelsCompleted") int levelsCompleted,
                 @JsonProperty("stayLoggedIn") boolean stayLoggedIn,
-                @JsonProperty("greenHouse") GreenHouse greenHouse) {
+                @JsonProperty("greenHouse") GreenHouse greenHouse,
+                @JsonProperty("questManager")  QuestManager questManager) {
 
         this.id = id;
         this.username = username;
@@ -86,6 +90,8 @@ public class User {
         this.levelsCompleted = levelsCompleted;
         this.stayLoggedIn = stayLoggedIn;
         this.greenHouse = (greenHouse != null) ? greenHouse : new GreenHouse();
+        this.questManager = (questManager != null) ? questManager : new QuestManager();
+        this.inventory = (inventory != null) ? inventory : new Inventory();
     }
 
     public String getId() {
@@ -242,5 +248,13 @@ public class User {
             this.unlockedPlants.clear();
             this.unlockedPlants.addAll(plants);
         }
+    }
+
+    public QuestManager getQuestManager() {
+        return questManager;
+    }
+
+    public void setQuestManager(QuestManager questManager) {
+        this.questManager = questManager;
     }
 }

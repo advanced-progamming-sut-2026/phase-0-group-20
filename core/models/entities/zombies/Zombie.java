@@ -13,6 +13,8 @@ import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
 import models.game.Arena;
 import models.game.GameSession;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class Zombie implements Ticker {
     private Tile tile;
     private SpawnEffect spawnEffect = SpawnEffect.NORMAL;
     private boolean isHypnotized = false;
+    private GameEventMessenger messenger = GameEventMessenger.getInstance();
 
     private int row;
     private int col;

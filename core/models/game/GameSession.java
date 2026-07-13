@@ -10,6 +10,7 @@ import models.entities.zombies.Zombie;
 import models.enums.GameState;
 import models.fields.tiles.Tile;
 import models.game.adventure.Chapter;
+import models.game.events.GameEvent;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;

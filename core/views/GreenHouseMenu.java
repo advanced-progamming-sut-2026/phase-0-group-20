@@ -17,7 +17,7 @@ public class GreenHouseMenu implements AppMenu {
     public void check(Scanner scanner) {
         String input = scanner.nextLine();
         Matcher matcher;
-        
+
         GreenHouse greenHouse = null;
         if (App.getActiveUser() != null) {
             greenHouse = App.getActiveUser().getGreenHouse();
@@ -48,3 +48,4 @@ public class GreenHouseMenu implements AppMenu {
         }
     }
 }
+

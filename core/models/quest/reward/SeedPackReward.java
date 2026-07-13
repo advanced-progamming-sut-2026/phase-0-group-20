@@ -35,4 +35,9 @@ public class SeedPackReward implements Reward {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return packetCount + "seed packets";
+    }
 }

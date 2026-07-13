@@ -1,8 +1,8 @@
 package models.quest.conditions;
 
 import models.enums.plants.PlantCategory;
-import models.game.GameEvent;
-import models.game.GameEventPayload;
+import models.game.events.GameEvent;
+import models.game.events.GameEventPayload;
 
 public class PlantCategoryUseCondition extends QuestCondition {
     PlantCategory plantCategory;

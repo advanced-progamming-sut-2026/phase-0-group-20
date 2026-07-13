@@ -1,7 +1,7 @@
 package models.quest.conditions;
 
-import models.game.GameEvent;
-import models.game.GameEventPayload;
+import models.game.events.GameEvent;
+import models.game.events.GameEventPayload;
 
 public class LawnMoverKillsCondition extends QuestCondition {
     public LawnMoverKillsCondition(int amount) {

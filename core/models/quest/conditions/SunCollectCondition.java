@@ -1,6 +1,6 @@
 package models.quest.conditions;
 
-import models.game.GameEventPayload;
+import models.game.events.GameEventPayload;
 
 public class SunCollectCondition extends QuestCondition {
     public SunCollectCondition(int amount) {
