@@ -20,6 +20,7 @@ public enum Menu {
     TRAVELLOG_MENU(new TravelLogMenu(), "travel log menu"),
     GAME_MENU(new GameMenu(), "game menu"),
     NEWS_MENU(new NewsMenu(), "news menu"),
+    GAME_FLOW_MENU(new GameFlowMenu(), "game flow menu"),
     ;
 
     private final AppMenu menu;

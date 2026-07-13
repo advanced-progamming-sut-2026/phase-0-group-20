@@ -5,6 +5,7 @@ import models.entities.zombies.Zombie;
 import models.enums.GameState;
 import models.fields.modifiers.SeasonModifier;
 import models.game.*;
+import models.game.adventure.Chapter;
 import models.game.adventure.SeasonType;
 
 import java.util.ArrayList;
