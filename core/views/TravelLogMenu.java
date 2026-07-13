@@ -23,11 +23,11 @@ public class TravelLogMenu implements AppMenu {
         } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
             System.out.println(NavigationController.showCurrentMenu());
 
-        } else if ((matcher = TravelLogCommands.SHOW_PAGE.getMatcher(input)) != null) {
+        } else if ((matcher = TravelLogCommands.CHANGE_PAGE.getMatcher(input)) != null) {
             String pageName = matcher.group("pageName");
-            System.out.println(controller.showTravelLogPage(pageName));
-        } else if ((matcher = TravelLogCommands.NEXT_PAGE.getMatcher(input)) != null) {
-            System.out.println(controller.nextPage());
+            System.out.println(controller.changePage(pageName));
+        } else if ((matcher = TravelLogCommands.SHOW_PAGE.getMatcher(input)) != null) {
+            System.out.println(controller.showCurrentPage());
 
         } else {
             invalidCommands();

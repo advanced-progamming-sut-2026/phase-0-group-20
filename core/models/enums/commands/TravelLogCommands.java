@@ -1,8 +1,8 @@
 package models.enums.commands;
 
 public enum TravelLogCommands implements Commands {
-    SHOW_PAGE("^\\s*travel\\s+log\\s+page\\s+(?<pageName>\\S+)\\s*$"),
-    NEXT_PAGE("^\\s*travel\\s+log\\s+next\\s+page\\s*$");
+    CHANGE_PAGE("^\\s*travel\\s+log\\s+page\\s+(?<pageName>\\S+)\\s*$"),
+    SHOW_PAGE("^\\s*travel\\s+log\\s+next\\s+page\\s*$");
 
     private final String pattern;
 
