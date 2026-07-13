@@ -1,7 +1,10 @@
 package models.quest.conditions;
 
-import models.game.GameEventPayload;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import models.game.events.GameEventPayload;
 
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public interface IQuestCondition {
 
     boolean isHappened();

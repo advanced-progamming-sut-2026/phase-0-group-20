@@ -6,10 +6,14 @@ import models.database.DataBaseManager;
 import models.enums.Gender;
 import models.enums.Menu;
 import models.enums.SecurityQuestion;
+import models.quest.Quest;
+import models.quest.QuestLoader;
 import models.users.PasswordUtils;
 import models.users.PendingRegistration;
 import models.users.User;
 import models.validation.UserValidator;
+
+import java.util.List;
 
 public class SignupMenuController {
 
@@ -79,7 +83,7 @@ public class SignupMenuController {
                 securityQuestion,
                 PasswordUtils.hashPassword(answer)
         );
-
+        loadInitialQuestsForUser(newUser);
         DataBaseManager.saveOrUpdateUser(newUser);
         pendingRegistration = null;
         App.setActiveMenu(Menu.LOGIN_MENU);
@@ -97,5 +101,12 @@ public class SignupMenuController {
         if (questionNumber < 1 || questionNumber > questions.length)
             return null;
         return questions[questionNumber - 1];
+    }
+
+    private void loadInitialQuestsForUser(User user) {
+        List<Quest> loadedQuests = QuestLoader.loadQuestsFromCSV("quests.csv");
+        for (Quest q : loadedQuests) {
+            user.getQuestManager().addQuest(q);
+        }
     }
 }

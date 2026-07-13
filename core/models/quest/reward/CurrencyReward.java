@@ -24,4 +24,10 @@ public class CurrencyReward implements Reward {
             user.earnCoin(amount);
         }
     }
+
+    @Override
+    public String toString() {
+        String currency = (isDiamond) ? "diamonds" : "coins";
+        return amount + " " + currency;
+    }
 }

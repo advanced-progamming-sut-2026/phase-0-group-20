@@ -2,8 +2,8 @@ package models.quest.conditions;
 
 import models.entities.plants.Plant;
 import models.enums.plants.PlantTag;
-import models.game.GameEvent;
-import models.game.GameEventPayload;
+import models.game.events.GameEvent;
+import models.game.events.GameEventPayload;
 
 public class WinWithSpecificTagCondition extends QuestCondition {
     private final PlantTag plantTag;

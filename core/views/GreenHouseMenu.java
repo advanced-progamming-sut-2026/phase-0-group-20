@@ -1,27 +1,20 @@
 package views;
 
-import controllers.GameController.GreenHouseController;
+import controllers.GameController.TravelLogController;
 import controllers.NavigationController;
-import models.App;
-import models.enums.commands.GreenHouseCommands;
 import models.enums.commands.MainCommands;
-import models.greenhouse.GreenHouse;
+import models.enums.commands.TravelLogCommands;
 
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
-public class GreenHouseMenu implements AppMenu {
-    private final GreenHouseController controller = new GreenHouseController();
+public class TravelLogMenu implements AppMenu {
+    private final TravelLogController controller = new TravelLogController();
 
     @Override
     public void check(Scanner scanner) {
         String input = scanner.nextLine();
         Matcher matcher;
-        
-        GreenHouse greenHouse = null;
-        if (App.getActiveUser() != null) {
-            greenHouse = App.getActiveUser().getGreenHouse();
-        }
 
         if ((matcher = MainCommands.EXIT_MENU.getMatcher(input)) != null) {
             System.out.println(NavigationController.exitMenu());
@@ -29,20 +22,13 @@ public class GreenHouseMenu implements AppMenu {
             System.out.println(NavigationController.enterMenu(matcher.group("name")));
         } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
             System.out.println(NavigationController.showCurrentMenu());
-        } else if ((matcher = GreenHouseCommands.SHOW_GREENHOUSE.getMatcher(input)) != null) {
-            System.out.println(controller.showGreenHouse(greenHouse));
-        } else if ((matcher = GreenHouseCommands.PLANT_POT.getMatcher(input)) != null) {
-            String x = matcher.group("x");
-            String y = matcher.group("y");
-            controller.plantPot(x,y, greenHouse);
-        } else if ((matcher = GreenHouseCommands.COLLECT_POT.getMatcher(input)) != null) {
-            String x = matcher.group("x");
-            String y = matcher.group("y");
-            controller.collect(x,y, greenHouse);
-        } else if ((matcher = GreenHouseCommands.GROW_POT.getMatcher(input)) != null) {
-            String x = matcher.group("x");
-            String y = matcher.group("y");
-            controller.grow(x,y, greenHouse);
+
+        } else if ((matcher = TravelLogCommands.SHOW_PAGE.getMatcher(input)) != null) {
+            String pageName = matcher.group("pageName");
+            System.out.println(controller.showTravelLogPage(pageName));
+        } else if ((matcher = TravelLogCommands.NEXT_PAGE.getMatcher(input)) != null) {
+            System.out.println(controller.nextPage());
+
         } else {
             invalidCommands();
         }

@@ -1,7 +1,8 @@
-package models.game;
+package models.game.events;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.game.Arena;
 import models.game.adventure.SeasonType;
 
 /**
