@@ -162,7 +162,6 @@ public class PlantFactory {
             case "gold bloom", "enlighten-mint" -> plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
 
 
-
             case "peashooter", "goo peashooter", "fire peashooter", "cat-tail" ->
                     plant.addPlantFoodStrategy(new RapidFireFoodStrategy());
             case "repeater" -> plant.addPlantFoodStrategy(new RapidFireFoodStrategy(1));
@@ -182,7 +181,7 @@ public class PlantFactory {
 
             case "citron" ->
                     plant.addPlantFoodStrategy(new LaneClearFoodStrategy("purifying plasma ball clears the whole lane"));
-            case "cactus", "pierce-mint" ->
+            case "cactus" ->
                     plant.addPlantFoodStrategy(new LaneClearFoodStrategy("electrified, high-damage, infinitely piercing spikes"));
             case "fume-shroom" ->
                     plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("a giant smoke cloud that pushes zombies back"));
@@ -237,7 +236,8 @@ public class PlantFactory {
             case "lily pad" -> plant.addPlantFoodStrategy(new DuplicateSelfFoodStrategy());
 
             case "cherry bomb", "grapeshot", "jalapeno", "doom-shroom", "ice-shroom",
-                 "hot potato", "grave buster", "imitater" -> plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
+                 "hot potato", "grave buster", "imitater", "pierce-mint" ->
+                    plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
 
 
             case "arma-mint", "bombard-mint", "enchant-mint", "appease-mint", "cattail-mint" ->

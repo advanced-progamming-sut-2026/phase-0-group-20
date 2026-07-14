@@ -1,18 +1,17 @@
 package models.entities;
 
+import models.Position;
 import models.timeManager.Ticker;
 
 public class PlantFood implements Ticker {
-    private int row;
-    private int col;
+    private Position position;
 
     private int lifeTicksLeft = 200;
     private boolean isCollected = false;
     private boolean isExpired = false;
 
     public PlantFood(int row, int col) {
-        this.row = row;
-        this.col = col;
+        position = new Position(row, col);
     }
 
     @Override
@@ -36,18 +35,18 @@ public class PlantFood implements Ticker {
     }
 
     public int getRow() {
-        return row;
+        return position.getRow();
     }
 
     public void setRow(int row) {
-        this.row = row;
+        position.setRow(row);
     }
 
     public int getCol() {
-        return col;
+        return position.getCol();
     }
 
     public void setCol(int col) {
-        this.col = col;
+        position.setCol(col);
     }
 }

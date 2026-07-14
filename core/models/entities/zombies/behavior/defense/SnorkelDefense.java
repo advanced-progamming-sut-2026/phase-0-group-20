@@ -4,7 +4,7 @@ import models.entities.zombies.Zombie;
 import models.entities.zombies.behavior.move.SnorkelMove;
 import models.enums.plants.ProjectileType;
 
-public class SnorkelDefense implements DefenseBehavior{
+public class SnorkelDefense implements DefenseBehavior {
     private final Zombie zombie;
 
     public SnorkelDefense(Zombie zombie) {

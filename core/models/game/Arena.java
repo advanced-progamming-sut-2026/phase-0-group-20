@@ -10,7 +10,7 @@ import models.fields.tiles.Tile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class    Arena {
+public class Arena {
     private final int ROWS = 5;
     private final int COLS = 9;
     private final List<Plant> activePlants;// these are the plants that are already in the arena.(placed and not dead)
@@ -87,8 +87,8 @@ public class    Arena {
         return null;
     }
 
-    public void setZombiesOnTiles(){
-        for(Zombie zombie : activeZombies){
+    public void setZombiesOnTiles() {
+        for (Zombie zombie : activeZombies) {
             int x = (int) zombie.getX();
             zombie.setTile(this.tiles[zombie.getRow()][x]);
         }

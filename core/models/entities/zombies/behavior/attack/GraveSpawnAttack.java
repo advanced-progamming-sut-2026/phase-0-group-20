@@ -24,8 +24,8 @@ public class GraveSpawnAttack implements AttackBehavior {
 
         List<Tile> availableTiles = new ArrayList<>();
 
-        for (int row = 0 ; row < session.getArena().getRows() ; row++) {
-            for (int col = 5 ; col <= session.getArena().getCols() ; col++) {
+        for (int row = 0; row < session.getArena().getRows(); row++) {
+            for (int col = 5; col <= session.getArena().getCols(); col++) {
                 Tile tile = session.getArena().getTile(row, col);
                 if (tile.getPlants().isEmpty()) {
                     availableTiles.add(tile);

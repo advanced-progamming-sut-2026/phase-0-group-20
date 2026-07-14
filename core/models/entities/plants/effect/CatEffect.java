@@ -3,7 +3,7 @@ package models.entities.plants.effect;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 
-public class CatEffect implements PlantEffect{
+public class CatEffect implements PlantEffect {
     private final Zombie wizardZombie;
 
     public CatEffect(Zombie wizardZombie) {

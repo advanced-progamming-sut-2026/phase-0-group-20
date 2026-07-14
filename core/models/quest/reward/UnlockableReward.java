@@ -33,9 +33,9 @@ public class UnlockableReward implements Reward {
 
     private Plant determineLockedPlant(User user) {
         List<Plant> plants = App.getAllPlants();
-        List <Plant> userLockedPlants = new ArrayList<>();
+        List<Plant> userLockedPlants = new ArrayList<>();
         for (Plant plant : plants) {
-            if(!user.getUnlockedPlants().contains(plant)) {
+            if (!user.getUnlockedPlants().contains(plant)) {
                 userLockedPlants.add(plant);
             }
         }
@@ -46,6 +46,7 @@ public class UnlockableReward implements Reward {
         int index = new Random().nextInt(userLockedPlants.size());
         return userLockedPlants.get(index);
     }
+
     @Override
     public String toString() {
         return "a random plant";

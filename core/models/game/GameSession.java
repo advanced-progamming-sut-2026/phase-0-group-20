@@ -242,7 +242,7 @@ public class GameSession {
                 downTile = Math.max(sunTile.getRow() - 1, 0);
                 for (int row = downTile; row <= upTile; row++) {
                     for (int col = leftTile; col <= rightTile; col++) {
-                        List <Plant> tilePlants = arena.getTile(row, col).getPlants();
+                        List<Plant> tilePlants = arena.getTile(row, col).getPlants();
                         Plant damagePlant = tilePlants.get(tilePlants.size() - 1);
                         damagePlant.takeDamage(80);
                     }

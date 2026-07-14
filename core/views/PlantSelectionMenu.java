@@ -2,7 +2,6 @@ package views;
 
 import controllers.GameController.PlantSelectionController;
 import controllers.NavigationController;
-import models.Result;
 import models.enums.commands.MainCommands;
 import models.enums.commands.PlantSelectionCommands;
 

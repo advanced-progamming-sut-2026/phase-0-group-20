@@ -9,4 +9,5 @@ public interface SeasonModifier {
 
     void onZombieSpawn(Zombie zombie, Arena arena);
 
-    void updateEnvironment(int currentTick, Arena arena);}
+    void updateEnvironment(int currentTick, Arena arena);
+}

@@ -1,6 +1,5 @@
 package models.game.adventure.levels.conditions;
 
-import models.enums.GameState;
 import models.game.GameSession;
 import models.game.LoseCondition;
 

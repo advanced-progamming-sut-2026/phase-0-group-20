@@ -95,6 +95,7 @@ public class ProjectileMechanism {
             case "Goo Peashooter" -> ProjectileType.GOO_PEA;
             case "Caulipower" -> ProjectileType.MAGIC_BEAM;
             case "Electric Blueberry" -> ProjectileType.LIGHTNING_CLOUD;
+            case "citron" -> ProjectileType.PLASMA_BALL;
             default -> ProjectileType.PEA;
         };
     }
@@ -163,7 +164,7 @@ public class ProjectileMechanism {
 
 
     private static boolean isPiercingProjectile(ProjectileType type) {
-        return type==ProjectileType.SPIKE;
+        return type == ProjectileType.SPIKE;
     }
 
     private static boolean canPassObstacles(Plant plant) {

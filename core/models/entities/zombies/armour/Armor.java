@@ -27,6 +27,10 @@ public class Armor {
         return currentHealth <= 0;
     }
 
+    public boolean isMetallic() {
+        return getData().hasFlag("metallic");
+    }
+
     public int takeDamage(int damage) {
         currentHealth -= damage;
         if (currentHealth <= 0) {

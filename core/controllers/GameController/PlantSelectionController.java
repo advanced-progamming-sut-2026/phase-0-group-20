@@ -4,7 +4,6 @@ import models.App;
 import models.Result;
 import models.entities.plants.Plant;
 import models.enums.Menu;
-import models.game.Arena;
 import models.game.GameSession;
 import models.game.adventure.levels.Level;
 import models.users.User;

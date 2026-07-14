@@ -198,15 +198,25 @@ public abstract class Plant implements IPlant, Ticker {
         this.placedTile = placedTile;
     }
 
-    public boolean isFrozen() { return frozen; }
+    public boolean isFrozen() {
+        return frozen;
+    }
 
-    public void setFrozen(boolean frozen) { this.frozen = frozen; }
+    public void setFrozen(boolean frozen) {
+        this.frozen = frozen;
+    }
 
-    public boolean isStunned() { return stunned; }
+    public boolean isStunned() {
+        return stunned;
+    }
 
-    public void setStunned(boolean stunned) { this.stunned = stunned; }
+    public void setStunned(boolean stunned) {
+        this.stunned = stunned;
+    }
 
-    public List<PlantEffect> getActiveEffects() { return activeEffects; }
+    public List<PlantEffect> getActiveEffects() {
+        return activeEffects;
+    }
 
     public void upgrade() {
         this.level += 1;

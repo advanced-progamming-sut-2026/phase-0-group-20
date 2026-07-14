@@ -7,13 +7,15 @@ public class Sun implements Ticker {
     private int productionTime;
     private int amountProduced;
 
+    // don't forget to use position beautiful boys
+
     private SunType type;
     private int x;
     private int y;
     private int fallTicksLeft = 50;
     private boolean isFalling = true;
     private boolean isCollected = false;
-    private boolean exploded = false ;
+    private boolean exploded = false;
 
     public Sun(SunType type, int x, int y, int currentTick) {
         this.type = type;

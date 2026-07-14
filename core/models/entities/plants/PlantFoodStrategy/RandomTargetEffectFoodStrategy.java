@@ -44,7 +44,7 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
         int hits = Math.min(targetCount, pool.size());
         List<Zombie> targets = new ArrayList<>();
 
-        for (int i = 0 ; i < pool.size(); i++) {
+        for (int i = 0; i < pool.size(); i++) {
             int rnd = new Random().nextInt(pool.size());
             targets.add(pool.get(rnd));
             pool.remove(rnd);
@@ -74,7 +74,7 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
 
     private void applyDirectEffect(Zombie target, Plant plant) {
         switch (plant.getName().toLowerCase()) {
-            case "electric blueberry", "tangle kelp", "chomper" ,"squash"->
+            case "electric blueberry", "tangle kelp", "chomper", "squash" ->
                     target.takeDirectDamage(10000, plant); //yahtamel plant be kar biad
             case "caulipower" -> {
                 target.hypnotize();

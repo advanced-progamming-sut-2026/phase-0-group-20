@@ -18,7 +18,7 @@ public class ResetLifespanFoodStrategy implements PlantFoodStrategy {
 
         for (Plant p : GameSession.getInstance().getArena().getActivePlants())
             if (p.getName().equals(plant.getName()))
-                for (IPlantStrategy strategy: p.getStrategies())
+                for (IPlantStrategy strategy : p.getStrategies())
                     if (strategy instanceof LifespanStrategy lifespanStrategy)
                         lifespanStrategy.resetLifespan();
 
