@@ -34,7 +34,7 @@ public class IcyRapidFireFoodStrategy implements PlantFoodStrategy {
         }
 
         if (tickTimer % 2 == 0)
-            ProjectileMechanism.executeNewProjectile(plant, gameSession, true, false);
+            ProjectileMechanism.executeNewProjectile(plant, true, false);
 
         if (tickTimer == 2)
             System.out.println(plant.getName() + " froze the entire lane and unleashed an icy barrage!");

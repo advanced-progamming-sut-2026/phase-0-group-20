@@ -2,6 +2,8 @@ package models.game;
 
 import models.entities.Sun;
 import models.entities.plants.Plant;
+import models.entities.projectiles.Projectile;
+import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.PhysicalConstants;
 import models.fields.LawnMower;
@@ -16,9 +18,12 @@ public class Arena {
     private final int COLS = 9;
     private final List<Plant> activePlants;// these are the plants that are already in the arena.(placed and not dead)
     private final List<Zombie> activeZombies;//these are the zombies that are already in the arena and moving/attacking.
+    private final List<Projectile> activeProjectiles = new ArrayList<>();
     private final LawnMower[] lawnMowers;
     private Tile[][] tiles;
     private List<Sun> activeSuns = new ArrayList<>();
+    private Wave currentActiveWave;
+    private final List<Wave> spawnedWaves = new ArrayList<>();
 
     public Arena() {
         this.tiles = new Tile[ROWS][COLS];
@@ -95,6 +100,10 @@ public class Arena {
         }
     }
 
+    public void addProjectile(Projectile p) {
+        activeProjectiles.add(p);
+    }
+
 
     public List<Plant> getActivePlants() {
         return activePlants;
@@ -128,6 +137,10 @@ public class Arena {
         return tiles;
     }
 
+    public List<Projectile> getActiveProjectiles() {
+        return activeProjectiles;
+    }
+
     public Tile getTile(int row, int col) {
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return null;
         return tiles[row][col];
@@ -136,6 +149,21 @@ public class Arena {
     public void changeTile(int row, int col, Tile tile) {
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return;
         tiles[row][col] = tile;
+    }
+
+    public Wave getCurrentActiveWave() {
+        return currentActiveWave;
+    }
+
+    public void setCurrentActiveWave(Wave wave) {
+        this.currentActiveWave = wave;
+        if (wave != null) {
+            this.spawnedWaves.add(wave);
+        }
+    }
+
+    public List<Wave> getSpawnedWaves() {
+        return spawnedWaves;
     }
 
 }

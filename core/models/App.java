@@ -3,6 +3,7 @@ package models;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.Menu;
+import models.game.GameSession;
 import models.game.adventure.Adventure;
 import models.game.adventure.Chapter;
 import models.news.News;
@@ -19,6 +20,7 @@ public class App {
     private static ArrayList<Plant> allPlants;
     private static ArrayList<Chapter> allChapters;
     private static Adventure activeAdventure;
+    private static GameSession activeSession;
 
     public static void changeDifficulty(int difficulty) {
         return; // We need to implement the Zombies and Plants Mechanism before make this
@@ -67,5 +69,33 @@ public class App {
             }
         }
         return null;
+    }
+
+    public static void setAllZombies(ArrayList<Zombie> allZombies) {
+        App.allZombies = allZombies;
+    }
+
+    public static void setAllPlants(ArrayList<Plant> allPlants) {
+        App.allPlants = allPlants;
+    }
+
+    public static ArrayList<Chapter> getAllChapters() {
+        return allChapters;
+    }
+
+    public static void setAllChapters(ArrayList<Chapter> allChapters) {
+        App.allChapters = allChapters;
+    }
+
+    public static void setActiveAdventure(Adventure activeAdventure) {
+        App.activeAdventure = activeAdventure;
+    }
+
+    public static GameSession getActiveSession() {
+        return activeSession;
+    }
+
+    public static void setActiveSession(GameSession activeSession) {
+        App.activeSession = activeSession;
     }
 }

@@ -23,11 +23,11 @@ public class HomingStrategy implements IPlantStrategy {
     private int lastShotTick = 0;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
-            List<Zombie> activeZombies = gameSession.getArena().getActiveZombies();
+            List<Zombie> activeZombies = GameSession.getInstance().getArena().getActiveZombies();
             List<Zombie> validTargets = activeZombies.stream().filter(z -> !z.isDead()).toList();
 
             if (!validTargets.isEmpty()) {
@@ -55,7 +55,7 @@ public class HomingStrategy implements IPlantStrategy {
                 if (target != null) {
                     int burstCount = plantName.equals("Cat-tail") ? 2 : 1;
                     for (int i = 0; i < burstCount; i++)
-                        ProjectileMechanism.executeTargetedProjectile(context, gameSession, target, i);
+                        ProjectileMechanism.executeTargetedProjectile(context, GameSession.getInstance(), target, i);
                     System.out.println(context.getName() + " locked onto " + target.getName() + "!");
                     lastShotTick = currentTick;
 

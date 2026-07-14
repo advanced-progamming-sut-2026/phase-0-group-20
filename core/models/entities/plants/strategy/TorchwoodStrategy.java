@@ -4,7 +4,6 @@ import models.entities.plants.Plant;
 import models.entities.projectiles.FireEffect;
 import models.entities.projectiles.Projectile;
 import models.enums.plants.ProjectileType;
-import models.game.GameSession;
 
 /**
  * Torchwood Strategy:
@@ -17,7 +16,7 @@ public class TorchwoodStrategy implements IPlantStrategy {
     private boolean blueFlame = false; // set to true when boosted by Plant Food
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         // Passive: nothing happens on tick by itself.
         // Hook point: ProjectileManager should call igniteIfPassing(projectile)
         // whenever a pea-type projectile crosses this plant's tile.

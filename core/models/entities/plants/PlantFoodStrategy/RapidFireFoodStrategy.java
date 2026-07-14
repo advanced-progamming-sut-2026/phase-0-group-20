@@ -36,7 +36,7 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
         tickTimer++;
 
         if (tickTimer % 2 == 0)
-            ProjectileMechanism.executeNewProjectile(plant, GameSession.getInstance(), true, false);
+            ProjectileMechanism.executeNewProjectile(plant, true, false);
 
         if (tickTimer == 2)
             System.out.println(plant.getName() + " unleashed a rapid-fire barrage down its lane!");
@@ -47,7 +47,6 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
             Projectile projectile = Projectile.spawnNewProjectile(
                     plant,
                     type,
-                    GameSession.getInstance(),
                     giantDamage,
                     new Position(plant.getPlacedTile().getCol() + 1, plant.getPlacedTile().getRow()),
                     1,

@@ -11,16 +11,32 @@ public class Wave {
     private int totalWaveCost;
     private int totalBaseHp;
 
-    public Wave(int currentNumber, boolean lastWave) {
+    public Wave(int currentNumber, boolean lastWave, int difficulty) {
         this.currentNumber = currentNumber;
         this.lastWave = lastWave;
+        this.difficulty = difficulty;
         this.zombies = new ArrayList<>();
+        this.totalWaveCost = 0;
+        this.totalBaseHp = 0;
     }
 
     public void addZombie(Zombie zombie) {
         this.zombies.add(zombie);
         this.totalWaveCost += zombie.getWaveCost();
         this.totalBaseHp += zombie.getBaseHp();
+    }
+
+    public boolean is75PercentHpDestroyed() {
+        if (totalBaseHp == 0) return true;
+
+        int currentTotalHp = 0;
+        for (Zombie z : zombies) {
+            if (!z.isDead()) {
+                currentTotalHp += z.getHealth();
+            }
+        }
+
+        return currentTotalHp <= (totalBaseHp * 0.25f);
     }
 
     public boolean isLastWave() {

@@ -1,7 +1,6 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
-import models.game.GameSession;
 
 /**
  * Crater Strategy:
@@ -13,7 +12,7 @@ public class CraterStrategy implements IPlantStrategy {
     private boolean craterCreated = false;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         if (context.getCurrentHp() <= 0 && !craterCreated) {
             System.out.println("🕳️ " + context.getName() + " exploded and left a deep crater on the tile!");
 

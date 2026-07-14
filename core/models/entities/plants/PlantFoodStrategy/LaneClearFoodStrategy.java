@@ -36,7 +36,6 @@ public class LaneClearFoodStrategy implements PlantFoodStrategy {
             Projectile.spawnNewProjectile(
                     plant,
                     type,
-                    gameSession,
                     damage,
                     new Position(col, row),
                     1,

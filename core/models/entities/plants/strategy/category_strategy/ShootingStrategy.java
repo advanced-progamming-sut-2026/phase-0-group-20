@@ -15,7 +15,7 @@ public class ShootingStrategy implements IPlantStrategy {
     private int lastShotTick = 0;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
@@ -27,7 +27,7 @@ public class ShootingStrategy implements IPlantStrategy {
             String plantName = context.getName();
 
             if (plantName.equals("Rotobaga")) {
-                for (Zombie z : gameSession.getChosenZombies()) {
+                for (Zombie z : GameSession.getInstance().getChosenZombies()) {
                     if (z.isDead()) continue;
                     int rowDiff = Math.abs(z.getRow() - plantRow);
                     int colDiff = Math.abs(z.getCol() - plantCol);
@@ -38,7 +38,7 @@ public class ShootingStrategy implements IPlantStrategy {
                     }
                 }
             } else if (plantName.equals("Starfruit")) {
-                for (Zombie z : gameSession.getChosenZombies()) {
+                for (Zombie z : GameSession.getInstance().getChosenZombies()) {
                     if (z.isDead()) continue;
                     int rowDiff = z.getRow() - plantRow;
                     int colDiff = z.getCol() - plantCol;
@@ -56,7 +56,7 @@ public class ShootingStrategy implements IPlantStrategy {
             } else {
                 List<Integer> targetLines = projectileInLine(plantName, plantRow);
                 for (int line : targetLines) {
-                    for (Zombie z : gameSession.getArena().zombieInRow(line)) {
+                    for (Zombie z : GameSession.getInstance().getArena().zombieInRow(line)) {
                         if (z.isDead()) continue;
 
                         int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom")) ? 3 : 999;
@@ -69,7 +69,7 @@ public class ShootingStrategy implements IPlantStrategy {
             }
 
             if (shootForward || shootBackward) {
-                executeNewProjectile(context, gameSession, shootForward, shootBackward);
+                executeNewProjectile(context, shootForward, shootBackward);
                 System.out.println(plantName + " fired projectiles!");
                 lastShotTick = currentTick;
             }

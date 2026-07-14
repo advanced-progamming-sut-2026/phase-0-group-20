@@ -21,11 +21,11 @@ import java.util.List;
 
 public class ExplosiveStrategy implements IPlantStrategy {
 
-    private final int EXPLOSION_DELAY_TICKS = 1 * TimeManager.TICKS_PER_SECOND; // 1 sec delay for animation
+    private static final int EXPLOSION_DELAY_TICKS = TimeManager.TICKS_PER_SECOND; // 1 sec delay for animation
     private int startTick = -1;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         if (startTick == -1) startTick = currentTick;
 
         if (currentTick - startTick >= EXPLOSION_DELAY_TICKS) {
@@ -40,7 +40,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
             switch (name) {
                 case "Cherry Bomb":
                 case "Grapeshot":
-                    applyAreaDamage(gameSession, plantCol, plantRow, 1.5f, damage,context);
+                    applyAreaDamage(plantCol, plantRow, 1.5f, damage,context);
 
                     if (name.equals("Grapeshot")) {
                         float[][] directions = {
@@ -51,7 +51,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
                         for (float[] dir : directions) {
                             Projectile grape = new Projectile(
                                     context,
-                                    ProjectileType.GRAPE, new NormalEffect(), gameSession, 60,
+                                    ProjectileType.GRAPE, new NormalEffect(),60,
                                     new Position(plantCol, plantRow),
                                     dir[0] * 2.5f, dir[1] * 2.5f,
                                     false, false
@@ -60,14 +60,14 @@ public class ExplosiveStrategy implements IPlantStrategy {
                             grape.setLifespanTicks(5 * TimeManager.TICKS_PER_SECOND);
                             grape.setBouncesLeft(20);
 
-                            gameSession.addProjectile(grape);
+                            GameSession.getInstance().getArena().addProjectile(grape);
                         }
                         System.out.println("🍇 Grapeshot scattered 8 bouncing grapes in all directions!");
                     }
                     break;
 
                 case "Jalapeno":
-                    for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
+                    for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                         if (!z.isDead()) {
                             z.removeChillEffect();
                             z.removeFreezeEffect();
@@ -78,7 +78,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
                     break;
 
                 case "Doom-shroom":
-                    applyAreaDamage(gameSession, plantCol, plantRow, 3.5f, damage,context);
+                    applyAreaDamage(plantCol, plantRow, 3.5f, damage,context);
                     // change tile type
                     System.out.println("🕳️ Doom-shroom left a massive crater behind!");
                     break;
@@ -87,8 +87,8 @@ public class ExplosiveStrategy implements IPlantStrategy {
         }
     }
 
-    private void applyAreaDamage(GameSession gameSession, int col, int row, float radius, int damage,Plant plant) {
-        List<Zombie> targets = gameSession.getArena().getZombiesInRadius(col, row, radius);
+    private void applyAreaDamage(int col, int row, float radius, int damage,Plant plant) {
+        List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(col, row, radius);
         for (Zombie z : targets) {
             if (!z.isDead()) {
                 z.takeDirectDamage(damage,plant);

@@ -3,7 +3,6 @@ package models.entities.plants.strategy;
 import models.entities.plants.Plant;
 import models.fields.obstacle.IceHolder;
 import models.fields.tiles.Tile;
-import models.game.GameSession;
 import models.timeManager.TimeManager;
 
 /**
@@ -13,11 +12,11 @@ import models.timeManager.TimeManager;
  */
 
 public class MeltIceStrategy implements IPlantStrategy {
-    private final int MELT_DELAY = (int) (0.5 * TimeManager.TICKS_PER_SECOND);
+    private static final int MELT_DELAY = (int) (0.5 * TimeManager.TICKS_PER_SECOND);
     private int startTick = -1;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         if (startTick == -1) startTick = currentTick;
 
         if (currentTick - startTick >= MELT_DELAY) {

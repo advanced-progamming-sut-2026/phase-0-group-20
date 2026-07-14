@@ -24,7 +24,7 @@ public class ChargeStrategy implements IPlantStrategy {
     private int chargeStartTick = -1;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         if (context.getTags().contains(PlantTag.TRAP)) return;
 
         if (chargeStartTick == -1) {
@@ -79,12 +79,12 @@ public class ChargeStrategy implements IPlantStrategy {
             Zombie target = null;
 
             if (isHoming) {
-                List<Zombie> actives = gameSession.getArena().getActiveZombies().stream().filter(z -> !z.isDead()).toList();
+                List<Zombie> actives = GameSession.getInstance().getArena().getActiveZombies().stream().filter(z -> !z.isDead()).toList();
                 if (!actives.isEmpty()) {
                     target = actives.get(random.nextInt(actives.size()));
                 }
             } else {
-                for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
+                for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                     if (!z.isDead() && z.getCol() >= plantCol) {
                         target = z;
                         break;
@@ -95,7 +95,7 @@ public class ChargeStrategy implements IPlantStrategy {
             if (target != null && projType != null) {
                 Projectile projectile = new Projectile(
                         context,
-                        projType, effect, gameSession, currentDamage,
+                        projType, effect, currentDamage,
                         new Position(plantCol, plantRow),
                         isHoming ? 0 : 1.5f,
                         0,
@@ -113,8 +113,7 @@ public class ChargeStrategy implements IPlantStrategy {
                         System.out.println("🎳 Bowling Bulb fired a bouncing bulb!");
                     }
                 }
-
-                gameSession.addProjectile(projectile);
+                GameSession.getInstance().getArena().addProjectile(projectile);
                 chargeStartTick = currentTick;
             }
         }

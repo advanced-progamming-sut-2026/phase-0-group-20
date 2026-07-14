@@ -12,14 +12,13 @@ import models.timeManager.Ticker;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Plant implements IPlant, Ticker {
+public class Plant implements IPlant, Ticker {
     protected final PlantData data;
     protected final List<IPlantStrategy> strategies = new ArrayList<>();
     protected int currentHp;
     protected Tile placedTile;
     protected int level = 1;
     protected final List<PlantFoodStrategy> plantFoodStrategy = new ArrayList<>();
-    protected GameSession gameSession;
     private int stackCount = 1;
 
     protected final List<PlantEffect> activeEffects = new ArrayList<>();
@@ -31,10 +30,9 @@ public abstract class Plant implements IPlant, Ticker {
     protected int boostTimer = 0;
 
 
-    public Plant(PlantData data, GameSession gameSession) {
+    public Plant(PlantData data) {
         this.data = data;
         this.currentHp = data.baseHp();
-        this.gameSession = gameSession;
     }
 
     public void addStrategy(IPlantStrategy strategy) {
@@ -58,9 +56,6 @@ public abstract class Plant implements IPlant, Ticker {
         effect.apply(this);
     }
 
-    /**
-     * Called when the player feeds this plant with Plant Food.
-     */
     public void useFood() {
         for (PlantFoodStrategy strategy : plantFoodStrategy)
             strategy.executeStrategy(this);
@@ -85,7 +80,7 @@ public abstract class Plant implements IPlant, Ticker {
         }
 
         for (IPlantStrategy strategy : strategies) {
-            strategy.execute(this, currentTick, gameSession);
+            strategy.execute(this, currentTick);
         }
 
 
@@ -110,7 +105,9 @@ public abstract class Plant implements IPlant, Ticker {
         return false;
     }
 
-    protected abstract void die();
+    public void die() {
+
+    }
 
     @Override
     public int getId() {

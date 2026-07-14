@@ -1,11 +1,16 @@
 package controllers.GameController;
 
 import models.App;
+import models.InGameEntityGenerator;
 import models.Result;
 import models.entities.plants.Plant;
+import models.entities.zombies.Zombie;
 import models.enums.Menu;
+import models.game.Arena;
 import models.game.GameSession;
+import models.game.adventure.Adventure;
 import models.game.adventure.levels.Level;
+import models.timeManager.TimeManager;
 import models.users.User;
 
 import java.util.ArrayList;
@@ -116,18 +121,57 @@ public class PlantSelectionController {
             return new Result(false, "You must select at least one plant to start the game!");
         }
 
-
-        GameSession session = GameSession.getInstance();
-        if (session == null) { // we should add plant and zombie to GameSession
-//            session = GameSession.getInstance(new Arena(), );
+        for (String pName : boostedPlantNames) {
+            Plant p = getPlantByName(pName);
+            if (p != null) {
+                p.setBoosted(true);
+            }
         }
 
+        List<Plant> inGamePlants = new ArrayList<>();
+        for (Plant p : selectedPlants) {
+            inGamePlants.add(InGameEntityGenerator.getPlantForGame(p, p.isBoosted()));
+        }
+
+
+        Adventure adventure = App.getActiveAdventure();
+        Level currentLevel = App.getActiveAdventure().getCurrentChapter().getCurrentLevel();
+        List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(adventure.getCurrentChapter().getSeasonType(), currentLevel.getLevelNumber());
+
+        Arena arena = new Arena();
+
+
+        TimeManager timeManager = GameSession.getInstance().getTimeManager();
+
+        for (Zombie z : inGameZombies) {
+            timeManager.registerNewTicker(z);
+        }
+
+        for (Plant p : selectedPlants) {
+            timeManager.registerNewTicker(p);
+        }
+
+        GameSession.destroyInstance(); // for safety
+        GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
+
+
+        App.setActiveSession(session);
         App.setActiveMenu(Menu.GAME_FLOW_MENU);
 
         selectedPlants.clear();
         boostedPlantNames.clear();
 
         return new Result(true, "Game Started! Good luck defending your brains!");
+    }
+
+
+    private Plant getPlantByName(String name) {
+        for (Plant p : selectedPlants) {
+            if (p.getName().equalsIgnoreCase(name.trim())) {
+                return p;
+            }
+        }
+        return null;
     }
 
 }

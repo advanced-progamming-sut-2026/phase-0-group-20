@@ -17,14 +17,14 @@ public class AreaOfEffect implements ProjectileEffect {
     }
 
     @Override
-    public void applyEffect(Zombie mainZombie, GameSession gameSession, Projectile projectile) {
-        if (inner != null) inner.applyEffect(mainZombie, gameSession, projectile);
+    public void applyEffect(Zombie mainZombie, Projectile projectile) {
+        if (inner != null) inner.applyEffect(mainZombie, projectile);
 
-        List<Zombie> nearby = gameSession.getArena().getZombiesInRadius((int) projectile.getY(), (int) projectile.getY(), radius);
+        List<Zombie> nearby = GameSession.getInstance().getArena().getZombiesInRadius((int) projectile.getY(), (int) projectile.getY(), radius);
         for (Zombie zombie : nearby) {
             if (zombie == mainZombie) continue;
             zombie.takeDamage(splashDamage, projectile);
-            if (inner != null) inner.applyEffect(zombie, gameSession, projectile);
+            if (inner != null) inner.applyEffect(zombie, projectile);
         }
     }
 

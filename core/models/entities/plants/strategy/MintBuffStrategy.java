@@ -12,16 +12,16 @@ import models.timeManager.TimeManager;
  */
 
 public class MintBuffStrategy implements IPlantStrategy {
-    private final int lifespanInTicks = 10 * TimeManager.TICKS_PER_SECOND;
+    private static final int lifespanInTicks = 10 * TimeManager.TICKS_PER_SECOND;
     private boolean isActivated = false;
     private int aliveTicks = 0;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         if (!isActivated) {
             String mintName = context.getName().toLowerCase();
 
-            for (Plant p : gameSession.getArena().getActivePlants()) {
+            for (Plant p : GameSession.getInstance().getArena().getActivePlants()) {
                 if (isSameFamily(mintName, p)) {
                     p.useFood();
                 }

@@ -1,12 +1,11 @@
 package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
-import models.game.GameSession;
 
 public class NormalEffect implements ProjectileEffect {
 
     @Override
-    public void applyEffect(Zombie zombie, GameSession gameSession, Projectile projectile) {
+    public void applyEffect(Zombie zombie, Projectile projectile) {
         // no effect
     }
 

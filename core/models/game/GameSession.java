@@ -11,6 +11,7 @@ import models.enums.GameState;
 import models.enums.PhysicalConstants;
 import models.fields.tiles.Tile;
 import models.game.adventure.Chapter;
+import models.game.adventure.levels.Level;
 import models.game.events.GameEvent;
 import models.timeManager.TimeManager;
 
@@ -23,11 +24,10 @@ public class GameSession {
     private static GameSession instance;
     private final List<Plant> chosenPlants;
     private final List<Zombie> chosenZombies;
-    private final List<Projectile> activeProjectiles = new ArrayList<>();
     private final List<PlantFood> plantFoods = new ArrayList<>();
-    private TimeManager timeManager;
-    private Arena arena;
-    private Chapter currentChapter;
+    private final TimeManager timeManager;
+    private final Arena arena;
+    private final Chapter currentChapter;
     private boolean isGameOver = false;
     private int currentSun;
     private GameEvent event = GameEvent.GAME_STARTED;
@@ -36,7 +36,6 @@ public class GameSession {
     private HashMap<Plant, Integer> plantsCooldown;
     private GameMode currentMode;
     private boolean zombieBreached = false;
-    private Wave waveManager;
 
 
     private GameSession(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
@@ -72,24 +71,8 @@ public class GameSession {
         }
     }
 
-    public void spawnZombie(Zombie z, int lane) {
-
-    }
-
-    public void spawnPlant(Plant plant) {
-
-    }
-
-    public void startGame() {
-        while (!isGameOver) {
-            timeManager.tick();
-
-            for (Plant p : chosenPlants) p.onTick(timeManager.getCurrentTick());
-            for (Zombie z : chosenZombies) z.onTick(timeManager.getCurrentTick());
-            for (Projectile proj : activeProjectiles) proj.move();
-
-            checkCollisions();
-        }
+    public static void destroyInstance() {
+        instance = null;
     }
 
     public void update(int timeAmount) {
@@ -98,12 +81,35 @@ public class GameSession {
         for (int i = 0; i < timeAmount; i++) {
             timeManager.tick();
             if (this.currentMode != null)
-                this.currentMode.onTick(this, timeManager.getCurrentTick());
+                this.currentMode.dorosteshKonin(this, timeManager.getCurrentTick());
 
+            for (Plant p : getArena().getActivePlants()) p.onTick(timeManager.getCurrentTick());
+            for (Zombie z : getArena().getActiveZombies()) z.onTick(timeManager.getCurrentTick());
+            for (Projectile proj : getArena().getActiveProjectiles()) proj.onTick(timeManager.getCurrentTick());
+
+            updateWavesLogic();
+
+            checkCollisions();
             removeDeadEntities();
             checkGameConditions();
             checkCollisions();
             if (this.state == GameState.WON || this.state == GameState.LOST) break;
+        }
+    }
+
+    public void updateWavesLogic() {
+        if (currentMode instanceof Level level) {
+            if (level.allWavesSpawned()) return;
+
+            Wave activeWave = arena.getCurrentActiveWave();
+
+            if (level.getCurrentWave() == 0) {
+                level.startNextWave();
+            } else {
+                if (activeWave != null && activeWave.is75PercentHpDestroyed()) {
+                    level.startNextWave();
+                }
+            }
         }
     }
 
@@ -126,7 +132,7 @@ public class GameSession {
             return false;
         });
 
-        activeProjectiles.removeIf(proj -> {
+        getArena().getActiveProjectiles().removeIf(proj -> {
             if (proj.isDestroyed()) {
                 timeManager.unregisterTicker(proj);
                 return true;
@@ -161,7 +167,7 @@ public class GameSession {
         List<Zombie> activeZombies = arena.getActiveZombies();
 
         //for projectiles
-        for (Projectile proj : activeProjectiles) {
+        for (Projectile proj : getArena().getActiveProjectiles()) {
             if (proj.isDestroyed()) continue;
             float projectileHitRadius = 0.25f;
             float zombieHitRadius = 0.25f;
@@ -254,10 +260,6 @@ public class GameSession {
         }
     }
 
-    public void addProjectile(Projectile p) {
-        activeProjectiles.add(p);
-    }
-
     public void removeZombie(Zombie z) {
         chosenZombies.remove(z);
     }
@@ -270,14 +272,6 @@ public class GameSession {
         return arena;
     }
 
-    public Wave getWaveManager() {
-        return waveManager;
-    }
-
-
-    public List<Projectile> getActiveProjectiles() {
-        return activeProjectiles;
-    }
 
     public List<Zombie> getChosenZombies() {
         return chosenZombies;

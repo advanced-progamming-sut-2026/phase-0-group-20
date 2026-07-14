@@ -13,7 +13,6 @@ public class Projectile implements Ticker {
     private final Plant plant;
     private ProjectileType type;
     private ProjectileEffect effect;
-    private final GameSession gameSession;
     private int damage;
     private Position position;
     private float speedX;
@@ -34,7 +33,6 @@ public class Projectile implements Ticker {
     public Projectile(Plant plant,
                       ProjectileType type,
                       ProjectileEffect effect,
-                      GameSession gameSession,
                       int damage,
                       Position position,
                       float speedX,
@@ -44,7 +42,6 @@ public class Projectile implements Ticker {
         this.plant = plant;
         this.type = type;
         this.effect = effect;
-        this.gameSession = gameSession;
         this.damage = damage;
         this.position = position;
         this.speedX = speedX;
@@ -76,7 +73,6 @@ public class Projectile implements Ticker {
 
     public static Projectile spawnNewProjectile(Plant plant,
                                                 ProjectileType type,
-                                                GameSession gameSession,
                                                 int damage,
                                                 Position position,
                                                 int speedX,
@@ -87,7 +83,6 @@ public class Projectile implements Ticker {
                 plant,
                 type,
                 projectileEffect(type),
-                gameSession,
                 damage,
                 position,
                 speedX,
@@ -95,7 +90,7 @@ public class Projectile implements Ticker {
                 piercing,
                 canPassObstacles
         );
-        gameSession.addProjectile(projectile);
+        GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
     }
 
@@ -127,7 +122,7 @@ public class Projectile implements Ticker {
 
         if (bouncesLeft > 0) {
             boolean bounced = false;
-            if (position.getX() >= gameSession.getArena().getCols() && speedX > 0) {
+            if (position.getX() >= GameSession.getInstance().getArena().getCols() && speedX > 0) {
                 speedX = -speedX;
                 bounced = true;
             } else if (position.getX() < 0 && speedX < 0) {
@@ -135,7 +130,7 @@ public class Projectile implements Ticker {
                 bounced = true;
             }
 
-            if (position.getY() >= gameSession.getArena().getRows() && speedY > 0) {
+            if (position.getY() >= GameSession.getInstance().getArena().getRows() && speedY > 0) {
                 speedY = -speedY;
                 bounced = true;
             } else if (position.getY() < 0 && speedY < 0) {
@@ -163,7 +158,7 @@ public class Projectile implements Ticker {
             z.takeDamage(finalDamage, this);
         }
 
-        effect.applyEffect(z, gameSession, this);
+        effect.applyEffect(z, this);
 
         if (piercing) {
             pierceCount--;
@@ -183,8 +178,8 @@ public class Projectile implements Ticker {
 
     public boolean isOutOfBounds() {
         if (bouncesLeft > 0) return false;
-        return position.getX() < 0 || position.getX() >= gameSession.getArena().getCols()
-                || position.getY() < 0 || position.getY() >= gameSession.getArena().getRows();
+        return position.getX() < 0 || position.getX() >= GameSession.getInstance().getArena().getCols()
+                || position.getY() < 0 || position.getY() >= GameSession.getInstance().getArena().getRows();
     }
 
     public ProjectileType getType() {
@@ -201,10 +196,6 @@ public class Projectile implements Ticker {
 
     public void setEffect(ProjectileEffect newEffect) {
         this.effect = newEffect;
-    }
-
-    public GameSession getBoard() {
-        return gameSession;
     }
 
     public int getDamage() {

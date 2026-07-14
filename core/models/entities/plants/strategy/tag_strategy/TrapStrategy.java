@@ -27,7 +27,7 @@ public class TrapStrategy implements IPlantStrategy {
     private int armingTimeTicks = 0;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         String name = context.getName();
 
         if (!initialized) {
@@ -57,7 +57,7 @@ public class TrapStrategy implements IPlantStrategy {
 
         double detectionRadius = name.equals("Squash") ? 1.5 : 0.5;
 
-        for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
+        for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
             if (z.isDead()) continue;
 
             double dist = Math.abs(z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - plantCol);
@@ -76,7 +76,7 @@ public class TrapStrategy implements IPlantStrategy {
                     break;
 
                 case "Primal Potato Mine":
-                    List<Zombie> aoeTargets = gameSession.getArena().getZombiesInRadius((int) plantCol, plantRow, 1.5);
+                    List<Zombie> aoeTargets = GameSession.getInstance().getArena().getZombiesInRadius((int) plantCol, plantRow, 1.5);
                     for (Zombie z : aoeTargets) {
                         if (!z.isDead()) z.takeDirectDamage(2400,context);
                     }
