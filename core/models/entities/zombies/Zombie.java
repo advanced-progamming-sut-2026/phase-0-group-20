@@ -11,10 +11,7 @@ import models.entities.zombies.behavior.effect.ZombieEffect;
 import models.entities.zombies.behavior.move.MoveBehavior;
 import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
-import models.game.Arena;
-import models.game.GameSession;
 import models.game.events.GameEventMessenger;
-import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -89,6 +86,7 @@ public class Zombie implements Ticker {
         } else {
             moveBehavior.execute();
         }
+        armorPieces.removeIf(Armor::isDropped);
     }
 
     public boolean takeDamage(int damage, ProjectileType projectileType) {

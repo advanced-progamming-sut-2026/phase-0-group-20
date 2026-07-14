@@ -7,12 +7,12 @@ public class GreenHouse {
     private Pot[][] pots = new Pot[4][5];
 
     public GreenHouse() {
-        for(int i = 0;i<pots.length;i++){
-            for(int j = 0;j<pots[i].length;j++){
-                pots[i][j]= new Pot();
-                if(i>=1)
+        for (int i = 0; i < pots.length; i++) {
+            for (int j = 0; j < pots[i].length; j++) {
+                pots[i][j] = new Pot();
+                if (i >= 1)
                     pots[i][j].setPotCondition(PotCondition.LOCKED);
-                else{
+                else {
                     pots[i][j].setPotCondition(PotCondition.EMPTY);
                 }
             }
@@ -35,7 +35,7 @@ public class GreenHouse {
             for (int j = 0; j < pots[i].length; j++) {
                 Pot currentPot = pots[i][j];
 
-                sb.append("Pot [").append(i+1).append("][").append(j+1).append("]: ");
+                sb.append("Pot [").append(i + 1).append("][").append(j + 1).append("]: ");
 
                 switch (currentPot.getPotCondition()) {
                     case LOCKED -> sb.append("Locked");
@@ -62,7 +62,7 @@ public class GreenHouse {
         return sb.toString();
     }
 
-    public Pot getSpecificPot(int x , int y){
+    public Pot getSpecificPot(int x, int y) {
         return pots[x][y];
     }
 }

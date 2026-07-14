@@ -1,8 +1,6 @@
 package models.enums.commands;
 
-import java.util.regex.Matcher;
-
-public enum PlantSelectionCommands implements Commands{
+public enum PlantSelectionCommands implements Commands {
     SHOW_ALL_PLANTS("^\\s*show\\s+all\\s+plants\\s*$"),
     SHOW_AVAILABLE_PLANTS("^\\s*show\\s+available\\s+plants\\s*$"),
     ADD_PLANT("^\\s*add\\s+plant\\s+-t\\s+(?<type>.+?)\\s*$"),

@@ -1,10 +1,8 @@
 package models;
 
 import models.entities.plants.Plant;
-import models.items.Item;
 import models.users.User;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class Shop {

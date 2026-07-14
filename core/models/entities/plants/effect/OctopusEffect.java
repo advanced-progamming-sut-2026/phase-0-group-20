@@ -2,10 +2,10 @@ package models.entities.plants.effect;
 
 import models.entities.plants.Plant;
 
-public class OctopusEffect implements PlantEffect{
+public class OctopusEffect implements PlantEffect {
     private int hp;
 
-    public OctopusEffect(int hp){
+    public OctopusEffect(int hp) {
         this.hp = hp;
     }
 

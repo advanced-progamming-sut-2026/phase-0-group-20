@@ -1,12 +1,10 @@
 package models.entities.plants.strategy.category_strategy;
 
 
-import models.Position;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
-import models.entities.projectiles.*;
+import models.entities.projectiles.ProjectileMechanism;
 import models.entities.zombies.Zombie;
-import models.enums.plants.ProjectileType;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 

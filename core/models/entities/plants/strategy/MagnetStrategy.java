@@ -29,7 +29,7 @@ public class MagnetStrategy implements IPlantStrategy {
                 if (rowDiff <= 2 && colDiff <= 2.5f) {
                     for (Armor armor : zombie.getArmorPieces()) {
 
-                        if (!armor.isDestroyed()) { // && armor.isMetallic()
+                        if (!armor.isDestroyed() && armor.isMetallic()) {
                             armor.takeDamage(9999);
                             foundMetal = true;
 

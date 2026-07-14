@@ -10,8 +10,8 @@ import java.util.regex.Matcher;
 
 public class ShopMenu implements AppMenu {
     ShopMenuController controller = new ShopMenuController();
-    
-    
+
+
     public void check(Scanner scanner) {
         String input = scanner.nextLine();
 

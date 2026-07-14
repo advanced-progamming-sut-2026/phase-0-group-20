@@ -35,11 +35,11 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
     public void executeStrategy(Plant plant) {
         tickTimer++;
 
-        if (tickTimer % 2 == 0) {
+        if (tickTimer % 2 == 0)
             ProjectileMechanism.executeNewProjectile(plant, GameSession.getInstance(), true, false);
-            System.out.println(plant.getName() + " unleashed a rapid-fire barrage down its lane!");
 
-        }
+        if (tickTimer == 2)
+            System.out.println(plant.getName() + " unleashed a rapid-fire barrage down its lane!");
 
         if (extraGiantShots > 0 && plant.getBoostTimer() - tickTimer < 2) { // shoot giant pea as last shot
             ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());

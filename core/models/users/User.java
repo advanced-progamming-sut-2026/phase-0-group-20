@@ -74,7 +74,7 @@ public class User {
                 @JsonProperty("levelsCompleted") int levelsCompleted,
                 @JsonProperty("stayLoggedIn") boolean stayLoggedIn,
                 @JsonProperty("greenHouse") GreenHouse greenHouse,
-                @JsonProperty("questManager")  QuestManager questManager) {
+                @JsonProperty("questManager") QuestManager questManager) {
 
         this.id = id;
         this.username = username;

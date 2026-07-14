@@ -1,8 +1,8 @@
 package models.quest.conditions;
 
+import models.game.GameSession;
 import models.game.events.GameEvent;
 import models.game.events.GameEventPayload;
-import models.game.GameSession;
 
 public class CertainAmountOfSunCondition extends QuestCondition {
 

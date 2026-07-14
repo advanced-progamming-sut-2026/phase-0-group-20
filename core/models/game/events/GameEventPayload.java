@@ -32,7 +32,7 @@ public class GameEventPayload {
     private int amount;
     private int row, col;
 
-    public GameEventPayload(GameEvent type, Zombie zombie, Plant plant, SeasonType seasonType, int amount, int row, int col , Arena arena) {
+    public GameEventPayload(GameEvent type, Zombie zombie, Plant plant, SeasonType seasonType, int amount, int row, int col, Arena arena) {
         this.type = type;
         this.zombie = zombie;
         this.plant = plant;

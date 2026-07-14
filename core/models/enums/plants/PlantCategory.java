@@ -11,8 +11,7 @@ public enum PlantCategory {
     WALL_NUT,
     MODIFIER,
     STRIKE_THROUGH,
-    HOMING
-    ;
+    HOMING;
 
 
     public static PlantCategory findByName(String name) {

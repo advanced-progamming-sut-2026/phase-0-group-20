@@ -21,8 +21,8 @@ public class CollectionMenu implements AppMenu {
         } else if ((matcher = MainCommands.ENTER_MENU.getMatcher(input)) != null) {
             System.out.println(NavigationController.enterMenu(matcher.group("name")));
         } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.showCurrentMenu());}
-        else if ((matcher = CollectionCommands.SHOW_PLANTS.getMatcher(input)) != null) {
+            System.out.println(NavigationController.showCurrentMenu());
+        } else if ((matcher = CollectionCommands.SHOW_PLANTS.getMatcher(input)) != null) {
             System.out.println(controller.showPlants());
         } else if ((matcher = CollectionCommands.SHOW_ALL_PLANTS.getMatcher(input)) != null) {
             System.out.println(controller.showAllPlants());

@@ -14,15 +14,16 @@ public class Pot implements Ticker {
     private boolean isItMari = false;
     private static final int TIME_TO_HATCH_MARIGOLD = 72000;
     private static final int TIME_TO_HATCH_PLANT = 288000;
-    public Pot(){
+
+    public Pot() {
         potCondition = PotCondition.EMPTY;
     }
 
-        @Override
+    @Override
     public void onTick(int currentTick) {
-        if(currentTick> 0){
+        if (currentTick > 0) {
             currentTick--;
-            if(currentTick==0){
+            if (currentTick == 0) {
                 potCondition = PotCondition.COLLECTABLE;
             }
         }
@@ -30,11 +31,10 @@ public class Pot implements Ticker {
 
     public void plantPlant() {
         isItMari = getTheType();
-        if(isItMari){
+        if (isItMari) {
             remainedTimeToCollect = TIME_TO_HATCH_MARIGOLD;
             potCondition = PotCondition.PLANTED;
-        }
-        else{
+        } else {
             Plant plant = getRandomUnlockedPlant();
             plantedPlant = plant;
             remainedTimeToCollect = TIME_TO_HATCH_PLANT;
@@ -85,20 +85,20 @@ public class Pot implements Ticker {
         isItMari = itMari;
     }
 
-    private boolean getTheType(){
+    private boolean getTheType() {
         Random rand = new Random();
         int chance = rand.nextInt(100);
-        if(chance<50){
+        if (chance < 50) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
-    private Plant getRandomUnlockedPlant(){
+    private Plant getRandomUnlockedPlant() {
         List<Plant> plants = App.getActiveUser().getUnlockedPlants();
         Random rand = new Random();
-        int index =  rand.nextInt(plants.size());
+        int index = rand.nextInt(plants.size());
         return plants.get(index);
     }
 

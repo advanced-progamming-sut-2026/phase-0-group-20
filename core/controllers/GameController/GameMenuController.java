@@ -3,7 +3,6 @@ package controllers.GameController;
 import models.App;
 import models.Result;
 import models.enums.Menu;
-import models.game.Arena;
 import models.game.adventure.Adventure;
 import models.game.adventure.Chapter;
 import models.game.adventure.levels.Level;

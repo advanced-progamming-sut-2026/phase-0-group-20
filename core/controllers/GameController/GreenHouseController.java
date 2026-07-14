@@ -7,13 +7,12 @@ import models.greenhouse.GreenHouse;
 import models.greenhouse.Pot;
 import models.greenhouse.PotCondition;
 import models.users.User;
-import views.GreenHouseMenu;
 
 public class GreenHouseController {
     private final User user = App.getActiveUser();
 
     public Result showGreenHouse(GreenHouse greenHouse) {
-        return new Result(true , greenHouse.showGreenHouse());
+        return new Result(true, greenHouse.showGreenHouse());
     }
 
     public Result plantPot(String x, String y, GreenHouse greenHouse) {

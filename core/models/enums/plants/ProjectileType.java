@@ -16,5 +16,6 @@ public enum ProjectileType {
     PEPPER,
     GRAPE,
     FUME,
-    SPIKE
+    SPIKE,
+    PLASMA_BALL
 }

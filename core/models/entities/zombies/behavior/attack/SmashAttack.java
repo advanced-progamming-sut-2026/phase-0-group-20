@@ -4,7 +4,6 @@ import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieState;
 import models.fields.tiles.Tile;
-import models.timeManager.TimeManager;
 
 public class SmashAttack implements AttackBehavior {
     private final Zombie zombie;

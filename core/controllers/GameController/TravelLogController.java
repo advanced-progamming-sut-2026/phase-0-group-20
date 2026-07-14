@@ -64,12 +64,12 @@ public class TravelLogController {
     }
 
     public Result showCurrentPage() {
-       if(currentPage != ValidPageNames.MINIGAME)
-           return showCategoryQuests();
-       return new Result(true, "Coming soon...");
+        if (currentPage != ValidPageNames.MINIGAME)
+            return showCategoryQuests();
+        return new Result(true, "Coming soon...");
     } // temporary
 
-    private Result showCategoryQuests(){
+    private Result showCategoryQuests() {
         QuestManager questManager = activeUser.getQuestManager();
         List<Quest> quests = new ArrayList<>();
         QuestCategory category = findQuestCategory();

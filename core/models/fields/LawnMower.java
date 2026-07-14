@@ -2,8 +2,8 @@ package models.fields;
 
 import models.entities.zombies.Zombie;
 import models.game.Arena;
-import models.game.events.GameEvent;
 import models.game.GameSession;
+import models.game.events.GameEvent;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;

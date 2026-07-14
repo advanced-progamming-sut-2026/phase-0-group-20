@@ -175,11 +175,11 @@ public class GameFlowController {
 
     public Result cheatAddPlantFood() {
         GameSession session = GameSession.getInstance();
-        List <PlantFood> plantFoods = session.getPlantFoods();
-        if  (plantFoods.size()>=3) {
-            return new Result (false,"You already have the maximum amount of the food plants");
-        }else{
-            PlantFood pf = new PlantFood(0,0);
+        List<PlantFood> plantFoods = session.getPlantFoods();
+        if (plantFoods.size() >= 3) {
+            return new Result(false, "You already have the maximum amount of the food plants");
+        } else {
+            PlantFood pf = new PlantFood(0, 0);
             pf.collect();
             plantFoods.add(pf);
             return new Result(true, "You successfully added the food plant");
@@ -298,12 +298,12 @@ public class GameFlowController {
         return new Result(true, statusDisplay.toString().trim());
     }
 
-    public Result showTileStatus(String x , String y) {
-        int row,col;
-        try{
+    public Result showTileStatus(String x, String y) {
+        int row, col;
+        try {
             row = Integer.parseInt(x);
             col = Integer.parseInt(y);
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
         GameSession session = GameSession.getInstance();
