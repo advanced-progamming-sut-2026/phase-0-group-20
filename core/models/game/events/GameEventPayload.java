@@ -24,54 +24,86 @@ import models.game.adventure.SeasonType;
  */
 
 public class GameEventPayload {
-    private GameEvent type;
-    private Arena arena;
-    private Zombie zombie;
-    private SeasonType seasonType;
-    private Plant plant;
-    private int amount;
-    private int row, col;
+    private final GameEvent type;
+    private final Arena arena;
+    private final Zombie zombie;
+    private final SeasonType seasonType;
+    private final Plant plant;
+    private final int amount;
+    private final int row;
+    private final int col;
 
-    public GameEventPayload(GameEvent type, Zombie zombie, Plant plant, SeasonType seasonType, int amount, int row, int col, Arena arena) {
-        this.type = type;
-        this.zombie = zombie;
-        this.plant = plant;
-        this.seasonType = seasonType;
-        this.amount = amount;
-        this.row = row;
-        this.col = col;
-        this.arena = arena;
+    private GameEventPayload(Builder builder) {
+        this.type = builder.type;
+        this.arena = builder.arena;
+        this.zombie = builder.zombie;
+        this.seasonType = builder.seasonType;
+        this.plant = builder.plant;
+        this.amount = builder.amount;
+        this.row = builder.row;
+        this.col = builder.col;
     }
 
-    public GameEvent getType() {
-        return type;
-    }
 
-    public Zombie getZombie() {
-        return zombie;
-    }
 
-    public Plant getPlant() {
-        return plant;
-    }
+    public GameEvent getType() { return type; }
+    public Zombie getZombie() { return zombie; }
+    public Plant getPlant() { return plant; }
+    public int getAmount() { return amount; }
+    public int getRow() { return row; }
+    public int getCol() { return col; }
+    public SeasonType getSeasonType() { return seasonType; }
+    public Arena getArena() { return arena; }
 
-    public int getAmount() {
-        return amount;
-    }
 
-    public int getRow() {
-        return row;
-    }
+    public static class Builder {
+        private final GameEvent type;
 
-    public int getCol() {
-        return col;
-    }
+        private Arena arena;
+        private Zombie zombie;
+        private SeasonType seasonType;
+        private Plant plant;
+        private int amount = 0;
+        private int row = -1;
+        private int col = -1;
 
-    public SeasonType getSeasonType() {
-        return seasonType;
-    }
+        public Builder(GameEvent type) {
+            this.type = type;
+        }
 
-    public Arena getArena() {
-        return arena;
+        public Builder arena(Arena arena) {
+            this.arena = arena;
+            return this;
+        }
+
+        public Builder zombie(Zombie zombie) {
+            this.zombie = zombie;
+            return this;
+        }
+
+        public Builder seasonType(SeasonType seasonType) {
+            this.seasonType = seasonType;
+            return this;
+        }
+
+        public Builder plant(Plant plant) {
+            this.plant = plant;
+            return this;
+        }
+
+        public Builder amount(int amount) {
+            this.amount = amount;
+            return this;
+        }
+
+        public Builder coordinate(int row, int col) {
+            this.row = row;
+            this.col = col;
+            return this;
+        }
+
+        public GameEventPayload build() {
+            return new GameEventPayload(this);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package models.entities.zombies;
 
 import models.entities.plants.Plant;
+import models.entities.projectiles.Projectile;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.behavior.attack.AttackBehavior;
 import models.entities.zombies.behavior.attack.LaserAttack;
@@ -11,7 +12,9 @@ import models.entities.zombies.behavior.effect.ZombieEffect;
 import models.entities.zombies.behavior.move.MoveBehavior;
 import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
+import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -89,11 +92,12 @@ public class Zombie implements Ticker {
         armorPieces.removeIf(Armor::isDropped);
     }
 
-    public boolean takeDamage(int damage, ProjectileType projectileType) {
+    public boolean takeDamage(int damage, Projectile projectile) {
+        ProjectileType projectileType = projectile.getType();
         if (dead) return false;
 
         if (projectileType == null) { // for lawn
-            return applyHealthDamage(health);
+            return applyHealthDamage(health,projectile );
         }
 
         if (defenseBehavior != null && defenseBehavior.deflectProjectile(projectileType)) {
@@ -107,7 +111,7 @@ public class Zombie implements Ticker {
         if (remaining <= 0) return false;
 
         if (isArmorBypassingProjectile(projectileType)) {
-            return applyHealthDamage(remaining);
+            return applyHealthDamage(remaining, projectile);
         }
 
         for (int i = 0; i < armorPieces.size(); i++) {
@@ -119,7 +123,7 @@ public class Zombie implements Ticker {
             }
         }
 
-        return applyHealthDamage(remaining);
+        return applyHealthDamage(remaining,projectile);
     }
 
     public void takeDamage(int damage) {
@@ -135,7 +139,7 @@ public class Zombie implements Ticker {
         return projectileType == ProjectileType.GOO_PEA;
     }
 
-    private boolean applyHealthDamage(int remaining) {
+    private boolean applyHealthDamage(int remaining ,Projectile projectile) {
         health -= remaining;
         if (health <= 0) {
             health = 0;
@@ -171,6 +175,12 @@ public class Zombie implements Ticker {
         if (health <= 0) {
             health = 0;
             dead = true;
+            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
+                    .zombie(this)
+                    .plant(plant)
+                    .coordinate(this.getRow(),this.getCol())
+                    .build();
+            GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
             return true;
         }
         return false;

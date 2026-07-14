@@ -44,7 +44,7 @@ public class DigestionStrategy implements IPlantStrategy {
 
             if (target != null) {
                 System.out.println("🦖 " + context.getName() + " swallowed " + target.getName() + " whole!");
-                target.takeDirectDamage(9999);
+                target.takeDirectDamage(9999,context);
 
                 isDigesting = true;
                 digestionStartTick = currentTick;
