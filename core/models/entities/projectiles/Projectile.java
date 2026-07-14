@@ -92,8 +92,8 @@ public class Projectile implements Ticker {
                 position,
                 speedX,
                 speedY,
-                false,
-                false
+                piercing,
+                canPassObstacles
         );
         gameSession.addProjectile(projectile);
         return projectile;

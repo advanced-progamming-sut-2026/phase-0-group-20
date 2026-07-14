@@ -213,7 +213,7 @@ public class PlantFactory {
             case "sweet potato" ->
                     plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy("pulls in every nearby zombie and fully heals itself"));
 
-            case "bonk choy", "enforce-mint" ->
+            case "bonk choy"->
                     plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("rapid 3x3 punches"));
             case "phat beet" -> plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("powerful 3x3 sonic blast"));
             case "wasabi whip" ->
@@ -236,7 +236,7 @@ public class PlantFactory {
             case "lily pad" -> plant.addPlantFoodStrategy(new DuplicateSelfFoodStrategy());
 
             case "cherry bomb", "grapeshot", "jalapeno", "doom-shroom", "ice-shroom",
-                 "hot potato", "grave buster", "imitater", "pierce-mint" ->
+                 "hot potato", "grave buster", "imitater", "pierce-mint", "enforce-mint"  ->
                     plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
 
 
