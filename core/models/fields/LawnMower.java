@@ -43,7 +43,7 @@ public class LawnMower implements Ticker {
 
         for (Zombie z : arena.getActiveZombies()) {
             if (!z.isDead() && z.getRow() == this.row) {
-                z.takeDamage(10000, null);
+                z.takeDamage(10000, , null);
                 killedZombiesNames.add(z.getName());
             }
         }

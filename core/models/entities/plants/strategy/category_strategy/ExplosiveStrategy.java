@@ -40,7 +40,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
             switch (name) {
                 case "Cherry Bomb":
                 case "Grapeshot":
-                    applyAreaDamage(gameSession, plantCol, plantRow, 1.5f, damage);
+                    applyAreaDamage(gameSession, plantCol, plantRow, 1.5f, damage,context);
 
                     if (name.equals("Grapeshot")) {
                         float[][] directions = {
@@ -70,14 +70,14 @@ public class ExplosiveStrategy implements IPlantStrategy {
                     for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
                         if (!z.isDead()) {
                             z.removeChillEffect();
-                            z.takeDirectDamage(damage);
+                            z.takeDirectDamage(damage,context);
                         }
                     }
                     System.out.println("🔥 Jalapeno burned the entire lane!");
                     break;
 
                 case "Doom-shroom":
-                    applyAreaDamage(gameSession, plantCol, plantRow, 3.5f, damage);
+                    applyAreaDamage(gameSession, plantCol, plantRow, 3.5f, damage,context);
                     // change tile type
                     System.out.println("🕳️ Doom-shroom left a massive crater behind!");
                     break;
@@ -86,11 +86,11 @@ public class ExplosiveStrategy implements IPlantStrategy {
         }
     }
 
-    private void applyAreaDamage(GameSession gameSession, int col, int row, float radius, int damage) {
+    private void applyAreaDamage(GameSession gameSession, int col, int row, float radius, int damage,Plant plant) {
         List<Zombie> targets = gameSession.getArena().getZombiesInRadius(col, row, radius);
         for (Zombie z : targets) {
             if (!z.isDead()) {
-                z.takeDirectDamage(damage);
+                z.takeDirectDamage(damage,plant);
             }
         }
     }

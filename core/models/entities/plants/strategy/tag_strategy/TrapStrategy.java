@@ -4,6 +4,9 @@ import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.zombies.Zombie;
 import models.game.GameSession;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.TimeManager;
 
 import java.util.List;
@@ -68,24 +71,24 @@ public class TrapStrategy implements IPlantStrategy {
 
             switch (name) {
                 case "Potato Mine":
-                    target.takeDirectDamage(1800);
+                    target.takeDirectDamage(1800,context);
                     break;
 
                 case "Primal Potato Mine":
                     List<Zombie> aoeTargets = gameSession.getArena().getZombiesInRadius((int) plantCol, plantRow, 1.5);
                     for (Zombie z : aoeTargets) {
-                        if (!z.isDead()) z.takeDirectDamage(2400);
+                        if (!z.isDead()) z.takeDirectDamage(2400,context);
                     }
                     System.out.println("💥 Primal Potato Mine dealt massive AoE damage!");
                     break;
 
                 case "Squash":
-                    target.takeDirectDamage(1800);
+                    target.takeDirectDamage(1800,context);
                     System.out.println("🪨 Squash crushed " + target.getName() + "!");
                     break;
 
                 case "Tangle Kelp":
-                    target.takeDirectDamage(9999);
+                    target.takeDirectDamage(9999,context);
                     System.out.println("🌊 Tangle Kelp pulled " + target.getName() + " underwater!");
                     break;
 
@@ -95,6 +98,10 @@ public class TrapStrategy implements IPlantStrategy {
                     break;
             }
             context.takeDamage(context.getCurrentHp());
+            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
+                    .plant(context)
+                            .build();
+            GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,payload);
         }
     }
 }
