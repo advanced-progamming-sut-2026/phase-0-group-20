@@ -26,8 +26,8 @@ public class NecromanceTile extends Tile implements GraveHolder {
     public void spawnZombieFromBelow(Zombie zombie) {
         if (zombie == null || !canZombieEmerge()) return;
 
-        zombie.setRow(row);
-        zombie.setX(col);
+        zombie.setRow(position.getRow());
+        zombie.setCol( position.getCol());
         GameSession session = GameSession.getInstance();
         session.getArena().addZombie(zombie);
         session.getTimeManager().registerNewTicker(zombie);

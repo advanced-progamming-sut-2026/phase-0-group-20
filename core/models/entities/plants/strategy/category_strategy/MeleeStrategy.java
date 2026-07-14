@@ -3,6 +3,7 @@ package models.entities.plants.strategy.category_strategy;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.zombies.Zombie;
+import models.enums.PhysicalConstants;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 
@@ -32,7 +33,7 @@ public class MeleeStrategy implements IPlantStrategy {
 
                 for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
                     if (z.isDead()) continue;
-                    double dist = z.getX() - plantCol;
+                    double dist =  z.getX()/ PhysicalConstants.TILE_UNIT_LENGTH  - plantCol;
 
                     if (dist >= -1.0 && dist <= 1.5) {
                         if (Math.abs(dist) < minDistance) {
@@ -49,6 +50,7 @@ public class MeleeStrategy implements IPlantStrategy {
 
                     if (name.equals("Wasabi Whip")) {
                         target.removeChillEffect();
+                        target.removeFreezeEffect();
                     }
                     System.out.println("🥊 " + name + " landed a melee strike on " + target.getName() + "!");
                 }

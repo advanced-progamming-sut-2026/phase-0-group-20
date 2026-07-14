@@ -32,7 +32,7 @@ public class EgyptModifier implements SeasonModifier {
                 int startCol = arena.getCols() - 1;
                 int targetCol = Math.max(0, startCol - randColAhead);
 
-                zombie.setX(targetCol);
+                zombie.setCol(targetCol);
 
                 zombie.setSpawnEffect(Zombie.SpawnEffect.SANDSTORM); //for graphic phase
 

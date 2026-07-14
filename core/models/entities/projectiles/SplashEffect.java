@@ -13,12 +13,12 @@ public class SplashEffect implements ProjectileEffect {
         int splashDamage = projectile.getDamage() / 2;
 
         List<Zombie> nearbyZombies = gameSession.getArena().getZombiesInRadius(
-                (int) zombie.getX(), zombie.getRow(), SPLASH_RADIUS
+                zombie.getCol(), zombie.getRow(), SPLASH_RADIUS
         );
 
         for (Zombie z : nearbyZombies) {
             if (z != zombie && !z.isDead()) {
-                z.takeDamage(splashDamage, , projectile.getType());
+                z.takeDamage(splashDamage, projectile);
             }
         }
 

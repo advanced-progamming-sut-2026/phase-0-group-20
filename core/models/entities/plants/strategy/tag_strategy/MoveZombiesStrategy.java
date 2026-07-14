@@ -50,7 +50,7 @@ public class MoveZombiesStrategy implements IPlantStrategy {
 
                     int zRow = z.getRow();
                     if (Math.abs(zRow - plantRow) == 1) {
-                        if (Math.abs(z.getX() - plantCol) <= 2.0) {
+                        if (Math.abs(z.getCol() - plantCol) <= 2) {
                             z.setRow(plantRow);
                             System.out.println("🍠 Sweet Potato pulled " + z.getName() + " into its lane!");
                         }

@@ -31,16 +31,16 @@ public class GameFlowController {
         return new Result(true, "Successfully advanced time for " + timeAmount + " seconds.");
     }
 
-    public Result collectSun(String x, String y) {
+    public Result collectSun(String colStr, String rowStr) {
         Arena arena = GameSession.getInstance().getArena();
-        int posX, posY;
+        int col, row;
         try {
-            posX = Integer.parseInt(x);
-            posY = Integer.parseInt(y);
+            col = Integer.parseInt(colStr);
+            row = Integer.parseInt(rowStr);
         } catch (NumberFormatException e) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
-        Sun sun = arena.getSunInCoordinate(posX, posY);
+        Sun sun = arena.getSunInCoordinate(col, row);
         if (sun == null) {
             return new Result(false, "There is no sun in this coordinate.");
         }
@@ -219,7 +219,7 @@ public class GameFlowController {
                 java.util.List<Zombie> zombiesInTile = new java.util.ArrayList<>();
                 if (session.getArena().zombieInRow(row) != null) {
                     for (Zombie z : session.getArena().zombieInRow(row)) {
-                        if (!z.isDead() && (int) z.getX() == col) {
+                        if (!z.isDead() && (int) z.getCol() == col) {
                             zombiesInTile.add(z);
                         }
                     }
@@ -233,7 +233,7 @@ public class GameFlowController {
                     for (int k = 0; k < zombiesInTile.size(); k++) {
                         Zombie z = zombiesInTile.get(k);
                         mapDisplay.append(z.getName()).append(":")
-                                .append(String.format("%.2f", z.getX())).append(",")
+                                .append(z.getCol()).append(",")
                                 .append(z.getRow());
 
                         if (k < zombiesInTile.size() - 1) {
@@ -344,7 +344,7 @@ public class GameFlowController {
         boolean zombieFound = false;
         if (session.getArena().zombieInRow(row) != null) {
             for (Zombie z : session.getArena().zombieInRow(row)) {
-                if (!z.isDead() && (int) z.getX() == col) {
+                if (!z.isDead() && z.getCol() == col) {
                     zombieFound = true;
                     statusDisplay.append("    - Name: ").append(z.getName()).append("\n");
                     statusDisplay.append("      Health: ").append(z.getHealth()).append("\n");

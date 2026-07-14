@@ -8,6 +8,7 @@ public class FireEffect implements ProjectileEffect {
     @Override
     public void applyEffect(Zombie zombie, GameSession gameSession, Projectile projectile) {
         zombie.removeChillEffect();
+        zombie.removeFreezeEffect();
     }
 
     @Override

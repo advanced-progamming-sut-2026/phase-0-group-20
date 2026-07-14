@@ -70,6 +70,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
                     for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
                         if (!z.isDead()) {
                             z.removeChillEffect();
+                            z.removeFreezeEffect();
                             z.takeDirectDamage(damage,context);
                         }
                     }

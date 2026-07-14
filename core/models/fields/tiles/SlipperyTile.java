@@ -21,7 +21,7 @@ public class SlipperyTile extends Tile {
     public void slide(Zombie zombie) {
         if (zombie == null) return;
 
-        int targetRow = (direction == SlideDirection.UP) ? row - 1 : row + 1;
+        int targetRow = (direction == SlideDirection.UP) ? position.getRow() - 1 : position.getRow() + 1;
         if (targetRow < 0 || targetRow >= GameSession.getInstance().getArena().getRows()) return;
 
         zombie.setRow(targetRow);

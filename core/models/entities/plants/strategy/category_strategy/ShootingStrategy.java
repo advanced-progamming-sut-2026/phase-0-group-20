@@ -30,7 +30,7 @@ public class ShootingStrategy implements IPlantStrategy {
                 for (Zombie z : gameSession.getChosenZombies()) {
                     if (z.isDead()) continue;
                     int rowDiff = Math.abs(z.getRow() - plantRow);
-                    int colDiff = (int) Math.abs(z.getX() - plantCol);
+                    int colDiff = Math.abs(z.getCol() - plantCol);
                     if (rowDiff == colDiff && rowDiff > 0 && rowDiff <= 2) {
                         shootForward = true;
                         shootBackward = true;
@@ -41,7 +41,7 @@ public class ShootingStrategy implements IPlantStrategy {
                 for (Zombie z : gameSession.getChosenZombies()) {
                     if (z.isDead()) continue;
                     int rowDiff = z.getRow() - plantRow;
-                    int colDiff = (int) (z.getX() - plantCol);
+                    int colDiff = z.getCol() - plantCol;
 
                     boolean isBackward = (rowDiff == 0 && colDiff < 0);
                     boolean isUpOrDown = (colDiff == 0 && rowDiff != 0);
@@ -61,9 +61,9 @@ public class ShootingStrategy implements IPlantStrategy {
 
                         int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom")) ? 3 : 999;
 
-                        if (z.getX() >= plantCol && z.getX() <= plantCol + maxRange) shootForward = true;
+                        if (z.getCol()  >= plantCol && z.getCol() <= plantCol + maxRange) shootForward = true;
 
-                        if (z.getX() < plantCol) shootBackward = true;
+                        if (z.getCol() < plantCol) shootBackward = true;
                     }
                 }
             }

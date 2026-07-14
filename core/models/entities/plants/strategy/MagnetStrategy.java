@@ -24,7 +24,7 @@ public class MagnetStrategy implements IPlantStrategy {
                 if (zombie.isDead()) continue;
 
                 int rowDiff = Math.abs(zombie.getRow() - plantRow);
-                double colDiff = Math.abs(zombie.getX() - plantCol);
+                double colDiff = Math.abs(zombie.getCol() - plantCol);
 
                 if (rowDiff <= 2 && colDiff <= 2.5f) {
                     for (Armor armor : zombie.getArmorPieces()) {

@@ -112,8 +112,8 @@ public class Projectile implements Ticker {
 
     public void move() {
         if (target != null && !target.isDead()) {
-            float dx = (float) (target.getX() - position.getX());
-            float dy = target.getRow() - position.getY();
+            float dx = target.getX() - position.getX();
+            float dy = target.getY() - position.getY();
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
             if (distance > 0) {
@@ -160,7 +160,7 @@ public class Projectile implements Ticker {
         if (effect.ignoresArmor()) {
             z.takeDirectDamage(finalDamage);
         } else {
-            z.takeDamage(finalDamage, , type);
+            z.takeDamage(finalDamage, this);
         }
 
         effect.applyEffect(z, gameSession, this);

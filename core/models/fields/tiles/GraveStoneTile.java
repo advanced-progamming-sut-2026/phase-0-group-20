@@ -34,7 +34,7 @@ public class GraveStoneTile extends Tile implements GraveHolder {
 
     @Override
     public void removeGrave() {
-        GameSession.getInstance().getArena().changeTile(row, col, new NormalTile(row, col));
+        GameSession.getInstance().getArena().changeTile(position.getRow(),  position.getCol(), new NormalTile(position.getRow(),  position.getCol()));
     }
 
 }

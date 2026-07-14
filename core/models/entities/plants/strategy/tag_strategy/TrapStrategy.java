@@ -3,6 +3,7 @@ package models.entities.plants.strategy.tag_strategy;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.zombies.Zombie;
+import models.enums.PhysicalConstants;
 import models.game.GameSession;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
@@ -59,7 +60,7 @@ public class TrapStrategy implements IPlantStrategy {
         for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
             if (z.isDead()) continue;
 
-            double dist = Math.abs(z.getX() - plantCol);
+            double dist = Math.abs(z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - plantCol);
             if (dist <= detectionRadius) {
                 target = z;
                 break;

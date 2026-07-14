@@ -5,6 +5,7 @@ import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.*;
 import models.entities.zombies.Zombie;
+import models.enums.PhysicalConstants;
 import models.enums.plants.ProjectileType;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
@@ -22,7 +23,7 @@ public class LobberStrategy implements IPlantStrategy {
             boolean zombieFound = false;
 
             for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
-                if (!z.isDead() && z.getX() >= plantCol) {
+                if (!z.isDead() && z.getX()/ PhysicalConstants.TILE_UNIT_LENGTH >= plantCol) {
                     zombieFound = true;
                     break;
                 }

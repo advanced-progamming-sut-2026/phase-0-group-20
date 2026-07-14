@@ -1,5 +1,6 @@
 package models.fields.tiles;
 
+import models.Position;
 import models.entities.plants.Plant;
 import models.enums.plants.PlantTag;
 import models.game.adventure.SeasonType;
@@ -11,22 +12,20 @@ import java.util.List;
 public abstract class Tile implements Ticker {
     protected SeasonType currentSeason;
     protected List<Plant> plants = new ArrayList<>();
-    protected int row;
-    protected int col;
+    protected Position position;
 
     public Tile(int row, int col) {
-        this.row = row;
-        this.col = col;
+        position = new Position(col, row);
     }
 
     public abstract void onTick(int currentTick);
 
     public int getCol() {
-        return col;
+        return position.getCol();
     }
 
     public int getRow() {
-        return row;
+        return position.getRow();
     }
 
     public List<Plant> getPlants() {
