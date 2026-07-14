@@ -15,21 +15,19 @@ import java.util.Map;
 
 public class PlantFactory {
 
-    private final Map<Integer, PlantData> plantRegistry;
-    private final GameSession gameSession;
+    private static Map<Integer, PlantData> plantRegistry = Map.of();
 
-    public PlantFactory(Map<Integer, PlantData> plantRegistry, GameSession gameSession) {
-        this.plantRegistry = plantRegistry;
-        this.gameSession = gameSession;
+    public PlantFactory(Map<Integer, PlantData> plantReg) {
+        plantRegistry = plantReg;
     }
 
-    public Plant create(int id) {
+    public static Plant create(int id) {
         PlantData data = plantRegistry.get(id);
         if (data == null) {
             throw new IllegalArgumentException(String.format("No plants with id %d", id));
         }
 
-        Plant plant = new GamePlant(data, gameSession);
+        Plant plant = new Plant(data);
         String nameKey = data.name().toLowerCase();
 
         boolean hasTrap = data.tags().contains(PlantTag.TRAP);
@@ -247,22 +245,6 @@ public class PlantFactory {
                 System.out.println("WARNING: no PlantFoodStrategy mapped for '" + data.name()
                         + "' - falling back to NoFoodEffectStrategy. Check PlantFactory.wirePlantFoodStrategy().");
                 plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
-            }
-        }
-    }
-
-    private static class GamePlant extends Plant { // this class will implement in game
-
-        public GamePlant(PlantData data, GameSession gameSession) {
-            super(data, gameSession);
-        }
-
-        @Override
-        protected void die() {
-            System.out.println("[" + getName() + "] has died!");
-            if (this.placedTile != null) {
-                // remove plant from this cell
-                // event
             }
         }
     }

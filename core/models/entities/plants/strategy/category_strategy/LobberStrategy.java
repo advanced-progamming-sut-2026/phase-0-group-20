@@ -14,7 +14,7 @@ public class LobberStrategy implements IPlantStrategy {
     private int lastLobTick = 0;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastLobTick) >= intervalInTicks) {
@@ -22,7 +22,7 @@ public class LobberStrategy implements IPlantStrategy {
             float plantCol = context.getPlacedTile().getCol();
             boolean zombieFound = false;
 
-            for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
+            for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                 if (!z.isDead() && z.getX()/ PhysicalConstants.TILE_UNIT_LENGTH >= plantCol) {
                     zombieFound = true;
                     break;
@@ -30,14 +30,14 @@ public class LobberStrategy implements IPlantStrategy {
             }
 
             if (zombieFound) {
-                executeNewLobbedProjectile(context, gameSession);
+                executeNewLobbedProjectile(context);
                 lastLobTick = currentTick;
             }
         }
     }
 
 
-    private void executeNewLobbedProjectile(Plant context, GameSession gameSession) {
+    private void executeNewLobbedProjectile(Plant context) {
         String name = context.getName();
         float spawnX = context.getPlacedTile().getCol();
         float spawnY = context.getPlacedTile().getRow();
@@ -81,13 +81,13 @@ public class LobberStrategy implements IPlantStrategy {
         if (type != null) {
             Projectile projectile = new Projectile(
                     context,
-                    type, effect, gameSession, damage,
+                    type, effect, damage,
                     new Position(spawnX, spawnY),
                     1.5f, 0,
                     false,
                     true
             );
-            gameSession.addProjectile(projectile);
+            GameSession.getInstance().getArena().addProjectile(projectile);
             System.out.println("🥔 " + name + " lobbed a " + type.name() + "!");
         }
     }

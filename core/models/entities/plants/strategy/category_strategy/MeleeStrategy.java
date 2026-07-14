@@ -14,7 +14,7 @@ public class MeleeStrategy implements IPlantStrategy {
     private int aliveTicks = 0;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         aliveTicks++;
         String name = context.getName();
 
@@ -31,7 +31,7 @@ public class MeleeStrategy implements IPlantStrategy {
                 Zombie target = null;
                 double minDistance = Double.MAX_VALUE;
 
-                for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
+                for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                     if (z.isDead()) continue;
                     double dist =  z.getX()/ PhysicalConstants.TILE_UNIT_LENGTH  - plantCol;
 
@@ -55,7 +55,7 @@ public class MeleeStrategy implements IPlantStrategy {
                     System.out.println("🥊 " + name + " landed a melee strike on " + target.getName() + "!");
                 }
             } else if (name.equals("Phat Beet") || name.equals("Kiwibeast")) {
-                List<Zombie> targets = gameSession.getArena().getZombiesInRadius(plantCol, plantRow, 1.5);
+                List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5);
 
                 if (!targets.isEmpty()) {
                     int damage = 15;

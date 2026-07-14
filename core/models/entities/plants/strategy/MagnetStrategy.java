@@ -10,7 +10,7 @@ public class MagnetStrategy implements IPlantStrategy {
     private int lastStealTick = 0;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
 
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
@@ -20,7 +20,7 @@ public class MagnetStrategy implements IPlantStrategy {
             int plantCol = context.getPlacedTile().getCol();
             boolean foundMetal = false;
 
-            for (Zombie zombie : gameSession.getArena().getActiveZombies()) {
+            for (Zombie zombie : GameSession.getInstance().getArena().getActiveZombies()) {
                 if (zombie.isDead()) continue;
 
                 int rowDiff = Math.abs(zombie.getRow() - plantRow);

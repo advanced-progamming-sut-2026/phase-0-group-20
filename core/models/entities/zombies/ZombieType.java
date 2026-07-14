@@ -1,44 +1,54 @@
 package models.entities.zombies;
 
+import models.game.adventure.SeasonType;
+
 public enum ZombieType {
-    NORMAL("ZombieDefault"),
-    CONE("ZombieArmor1"),
-    BUCKET("ZombieArmor2"),
-    BRICK("ZombieArmor4"),
-    GARGANTUAR("ZombieGargantuar"),
-    IMP("ZombieImp"),
-    RA("ZombieRa"),
-    EXPLORER("ZombieExplorer"),
-    TOMB_RAISER("ZombieTombRaiser"),
+    // Ordinary
+    NORMAL("ZombieDefault", null),
+    CONE("ZombieArmor1", null),
+    BUCKET("ZombieArmor2", null),
+    BRICK("ZombieArmor4", null),
+    DARK_ARMOR("ZombieDarkArmor3", null), //knight
+    GARGANTUAR("ZombieGargantuar", null),
+    IMP("ZombieImp", null),
+    ALL_STAR("ZombieModernAllStar", null),
+    ARCADE("ZombieArcade", null),
+    JANE("ZombieLostCityJane", null), // Zombie Parasol
+    CRYSTAL_SKULL("ZombieCrystalSkull", null), //Turquoise Zombie
+    PROSPECTOR("ZombieProspector", null),
+    PIANIST("ZombiePiano", null),
+    NEWSPAPER("ZombieNewspaper", null),
+    BARREL_ROLLER("", null), // WARNING : We don't have this yet
 
-    DODO("ZombieIceAgeDodo"),
-    HUNTER("ZombieIceAgeHunter"),
-    TROGLOBITE("ZombieIceAgeTroglobite"),
 
-    FISHERMAN("ZombieBeachFisherman"),
-    OCTOPUS("ZombieBeachOctopus"),
-    SNORKEL("ZombieBeachSnorkel"),
+    // Ancient Egypt
+    RA("ZombieRa", SeasonType.ANCIENT_EGYPT),
+    EXPLORER("ZombieExplorer", SeasonType.ANCIENT_EGYPT),
+    TOMB_RAISER("ZombieTombRaiser", SeasonType.ANCIENT_EGYPT),
 
-    JUGGLER("ZombieDarkJuggler"),
-    WIZARD("ZombieWizard"),
-    KING("ZombieDarkKing"),
-    IMP_DRAGON("ZombieDarkImpDragon"),
+    // frostbite Caves
+    DODO("ZombieIceAgeDodo", SeasonType.FROZEN_CAVES),
+    HUNTER("ZombieIceAgeHunter", SeasonType.FROZEN_CAVES),
+    TROGLOBITE("ZombieIceAgeTroglobite", SeasonType.FROZEN_CAVES),
 
-    ALL_STAR("ZombieModernAllStar"),
-    JANE("ZombieLostCityJane"), // Zombie Parasol
-    CRYSTAL_SKULL("ZombieCrystalSkull"), //Turquoise Zombie
-    PROSPECTOR("ZombieProspector"),
-    PIANIST("ZombiePiano"),
-    NEWSPAPER("ZombieNewspaper"),
-    ARCADE("ZombieArcade"),
-    BARREL_ROLLER(""), // WARNING : We don't have this yet
+    // big wave beach
+    FISHERMAN("ZombieBeachFisherman", SeasonType.BIG_WAVE_BEACH),
+    OCTOPUS("ZombieBeachOctopus", SeasonType.BIG_WAVE_BEACH),
+    SNORKEL("ZombieBeachSnorkel", SeasonType.BIG_WAVE_BEACH),
 
-    DARK_ARMOR("ZombieDarkArmor3"); //knight
+    // dark age
+    JUGGLER("ZombieDarkJuggler", SeasonType.DARK_AGES),
+    WIZARD("ZombieWizard", SeasonType.DARK_AGES),
+    KING("ZombieDarkKing", SeasonType.DARK_AGES),
+    IMP_DRAGON("ZombieDarkImpDragon", SeasonType.DARK_AGES);
+
 
     private final String jsonAlias;
+    private final SeasonType type;
 
-    ZombieType(String jsonAlias) {
+    ZombieType(String jsonAlias, SeasonType type) {
         this.jsonAlias = jsonAlias;
+        this.type = type;
     }
 
     public static ZombieType fromAlias(String alias) {
@@ -50,5 +60,9 @@ public enum ZombieType {
 
     public String getJsonAlias() {
         return jsonAlias;
+    }
+
+    public SeasonType getType() {
+        return type;
     }
 }

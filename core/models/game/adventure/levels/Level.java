@@ -1,6 +1,8 @@
 package models.game.adventure.levels;
 
+import models.InGameEntityGenerator;
 import models.entities.plants.IPlant;
+import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
 import models.fields.modifiers.SeasonModifier;
@@ -18,6 +20,7 @@ import java.util.List;
 public abstract class Level implements GameMode {
 
     protected final String name;
+    protected final int levelNumber;
     protected final SeasonType season;
     protected final SeasonModifier seasonModifier;
     protected final List<WinCondition> winConditions = new ArrayList<>();
@@ -25,26 +28,21 @@ public abstract class Level implements GameMode {
 
     protected final int waveCount;
     protected final int baseWaveDifficulty;
-
     protected int currentWave = 0;
     private boolean allWavesSpawned = false;
-    private int currentWaveInitialHp = 0;
+    private Wave currentActiveWave = null;
+    private int currentDifficulty;
 
-    protected Level(String name, SeasonType season, int waveCount, int baseWaveDifficulty) {
+    protected Level(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {
         this.name = name;
         this.season = season;
         this.seasonModifier = Chapter.createModifier(season);
         this.waveCount = waveCount;
         this.baseWaveDifficulty = baseWaveDifficulty;
+        this.levelNumber = levelNumber;
     }
 
     public abstract void onStart(GameSession session);
-
-
-    public void onTick(GameSession session, int currentTick) {
-        updateWaves(session, currentTick);
-    }
-
 
     public GameState checkResult(GameSession session) {
         for (LoseCondition lose : loseConditions)
@@ -57,47 +55,64 @@ public abstract class Level implements GameMode {
     }
 
 
-    public int getWaveDifficulty(int waveNumber) {
-        if (waveCount > 1 && waveNumber >= waveCount)
-            return (int) Math.round(2 * baseWaveDifficulty * Math.pow(1.25, waveCount - 2));
-
-        return (int) Math.round(baseWaveDifficulty * Math.pow(1.25, waveNumber - 1));
-    }
-
-    protected void updateWaves(GameSession session, int currentTick) {
-        if (allWavesSpawned) return;
-        if (currentWave == 0 || shouldStartNextWave(session))
-            startNextWave(session, currentTick);
-    }
-
-    boolean shouldStartNextWave(GameSession session) {
-        if (currentWaveInitialHp <= 0) return true;
-        int aliveHp = 0;
-        for (Zombie zombie : session.getChosenZombies())
-            if (!zombie.isDead()) aliveHp += zombie.getHealth();
-
-        return aliveHp <= currentWaveInitialHp * 0.25;
-    }
-
-    protected void startNextWave(GameSession session, int currentTick) {
+    public void startNextWave() {
         currentWave++;
-        if (currentWave >= waveCount) // methods will be return Result but just print for now
+        boolean isLastWave = (currentWave == waveCount);
+
+        if (currentWave == 1) {
+            currentDifficulty = baseWaveDifficulty;
+        } else {
+            if (isLastWave) {
+                currentDifficulty = currentDifficulty * 2;
+            } else {
+                currentDifficulty = (int) (currentDifficulty * 1.25);
+            }
+        }
+
+        currentActiveWave = new Wave(currentWave, isLastWave, currentDifficulty);
+
+        if (isLastWave) {
             System.out.println("The final wave has come.");
-        else
+        } else {
             System.out.println("Wave " + currentWave + " started.");
+        }
 
-        spawnWave(session, currentWave, getWaveDifficulty(currentWave));
-        if (seasonModifier != null) seasonModifier.onWaveStart(null);
+        spawnWave(currentActiveWave);
 
-        currentWaveInitialHp = 0;
-        for (Zombie z : session.getChosenZombies())
-            if (!z.isDead()) currentWaveInitialHp += z.getHealth();
-
-        if (currentWave >= waveCount) allWavesSpawned = true;
+        if (isLastWave) {
+            allWavesSpawned = true;
+        }
     }
 
-    protected void spawnWave(GameSession session, int waveNumber, int difficulty) {
-        System.out.println("[wave hook] spawn zombies worth " + difficulty + " wave points for wave " + waveNumber);
+    protected void spawnWave(Wave wave) {
+        int targetDifficulty = wave.getDifficulty();
+        int accumulatedCost = 0;
+
+        List<Zombie> allowedZombies = GameSession.getInstance().getChosenZombies();
+        if (allowedZombies.isEmpty()) return;
+
+        java.util.Random random = new java.util.Random();
+
+        while (accumulatedCost < targetDifficulty) {
+            Zombie template = allowedZombies.get(random.nextInt(allowedZombies.size()));
+
+            int lane = random.nextInt(5);
+
+            Zombie newZombie = InGameEntityGenerator.getZombieForGame(template.getType(), lane);
+            newZombie.setCol(8);
+
+            wave.addZombie(newZombie);
+            accumulatedCost += newZombie.getWaveCost();
+
+            GameSession.getInstance().getArena().addZombie(newZombie);
+
+            GameSession.getInstance().getTimeManager().registerNewTicker(newZombie);
+
+            System.out.println("Zombie " + newZombie.getType().name() +
+                    " spawned at wave " + wave.getCurrentNumber() +
+                    " in lane " + lane +
+                    " which costed " + newZombie.getWaveCost() + ".");
+        }
     }
 
     public boolean skipsPlantSelection() {
@@ -154,6 +169,10 @@ public abstract class Level implements GameMode {
 
     public boolean allWavesSpawned() {
         return allWavesSpawned;
+    }
+
+    public int getLevelNumber() {
+        return levelNumber;
     }
 
 }

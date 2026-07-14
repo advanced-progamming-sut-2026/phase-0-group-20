@@ -15,7 +15,7 @@ public class MoveZombiesStrategy implements IPlantStrategy {
     private int lastPullTick = 0;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         String name = context.getName();
         int plantRow = context.getPlacedTile().getRow();
         double plantCol = context.getPlacedTile().getCol();
@@ -29,11 +29,11 @@ public class MoveZombiesStrategy implements IPlantStrategy {
             int currentHp = context.getCurrentHp();
 
             if (currentHp < lastRecordedHp) {
-                List<Zombie> attackers = gameSession.getArena().getZombiesInRadius((int) plantCol, plantRow, 0.8);
+                List<Zombie> attackers = GameSession.getInstance().getArena().getZombiesInRadius((int) plantCol, plantRow, 0.8);
 
                 for (Zombie z : attackers) {
                     if (!z.isDead() && z.getRow() == plantRow) {
-                        moveZombieToAdjacentLane(z, plantRow, gameSession);
+                        moveZombieToAdjacentLane(z, plantRow, GameSession.getInstance());
                         System.out.println("🧄 Garlic forced " + z.getName() + " to switch lanes!");
                     }
                 }
@@ -45,7 +45,7 @@ public class MoveZombiesStrategy implements IPlantStrategy {
             int pullInterval = (int) (0.5 * TimeManager.TICKS_PER_SECOND);
 
             if (currentTick - lastPullTick >= pullInterval) {
-                for (Zombie z : gameSession.getArena().getActiveZombies()) {
+                for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
                     if (z.isDead()) continue;
 
                     int zRow = z.getRow();

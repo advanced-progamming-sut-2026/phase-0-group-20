@@ -10,10 +10,10 @@ public class FireSplashEffect implements ProjectileEffect {
 
 
     @Override
-    public void applyEffect(Zombie zombie, GameSession gameSession, Projectile projectile) {
+    public void applyEffect(Zombie zombie, Projectile projectile) {
         int splashDamage = projectile.getDamage() / 2;
 
-        List<Zombie> nearbyZombies = gameSession.getArena().getZombiesInRadius(
+        List<Zombie> nearbyZombies = GameSession.getInstance().getArena().getZombiesInRadius(
                 zombie.getCol(), zombie.getRow(), SPLASH_RADIUS
         );
 

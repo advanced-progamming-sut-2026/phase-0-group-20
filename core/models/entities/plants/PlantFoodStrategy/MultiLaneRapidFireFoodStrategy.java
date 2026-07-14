@@ -17,7 +17,7 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
         tickTimer++;
 
         if (tickTimer % 2 == 0) {
-            ProjectileMechanism.executeNewProjectile(plant, GameSession.getInstance(), true, false);
+            ProjectileMechanism.executeNewProjectile(plant,true, false);
             System.out.println(plant.getName() + " fired a fan-shaped rapid barrage across all its lanes!");
         }
     }

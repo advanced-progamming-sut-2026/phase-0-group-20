@@ -13,12 +13,12 @@ import models.timeManager.TimeManager;
  */
 
 public class DigestionStrategy implements IPlantStrategy {
-    private final int DIGESTION_DURATION_TICKS = 40 * TimeManager.TICKS_PER_SECOND;
+    private static final int DIGESTION_DURATION_TICKS = 40 * TimeManager.TICKS_PER_SECOND;
     private boolean isDigesting = false;
     private int digestionStartTick = -1;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         if (isDigesting) {
             if (currentTick - digestionStartTick >= DIGESTION_DURATION_TICKS) {
                 isDigesting = false;
@@ -30,7 +30,7 @@ public class DigestionStrategy implements IPlantStrategy {
             Zombie target = null;
             double minDistance = Double.MAX_VALUE;
 
-            for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
+            for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                 if (z.isDead()) continue;
 
                 double dist = z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - plantCol;

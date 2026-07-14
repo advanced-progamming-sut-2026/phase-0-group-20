@@ -1,7 +1,6 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
-import models.game.GameSession;
 import models.timeManager.TimeManager;
 
 /**
@@ -22,7 +21,7 @@ public class LifespanStrategy implements IPlantStrategy {
     }
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         aliveTicks++;
         if (aliveTicks >= lifespanTicks) {
             context.takeDamage(context.getCurrentHp());

@@ -20,7 +20,7 @@ public class StrikeThroughStrategy implements IPlantStrategy {
     private int lastShotTick = 0;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
@@ -28,7 +28,7 @@ public class StrikeThroughStrategy implements IPlantStrategy {
             int plantCol = context.getPlacedTile().getCol();
             boolean zombieFound = false;
 
-            for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
+            for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                 if (!z.isDead() && z.getCol() >= plantCol) {
                     if (context.getName().equals("Fume-shroom")) {
                         if (z.getCol() <= plantCol + 4) {
@@ -43,13 +43,13 @@ public class StrikeThroughStrategy implements IPlantStrategy {
             }
 
             if (zombieFound) {
-                shootPiercingProjectile(context, gameSession);
+                shootPiercingProjectile(context);
                 lastShotTick = currentTick;
             }
         }
     }
 
-    private void shootPiercingProjectile(Plant context, GameSession gameSession) {
+    private void shootPiercingProjectile(Plant context) {
         String name = context.getName();
         float spawnX = context.getPlacedTile().getCol();
         float spawnY = context.getPlacedTile().getRow();
@@ -74,7 +74,6 @@ public class StrikeThroughStrategy implements IPlantStrategy {
                     context,
                     type,
                     new NormalEffect(),
-                    gameSession,
                     damage,
                     new Position(spawnX, spawnY),
                     0.1f,
@@ -88,7 +87,7 @@ public class StrikeThroughStrategy implements IPlantStrategy {
                 projectile.setLifespanTicks(lifespan);
             }
 
-            gameSession.addProjectile(projectile);
+            GameSession.getInstance().getArena().addProjectile(projectile);
             System.out.println("💨 " + name + " fired a strike-through attack!");
         }
     }

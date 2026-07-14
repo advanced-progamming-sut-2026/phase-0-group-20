@@ -2,7 +2,6 @@ package models.entities.plants.strategy.tag_strategy;
 
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
-import models.game.GameSession;
 
 /**
  * Sleep Strategy (Day/Night mechanic):
@@ -15,7 +14,7 @@ public class SleepStrategy implements IPlantStrategy {
     private boolean isAsleep = true;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         // If it's a day level, this DigestionStrategy can block other strategies from executing.
         // In a real implementation, you might want to use a state machine or a flag
         // inside the Plant class (e.g., context.isAsleep()).

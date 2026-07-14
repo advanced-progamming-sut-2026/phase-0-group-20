@@ -1,7 +1,6 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
-import models.game.GameSession;
 
 /**
  * Lily Pad Strategy:
@@ -11,7 +10,7 @@ import models.game.GameSession;
  */
 public class LilyPadStrategy implements IPlantStrategy {
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         // Passive marker - no per-tick behavior.
     }
 }

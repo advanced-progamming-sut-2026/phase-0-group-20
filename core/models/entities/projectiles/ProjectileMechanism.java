@@ -13,7 +13,7 @@ import java.util.List;
 public class ProjectileMechanism {
 
 
-    public static void executeNewProjectile(Plant plant, GameSession gameSession, boolean shootForward, boolean shootBackward) {
+    public static void executeNewProjectile(Plant plant, boolean shootForward, boolean shootBackward) {
         int damage = parseDamage(plant.getDamage());
         ProjectileType type = getProjectileType(plant.getName());
         int plantRow = plant.getPlacedTile().getRow();
@@ -32,12 +32,11 @@ public class ProjectileMechanism {
 
                 if (speedX > 0 && !shootForward) continue;
                 if (speedX < 0 && !shootBackward) continue;
-                if (spawnRow >= 0 && spawnRow < gameSession.getArena().getRows()) {
+                if (spawnRow >= 0 && spawnRow < GameSession.getInstance().getArena().getRows()) {
 
                     Projectile.spawnNewProjectile(
                             plant,
                             type,
-                            gameSession,
                             50,
                             new Position(spawnCol, spawnRow),
                             speedX,
@@ -64,7 +63,6 @@ public class ProjectileMechanism {
             Projectile projectile = Projectile.spawnNewProjectile(
                     plant,
                     type,
-                    gameSession,
                     damage,
                     new Position(spawnX, spawnRow),
                     0,

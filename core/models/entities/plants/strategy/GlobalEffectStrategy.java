@@ -12,11 +12,11 @@ import models.timeManager.TimeManager;
  */
 
 public class GlobalEffectStrategy implements IPlantStrategy {
-    private final int ACTIVATION_DELAY = 1 * TimeManager.TICKS_PER_SECOND;
+    private static final int ACTIVATION_DELAY = TimeManager.TICKS_PER_SECOND;
     private int startTick = -1;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         if (startTick == -1) startTick = currentTick;
 
         if (currentTick - startTick >= ACTIVATION_DELAY) {
@@ -24,7 +24,7 @@ public class GlobalEffectStrategy implements IPlantStrategy {
             if (context.getName().equals("Ice-shroom")) {
                 System.out.println("❄️ Ice-shroom exploded and froze the entire board!");
 
-                for (Zombie z : gameSession.getArena().getActiveZombies()) {
+                for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
                     if (!z.isDead()) {
                         // freeze zombie
                         System.out.println("-> " + z.getName() + " is completely frozen!");

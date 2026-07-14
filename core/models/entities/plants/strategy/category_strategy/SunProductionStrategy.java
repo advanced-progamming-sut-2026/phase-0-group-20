@@ -13,7 +13,7 @@ public class SunProductionStrategy implements IPlantStrategy {
     private boolean hasProducedInstant = false;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         aliveTicks++;
         String plantName = context.getName();
 

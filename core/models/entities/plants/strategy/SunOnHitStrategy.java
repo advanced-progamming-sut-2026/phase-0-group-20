@@ -15,7 +15,7 @@ public class SunOnHitStrategy implements IPlantStrategy {
     private int sunPerHit = 5;
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         // Initialize the HP tracker on the first tick
         if (lastRecordedHp == -1) {
             lastRecordedHp = context.getCurrentHp();
@@ -31,8 +31,8 @@ public class SunOnHitStrategy implements IPlantStrategy {
             int spawnY = context.getPlacedTile().getRow();
 
             Sun newSun = new Sun(sunPerHit, spawnX, spawnY, currentTick);
-            gameSession.getArena().addSun(newSun);
-            gameSession.getTimeManager().registerNewTicker(newSun);
+            GameSession.getInstance().getArena().addSun(newSun);
+            GameSession.getInstance().getTimeManager().registerNewTicker(newSun);
 
             lastRecordedHp = currentHp;
             System.out.println("☀️ " + context.getName() + " was bitten! Dropped " + sunPerHit + " sun.");
