@@ -85,7 +85,7 @@ public class ChargeStrategy implements IPlantStrategy {
                 }
             } else {
                 for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
-                    if (!z.isDead() && z.getX() >= plantCol) {
+                    if (!z.isDead() && z.getCol() >= plantCol) {
                         target = z;
                         break;
                     }

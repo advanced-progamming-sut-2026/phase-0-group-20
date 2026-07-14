@@ -47,12 +47,12 @@ public class IceCaveModifier implements SeasonModifier {
 
     @Override
     public void updateEnvironment(int currentTick, Arena arena) {
-        // in this season icy projectiles never chill or freeze zombies
+        // in this season icy projectiles never freeze zombies
 
         for (Zombie zombie : arena.getActiveZombies()) {
-            boolean chilled = zombie.getActiveEffects().stream()
-                    .anyMatch(zombieEffect -> zombieEffect instanceof ChillEffect || zombieEffect instanceof FreezeEffect);
-            if (chilled) zombie.removeChillEffect();
+            boolean frozen = zombie.getActiveEffects().stream()
+                    .anyMatch(zombieEffect -> zombieEffect instanceof FreezeEffect);
+            if (frozen) zombie.removeFreezeEffect();
         }
 
         frostbiteLevels.keySet().removeIf(plant -> plant.getCurrentHp() <= 0);

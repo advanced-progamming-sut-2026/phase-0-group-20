@@ -3,6 +3,7 @@ package models.game;
 import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.enums.PhysicalConstants;
 import models.fields.LawnMower;
 import models.fields.tiles.NormalTile;
 import models.fields.tiles.Tile;
@@ -47,8 +48,9 @@ public class Arena {
         List<Zombie> result = new ArrayList<>();
         for (Zombie zombie : activeZombies) {
             if (zombie.isDead()) continue;
-            double dx = zombie.getX() - column;
-            double dy = zombie.getRow() - lane;
+            radius *= PhysicalConstants.TILE_UNIT_LENGTH;
+            double dx = zombie.getX() - column * PhysicalConstants.TILE_UNIT_LENGTH;
+            double dy = zombie.getY() - lane * PhysicalConstants.TILE_UNIT_LENGTH;
             if (Math.sqrt(dx * dx + dy * dy) <= radius) result.add(zombie);
         }
         return result;
@@ -80,17 +82,16 @@ public class Arena {
         return target;
     }
 
-    public Sun getSunInCoordinate(int x, int y) {
+    public Sun getSunInCoordinate(int col, int row) {
         for (Sun sun : activeSuns) {
-            if (!sun.isCollected() && sun.getX() == x && sun.getY() == y) return sun;
+            if (!sun.isCollected() && sun.getCol() == col && sun.getRow() == row) return sun;
         }
         return null;
     }
 
     public void setZombiesOnTiles() {
         for (Zombie zombie : activeZombies) {
-            int x = (int) zombie.getX();
-            zombie.setTile(this.tiles[zombie.getRow()][x]);
+            zombie.setTile(this.tiles[zombie.getRow()][zombie.getCol()]);
         }
     }
 

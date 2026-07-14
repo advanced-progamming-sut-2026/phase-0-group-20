@@ -8,7 +8,6 @@ public final class Position {
     private float x;
     private float y;
     private int col;
-
     private int row;
 
     public Position(float x, float y) {

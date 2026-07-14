@@ -28,7 +28,7 @@ public class ProspectorMove implements MoveBehavior {
         }
 
         if (isBlownToBack) {
-            zombie.setX((int) (zombie.getX() + zombie.getCurrentSpeed()));
+            zombie.getPosition().moveX(zombie.getCurrentSpeed());
         } else {
             zombie.moveForward();
         }

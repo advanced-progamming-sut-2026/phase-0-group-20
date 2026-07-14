@@ -8,6 +8,7 @@ import models.entities.projectiles.Projectile;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
+import models.enums.PhysicalConstants;
 import models.fields.tiles.Tile;
 import models.game.adventure.Chapter;
 import models.game.events.GameEvent;
@@ -179,7 +180,7 @@ public class GameSession {
                 if (z.isDead()) continue;
 
                 double dx = proj.getX() - z.getX();
-                double dy = proj.getY() - z.getRow();
+                double dy = proj.getY() - z.getY();
                 double distanceSquared = (dx * dx) + (dy * dy);
 
                 double combinedRadius = projectileHitRadius + zombieHitRadius;
@@ -197,7 +198,7 @@ public class GameSession {
             if (z.isDead()) continue;
 
             int row = z.getRow();
-            int targetCol = (int) (z.getX() - 0.2);//mostly for phase 2... If you want You can remove the front threshold
+            int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - 0.2);//mostly for phase 2... If you want You can remove the front threshold
 
             Tile targetTile = arena.getTile(row, targetCol);
             List<Plant> plantToEat = targetTile.getPlants();
@@ -221,7 +222,7 @@ public class GameSession {
 
         for (Sun sun : arena.getActiveSuns()) {
             if (sun.isCollected() && sun.isFalling() && sun.getType() == SunType.RADIOACTIVE_SUN) {
-                Tile sunTile = arena.getTile(sun.getX(), sun.getY()); //damaging zombies
+                Tile sunTile = arena.getTile(sun.getCol(), sun.getRow()); //damaging zombies
                 int rightTile = Math.min(sunTile.getCol() + 2, arena.getCols() - 1);
                 int leftTile = Math.max(sunTile.getCol() - 2, 0);
                 int upTile = Math.min(sunTile.getRow() + 2, arena.getRows() - 1);

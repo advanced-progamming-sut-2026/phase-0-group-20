@@ -1,6 +1,17 @@
 package models.entities.plants.PlantFoodStrategy;
 
 import models.entities.plants.Plant;
+import models.entities.projectiles.ProjectileMechanism;
+import models.entities.zombies.Zombie;
+import models.entities.zombies.ZombieState;
+import models.entities.zombies.behavior.effect.ChillEffect;
+import models.entities.zombies.behavior.effect.FreezeEffect;
+import models.enums.PhysicalConstants;
+import models.game.GameSession;
+import models.game.adventure.SeasonType;
+
+import java.util.List;
+import java.util.Random;
 
 /**
  * A single effect applied to every zombie on the field (or every zombie
@@ -19,8 +30,63 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
         this.description = description;
     }
 
+
     @Override
     public void executeStrategy(Plant plant) {
+        GameSession gameSession = GameSession.getInstance();
+        List<Zombie> allZombies = gameSession.getArena().getActiveZombies();
+        String plantName = plant.getName().toLowerCase();
+
+        int plantRow = plant.getPlacedTile().getRow();
+        int plantCol = plant.getPlacedTile().getCol();
+
+        switch (plantName) {
+            case "iceberg lettuce":
+                for (Zombie zombie : allZombies)
+                    if (!zombie.isDead())
+                        if (gameSession.getCurrentChapter().getSeasonType() == SeasonType.FROZEN_CAVES)
+                            zombie.addEffect(new ChillEffect(zombie, 150));
+                        else
+                            zombie.addEffect(new FreezeEffect(zombie, 150));
+                break;
+
+            case "kernel-pult":
+                for (Zombie zombie : allZombies)
+                    if (!zombie.isDead())
+                        ProjectileMechanism.executeTargetedProjectile(plant, gameSession, zombie, 0);
+                break;
+
+            case "garlic":
+                for (Zombie zombie : gameSession.getArena().zombieInRow(plantRow)) //just the zombies in the current row not whole field
+                    if (!zombie.isDead())
+                        shiftZombieToAdjacentLane(zombie, gameSession);
+                break;
+
+            case "sweet potato":
+                plant.setCurrentHp(plant.getBaseHp());
+                List<Zombie> nearby = gameSession.getArena().getZombiesInRadius(plantCol, plantRow, PhysicalConstants.TILE_UNIT_LENGTH * 2);
+                for (Zombie zombie : nearby)
+                    if (!zombie.isDead() && zombie.getRow() != plantRow)
+                        zombie.setRow(plantRow);
+                break;
+
+            default:
+                System.out.println("WARNING: Unmapped field-wide effect for: " + plant.getName());
+        }
+
         System.out.println(plant.getName() + " triggered a field-wide effect: " + description);
+    }
+
+    private void shiftZombieToAdjacentLane(Zombie zombie, GameSession gameSession) {
+        int currentRow = zombie.getRow();
+        int maxRows = gameSession.getArena().getRows();
+
+        boolean canGoUp = (currentRow > 0);
+        boolean canGoDown = (currentRow < maxRows - 1);
+
+        if (canGoUp && canGoDown) zombie.setRow(currentRow - 1 + new Random().nextInt(2) * 2); //current row - 1 + (0 or 2)
+        else if (canGoUp) zombie.setRow(currentRow - 1);
+        else if (canGoDown) zombie.setRow(currentRow + 1);
+        else zombie.setState(ZombieState.STUNNED);
     }
 }

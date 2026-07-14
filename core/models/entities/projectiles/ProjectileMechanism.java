@@ -96,6 +96,7 @@ public class ProjectileMechanism {
             case "Caulipower" -> ProjectileType.MAGIC_BEAM;
             case "Electric Blueberry" -> ProjectileType.LIGHTNING_CLOUD;
             case "citron" -> ProjectileType.PLASMA_BALL;
+            case "kernel-pult" -> ProjectileType.BUTTER;
             default -> ProjectileType.PEA;
         };
     }

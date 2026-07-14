@@ -24,8 +24,8 @@ public class LowShoreTile extends Tile {
     public void spawnZombieFromBelow(Zombie zombie) {
         if (zombie == null) return;
 
-        zombie.setRow(row);
-        zombie.setX(col);
+        zombie.setRow(position.getRow());
+        zombie.setCol( position.getCol());
         GameSession session = GameSession.getInstance();
         session.getArena().addZombie(zombie);
         session.getTimeManager().registerNewTicker(zombie);

@@ -14,8 +14,8 @@ public class ZombieVaseTile extends Tile {
     }
 
     public VaseInside breakVase() {
-        System.out.println("Vase broken at [" + row + "][" + col + "]");
-        GameSession.getInstance().getArena().changeTile(row, col, new NormalTile(row, col));
+        System.out.println("Vase broken at [" + position.getRow() + "][" +  position.getCol() + "]");
+        GameSession.getInstance().getArena().changeTile(position.getRow(),  position.getCol(), new NormalTile(position.getRow(),  position.getCol()));
         return VaseInside.ZOMBIE;
     }
 

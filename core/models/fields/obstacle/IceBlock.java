@@ -67,7 +67,7 @@ public class IceBlock implements Ticker {
 
         if (frozenZombie != null) {
             frozenZombie.setRow(row);
-            frozenZombie.setX(col);
+            frozenZombie.setCol(col);
             session.getArena().addZombie(frozenZombie);
             session.getTimeManager().registerNewTicker(frozenZombie);
             frozenZombie = null;

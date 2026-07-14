@@ -1,5 +1,6 @@
 package models.entities;
 
+import models.Position;
 import models.game.GameSession;
 import models.timeManager.Ticker;
 
@@ -10,25 +11,22 @@ public class Sun implements Ticker {
     // don't forget to use position beautiful boys
 
     private SunType type;
-    private int x;
-    private int y;
+    private Position position;
     private int fallTicksLeft = 50;
     private boolean isFalling = true;
     private boolean isCollected = false;
     private boolean exploded = false;
 
-    public Sun(SunType type, int x, int y, int currentTick) {
+    public Sun(SunType type, int col, int row, int currentTick) {
         this.type = type;
-        this.x = x;
-        this.y = y;
+        this.position = new Position(col, row);
         this.productionTime = currentTick;
         this.amountProduced = type.getValue();
     }
 
-    public Sun(int amount, int x, int y, int currentTick) {
+    public Sun(int amount, int col, int row, int currentTick) {
         this.type = null;
-        this.x = x;
-        this.y = y;
+        this.position = new Position(col, row);
         this.productionTime = currentTick;
         this.amountProduced = amount;
     }
@@ -51,7 +49,7 @@ public class Sun implements Ticker {
             this.amountProduced = this.type.getValue();
         }
 
-        System.out.printf("Sun reached the ground at position (%d, %d)\n", x, y);
+        System.out.printf("Sun reached the ground at position (%d, %d)\n", getCol(), getRow());
     }
 
     public void collect() {
@@ -64,12 +62,12 @@ public class Sun implements Ticker {
         }
     }
 
-    public int getX() {
-        return x;
+    public int getCol() {
+        return position.getCol();
     }
 
-    public int getY() {
-        return y;
+    public int getRow() {
+        return position.getRow();
     }
 
     public boolean isFalling() {

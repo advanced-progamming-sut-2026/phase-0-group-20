@@ -1,5 +1,6 @@
 package models.game.events;
 
+import models.Position;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.game.Arena;
@@ -30,8 +31,7 @@ public class GameEventPayload {
     private final SeasonType seasonType;
     private final Plant plant;
     private final int amount;
-    private final int row;
-    private final int col;
+    private final Position position;
 
     private GameEventPayload(Builder builder) {
         this.type = builder.type;
@@ -40,20 +40,41 @@ public class GameEventPayload {
         this.seasonType = builder.seasonType;
         this.plant = builder.plant;
         this.amount = builder.amount;
-        this.row = builder.row;
-        this.col = builder.col;
+        this.position = new Position(builder.position.getCol(), builder.position.getRow());
     }
 
 
+    public GameEvent getType() {
+        return type;
+    }
 
-    public GameEvent getType() { return type; }
-    public Zombie getZombie() { return zombie; }
-    public Plant getPlant() { return plant; }
-    public int getAmount() { return amount; }
-    public int getRow() { return row; }
-    public int getCol() { return col; }
-    public SeasonType getSeasonType() { return seasonType; }
-    public Arena getArena() { return arena; }
+    public Zombie getZombie() {
+        return zombie;
+    }
+
+    public Plant getPlant() {
+        return plant;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public int getRow() {
+        return position.getRow();
+    }
+
+    public int getCol() {
+        return position.getCol();
+    }
+
+    public SeasonType getSeasonType() {
+        return seasonType;
+    }
+
+    public Arena getArena() {
+        return arena;
+    }
 
 
     public static class Builder {
@@ -64,8 +85,7 @@ public class GameEventPayload {
         private SeasonType seasonType;
         private Plant plant;
         private int amount = 0;
-        private int row = -1;
-        private int col = -1;
+        private Position position;
 
         public Builder(GameEvent type) {
             this.type = type;
@@ -97,8 +117,8 @@ public class GameEventPayload {
         }
 
         public Builder coordinate(int row, int col) {
-            this.row = row;
-            this.col = col;
+            position.setRow(row);
+            position.setCol(col);
             return this;
         }
 

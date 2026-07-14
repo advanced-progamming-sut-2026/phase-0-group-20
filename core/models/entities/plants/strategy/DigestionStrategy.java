@@ -2,6 +2,7 @@ package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.enums.PhysicalConstants;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 
@@ -32,7 +33,7 @@ public class DigestionStrategy implements IPlantStrategy {
             for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
                 if (z.isDead()) continue;
 
-                double dist = z.getX() - plantCol;
+                double dist = z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - plantCol;
 
                 if (dist >= -0.5 && dist <= 1.5) {
                     if (dist < minDistance) {
@@ -44,7 +45,7 @@ public class DigestionStrategy implements IPlantStrategy {
 
             if (target != null) {
                 System.out.println("🦖 " + context.getName() + " swallowed " + target.getName() + " whole!");
-                target.takeDirectDamage(9999,context);
+                target.takeDirectDamage(9999, context);
 
                 isDigesting = true;
                 digestionStartTick = currentTick;

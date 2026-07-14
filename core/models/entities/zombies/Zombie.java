@@ -1,5 +1,6 @@
 package models.entities.zombies;
 
+import models.Position;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.armour.Armor;
@@ -49,9 +50,7 @@ public class Zombie implements Ticker {
     private boolean isHypnotized = false;
     private GameEventMessenger messenger = GameEventMessenger.getInstance();
 
-    private int row;
-    private int col;
-    private double x;
+    private Position position;
 
     public Zombie(ZombieType type, ZombieData data, int row, MoveBehavior moveBehavior, AttackBehavior attackBehavior, DefenseBehavior defenseBehavior) {
         this.type = type;
@@ -62,8 +61,8 @@ public class Zombie implements Ticker {
         this.currentSpeed = data.getSpeed();
         this.eatDPS = data.getEatDps();
         this.waveCost = data.getWaveCost();
-        this.row = row;
-        this.x = 10.0f;// initial state
+        this.position = new Position(0, row);
+        this.position.setX(10.0f);
         this.moveBehavior = moveBehavior;
         this.defenseBehavior = defenseBehavior;
         this.attackBehavior = attackBehavior;
@@ -97,7 +96,7 @@ public class Zombie implements Ticker {
         if (dead) return false;
 
         if (projectileType == null) { // for lawn
-            return applyHealthDamage(health,projectile );
+            return applyHealthDamage(health, projectile);
         }
 
         if (defenseBehavior != null && defenseBehavior.deflectProjectile(projectileType)) {
@@ -123,7 +122,7 @@ public class Zombie implements Ticker {
             }
         }
 
-        return applyHealthDamage(remaining,projectile);
+        return applyHealthDamage(remaining, projectile);
     }
 
     public void takeDamage(int damage) {
@@ -139,7 +138,7 @@ public class Zombie implements Ticker {
         return projectileType == ProjectileType.GOO_PEA;
     }
 
-    private boolean applyHealthDamage(int remaining ,Projectile projectile) {
+    private boolean applyHealthDamage(int remaining, Projectile projectile) {
         health -= remaining;
         if (health <= 0) {
             health = 0;
@@ -178,7 +177,7 @@ public class Zombie implements Ticker {
             GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
                     .zombie(this)
                     .plant(plant)
-                    .coordinate(this.getRow(),this.getCol())
+                    .coordinate(this.getRow(), this.getCol())
                     .build();
             GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
             return true;
@@ -221,7 +220,12 @@ public class Zombie implements Ticker {
     }
 
     public void removeChillEffect() {
-        activeEffects.removeIf(e -> e instanceof ChillEffect || e instanceof FreezeEffect);
+        activeEffects.removeIf(e -> e instanceof ChillEffect);
+        resetSpeed();
+    }
+
+    public void removeFreezeEffect() {
+        activeEffects.removeIf(e -> e instanceof FreezeEffect);
         resetSpeed();
     }
 
@@ -245,20 +249,28 @@ public class Zombie implements Ticker {
         return type;
     }
 
-    public double getX() {
-        return x;
+    public float getX() {
+        return position.getX();
     }
 
-    public void setX(double x) {
-        this.x = x;
+    public void setX(float x) {
+        position.setX(x);
+    }
+
+    public float getY() {
+        return position.getY();
+    }
+
+    public void setY(float y) {
+        position.setY(y);
     }
 
     public int getRow() {
-        return row;
+        return position.getRow();
     }
 
     public void setRow(int row) {
-        this.row = row;
+        position.setRow(row);
     }
 
     public int getHealth() {
@@ -342,7 +354,7 @@ public class Zombie implements Ticker {
     }
 
     public void moveForward() {
-        this.x -= this.currentSpeed;
+        position.moveX(-this.currentSpeed);
     }
 
     public Tile getTile() {
@@ -354,11 +366,11 @@ public class Zombie implements Ticker {
     }
 
     public int getCol() {
-        return col;
+        return position.getCol();
     }
 
     public void setCol(int col) {
-        this.col = col;
+        position.setCol(col);
     }
 
     public int getWeight() {
@@ -427,5 +439,9 @@ public class Zombie implements Ticker {
 
     public boolean isHypnotized() {
         return isHypnotized;
+    }
+
+    public Position getPosition() {
+        return position;
     }
 }

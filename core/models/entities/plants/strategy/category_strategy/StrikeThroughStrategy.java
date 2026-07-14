@@ -29,9 +29,9 @@ public class StrikeThroughStrategy implements IPlantStrategy {
             boolean zombieFound = false;
 
             for (Zombie z : gameSession.getArena().zombieInRow(plantRow)) {
-                if (!z.isDead() && z.getX() >= plantCol) {
+                if (!z.isDead() && z.getCol() >= plantCol) {
                     if (context.getName().equals("Fume-shroom")) {
-                        if (z.getX() <= plantCol + 4.0) {
+                        if (z.getCol() <= plantCol + 4) {
                             zombieFound = true;
                             break;
                         }

@@ -5,6 +5,7 @@ import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.ProjectileMechanism;
 import models.entities.zombies.Zombie;
+import models.enums.PhysicalConstants;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 
@@ -39,8 +40,8 @@ public class HomingStrategy implements IPlantStrategy {
                     int plantCol = context.getPlacedTile().getCol();
 
                     for (Zombie z : validTargets) {
-                        float dx = (float) z.getX() - plantCol;
-                        float dy = z.getRow() - plantRow;
+                        float dx = z.getX()/ PhysicalConstants.TILE_UNIT_LENGTH - plantCol;
+                        float dy = (z.getRow() - plantRow) * PhysicalConstants.TILE_UNIT_LENGTH;
                         float distance = (float) Math.sqrt(dx * dx + dy * dy);
                         if (distance < minDistance) {
                             minDistance = distance;
