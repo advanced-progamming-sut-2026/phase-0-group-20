@@ -30,7 +30,6 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
         Projectile.spawnNewProjectile(
                 plant,
                 type,
-                session,
                 damage,
                 new Position(plantCol, currentRow),
                 1,

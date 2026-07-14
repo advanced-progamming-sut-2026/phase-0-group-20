@@ -49,7 +49,7 @@ public class ProjectileMechanism {
         }
     }
 
-    public static void executeTargetedProjectile(Plant plant, GameSession gameSession, Zombie target, int burstIndex) {
+    public static void executeTargetedProjectile(Plant plant, Zombie target, int burstIndex) {
         int damage = parseDamage(plant.getDamage());
         ProjectileType type = getProjectileType(plant.getName());
 

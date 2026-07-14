@@ -19,7 +19,7 @@ public class SunProductionStrategy implements IPlantStrategy {
 
         if (plantName.equals("Gold Bloom")) {
             if (!hasProducedInstant) {
-                spawnSun(context, gameSession, SunType.HUGE_SUN, currentTick);
+                spawnSun(context, GameSession.getInstance(), SunType.HUGE_SUN, currentTick);
                 context.takeDamage(context.getCurrentHp());
                 hasProducedInstant = true;
             }
@@ -31,7 +31,7 @@ public class SunProductionStrategy implements IPlantStrategy {
         if (intervalInTicks > 0 && (currentTick - lastProductionTick) >= intervalInTicks) {
 
             SunType type = getSunTypeForPlant(plantName, aliveTicks);
-            spawnSun(context, gameSession, type, currentTick);
+            spawnSun(context,  GameSession.getInstance(), type, currentTick);
 
             lastProductionTick = currentTick;
         }

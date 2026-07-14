@@ -21,7 +21,7 @@ public class SpikeStrategy implements IPlantStrategy {
 
 
     @Override
-    public void execute(Plant context, int currentTick, GameSession gameSession) {
+    public void execute(Plant context, int currentTick) {
         if (currentTick - lastDamageTick >= DAMAGE_INTERVAL) {
             int plantRow = context.getPlacedTile().getRow();
             int plantCol = context.getPlacedTile().getCol();
@@ -29,7 +29,7 @@ public class SpikeStrategy implements IPlantStrategy {
 
 
 
-            List<Zombie> attackingZombies = gameSession.getArena().getZombiesInRadius(plantCol, plantRow, 0.8);
+            List<Zombie> attackingZombies =  GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 0.8);
 
             for (Zombie z : attackingZombies) {
                 damage = 20;
