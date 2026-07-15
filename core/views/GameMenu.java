@@ -1,9 +1,7 @@
 package views;
 
 import controllers.GameController.GameMenuController;
-import controllers.NavigationController;
 import models.enums.commands.GameMenuCommands;
-import models.enums.commands.MainCommands;
 
 import java.util.Scanner;
 import java.util.regex.Matcher;

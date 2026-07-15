@@ -3,7 +3,7 @@ package models.fields.tiles;
 import models.entities.plants.Plant;
 import models.game.GameSession;
 
-public class ZombieVaseTile extends Tile {
+public class ZombieVaseTile extends Tile implements VaseTile {
     public ZombieVaseTile(int row, int col) {
         super(row, col);
     }
@@ -13,6 +13,7 @@ public class ZombieVaseTile extends Tile {
 
     }
 
+    @Override
     public VaseInside breakVase() {
         System.out.println("Vase broken at [" + position.getRow() + "][" + position.getCol() + "]");
         GameSession.getInstance().getArena().changeTile(position.getRow(), position.getCol(), new NormalTile(position.getRow(), position.getCol()));

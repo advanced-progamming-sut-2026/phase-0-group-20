@@ -5,13 +5,11 @@ import models.entities.Sun;
 import models.entities.SunType;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
-import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
 import models.enums.PhysicalConstants;
 import models.fields.tiles.Tile;
 import models.game.adventure.Chapter;
-import models.game.adventure.levels.Level;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
@@ -113,7 +111,7 @@ public class GameSession {
                 timeManager.unregisterTicker(plant);
                 GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
                         .plant(plant)
-                        .coordinate(plant.getPlacedTile().getRow(),plant.getPlacedTile().getCol())
+                        .coordinate(plant.getPlacedTile().getRow(), plant.getPlacedTile().getCol())
                         .arena(arena)
                         .build();
                 GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST, payload);

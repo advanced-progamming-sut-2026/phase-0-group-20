@@ -250,9 +250,9 @@ public class PlantFactory {
         }
     }
 
-    public static List<Plant> createListOfPlants(List<Plant> plants){
+    public static List<Plant> createListOfPlants(List<Plant> plants) {
         List<Plant> newList = new ArrayList<>();
-        for(Plant plant: plants){
+        for (Plant plant : plants) {
             int id = plant.getId();
             Plant newPlant = create(id);
             newList.add(newPlant);
