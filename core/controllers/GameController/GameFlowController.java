@@ -4,11 +4,14 @@ import models.Result;
 import models.entities.PlantFood;
 import models.entities.Sun;
 import models.entities.plants.Plant;
+import models.entities.plants.PlantFactory;
 import models.entities.zombies.Zombie;
 import models.fields.LawnMower;
 import models.fields.tiles.*;
 import models.game.Arena;
+import models.game.GameMode;
 import models.game.GameSession;
+import models.game.adventure.levels.speciallevels.ConveyorBelt;
 import models.timeManager.TimeManager;
 
 import java.util.Collections;
@@ -83,7 +86,8 @@ public class GameFlowController {
     }
 
     public Result plantPlant(String plantName, String x, String y) {
-        Arena arena = GameSession.getInstance().getArena();
+        GameSession session = GameSession.getInstance();
+        Arena arena = session.getArena();
         int spawnX, spawnY;
         try {
             spawnX = Integer.parseInt(x);
@@ -94,13 +98,36 @@ public class GameFlowController {
         if (spawnX < 1 || spawnY < 1) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
-        List<Plant> chosenPlants = GameSession.getInstance().getChosenPlants();
-        Plant plant = chosenPlants.stream()
-                .filter(p -> p.getName().equalsIgnoreCase(plantName))
-                .findFirst()
-                .orElse(null);
+        Plant plant = null;
+        if (session.getCurrentMode() instanceof ConveyorBelt currentLevel) {
+            List<Plant> belt = currentLevel.getBelt();
+            if (belt.isEmpty()) {
+                return new Result(false, "There is no plant in the belt rightNow.");
+            }
+            plant = belt.stream()
+                    .filter(p -> p.getName().equalsIgnoreCase(plantName))
+                    .findFirst()
+                    .orElse(null);
+
+        } else {
+            plant = session.getChosenPlants().stream()
+                    .filter(p -> p.getName().equalsIgnoreCase(plantName))
+                    .findFirst()
+                    .orElse(null);
+            if (plant != null) {
+                if (session.getCurrentSun() < plant.getCost()) {
+                    return new Result(false, "Not enough sun to plant " + plant.getName() + "!");
+                }
+                Integer cd = session.getPlantsCooldown().get(plant);
+                if (cd != null && cd > 0) {
+                    return new Result(false, plant.getName() + " is still recharging!");
+                }
+            }
+        }
         if (plant == null) {
-            return new Result(false, "There no such plant named " + plantName);
+            return new Result(false,(session.getCurrentMode()instanceof ConveyorBelt)
+                    ?"There is no such plant named " + plantName+"in the belt"
+                    :"There no such plant named " + plantName);
         }
         Tile desiredTile = arena.getTile(spawnX - 1, spawnY - 1);
         if (desiredTile == null) {
@@ -110,10 +137,10 @@ public class GameFlowController {
         if (!desiredTile.isPlantable(plant)) {
             return new Result(false, "You can not plant this plant here");
         }
-
-        desiredTile.addPlant(plant);
-        GameSession.getInstance().setPlantCooldown(plant);
-        return new Result(true, "You plant a plant in " + spawnX + "," + spawnY + " with the name of" + plant.getName() + ".");
+        Plant newPlant = PlantFactory.create(plant.getId());
+        desiredTile.addPlant(newPlant);
+        GameSession.getInstance().setPlantCooldown(newPlant);
+        return new Result(true, "You plant a plant in " + spawnX + "," + spawnY + " with the name of" + newPlant.getName() + ".");
     }
 
     public Result cheatRemoveCooldown() {
@@ -192,7 +219,8 @@ public class GameFlowController {
         Arena arena = session.getArena();
         StringBuilder mapDisplay = new StringBuilder();
 
-        int currentWave = (session.getWaveManager() != null) ? session.getWaveManager().getCurrentNumber() : 0;
+        int currentWave = (session.getArena().getCurrentActiveWave() != null) ?
+                session.getArena().getCurrentActiveWave().getCurrentNumber() : 0;
         int sunAmount = session.getCurrentSun();
         int plantFoodsCount = (session.getPlantFoods() != null) ? session.getPlantFoods().size() : 0;
 
@@ -267,7 +295,19 @@ public class GameFlowController {
     public Result showPlantsStatus() {
         GameSession session = GameSession.getInstance();
         StringBuilder statusDisplay = new StringBuilder();
-
+        GameMode currentMode = session.getCurrentMode();
+        if (currentMode instanceof ConveyorBelt conveyor) {
+            List<Plant> belt = conveyor.getBelt();
+            if (belt.isEmpty()) {
+                return new Result(true, "The conveyor belt is currently empty! Wait for the next drop.");
+            }
+            statusDisplay.append("=== CONVEYOR BELT ===\n");
+            for (int i = 0; i < belt.size(); i++) {
+                statusDisplay.append("[").append(i+1).append("] ").append(belt.get(i).getName()).append("\n");
+            }
+            statusDisplay.deleteCharAt(statusDisplay.length()-1);
+            return new Result(true, statusDisplay.toString());
+        }
         List<Plant> chosenPlants = session.getChosenPlants();
         int currentSun = session.getCurrentSun();
         HashMap<Plant, Integer> cooldowns = session.getPlantsCooldown();
@@ -294,8 +334,8 @@ public class GameFlowController {
                 }
             }
         }
-
-        return new Result(true, statusDisplay.toString().trim());
+        statusDisplay.deleteCharAt(statusDisplay.length()-1);
+        return new Result(true, statusDisplay.toString());
     }
 
     public Result showTileStatus(String x, String y) {
