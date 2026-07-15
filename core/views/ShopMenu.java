@@ -13,17 +13,15 @@ public class ShopMenu implements AppMenu {
 
 
     public void check(Scanner scanner) {
-        String input = scanner.nextLine();
+        String input = scanner.nextLine().trim();
+
+        if (checkGlobalCommand(input)) {
+            return;
+        }
 
         Matcher matcher;
 
-        if ((matcher = MainCommands.EXIT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.exitMenu());
-        } else if ((matcher = MainCommands.ENTER_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.enterMenu(matcher.group("name")));
-        } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.showCurrentMenu());
-        } else if ((matcher = ShopMenuCommands.SHOW_SHOP.getMatcher(input)) != null) {
+        if ((matcher = ShopMenuCommands.SHOW_SHOP.getMatcher(input)) != null) {
             System.out.println(controller.showShop());
         } else if ((matcher = ShopMenuCommands.BUY_ITEM.getMatcher(input)) != null) {
             System.out.println(controller.buyItem(matcher.group("item")));

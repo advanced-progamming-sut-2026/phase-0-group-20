@@ -15,7 +15,7 @@ public class BossLevel extends Level {
     }
 
     @Override
-    public void dorosteshKonin(GameSession session, int currentTick) {
+    public void engineLoop(GameSession session, int currentTick) {
 
     }
 }

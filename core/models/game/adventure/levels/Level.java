@@ -2,6 +2,7 @@ package models.game.adventure.levels;
 
 import models.InGameEntityGenerator;
 import models.entities.plants.IPlant;
+import models.entities.plants.Plant;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
@@ -15,6 +16,7 @@ import models.game.adventure.SeasonType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public abstract class Level implements GameMode {
@@ -54,64 +56,65 @@ public abstract class Level implements GameMode {
         return GameState.RUNNING;
     }
 
+    @Override
+    public void engineLoop(GameSession session, int currentTick) {
+        if (allWavesSpawned) return;
 
-    public void startNextWave() {
+        Wave activeWave = session.getArena().getCurrentActiveWave();
+
+        if (currentWave == 0) {
+            startNextWave(session);
+        }
+        else if (activeWave != null && activeWave.is75PercentHpDestroyed()) {
+            startNextWave(session);
+        }
+    }
+
+    public void startNextWave(GameSession session) {
         currentWave++;
         boolean isLastWave = (currentWave == waveCount);
 
         if (currentWave == 1) {
             currentDifficulty = baseWaveDifficulty;
         } else {
-            if (isLastWave) {
-                currentDifficulty = currentDifficulty * 2;
-            } else {
-                currentDifficulty = (int) (currentDifficulty * 1.25);
-            }
+            currentDifficulty = isLastWave ? currentDifficulty * 2 : (int) (currentDifficulty * 1.25);
         }
 
-        currentActiveWave = new Wave(currentWave, isLastWave, currentDifficulty);
+        Wave newWave = new Wave(currentWave, isLastWave, currentDifficulty);
+        session.getArena().setCurrentActiveWave(newWave);
 
-        if (isLastWave) {
-            System.out.println("The final wave has come.");
-        } else {
-            System.out.println("Wave " + currentWave + " started.");
-        }
+        System.out.println(isLastWave ? "The final wave has come." : "Wave " + currentWave + " started.");
 
-        spawnWave(currentActiveWave);
+        spawnWave(newWave, session);
 
         if (isLastWave) {
             allWavesSpawned = true;
         }
     }
 
-    protected void spawnWave(Wave wave) {
+    protected void spawnWave(Wave wave, GameSession session) {
         int targetDifficulty = wave.getDifficulty();
         int accumulatedCost = 0;
 
-        List<Zombie> allowedZombies = GameSession.getInstance().getChosenZombies();
+        List<Zombie> allowedZombies = session.getChosenZombies();
         if (allowedZombies.isEmpty()) return;
 
-        java.util.Random random = new java.util.Random();
-
+        Random random = new Random();
         while (accumulatedCost < targetDifficulty) {
             Zombie template = allowedZombies.get(random.nextInt(allowedZombies.size()));
-
-            int lane = random.nextInt(5);
+            int lane = random.nextInt(session.getArena().getRows());
 
             Zombie newZombie = InGameEntityGenerator.getZombieForGame(template.getType(), lane);
-            newZombie.setCol(8);
+            newZombie.setCol(session.getArena().getCols() - 1); // better for the later arrangements
 
             wave.addZombie(newZombie);
             accumulatedCost += newZombie.getWaveCost();
 
-            GameSession.getInstance().getArena().addZombie(newZombie);
-
-            GameSession.getInstance().getTimeManager().registerNewTicker(newZombie);
+            session.getArena().addZombie(newZombie);
+            session.getTimeManager().registerNewTicker(newZombie);
 
             System.out.println("Zombie " + newZombie.getType().name() +
-                    " spawned at wave " + wave.getCurrentNumber() +
-                    " in lane " + lane +
-                    " which costed " + newZombie.getWaveCost() + ".");
+                    " spawned in lane " + lane + " (Cost: " + newZombie.getWaveCost() + ").");
         }
     }
 
@@ -123,7 +126,7 @@ public abstract class Level implements GameMode {
         return season != SeasonType.DARK_AGES;
     }
 
-    public boolean isPlantAllowed(IPlant plant) {
+    public boolean isPlantAllowed(Plant plant) {
         return true;
     }
 

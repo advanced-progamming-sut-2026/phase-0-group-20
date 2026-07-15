@@ -4,6 +4,8 @@ import models.entities.zombies.Zombie;
 import models.game.Arena;
 import models.game.GameSession;
 import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -44,6 +46,11 @@ public class LawnMower implements Ticker {
         for (Zombie z : arena.getActiveZombies()) {
             if (!z.isDead() && z.getRow() == this.row) {
                 z.takeDamage(10000, null);
+                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED_LAWN_MOWER)
+                        .zombie(z)
+                        .coordinate(this.row, z.getCol())
+                        .build();
+                GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, payload);
                 killedZombiesNames.add(z.getName());
             }
         }

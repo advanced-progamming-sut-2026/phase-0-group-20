@@ -14,15 +14,14 @@ public class GameFlowMenu implements AppMenu {
     @Override
     public void check(Scanner scanner) {
         String input = scanner.nextLine().trim();
+
+        if (checkGlobalCommand(input)) {
+            return;
+        }
+
         Matcher matcher;
 
-        if ((matcher = MainCommands.EXIT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.exitMenu());
-        } else if ((matcher = MainCommands.ENTER_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.enterMenu(matcher.group("name")));
-        } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.showCurrentMenu());
-        } else if ((matcher = GameFlowCommands.ADVANCE_TIME.getMatcher(input)) != null) {
+        if ((matcher = GameFlowCommands.ADVANCE_TIME.getMatcher(input)) != null) {
             System.out.println(controller.advanceTime(matcher.group("count")));
 
         } else if ((matcher = GameFlowCommands.COLLECT_SUN.getMatcher(input)) != null) {

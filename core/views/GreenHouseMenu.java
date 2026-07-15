@@ -15,7 +15,12 @@ public class GreenHouseMenu implements AppMenu {
 
     @Override
     public void check(Scanner scanner) {
-        String input = scanner.nextLine();
+        String input = scanner.nextLine().trim();
+
+        if (checkGlobalCommand(input)) {
+            return;
+        }
+
         Matcher matcher;
 
         GreenHouse greenHouse = null;
@@ -23,13 +28,7 @@ public class GreenHouseMenu implements AppMenu {
             greenHouse = App.getActiveUser().getGreenHouse();
         }
 
-        if ((matcher = MainCommands.EXIT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.exitMenu());
-        } else if ((matcher = MainCommands.ENTER_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.enterMenu(matcher.group("name")));
-        } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.showCurrentMenu());
-        } else if ((matcher = GreenHouseCommands.SHOW_GREENHOUSE.getMatcher(input)) != null) {
+        if ((matcher = GreenHouseCommands.SHOW_GREENHOUSE.getMatcher(input)) != null) {
             System.out.println(controller.showGreenHouse(greenHouse));
         } else if ((matcher = GreenHouseCommands.PLANT_POT.getMatcher(input)) != null) {
             String x = matcher.group("x");
