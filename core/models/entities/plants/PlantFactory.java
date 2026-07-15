@@ -10,6 +10,8 @@ import models.entities.plants.strategy.tag_strategy.SleepStrategy;
 import models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import models.enums.plants.PlantTag;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class PlantFactory {
@@ -246,5 +248,15 @@ public class PlantFactory {
                 plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
             }
         }
+    }
+
+    public static List<Plant> createListOfPlants(List<Plant> plants){
+        List<Plant> newList = new ArrayList<>();
+        for(Plant plant: plants){
+            int id = plant.getId();
+            Plant newPlant = create(id);
+            newList.add(newPlant);
+        }
+        return newList;
     }
 }

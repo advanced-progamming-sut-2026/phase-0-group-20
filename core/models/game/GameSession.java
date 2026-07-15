@@ -13,6 +13,8 @@ import models.fields.tiles.Tile;
 import models.game.adventure.Chapter;
 import models.game.adventure.levels.Level;
 import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -81,35 +83,17 @@ public class GameSession {
         for (int i = 0; i < timeAmount; i++) {
             timeManager.tick();
             if (this.currentMode != null)
-                this.currentMode.dorosteshKonin(this, timeManager.getCurrentTick());
+                this.currentMode.engineLoop(this, timeManager.getCurrentTick());
 
             for (Plant p : getArena().getActivePlants()) p.onTick(timeManager.getCurrentTick());
             for (Zombie z : getArena().getActiveZombies()) z.onTick(timeManager.getCurrentTick());
             for (Projectile proj : getArena().getActiveProjectiles()) proj.onTick(timeManager.getCurrentTick());
-
-            updateWavesLogic();
 
             checkCollisions();
             removeDeadEntities();
             checkGameConditions();
             checkCollisions();
             if (this.state == GameState.WON || this.state == GameState.LOST) break;
-        }
-    }
-
-    public void updateWavesLogic() {
-        if (currentMode instanceof Level level) {
-            if (level.allWavesSpawned()) return;
-
-            Wave activeWave = arena.getCurrentActiveWave();
-
-            if (level.getCurrentWave() == 0) {
-                level.startNextWave();
-            } else {
-                if (activeWave != null && activeWave.is75PercentHpDestroyed()) {
-                    level.startNextWave();
-                }
-            }
         }
     }
 
@@ -127,6 +111,12 @@ public class GameSession {
         arena.getActivePlants().removeIf(plant -> {
             if (plant.getCurrentHp() <= 0) {
                 timeManager.unregisterTicker(plant);
+                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
+                        .plant(plant)
+                        .coordinate(plant.getPlacedTile().getRow(),plant.getPlacedTile().getCol())
+                        .arena(arena)
+                        .build();
+                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST, payload);
                 return true;
             }
             return false;
@@ -354,5 +344,13 @@ public class GameSession {
 
     public HashMap<Plant, Integer> getPlantsCooldown() {
         return plantsCooldown;
+    }
+
+    public GameMode getCurrentMode() {
+        return currentMode;
+    }
+
+    public void setCurrentMode(GameMode currentMode) {
+        this.currentMode = currentMode;
     }
 }
