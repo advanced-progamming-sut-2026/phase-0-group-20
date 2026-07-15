@@ -13,6 +13,8 @@ import models.game.GameSession;
  */
 
 public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
+
+    private final int durationTicks = 60;
     private int tickTimer = 0;
 
     private int currentRow = 0;
@@ -46,5 +48,17 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
         if (tickTimer == 2)
             System.out.println(plant.getName() + " fired a fan-shaped rapid barrage across all its lanes!");
 
+    }
+
+    @Override
+    public int getDurationTicks() {
+        return durationTicks;
+    }
+
+    @Override
+    public void reset() {
+        this.tickTimer = 0;
+        this.currentRow = 0;
+        this.directionCoeff = 1;
     }
 }

@@ -41,4 +41,9 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
     public int getDurationTicks() {
         return durationTicks;
     }
+
+    @Override
+    public void reset() {
+        this.tickTimer = 0;
+    }
 }

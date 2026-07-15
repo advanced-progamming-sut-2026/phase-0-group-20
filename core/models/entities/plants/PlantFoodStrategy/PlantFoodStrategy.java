@@ -10,4 +10,6 @@ public interface PlantFoodStrategy {
         return 0;
     }
 
+    default void reset() {
+    }
 }

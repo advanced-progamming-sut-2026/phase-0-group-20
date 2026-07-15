@@ -40,7 +40,7 @@ public class GameEventPayload {
         this.seasonType = builder.seasonType;
         this.plant = builder.plant;
         this.amount = builder.amount;
-        this.position = new Position(builder.position.getCol(), builder.position.getRow());
+        this.position = builder.position != null ? new Position(builder.position.getCol(), builder.position.getRow()) : null;
     }
 
 

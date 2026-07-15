@@ -10,6 +10,7 @@ import models.entities.projectiles.ProjectileMechanism;
 
 public class MultiDirectionRapidFireFoodStrategy implements PlantFoodStrategy {
 
+    private final int durationTicks = 60;
     private final int directionCount;
     private int tickTimer;
 
@@ -21,9 +22,22 @@ public class MultiDirectionRapidFireFoodStrategy implements PlantFoodStrategy {
     @Override
     public void executeStrategy(Plant plant) {
         tickTimer++;
-        if (tickTimer % 2 == 0)
-            ProjectileMechanism.executeNewProjectile(plant, true, true);
-        if (tickTimer == 2)
-            System.out.println(plant.getName() + " unleashed a rapid barrage in all " + directionCount + " directions!");
+        if (tickTimer <= durationTicks) {
+            if (tickTimer % 2 == 0)
+                ProjectileMechanism.executeNewProjectile(plant, true, true);
+
+            if (tickTimer == 2)
+                System.out.println(plant.getName() + " unleashed a rapid barrage in all " + directionCount + " directions!");
+        }
+    }
+
+    @Override
+    public int getDurationTicks() {
+        return durationTicks;
+    }
+
+    @Override
+    public void reset() {
+        this.tickTimer = 0;
     }
 }

@@ -18,4 +18,10 @@ public class GargantuarHypnotizeFoodStrategy implements PlantFoodStrategy {
         // and new a gargantuar zombie will be born and hypnotized (working for plants)
         System.out.println(plant.getName() + " is now empowered: the next zombie to eat it will become a friendly Gargantuar!");
     }
+
+    @Override
+    public int getDurationTicks() {
+        return -1;
+    }
+
 }

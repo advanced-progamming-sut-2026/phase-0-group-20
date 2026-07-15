@@ -88,5 +88,10 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
         return durationTicks;
     }
 
-
+    @Override
+    public void reset() {
+        this.tickTimer = 0;
+        this.giantShotsFired = 0;
+        this.totalGiantShots = -1;
+    }
 }
