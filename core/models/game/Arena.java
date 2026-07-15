@@ -11,6 +11,7 @@ import models.fields.tiles.NormalTile;
 import models.fields.tiles.Tile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Arena {
@@ -61,6 +62,17 @@ public class Arena {
         return result;
     }
 
+
+    public Zombie getNearestZombie(int column, int lane) {
+        if (activeZombies.isEmpty()) return null;
+        for (float i = 0; i < PhysicalConstants.TILE_UNIT_LENGTH * COLS; i += 0.05f) {
+            List<Zombie> zombies = getZombiesInRadius(column, lane, i);
+            if (!zombies.isEmpty()) return zombies.get(0);
+        }
+        return null;
+    }
+
+
     public List<Zombie> zombieInRow(int row) {
         List<Zombie> zombies = new ArrayList<>();
         for (Zombie z : activeZombies) {
@@ -85,6 +97,27 @@ public class Arena {
             }
         }
         return target;
+    }
+
+
+    public List<Tile> getRandomEmptyTiles(int count) {
+        List<Tile> emptyTiles = new ArrayList<>();
+        for (Tile[] row : tiles)
+            for (Tile tile : row)
+                if (tile.getPlants().isEmpty() && getZombiesOnTile(tile).isEmpty())
+                    emptyTiles.add(tile);
+
+        Collections.shuffle(emptyTiles);
+        return emptyTiles.subList(0, Math.min(count, emptyTiles.size()));//Hossein karo dary ya chi?
+    }
+
+    public List<Zombie> getZombiesOnTile(Tile tile) {
+        List<Zombie> zombies = new ArrayList<>();
+        for (Zombie z : activeZombies)
+            if (z.getRow() == tile.getRow() && z.getCol() == tile.getCol())
+                zombies.add(z);
+
+        return zombies;
     }
 
     public Sun getSunInCoordinate(int col, int row) {

@@ -18,6 +18,7 @@ import models.enums.plants.ProjectileType;
 
 public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
+    private final int durationTicks = 60;
     private final int extraGiantShots;
     private final boolean doesRapidFire;
     private int tickTimer = 0;
@@ -46,7 +47,7 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
         }
 
 
-        if (doesRapidFire && tickTimer <= 60f) {
+        if (doesRapidFire && tickTimer <= durationTicks) {
             if (tickTimer % 2 == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, false);
             if (tickTimer == 2)
@@ -56,7 +57,7 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
         if (giantShotsFired < totalGiantShots) {  //shoot giant pea if needed
 
-            if (tickTimer % 5 == 0) {
+            if (tickTimer % 5 == 0) { //giant shots take more time
                 ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
                 int giantDamage = ProjectileMechanism.parseDamage(plant.getDamage()) * 20;
                 int col = plant.getPlacedTile().getCol();
@@ -66,7 +67,7 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
                         plant,
                         type,
                         giantDamage,
-                        new Position( col,row),
+                        new Position(col, row),
                         1,
                         0,
                         false,
@@ -83,7 +84,9 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
     }
 
     @Override
-    public boolean needsTimer() {
-        return true;
+    public int getDurationTicks() {
+        return durationTicks;
     }
+
+
 }

@@ -1,8 +1,7 @@
 package models.entities.plants.PlantFoodStrategy;
 
+import models.InGameEntityGenerator;
 import models.entities.plants.Plant;
-import models.entities.plants.PlantFactory;
-import models.entities.plants.strategy.LifespanStrategy;
 import models.entities.plants.strategy.LilyPadStrategy;
 import models.fields.tiles.Tile;
 import models.fields.tiles.WaterTile;
@@ -32,8 +31,8 @@ public class DuplicateSelfFoodStrategy implements PlantFoodStrategy {
                 Tile targetTile = gameSession.getArena().getTile(newRow, newCol);
 
                 if (targetTile instanceof WaterTile) {
-                    if (targetTile.getPlants().isEmpty()){
-                        // spawn a lily pad here
+                    if (targetTile.getPlants().isEmpty()) {
+                        InGameEntityGenerator.getPlantForGame(plant, false);
                     } else {
                         Plant p = targetTile.getPlants().get(0);
                         if (p.getStrategies().get(0) instanceof LilyPadStrategy)

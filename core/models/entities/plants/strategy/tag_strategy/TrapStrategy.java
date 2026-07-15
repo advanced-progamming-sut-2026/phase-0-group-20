@@ -72,24 +72,24 @@ public class TrapStrategy implements IPlantStrategy {
 
             switch (name) {
                 case "Potato Mine":
-                    target.takeDirectDamage(1800,context);
+                    target.takeDirectDamage(1800, context);
                     break;
 
                 case "Primal Potato Mine":
                     List<Zombie> aoeTargets = GameSession.getInstance().getArena().getZombiesInRadius((int) plantCol, plantRow, 1.5);
                     for (Zombie z : aoeTargets) {
-                        if (!z.isDead()) z.takeDirectDamage(2400,context);
+                        if (!z.isDead()) z.takeDirectDamage(2400, context);
                     }
                     System.out.println("💥 Primal Potato Mine dealt massive AoE damage!");
                     break;
 
                 case "Squash":
-                    target.takeDirectDamage(1800,context);
+                    target.takeDirectDamage(1800, context);
                     System.out.println("🪨 Squash crushed " + target.getName() + "!");
                     break;
 
                 case "Tangle Kelp":
-                    target.takeDirectDamage(9999,context);
+                    target.takeDirectDamage(9999, context);
                     System.out.println("🌊 Tangle Kelp pulled " + target.getName() + " underwater!");
                     break;
 
@@ -101,8 +101,8 @@ public class TrapStrategy implements IPlantStrategy {
             context.takeDamage(context.getCurrentHp());
             GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
                     .plant(context)
-                            .build();
-            GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,payload);
+                    .build();
+            GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST, payload);
         }
 
     }

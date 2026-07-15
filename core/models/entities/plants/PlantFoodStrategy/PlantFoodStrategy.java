@@ -6,7 +6,8 @@ public interface PlantFoodStrategy {
 
     void executeStrategy(Plant plant);
 
-    default boolean needsTimer() {
-        return false;
+    default int getDurationTicks() {
+        return 0;
     }
+
 }

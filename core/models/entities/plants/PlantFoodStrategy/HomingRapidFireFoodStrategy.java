@@ -1,13 +1,14 @@
 package models.entities.plants.PlantFoodStrategy;
 
 import models.entities.plants.Plant;
-import models.entities.zombies.Zombie;
 import models.entities.projectiles.ProjectileMechanism;
+import models.entities.zombies.Zombie;
 import models.game.GameSession;
 
 
 public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
 
+    private final int durationTicks = 60;
     private int tickTimer = 0;
 
 
@@ -16,7 +17,7 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
         tickTimer++;
         GameSession session = GameSession.getInstance();
 
-        if (tickTimer <= 60) {
+        if (tickTimer <= durationTicks) {
             if (tickTimer % 2 == 0) {
                 int col = plant.getPlacedTile().getCol();
                 int row = plant.getPlacedTile().getRow();
@@ -37,8 +38,7 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
     }
 
 
-    @Override
-    public boolean needsTimer() {
-        return true;
+    public int getDurationTicks() {
+        return durationTicks;
     }
 }

@@ -27,30 +27,42 @@ public class InGameEntityGenerator {
         switch (season) {
             case ANCIENT_EGYPT -> allowedTypes = switch (level) {
                 case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.RA);
-                case 2 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.RA, ZombieType.EXPLORER);
-                case 3 -> Arrays.asList(ZombieType.NORMAL, ZombieType.BUCKET, ZombieType.BRICK, ZombieType.EXPLORER, ZombieType.TOMB_RAISER);
-                default -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.RA, ZombieType.EXPLORER, ZombieType.TOMB_RAISER, ZombieType.GARGANTUAR);
+                case 2 ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.RA, ZombieType.EXPLORER);
+                case 3 ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.BUCKET, ZombieType.BRICK, ZombieType.EXPLORER, ZombieType.TOMB_RAISER);
+                default ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.RA, ZombieType.EXPLORER, ZombieType.TOMB_RAISER, ZombieType.GARGANTUAR);
             };
 
             case FROZEN_CAVES -> allowedTypes = switch (level) {
                 case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DODO);
-                case 2 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.DODO, ZombieType.HUNTER);
-                case 3 -> Arrays.asList(ZombieType.NORMAL, ZombieType.BUCKET, ZombieType.NEWSPAPER, ZombieType.HUNTER, ZombieType.TROGLOBITE);
-                default -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.DODO, ZombieType.HUNTER, ZombieType.TROGLOBITE, ZombieType.GARGANTUAR);
+                case 2 ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.DODO, ZombieType.HUNTER);
+                case 3 ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.BUCKET, ZombieType.NEWSPAPER, ZombieType.HUNTER, ZombieType.TROGLOBITE);
+                default ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.DODO, ZombieType.HUNTER, ZombieType.TROGLOBITE, ZombieType.GARGANTUAR);
             };
 
             case BIG_WAVE_BEACH -> allowedTypes = switch (level) {
                 case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.SNORKEL);
-                case 2 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.SNORKEL, ZombieType.FISHERMAN);
-                case 3 -> Arrays.asList(ZombieType.NORMAL, ZombieType.BUCKET, ZombieType.BRICK, ZombieType.FISHERMAN, ZombieType.OCTOPUS);
-                default -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.SNORKEL, ZombieType.FISHERMAN, ZombieType.OCTOPUS, ZombieType.GARGANTUAR);
+                case 2 ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.SNORKEL, ZombieType.FISHERMAN);
+                case 3 ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.BUCKET, ZombieType.BRICK, ZombieType.FISHERMAN, ZombieType.OCTOPUS);
+                default ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.SNORKEL, ZombieType.FISHERMAN, ZombieType.OCTOPUS, ZombieType.GARGANTUAR);
             };
 
             case DARK_AGES -> allowedTypes = switch (level) {
                 case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.IMP_DRAGON);
-                case 2 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DARK_ARMOR, ZombieType.IMP_DRAGON, ZombieType.JUGGLER);
-                case 3 -> Arrays.asList(ZombieType.NORMAL, ZombieType.DARK_ARMOR, ZombieType.BRICK, ZombieType.JUGGLER, ZombieType.WIZARD);
-                default -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DARK_ARMOR, ZombieType.JUGGLER, ZombieType.WIZARD, ZombieType.KING, ZombieType.GARGANTUAR);
+                case 2 ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DARK_ARMOR, ZombieType.IMP_DRAGON, ZombieType.JUGGLER);
+                case 3 ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.DARK_ARMOR, ZombieType.BRICK, ZombieType.JUGGLER, ZombieType.WIZARD);
+                default ->
+                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DARK_ARMOR, ZombieType.JUGGLER, ZombieType.WIZARD, ZombieType.KING, ZombieType.GARGANTUAR);
             };
         }
 
