@@ -13,22 +13,19 @@ public class TravelLogMenu implements AppMenu {
 
     @Override
     public void check(Scanner scanner) {
-        String input = scanner.nextLine();
+        String input = scanner.nextLine().trim();
+
+        if (checkGlobalCommand(input)) {
+            return;
+        }
+
         Matcher matcher;
 
-        if ((matcher = MainCommands.EXIT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.exitMenu());
-        } else if ((matcher = MainCommands.ENTER_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.enterMenu(matcher.group("name")));
-        } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.showCurrentMenu());
-
-        } else if ((matcher = TravelLogCommands.CHANGE_PAGE.getMatcher(input)) != null) {
+        if ((matcher = TravelLogCommands.CHANGE_PAGE.getMatcher(input)) != null) {
             String pageName = matcher.group("pageName");
             System.out.println(controller.changePage(pageName));
         } else if ((matcher = TravelLogCommands.SHOW_PAGE.getMatcher(input)) != null) {
             System.out.println(controller.showCurrentPage());
-
         } else {
             invalidCommands();
         }
