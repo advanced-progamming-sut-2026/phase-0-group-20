@@ -1,8 +1,13 @@
 package models.entities.plants.PlantFoodStrategy;
 
+import models.InGameEntityGenerator;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.plants.strategy.tag_strategy.TrapStrategy;
+import models.fields.tiles.Tile;
+import models.game.GameSession;
+
+import java.util.List;
 
 /**
  * Instantly arms the plant (skipping the normal arm-time delay) and throws
@@ -27,7 +32,25 @@ public class CloneAndArmFoodStrategy implements PlantFoodStrategy {
                 trapStrategy.setArmed(true);
             }
 
-        // throw a number of cloned copies of itself onto other random tiles (will be updated after pulling Elyas's changes)
+        List<Tile> randomEmptyTiles = GameSession.getInstance().getArena().getRandomEmptyTiles(cloneCount);
+
+        if (randomEmptyTiles != null) {
+            for (Tile tile : randomEmptyTiles) {
+
+                Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, true);
+
+                newPlant.setPlacedTile(tile);
+                tile.addPlant(newPlant);
+
+                for (IPlantStrategy strategy : newPlant.getStrategies()) {
+                    if (strategy instanceof TrapStrategy trapStrategy) {
+                        trapStrategy.setArmingTimeTicks(0);
+                        trapStrategy.setArmed(true);
+                    }
+                }
+            }
+        }
+
         System.out.println(plant.getName() + " instantly armed itself and threw " + cloneCount + " clone(s) onto the field!");
     }
 }

@@ -22,8 +22,8 @@ public class RandomVaseTile extends Tile {
     }
 
     public VaseInside breakVase() {
-        System.out.println("Vase broken at [" + position.getRow() + "][" +  position.getCol() + "]");
-        GameSession.getInstance().getArena().changeTile(position.getRow(),  position.getCol(), new NormalTile(position.getRow(),  position.getCol()));
+        System.out.println("Vase broken at [" + position.getRow() + "][" + position.getCol() + "]");
+        GameSession.getInstance().getArena().changeTile(position.getRow(), position.getCol(), new NormalTile(position.getRow(), position.getCol()));
         return contents;
     }
 

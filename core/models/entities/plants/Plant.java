@@ -6,7 +6,6 @@ import models.entities.plants.strategy.IPlantStrategy;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 import models.fields.tiles.Tile;
-import models.game.GameSession;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -57,10 +56,29 @@ public class Plant implements IPlant, Ticker {
     }
 
     public void useFood() {
-        for (PlantFoodStrategy strategy : plantFoodStrategy)
-            strategy.executeStrategy(this);
-        if (plantFoodStrategy.isEmpty())
+        if (plantFoodStrategy.isEmpty()) {
             System.out.println(getName() + " has no Plant Food effect wired up yet!");
+            return;
+        }
+
+        int maxDuration = 0;
+        this.boosted = true;
+
+        for (PlantFoodStrategy strategy : plantFoodStrategy) {
+            int duration = strategy.getDurationTicks();
+
+            if (duration > maxDuration)
+                maxDuration = duration;
+
+            if (duration == 0)
+                strategy.executeStrategy(this);
+        }
+
+        if (maxDuration > 0)
+            this.boostTimer = maxDuration;
+        else
+            this.boosted = false;
+
     }
 
 
@@ -79,10 +97,18 @@ public class Plant implements IPlant, Ticker {
             return;
         }
 
-        for (IPlantStrategy strategy : strategies) {
-            strategy.execute(this, currentTick);
-        }
+        if (boostTimer > 0) {
+            for (PlantFoodStrategy strategy : plantFoodStrategy)
+                if (strategy.getDurationTicks() > 0)
+                    strategy.executeStrategy(this);
 
+            boostTimer--;
+
+            if (boostTimer <= 0) boosted = false;
+
+        } else
+            for (IPlantStrategy strategy : strategies)
+                strategy.execute(this, currentTick);
 
     }
 

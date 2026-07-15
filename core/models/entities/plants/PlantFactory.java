@@ -9,7 +9,6 @@ import models.entities.plants.strategy.tag_strategy.MoveZombiesStrategy;
 import models.entities.plants.strategy.tag_strategy.SleepStrategy;
 import models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import models.enums.plants.PlantTag;
-import models.game.GameSession;
 
 import java.util.Map;
 
@@ -147,7 +146,7 @@ public class PlantFactory {
         return plant;
     }
 
-    private void wirePlantFoodStrategy(Plant plant, PlantData data) {
+    private static void wirePlantFoodStrategy(Plant plant, PlantData data) {
         switch (data.name().toLowerCase()) {
 
             case "sunflower" -> plant.addPlantFoodStrategy(new SunBurstFoodStrategy(150));
@@ -212,8 +211,7 @@ public class PlantFactory {
             case "sweet potato" ->
                     plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy("pulls in every nearby zombie and fully heals itself"));
 
-            case "bonk choy"->
-                    plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("rapid 3x3 punches"));
+            case "bonk choy" -> plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("rapid 3x3 punches"));
             case "phat beet" -> plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("powerful 3x3 sonic blast"));
             case "wasabi whip" ->
                     plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("spinning whip across a 3x3 area"));
@@ -235,7 +233,7 @@ public class PlantFactory {
             case "lily pad" -> plant.addPlantFoodStrategy(new DuplicateSelfFoodStrategy());
 
             case "cherry bomb", "grapeshot", "jalapeno", "doom-shroom", "ice-shroom",
-                 "hot potato", "grave buster", "imitater", "pierce-mint", "enforce-mint"  ->
+                 "hot potato", "grave buster", "imitater", "pierce-mint", "enforce-mint" ->
                     plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
 
 

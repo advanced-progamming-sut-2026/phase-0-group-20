@@ -31,7 +31,7 @@ public class SunProductionStrategy implements IPlantStrategy {
         if (intervalInTicks > 0 && (currentTick - lastProductionTick) >= intervalInTicks) {
 
             SunType type = getSunTypeForPlant(plantName, aliveTicks);
-            spawnSun(context,  GameSession.getInstance(), type, currentTick);
+            spawnSun(context, GameSession.getInstance(), type, currentTick);
 
             lastProductionTick = currentTick;
         }

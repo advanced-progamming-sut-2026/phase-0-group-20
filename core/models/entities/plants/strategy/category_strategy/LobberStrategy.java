@@ -23,7 +23,7 @@ public class LobberStrategy implements IPlantStrategy {
             boolean zombieFound = false;
 
             for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
-                if (!z.isDead() && z.getX()/ PhysicalConstants.TILE_UNIT_LENGTH >= plantCol) {
+                if (!z.isDead() && z.getX() / PhysicalConstants.TILE_UNIT_LENGTH >= plantCol) {
                     zombieFound = true;
                     break;
                 }
