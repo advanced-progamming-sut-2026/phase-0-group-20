@@ -40,7 +40,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
             switch (name) {
                 case "Cherry Bomb":
                 case "Grapeshot":
-                    applyAreaDamage(plantCol, plantRow, 1.5f, damage,context);
+                    applyAreaDamage(plantCol, plantRow, 1.5f, damage, context);
 
                     if (name.equals("Grapeshot")) {
                         float[][] directions = {
@@ -51,7 +51,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
                         for (float[] dir : directions) {
                             Projectile grape = new Projectile(
                                     context,
-                                    ProjectileType.GRAPE, new NormalEffect(),60,
+                                    ProjectileType.GRAPE, new NormalEffect(), 60,
                                     new Position(plantCol, plantRow),
                                     dir[0] * 2.5f, dir[1] * 2.5f,
                                     false, false
@@ -71,14 +71,14 @@ public class ExplosiveStrategy implements IPlantStrategy {
                         if (!z.isDead()) {
                             z.removeChillEffect();
                             z.removeFreezeEffect();
-                            z.takeDirectDamage(damage,context);
+                            z.takeDirectDamage(damage, context);
                         }
                     }
                     System.out.println("🔥 Jalapeno burned the entire lane!");
                     break;
 
                 case "Doom-shroom":
-                    applyAreaDamage(plantCol, plantRow, 3.5f, damage,context);
+                    applyAreaDamage(plantCol, plantRow, 3.5f, damage, context);
                     // change tile type
                     System.out.println("🕳️ Doom-shroom left a massive crater behind!");
                     break;
@@ -87,11 +87,11 @@ public class ExplosiveStrategy implements IPlantStrategy {
         }
     }
 
-    private void applyAreaDamage(int col, int row, float radius, int damage,Plant plant) {
+    private void applyAreaDamage(int col, int row, float radius, int damage, Plant plant) {
         List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(col, row, radius);
         for (Zombie z : targets) {
             if (!z.isDead()) {
-                z.takeDirectDamage(damage,plant);
+                z.takeDirectDamage(damage, plant);
             }
         }
     }

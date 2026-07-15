@@ -3,7 +3,6 @@ package models.fields.modifiers;
 import models.entities.plants.Plant;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
-import models.entities.zombies.behavior.effect.ChillEffect;
 import models.entities.zombies.behavior.effect.FreezeEffect;
 import models.enums.plants.PlantTag;
 import models.fields.obstacle.IceBlock;

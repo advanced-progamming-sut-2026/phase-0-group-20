@@ -76,7 +76,7 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
         switch (plant.getName().toLowerCase()) {
             case "electric blueberry", "tangle kelp", "chomper" ->
                     target.takeDirectDamage(10000, plant); //yahtamel plant be kar biad
-            case  "squash" -> {
+            case "squash" -> {
                 int damage = ProjectileMechanism.parseDamage(plant.getDamage());
                 target.takeDirectDamage(damage, plant);
             }

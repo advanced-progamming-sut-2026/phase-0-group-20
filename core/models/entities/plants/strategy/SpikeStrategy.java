@@ -28,15 +28,15 @@ public class SpikeStrategy implements IPlantStrategy {
             boolean dealtDamage = false;
 
 
-
-            List<Zombie> attackingZombies =  GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 0.8);
+            List<Zombie> attackingZombies = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 0.8);
 
             for (Zombie z : attackingZombies) {
                 damage = 20;
                 if (!z.isDead()) {
                     try {
                         damage = Integer.parseInt(context.getDamage());
-                    } catch (NumberFormatException e) {}
+                    } catch (NumberFormatException e) {
+                    }
 
                     hasArmor = context.getCurrentHp() > context.getBaseHp();
 
@@ -56,7 +56,7 @@ public class SpikeStrategy implements IPlantStrategy {
         }
     }
 
-    public void setHasArmor(boolean  hasArmor) {
+    public void setHasArmor(boolean hasArmor) {
         this.hasArmor = hasArmor;
     }
 

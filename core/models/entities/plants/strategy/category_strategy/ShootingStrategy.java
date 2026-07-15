@@ -61,7 +61,7 @@ public class ShootingStrategy implements IPlantStrategy {
 
                         int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom")) ? 3 : 999;
 
-                        if (z.getCol()  >= plantCol && z.getCol() <= plantCol + maxRange) shootForward = true;
+                        if (z.getCol() >= plantCol && z.getCol() <= plantCol + maxRange) shootForward = true;
 
                         if (z.getCol() < plantCol) shootBackward = true;
                     }
