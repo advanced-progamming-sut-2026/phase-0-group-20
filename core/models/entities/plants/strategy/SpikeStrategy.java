@@ -14,26 +14,34 @@ import java.util.List;
  */
 
 public class SpikeStrategy implements IPlantStrategy {
-    private static final int DAMAGE_INTERVAL = TimeManager.TICKS_PER_SECOND;
+    private final int DAMAGE_INTERVAL = TimeManager.TICKS_PER_SECOND;
     private int lastDamageTick = 0;
+    boolean hasArmor = false;
+    int damage;
+
 
     @Override
     public void execute(Plant context, int currentTick) {
         if (currentTick - lastDamageTick >= DAMAGE_INTERVAL) {
             int plantRow = context.getPlacedTile().getRow();
-            double plantCol = context.getPlacedTile().getCol();
+            int plantCol = context.getPlacedTile().getCol();
             boolean dealtDamage = false;
 
-            List<Zombie> attackingZombies = GameSession.getInstance().getArena().getZombiesInRadius((int) plantCol, plantRow, 0.8);
+
+
+            List<Zombie> attackingZombies =  GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 0.8);
 
             for (Zombie z : attackingZombies) {
+                damage = 20;
                 if (!z.isDead()) {
-                    int damage = 20;
                     try {
                         damage = Integer.parseInt(context.getDamage());
-                    } catch (NumberFormatException e) {
-                        damage = 20;
-                    }
+                    } catch (NumberFormatException e) {}
+
+                    hasArmor = context.getCurrentHp() > context.getBaseHp();
+
+                    if (hasArmor) //more hp = having armor
+                        damage *= 2;
 
                     z.takeDamage(damage);
                     dealtDamage = true;
@@ -41,9 +49,15 @@ public class SpikeStrategy implements IPlantStrategy {
             }
 
             if (dealtDamage) {
-                System.out.println("🦔 " + context.getName() + " reflected " + context.getDamage() + " damage to attacking zombies!");
+                int d = hasArmor ? damage * 2 : 20;
+                System.out.println("🦔 " + context.getName() + " reflected " + d + " damage to attacking zombies!");
                 lastDamageTick = currentTick;
             }
         }
     }
+
+    public void setHasArmor(boolean  hasArmor) {
+        this.hasArmor = hasArmor;
+    }
+
 }

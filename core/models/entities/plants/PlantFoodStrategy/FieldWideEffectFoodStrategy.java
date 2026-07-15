@@ -53,7 +53,7 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
             case "kernel-pult":
                 for (Zombie zombie : allZombies)
                     if (!zombie.isDead())
-                        ProjectileMechanism.executeTargetedProjectile(plant, gameSession, zombie, 0);
+                        ProjectileMechanism.executeTargetedProjectile(plant, zombie, 0);
                 break;
 
             case "garlic":
@@ -84,9 +84,13 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
         boolean canGoUp = (currentRow > 0);
         boolean canGoDown = (currentRow < maxRows - 1);
 
-        if (canGoUp && canGoDown) zombie.setRow(currentRow - 1 + new Random().nextInt(2) * 2); //current row - 1 + (0 or 2)
-        else if (canGoUp) zombie.setRow(currentRow - 1);
-        else if (canGoDown) zombie.setRow(currentRow + 1);
-        else zombie.setState(ZombieState.STUNNED);
+        if (canGoUp && canGoDown)
+            zombie.setRow(currentRow - 1 + new Random().nextInt(2) * 2); //current row - 1 + (0 or 2)
+        else if (canGoUp)
+            zombie.setRow(currentRow - 1);
+        else if (canGoDown)
+            zombie.setRow(currentRow + 1);
+        else
+            zombie.setState(ZombieState.STUNNED);
     }
 }

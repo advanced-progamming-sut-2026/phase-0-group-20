@@ -5,7 +5,6 @@ import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.projectiles.ProjectileMechanism;
 import models.enums.plants.ProjectileType;
-import models.game.GameSession;
 
 
 /**
@@ -20,43 +19,71 @@ import models.game.GameSession;
 public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
     private final int extraGiantShots;
-    private int tickTimer;
+    private final boolean doesRapidFire;
+    private int tickTimer = 0;
+    private int giantShotsFired = 0;
+    private int totalGiantShots = -1;
 
     public RapidFireFoodStrategy() {
-        this(0);
+        this(0, true);
     }
 
-    public RapidFireFoodStrategy(int extraGiantShots) {
+    public RapidFireFoodStrategy(int extraGiantShots, boolean doesRapidFire) {
         this.extraGiantShots = extraGiantShots;
-        this.tickTimer = 0;
+        this.doesRapidFire = doesRapidFire;
     }
 
     @Override
     public void executeStrategy(Plant plant) {
         tickTimer++;
 
-        if (tickTimer % 2 == 0)
-            ProjectileMechanism.executeNewProjectile(plant, true, false);
+        if (totalGiantShots == -1) {
+            if (plant.getName().equalsIgnoreCase("Pea Pod"))
+                totalGiantShots = plant.getStackCount(); //each head
+            else
+                totalGiantShots = extraGiantShots;
 
-        if (tickTimer == 2)
-            System.out.println(plant.getName() + " unleashed a rapid-fire barrage down its lane!");
-
-        if (extraGiantShots > 0 && plant.getBoostTimer() - tickTimer < 2) { // shoot giant pea as last shot
-            ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
-            int giantDamage = ProjectileMechanism.parseDamage(plant.getDamage()) * 20;
-            Projectile projectile = Projectile.spawnNewProjectile(
-                    plant,
-                    type,
-                    giantDamage,
-                    new Position(plant.getPlacedTile().getCol() + 1, plant.getPlacedTile().getRow()),
-                    1,
-                    0,
-                    false,
-                    false
-            );
-            projectile.setSize(2);
-            tickTimer = 0;
-            System.out.println(plant.getName() + " also fired " + extraGiantShots + " giant projectile(s) (20x damage)!");
         }
+
+
+        if (doesRapidFire && tickTimer <= 60f) {
+            if (tickTimer % 2 == 0)
+                ProjectileMechanism.executeNewProjectile(plant, true, false);
+            if (tickTimer == 2)
+                System.out.println(plant.getName() + " unleashed a rapid-fire barrage!");
+            return;
+        }
+
+        if (giantShotsFired < totalGiantShots) {  //shoot giant pea if needed
+
+            if (tickTimer % 5 == 0) {
+                ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
+                int giantDamage = ProjectileMechanism.parseDamage(plant.getDamage()) * 20;
+                int col = plant.getPlacedTile().getCol();
+                int row = plant.getPlacedTile().getRow();
+
+                Projectile projectile = Projectile.spawnNewProjectile(
+                        plant,
+                        type,
+                        giantDamage,
+                        new Position( col,row),
+                        1,
+                        0,
+                        false,
+                        false
+                );
+                projectile.setSize(2);
+
+                giantShotsFired++;
+
+                System.out.println(plant.getName() + " fired giant projectile " + giantShotsFired + "/" + totalGiantShots);
+            }
+        }
+
+    }
+
+    @Override
+    public boolean needsTimer() {
+        return true;
     }
 }

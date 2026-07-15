@@ -87,8 +87,8 @@ public class Projectile implements Ticker {
                 position,
                 speedX,
                 speedY,
-                false,
-                false
+                piercing,
+                canPassObstacles
         );
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;

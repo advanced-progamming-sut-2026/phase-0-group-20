@@ -104,5 +104,20 @@ public class TrapStrategy implements IPlantStrategy {
                             .build();
             GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,payload);
         }
+
     }
+
+
+    public void setArmingTimeTicks(int armingTime) {
+        this.armingTimeTicks = armingTime;
+    }
+
+    public int getArmingTimeTicks() {
+        return armingTimeTicks;
+    }
+
+    public void setArmed(boolean armed) {
+        this.isArmed = armed;
+    }
+
 }

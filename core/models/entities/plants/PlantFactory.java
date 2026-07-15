@@ -159,14 +159,15 @@ public class PlantFactory {
             case "primal sunflower" -> plant.addPlantFoodStrategy(new SunBurstFoodStrategy(225));
             case "gold bloom", "enlighten-mint" -> plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
 
+            case "cat-tail" -> plant.addPlantFoodStrategy(new HomingRapidFireFoodStrategy());
 
-            case "peashooter", "goo peashooter", "fire peashooter", "cat-tail" ->
+            case "peashooter", "goo peashooter", "fire peashooter" ->
                     plant.addPlantFoodStrategy(new RapidFireFoodStrategy());
-            case "repeater" -> plant.addPlantFoodStrategy(new RapidFireFoodStrategy(1));
+            case "repeater" -> plant.addPlantFoodStrategy(new RapidFireFoodStrategy(1, true));
             case "snow pea" -> plant.addPlantFoodStrategy(new IcyRapidFireFoodStrategy());
             case "split pea" -> plant.addPlantFoodStrategy(new BidirectionalRapidFireFoodStrategy());
-            case "pea pod" -> plant.addPlantFoodStrategy(new RapidFireFoodStrategy(5));
-            case "mega gatling pea" -> plant.addPlantFoodStrategy(new RapidFireFoodStrategy(4));
+            case "pea pod" -> plant.addPlantFoodStrategy(new RapidFireFoodStrategy(0, false));
+            case "mega gatling pea" -> plant.addPlantFoodStrategy(new RapidFireFoodStrategy(4, true));
 
             case "threepeater" -> plant.addPlantFoodStrategy(new MultiLaneRapidFireFoodStrategy());
             case "rotobaga" -> plant.addPlantFoodStrategy(new MultiDirectionRapidFireFoodStrategy(4));
@@ -211,7 +212,7 @@ public class PlantFactory {
             case "sweet potato" ->
                     plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy("pulls in every nearby zombie and fully heals itself"));
 
-            case "bonk choy", "enforce-mint" ->
+            case "bonk choy"->
                     plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("rapid 3x3 punches"));
             case "phat beet" -> plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("powerful 3x3 sonic blast"));
             case "wasabi whip" ->
@@ -234,7 +235,7 @@ public class PlantFactory {
             case "lily pad" -> plant.addPlantFoodStrategy(new DuplicateSelfFoodStrategy());
 
             case "cherry bomb", "grapeshot", "jalapeno", "doom-shroom", "ice-shroom",
-                 "hot potato", "grave buster", "imitater", "pierce-mint" ->
+                 "hot potato", "grave buster", "imitater", "pierce-mint", "enforce-mint"  ->
                     plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
 
 

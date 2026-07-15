@@ -1,6 +1,8 @@
 package models.entities.plants.PlantFoodStrategy;
 
 import models.entities.plants.Plant;
+import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.plants.strategy.SpikeStrategy;
 
 /**
  * Grants the plant permanent bonus "armor" HP (on top of its current HP) and,
@@ -27,8 +29,16 @@ public class ArmorFoodStrategy implements PlantFoodStrategy {
 
     @Override
     public void executeStrategy(Plant plant) {
-        System.out.println(plant.getName() + " gained " + armorAmount + " permanent armor!");
+
+        int maxHpWithArmor = plant.getBaseHp() + armorAmount;
+        plant.setCurrentHp(maxHpWithArmor);
+        System.out.println(plant.getName() + "gained " + armorAmount + " permanent armor! (Total HP: " + plant.getCurrentHp() + ")");
+
         if (boostsReflectDamage) {
+            for (IPlantStrategy strategy : plant.getStrategies())
+                if (strategy instanceof SpikeStrategy spikeStrategy)
+                    spikeStrategy.setHasArmor(true);
+
             System.out.println(plant.getName() + " also gained increased damage reflection!");
         }
     }
