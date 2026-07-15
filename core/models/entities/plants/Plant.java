@@ -62,22 +62,27 @@ public class Plant implements IPlant, Ticker {
         }
 
         int maxDuration = 0;
+        boolean isPermanentBoost = false;
         this.boosted = true;
 
         for (PlantFoodStrategy strategy : plantFoodStrategy) {
+            strategy.reset();
             int duration = strategy.getDurationTicks();
 
-            if (duration > maxDuration)
+            if (duration == -1)
+                isPermanentBoost = true;
+            else if (duration > maxDuration)
                 maxDuration = duration;
 
-            if (duration == 0)
+            if (duration == 0 || duration == -1)
                 strategy.executeStrategy(this);
         }
 
         if (maxDuration > 0)
             this.boostTimer = maxDuration;
-        else
-            this.boosted = false;
+        else if (isPermanentBoost)
+            this.boostTimer = -1;
+        else this.boosted = false;
 
     }
 
