@@ -13,16 +13,15 @@ public class GameMenu implements AppMenu {
 
     @Override
     public void check(Scanner scanner) {
-        String input = scanner.nextLine();
+        String input = scanner.nextLine().trim();
+
+        if (checkGlobalCommand(input)) {
+            return;
+        }
+
         Matcher matcher;
 
-        if ((matcher = MainCommands.EXIT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.exitMenu());
-        } else if ((matcher = MainCommands.ENTER_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.enterMenu(matcher.group("name")));
-        } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.showCurrentMenu());
-        } else if ((matcher = GameMenuCommands.ENTER_CHAPTER.getMatcher(input)) != null) {
+        if ((matcher = GameMenuCommands.ENTER_CHAPTER.getMatcher(input)) != null) {
             String chapterStr = matcher.group("chaptername");
             System.out.println(controller.enterChapter(chapterStr));
         } else if ((matcher = GameMenuCommands.ENTER_GREEN_HOUSE.getMatcher(input)) != null) {

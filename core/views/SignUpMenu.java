@@ -14,15 +14,14 @@ public class SignUpMenu implements AppMenu {
 
     public void check(Scanner scanner) {
         String input = scanner.nextLine().trim();
+
+        if (checkGlobalCommand(input)) {
+            return;
+        }
+
         Matcher matcher;
 
-        if ((matcher = MainCommands.EXIT_MENU.getMatcher(input)) != null) {
-            System.exit(0);
-        } else if ((matcher = MainCommands.ENTER_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.enterMenu(matcher.group("name")));
-        } else if ((matcher = MainCommands.SHOW_CURRENT_MENU.getMatcher(input)) != null) {
-            System.out.println(NavigationController.showCurrentMenu());
-        } else if ((matcher = SignUpCommands.REGISTER.getMatcher(input)) != null) {
+        if ((matcher = SignUpCommands.REGISTER.getMatcher(input)) != null) {
             System.out.println(controller.register(
                     matcher.group("username"),
                     matcher.group("password"),
