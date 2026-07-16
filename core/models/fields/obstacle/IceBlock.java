@@ -63,7 +63,6 @@ public class IceBlock implements Ticker {
         if (frozenPlant != null) {
             thisTile.addPlant(frozenPlant);
             session.getArena().addPlant(frozenPlant);
-            frozenPlant.setPlacedTile(thisTile);
             session.getTimeManager().registerNewTicker(frozenPlant);
             frozenPlant = null;
         }

@@ -1,5 +1,6 @@
 package models.entities.plants;
 
+import models.Position;
 import models.entities.plants.PlantFoodStrategy.PlantFoodStrategy;
 import models.entities.plants.effect.PlantEffect;
 import models.entities.plants.strategy.IPlantStrategy;
@@ -20,6 +21,7 @@ public class Plant implements IPlant, Ticker {
     protected final PlantData data;
     protected final List<IPlantStrategy> strategies = new ArrayList<>();
     protected int currentHp;
+    protected Position position;
     protected Tile placedTile;
     protected int level = 1;
     protected final List<PlantFoodStrategy> plantFoodStrategy = new ArrayList<>();
@@ -232,6 +234,7 @@ public class Plant implements IPlant, Ticker {
 
     public void setPlacedTile(Tile placedTile) {
         this.placedTile = placedTile;
+        position = new Position(placedTile.getCol(), placedTile.getRow());
     }
 
     public boolean isFrozen() {
@@ -300,5 +303,13 @@ public class Plant implements IPlant, Ticker {
 
     public void setBoosted(boolean boosted) {
         this.boosted = boosted;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 }

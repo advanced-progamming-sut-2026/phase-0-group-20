@@ -18,8 +18,8 @@ public class VaseBreakerLevel extends Level {
     private final int ZOMBIE_CHANCE = 30; // badan mitonim arzyabi konim taghir bedim
     private final int PLANT_CHANCE = 30;
 
-    public VaseBreakerLevel(String name, int baseWaveDifficulty, int levelNumber) {
-        super(name, SeasonType.ANCIENT_EGYPT, 1, baseWaveDifficulty, levelNumber);
+    public VaseBreakerLevel(String name, int levelNumber) {
+        super(name, SeasonType.ANCIENT_EGYPT, 1, -1, levelNumber);
         this.addWinCondition(new VaseBreakerCondition());
         this.addLoseCondition(new NormalLoseCondition());
     }
@@ -30,8 +30,8 @@ public class VaseBreakerLevel extends Level {
         int rows = session.getArena().getRows();
         int cols = session.getArena().getCols();
 
-        int currentZombieChance = ZOMBIE_CHANCE + (5 * baseWaveDifficulty * levelNumber);
-        int currentPlantChance = Math.max(0, PLANT_CHANCE - (5 * baseWaveDifficulty * levelNumber));
+        int currentZombieChance = ZOMBIE_CHANCE + (5 * levelNumber);
+        int currentPlantChance = Math.max(0, PLANT_CHANCE - (5 * levelNumber));
 
         for (int row = 0; row < rows; row++) {
             for (int col = cols - 5; col < cols; col++) {

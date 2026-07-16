@@ -39,7 +39,6 @@ public class CloneAndArmFoodStrategy implements PlantFoodStrategy {
 
                 Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, true);
 
-                newPlant.setPlacedTile(tile);
                 tile.addPlant(newPlant);
 
                 for (IPlantStrategy strategy : newPlant.getStrategies()) {

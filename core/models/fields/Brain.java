@@ -1,11 +1,15 @@
 package models.fields;
 
+
+import models.timeManager.Ticker;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
 
-public class Brain {
+public class Brain implements Ticker {
+
     private final int row;
+    private int hp = 100;
     private boolean isEaten;
 
     public Brain(int row) {
@@ -28,5 +32,12 @@ public class Brain {
 
     public int getRow() {
         return row;
+    }
+
+    @Override
+    public void onTick(int currentTick) {
+        if (hp <= 0)
+            isEaten = true;
+
     }
 }
