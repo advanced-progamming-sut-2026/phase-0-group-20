@@ -125,9 +125,9 @@ public class GameFlowController {
             }
         }
         if (plant == null) {
-            return new Result(false,(session.getCurrentMode()instanceof ConveyorBelt)
-                    ?"There is no such plant named " + plantName+"in the belt"
-                    :"There no such plant named " + plantName);
+            return new Result(false, (session.getCurrentMode() instanceof ConveyorBelt)
+                    ? "There is no such plant named " + plantName + "in the belt"
+                    : "There no such plant named " + plantName);
         }
         Tile desiredTile = arena.getTile(spawnX - 1, spawnY - 1);
         if (desiredTile == null) {
@@ -303,9 +303,9 @@ public class GameFlowController {
             }
             statusDisplay.append("=== CONVEYOR BELT ===\n");
             for (int i = 0; i < belt.size(); i++) {
-                statusDisplay.append("[").append(i+1).append("] ").append(belt.get(i).getName()).append("\n");
+                statusDisplay.append("[").append(i + 1).append("] ").append(belt.get(i).getName()).append("\n");
             }
-            statusDisplay.deleteCharAt(statusDisplay.length()-1);
+            statusDisplay.deleteCharAt(statusDisplay.length() - 1);
             return new Result(true, statusDisplay.toString());
         }
         List<Plant> chosenPlants = session.getChosenPlants();
@@ -334,7 +334,7 @@ public class GameFlowController {
                 }
             }
         }
-        statusDisplay.deleteCharAt(statusDisplay.length()-1);
+        statusDisplay.deleteCharAt(statusDisplay.length() - 1);
         return new Result(true, statusDisplay.toString());
     }
 

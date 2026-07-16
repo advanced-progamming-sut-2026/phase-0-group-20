@@ -1,8 +1,6 @@
 package views;
 
 import controllers.GameController.TravelLogController;
-import controllers.NavigationController;
-import models.enums.commands.MainCommands;
 import models.enums.commands.TravelLogCommands;
 
 import java.util.Scanner;

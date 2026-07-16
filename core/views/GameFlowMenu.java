@@ -1,9 +1,7 @@
 package views;
 
 import controllers.GameController.GameFlowController;
-import controllers.NavigationController;
 import models.enums.commands.GameFlowCommands;
-import models.enums.commands.MainCommands;
 
 import java.util.Scanner;
 import java.util.regex.Matcher;

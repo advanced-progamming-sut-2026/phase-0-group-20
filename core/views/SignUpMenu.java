@@ -1,8 +1,6 @@
 package views;
 
 import controllers.MenuController.SignupMenuController;
-import controllers.NavigationController;
-import models.enums.commands.MainCommands;
 import models.enums.commands.SignUpCommands;
 
 import java.util.Scanner;

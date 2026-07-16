@@ -1,8 +1,6 @@
 package views;
 
 import controllers.MenuController.ProfileMenuController;
-import controllers.NavigationController;
-import models.enums.commands.MainCommands;
 import models.enums.commands.ProfileCommands;
 
 import java.util.Scanner;
