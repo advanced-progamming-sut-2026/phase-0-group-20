@@ -1,8 +1,6 @@
 package views;
 
 import controllers.GameController.ShopMenuController;
-import controllers.NavigationController;
-import models.enums.commands.MainCommands;
 import models.enums.commands.ShopMenuCommands;
 
 import java.util.Scanner;

@@ -11,6 +11,7 @@ import models.game.GameSession;
 
 public class BidirectionalRapidFireFoodStrategy implements PlantFoodStrategy {
 
+    private final int durationTicks = 60;
     private int tickTimer = 0;
 
     @Override
@@ -18,11 +19,24 @@ public class BidirectionalRapidFireFoodStrategy implements PlantFoodStrategy {
         tickTimer++;
         GameSession session = GameSession.getInstance();
 
-        if (tickTimer % 2 == 0)
-            ProjectileMechanism.executeNewProjectile(plant, true, false); //khodesh be aghab ham shelik mikone
+        if (tickTimer <= durationTicks) {
 
-        if (tickTimer == 2)
-            System.out.println(plant.getName() + " fired a rapid barrage forward AND backward!");
+            if (tickTimer % 2 == 0)
+                ProjectileMechanism.executeNewProjectile(plant, true, false); //khodesh be aghab ham shelik mikone
 
+            if (tickTimer == 2)
+                System.out.println(plant.getName() + " fired a rapid barrage forward AND backward!");
+        }
     }
+
+    @Override
+    public int getDurationTicks() {
+        return durationTicks;
+    }
+
+    @Override
+    public void reset() {
+        this.tickTimer = 0;
+    }
+
 }

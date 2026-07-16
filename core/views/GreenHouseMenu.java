@@ -1,10 +1,8 @@
 package views;
 
 import controllers.GameController.GreenHouseController;
-import controllers.NavigationController;
 import models.App;
 import models.enums.commands.GreenHouseCommands;
-import models.enums.commands.MainCommands;
 import models.greenhouse.GreenHouse;
 
 import java.util.Scanner;

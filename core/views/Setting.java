@@ -1,8 +1,6 @@
 package views;
 
 import controllers.GameController.SettingController;
-import controllers.NavigationController;
-import models.enums.commands.MainCommands;
 import models.enums.commands.SettingCommands;
 
 import java.util.Scanner;

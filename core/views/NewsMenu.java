@@ -1,8 +1,6 @@
 package views;
 
 import controllers.GameController.NewsController;
-import controllers.NavigationController;
-import models.enums.commands.MainCommands;
 import models.enums.commands.NewsCommands;
 
 import java.util.Scanner;

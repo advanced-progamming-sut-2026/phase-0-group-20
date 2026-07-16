@@ -1,6 +1,5 @@
 package models.game.adventure.levels.conditions;
 
-import models.game.GameMode;
 import models.game.GameSession;
 import models.game.WinCondition;
 import models.game.adventure.levels.Level;
@@ -9,7 +8,7 @@ public class NormalWinCondition implements WinCondition {
 
     @Override
     public boolean isWon(GameSession session) {
-        if(!(session.getCurrentMode() instanceof Level currentLevel)){
+        if (!(session.getCurrentMode() instanceof Level currentLevel)) {
             return false;
         }
 
@@ -17,7 +16,7 @@ public class NormalWinCondition implements WinCondition {
             return false;
         }
 
-        if(!session.getArena().getActiveZombies().isEmpty()){
+        if (!session.getArena().getActiveZombies().isEmpty()) {
             return false;
         }
         return true;

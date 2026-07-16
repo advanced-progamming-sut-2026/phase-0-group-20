@@ -1,7 +1,6 @@
 package models.game.adventure.levels;
 
 import models.InGameEntityGenerator;
-import models.entities.plants.IPlant;
 import models.entities.plants.Plant;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
@@ -64,8 +63,7 @@ public abstract class Level implements GameMode {
 
         if (currentWave == 0) {
             startNextWave(session);
-        }
-        else if (activeWave != null && activeWave.is75PercentHpDestroyed()) {
+        } else if (activeWave != null && activeWave.is75PercentHpDestroyed()) {
             startNextWave(session);
         }
     }

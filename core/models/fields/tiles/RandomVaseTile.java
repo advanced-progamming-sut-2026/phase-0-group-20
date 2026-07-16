@@ -5,7 +5,7 @@ import models.game.GameSession;
 
 import java.util.Random;
 
-public class RandomVaseTile extends Tile {
+public class RandomVaseTile extends Tile implements VaseTile {
     private static final Random RAND = new Random();
 
     private final VaseInside contents; // null = empty vase
@@ -21,6 +21,7 @@ public class RandomVaseTile extends Tile {
 
     }
 
+    @Override
     public VaseInside breakVase() {
         System.out.println("Vase broken at [" + position.getRow() + "][" + position.getCol() + "]");
         GameSession.getInstance().getArena().changeTile(position.getRow(), position.getCol(), new NormalTile(position.getRow(), position.getCol()));
