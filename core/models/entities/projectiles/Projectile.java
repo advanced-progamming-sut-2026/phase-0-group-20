@@ -8,6 +8,9 @@ import models.fields.tiles.Tile;
 import models.game.GameSession;
 import models.timeManager.Ticker;
 
+import java.util.List;
+import java.util.Random;
+
 public class Projectile implements Ticker {
 
     private final Plant plant;
@@ -150,6 +153,8 @@ public class Projectile implements Ticker {
     public void onHit(Zombie z) {
         if (isDestroyed || z == null || z.isDead()) return;
 
+        if (onHitBowlingMinigame(z)) return;
+
         int finalDamage = damage * effect.getDamageMultiplier();
 
         if (effect.ignoresArmor()) {
@@ -168,6 +173,38 @@ public class Projectile implements Ticker {
         } else {
             isDestroyed = true;
         }
+    }
+
+
+    public boolean onHitBowlingMinigame(Zombie zombie) {
+
+        Random  rand = new Random();
+
+        if (type == ProjectileType.WALLNUT_BOWL) {
+            zombie.takeDamage(damage);
+            if (speedY == 0)
+                speedY = rand.nextBoolean() ? speedX : -speedX;
+            else
+                speedY = -speedY;
+            return true;
+
+        } else if (type == ProjectileType.EXPLODE_NUT_BOWL) {
+            System.out.println("Explode-o-nut bowled and exploded!");
+            List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(position.getCol(), position.getRow(), 1.5);
+            for (Zombie target : targets)
+                if (!target.isDead()) target.takeDirectDamage(1800, plant);
+
+            isDestroyed = true;
+            return true;
+
+        } else if (type == ProjectileType.GIANT_NUT_BOWL) {
+            zombie.takeDirectDamage(zombie.getHealth(), plant);
+            System.out.println("Giant nut crushed " + zombie.getName());
+            return true;
+        }
+
+        return false;
+
     }
 
     public void onHitObstacle(Tile tile) {

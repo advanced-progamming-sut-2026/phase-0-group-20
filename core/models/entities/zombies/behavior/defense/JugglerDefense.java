@@ -31,7 +31,7 @@ public class JugglerDefense implements DefenseBehavior {
             return switch (projectileType) {
                 case PEA, ICE_PEA, ROTOBAGA_SEED, FIRE_PEA, GOO_PEA,
                      CABBAGE, CORN, BUTTER, MELON, WINTER_MELON,
-                     PEPPER, GRAPE, SPIKE -> true;
+                     PEPPER, GRAPE, SPIKE, WALLNUT_BOWL, EXPLODE_NUT_BOWL, GIANT_NUT_BOWL -> true;
                 case MAGIC_BEAM, LIGHTNING_CLOUD, FUME, PLASMA_BALL -> false;
             };
         } catch (IllegalArgumentException e) {

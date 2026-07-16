@@ -31,7 +31,7 @@ public abstract class Level implements GameMode {
     protected final int baseWaveDifficulty;
     protected int currentWave = 0;
     private boolean allWavesSpawned = false;
-    private Wave currentActiveWave = null;
+    private Wave currentActiveWave = null; //seems useless
     private int currentDifficulty;
 
     protected Level(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {

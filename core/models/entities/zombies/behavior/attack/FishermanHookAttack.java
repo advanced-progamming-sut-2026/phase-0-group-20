@@ -40,7 +40,6 @@ public class FishermanHookAttack implements AttackBehavior {
 
             if (newTile.isPlantable(target)) {
                 target.getPlacedTile().getPlants().remove(target);
-                target.setPlacedTile(newTile);
                 newTile.addPlant(target);
             }
         }

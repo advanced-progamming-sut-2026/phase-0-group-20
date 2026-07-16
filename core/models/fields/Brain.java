@@ -1,7 +1,11 @@
 package models.fields;
 
-public class Brain {
+
+import models.timeManager.Ticker;
+
+public class Brain implements Ticker {
     private final int row;
+    private int hp = 100;
     private boolean isEaten;
 
     public Brain(int row) {
@@ -20,5 +24,12 @@ public class Brain {
 
     public int getRow() {
         return row;
+    }
+
+    @Override
+    public void onTick(int currentTick) {
+        if (hp <= 0)
+            isEaten = true;
+
     }
 }

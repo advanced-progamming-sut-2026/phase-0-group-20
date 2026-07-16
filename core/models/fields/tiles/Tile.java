@@ -38,6 +38,7 @@ public abstract class Tile implements Ticker {
 
     public void addPlant(Plant plant) {
         this.plants.add(plant);
+        plant.setPlacedTile(this);
     }
 
     public SeasonType getCurrentSeason() {

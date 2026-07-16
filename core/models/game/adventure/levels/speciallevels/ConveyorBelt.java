@@ -26,6 +26,9 @@ public class ConveyorBelt extends SpecialLevel {
 
     @Override
     public void engineLoop(GameSession session, int currentTick) {
+
+        super.engineLoop(session, currentTick); //we should implement the logic of parent class to spawn zombie wave
+
         if (currentTick > 0 && currentTick % (BELT_SPEED_SECONDS * TICKS_PER_SECOND) == 0) {
             if (belt.size() < BELT_CAPACITY) {
                 spawnPlantOnBelt();
@@ -45,12 +48,12 @@ public class ConveyorBelt extends SpecialLevel {
 
     @Override
     public boolean ignoresRecharge() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean skipsPlantSelection() {
-        return false;
+        return true;
     }
 
     @Override
@@ -65,8 +68,8 @@ public class ConveyorBelt extends SpecialLevel {
 
         Plant newPlant = PlantFactory.create(template.getId());
 
-        belt.add(template);
-        System.out.println("A new " + template.getName() + " arrived on the conveyor belt!");
+        belt.add(newPlant);
+        System.out.println("A new " + newPlant.getName() + " arrived on the conveyor belt!");
     }
 
     public List<Plant> getBelt() {
