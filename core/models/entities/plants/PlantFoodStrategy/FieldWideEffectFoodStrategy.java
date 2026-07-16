@@ -71,10 +71,10 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
                 break;
 
             default:
-                System.out.println("WARNING: Unmapped field-wide effect for: " + plant.getName());
+                notify("WARNING: Unmapped field-wide effect for: " + plant.getName());
         }
 
-        System.out.println(plant.getName() + " triggered a field-wide effect: " + description);
+        notify(plant.getName() + " triggered a field-wide effect: " + description);
     }
 
     private void shiftZombieToAdjacentLane(Zombie zombie, GameSession gameSession) {

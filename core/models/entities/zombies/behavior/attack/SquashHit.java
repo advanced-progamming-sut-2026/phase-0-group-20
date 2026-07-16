@@ -29,7 +29,7 @@ public class SquashHit implements AttackBehavior {
         for (Plant targetPlant : plantsToCrush) {
             targetPlant.takeDamage(99999);
             currentTile.getPlants().remove(targetPlant);
-            System.out.println(zombie.getName() + " completely crushed " + targetPlant.getName() + "!");
+            notify(zombie.getName() + " completely crushed " + targetPlant.getName() + "!");
         }
 
         resumeWalking();

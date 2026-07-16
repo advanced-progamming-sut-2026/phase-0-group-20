@@ -36,7 +36,7 @@ public class GargantuarMove implements MoveBehavior {
 
 //        session.getArena().spawnZombie(imp); // TODO : SPAWN IMP
 
-        System.out.println(zombie.getName() + " threw its Imp onto column "
+        notify(zombie.getName() + " threw its Imp onto column "
                 + IMP_LANDING_COLUMN + " of row " + zombie.getRow() + "!");
     }
 

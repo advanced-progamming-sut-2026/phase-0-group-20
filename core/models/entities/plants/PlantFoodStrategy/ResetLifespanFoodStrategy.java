@@ -22,7 +22,7 @@ public class ResetLifespanFoodStrategy implements PlantFoodStrategy {
                     if (strategy instanceof LifespanStrategy lifespanStrategy)
                         lifespanStrategy.resetLifespan();
 
-        System.out.println(plant.getName() + "The lifespan of all "
+        notify(plant.getName() + "The lifespan of all "
                 + plant.getName() + "s on the board has been reset!");
     }
 }

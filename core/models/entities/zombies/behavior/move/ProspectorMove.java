@@ -41,7 +41,7 @@ public class ProspectorMove implements MoveBehavior {
         int lastCol = GameSession.getInstance().getArena().getCols() - 1;
         zombie.setCol(lastCol);
 
-        System.out.println(zombie.getName() + "'s dynamite exploded! Now heading back the other way.");
+        notify(zombie.getName() + "'s dynamite exploded! Now heading back the other way.");
     }
 
     public void defuseDynamite() { // if ice shoot -> it will call in defense logic

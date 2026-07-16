@@ -45,7 +45,7 @@ public class TrapStrategy implements IPlantStrategy {
         if (!isArmed && (currentTick - startTick) >= armingTimeTicks) {
             isArmed = true;
             if (armingTimeTicks > 0) {
-                System.out.println("💣 " + name + " is now armed and ready!");
+                notify("💣 " + name + " is now armed and ready!");
             }
         }
 
@@ -68,7 +68,7 @@ public class TrapStrategy implements IPlantStrategy {
         }
 
         if (target != null) {
-            System.out.println("🚨 " + name + " TRAP TRIGGERED!");
+            notify("🚨 " + name + " TRAP TRIGGERED!");
 
             switch (name) {
                 case "Potato Mine":
@@ -80,22 +80,22 @@ public class TrapStrategy implements IPlantStrategy {
                     for (Zombie z : aoeTargets) {
                         if (!z.isDead()) z.takeDirectDamage(2400, context);
                     }
-                    System.out.println("💥 Primal Potato Mine dealt massive AoE damage!");
+                    notify("💥 Primal Potato Mine dealt massive AoE damage!");
                     break;
 
                 case "Squash":
                     target.takeDirectDamage(1800, context);
-                    System.out.println("🪨 Squash crushed " + target.getName() + "!");
+                    notify("🪨 Squash crushed " + target.getName() + "!");
                     break;
 
                 case "Tangle Kelp":
                     target.takeDirectDamage(9999, context);
-                    System.out.println("🌊 Tangle Kelp pulled " + target.getName() + " underwater!");
+                    notify("🌊 Tangle Kelp pulled " + target.getName() + " underwater!");
                     break;
 
                 case "Iceberg Lettuce":
                     // freeze zombie
-                    System.out.println("❄️ Iceberg Lettuce completely froze " + target.getName() + "!");
+                    notify("❄️ Iceberg Lettuce completely froze " + target.getName() + "!");
                     break;
             }
             context.takeDamage(context.getCurrentHp());

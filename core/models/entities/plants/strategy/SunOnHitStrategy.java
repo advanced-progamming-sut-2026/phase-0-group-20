@@ -35,7 +35,7 @@ public class SunOnHitStrategy implements IPlantStrategy {
             GameSession.getInstance().getTimeManager().registerNewTicker(newSun);
 
             lastRecordedHp = currentHp;
-            System.out.println("☀️ " + context.getName() + " was bitten! Dropped " + sunPerHit + " sun.");
+            notify("☀️ " + context.getName() + " was bitten! Dropped " + sunPerHit + " sun.");
         } else if (currentHp > lastRecordedHp) {
             lastRecordedHp = currentHp;
         }

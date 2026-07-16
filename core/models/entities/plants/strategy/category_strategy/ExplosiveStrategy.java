@@ -35,7 +35,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
 
             int damage = 1800;
 
-            System.out.println("💥 " + name + " DETONATED!");
+            notify("💥 " + name + " DETONATED!");
 
             switch (name) {
                 case "Cherry Bomb":
@@ -62,7 +62,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
 
                             GameSession.getInstance().getArena().addProjectile(grape);
                         }
-                        System.out.println("🍇 Grapeshot scattered 8 bouncing grapes in all directions!");
+                        notify("🍇 Grapeshot scattered 8 bouncing grapes in all directions!");
                     }
                     break;
 
@@ -74,13 +74,13 @@ public class ExplosiveStrategy implements IPlantStrategy {
                             z.takeDirectDamage(damage, context);
                         }
                     }
-                    System.out.println("🔥 Jalapeno burned the entire lane!");
+                    notify("🔥 Jalapeno burned the entire lane!");
                     break;
 
                 case "Doom-shroom":
                     applyAreaDamage(plantCol, plantRow, 3.5f, damage, context);
                     // change tile type
-                    System.out.println("🕳️ Doom-shroom left a massive crater behind!");
+                    notify("🕳️ Doom-shroom left a massive crater behind!");
                     break;
             }
             context.takeDamage(context.getCurrentHp());

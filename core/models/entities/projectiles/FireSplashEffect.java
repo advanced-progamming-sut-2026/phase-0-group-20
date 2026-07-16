@@ -28,7 +28,7 @@ public class FireSplashEffect implements ProjectileEffect {
             }
         }
 
-        System.out.println("🔥 Fire Splash applied! Melted ice on nearby zombies.");
+        notify("🔥 Fire Splash applied! Melted ice on nearby zombies.");
     }
 
     @Override

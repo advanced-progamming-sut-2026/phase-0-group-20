@@ -32,10 +32,10 @@ public class KingAttack implements AttackBehavior {
                     target.addArmor(new Armor(knightArmorData));
                     target.setType(ZombieType.DARK_ARMOR);
 
-                    System.out.println(zombie.getName() + " granted knighthood to a zombie in row " + target.getRow() + "!");
+                    notify(zombie.getName() + " granted knighthood to a zombie in row " + target.getRow() + "!");
                     break;
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Warning: Knight armor data not found in loader.");
+                    notify("Warning: Knight armor data not found in loader.");
                 }
             }
         }

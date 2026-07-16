@@ -104,13 +104,13 @@ public class ChargeStrategy implements IPlantStrategy {
 
                 if (isHoming) {
                     projectile.setHomingTarget(target, 0.8f);
-                    System.out.println("🔮 " + name + " fired a fully charged homing attack at " + target.getName() + "!");
+                    notify("🔮 " + name + " fired a fully charged homing attack at " + target.getName() + "!");
                 } else {
-                    System.out.println("🔋 " + name + " fired a charged attack! (Damage: " + currentDamage + ")");
+                    notify("🔋 " + name + " fired a charged attack! (Damage: " + currentDamage + ")");
 
                     if (name.equals("Bowling Bulb")) {
                         projectile.setBouncesLeft(3);
-                        System.out.println("🎳 Bowling Bulb fired a bouncing bulb!");
+                        notify("🎳 Bowling Bulb fired a bouncing bulb!");
                     }
                 }
                 GameSession.getInstance().getArena().addProjectile(projectile);

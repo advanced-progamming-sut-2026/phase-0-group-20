@@ -146,7 +146,7 @@ public class Zombie implements Ticker {
             if (this.attackBehavior instanceof LaserAttack laserAttack) {
                 int sunsToDrop = laserAttack.getStolenSuns() / 2;
                 if (sunsToDrop > 0) {
-                    System.out.println(this.getName() + " died and dropped " + sunsToDrop + " stolen suns!");
+                    notify(this.getName() + " died and dropped " + sunsToDrop + " stolen suns!");
                 }
             }
             return true;
@@ -193,7 +193,7 @@ public class Zombie implements Ticker {
 
         //implement new behavior for hypnotizing
 
-        System.out.println(this.getName() + " has switched sides!");
+        notify(this.getName() + " has switched sides!");
     }
 
     private float eatSpeedMultiplier = 1f;
@@ -227,6 +227,13 @@ public class Zombie implements Ticker {
     public void removeFreezeEffect() {
         activeEffects.removeIf(e -> e instanceof FreezeEffect);
         resetSpeed();
+    }
+
+    public void notify(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(message)
+                        .build());
     }
 
     public void applySpeedMultiplier(float multiplier) {

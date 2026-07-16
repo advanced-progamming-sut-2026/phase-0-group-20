@@ -2,7 +2,11 @@ package models.fields.modifiers;
 
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
+import models.enums.GameState;
 import models.game.Arena;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 
 public interface SeasonModifier {
     void onWaveStart(Wave wave);
@@ -10,4 +14,11 @@ public interface SeasonModifier {
     void onZombieSpawn(Zombie zombie, Arena arena);
 
     void updateEnvironment(int currentTick, Arena arena);
+
+    default void notify(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(message)
+                        .build());
+    }
 }

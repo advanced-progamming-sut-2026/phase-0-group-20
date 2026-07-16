@@ -66,7 +66,7 @@ public class ConveyorBelt extends SpecialLevel {
         Plant newPlant = PlantFactory.create(template.getId());
 
         belt.add(template);
-        System.out.println("A new " + template.getName() + " arrived on the conveyor belt!");
+        notify("A new " + template.getName() + " arrived on the conveyor belt!");
     }
 
     public List<Plant> getBelt() {

@@ -25,7 +25,7 @@ public class LifespanStrategy implements IPlantStrategy {
         aliveTicks++;
         if (aliveTicks >= lifespanTicks) {
             context.takeDamage(context.getCurrentHp());
-            System.out.println(context.getName() + " vanished due to limited lifespan!");
+            notify(context.getName() + " vanished due to limited lifespan!");
         }
     }
 

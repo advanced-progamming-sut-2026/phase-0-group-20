@@ -27,7 +27,7 @@ public class MultiDirectionRapidFireFoodStrategy implements PlantFoodStrategy {
                 ProjectileMechanism.executeNewProjectile(plant, true, true);
 
             if (tickTimer == 2)
-                System.out.println(plant.getName() + " unleashed a rapid barrage in all " + directionCount + " directions!");
+                notify(plant.getName() + " unleashed a rapid barrage in all " + directionCount + " directions!");
         }
     }
 

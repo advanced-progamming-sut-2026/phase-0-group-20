@@ -2,6 +2,9 @@ package models.entities.plants.effect;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 
 public class CatEffect implements PlantEffect {
     private final Zombie wizardZombie;
@@ -15,9 +18,7 @@ public class CatEffect implements PlantEffect {
         // flag for this
 
         // plant.setTargetable(false);
-        System.out.println(plant.getName() +
-                " was transformed into a CAT by " +
-                wizardZombie.getName() + "!");
+        notify(plant.getName() + " was transformed into a CAT by " + wizardZombie.getName() + "!");
 
     }
 
@@ -29,7 +30,7 @@ public class CatEffect implements PlantEffect {
     @Override
     public void remove(Plant plant) {
         // plant.setTargetable(true);
-        System.out.println("The spell broke! " + plant.getName() + " is no longer a cat.");
+        notify("The spell broke! " + plant.getName() + " is no longer a cat.");
     }
 
     @Override

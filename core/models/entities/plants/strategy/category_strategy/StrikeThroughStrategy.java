@@ -88,7 +88,7 @@ public class StrikeThroughStrategy implements IPlantStrategy {
             }
 
             GameSession.getInstance().getArena().addProjectile(projectile);
-            System.out.println("💨 " + name + " fired a strike-through attack!");
+            notify("💨 " + name + " fired a strike-through attack!");
         }
     }
 }

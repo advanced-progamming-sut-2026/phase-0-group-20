@@ -30,7 +30,7 @@ public class LaserAttack implements AttackBehavior {
 
             session.setCurrentSun(currentSun - sunToSteal);
             stolenSuns += sunToSteal;
-            System.out.println(zombie.getName() + " stole " + sunToSteal + " suns! Total stolen: " + stolenSuns);
+            notify(zombie.getName() + " stole " + sunToSteal + " suns! Total stolen: " + stolenSuns);
         }
 
         if (channelTicks >= 50) {
@@ -59,7 +59,7 @@ public class LaserAttack implements AttackBehavior {
 
         for (Plant plant : toDestroy) {
             plant.takeDamage(laserDamage);
-            System.out.println(zombie.getName() + " blasted " + plant.getName() + " with a laser!");
+            notify(zombie.getName() + " blasted " + plant.getName() + " with a laser!");
         }
     }
 

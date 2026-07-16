@@ -27,7 +27,7 @@ public class IceSplashEffect implements ProjectileEffect {
             }
         }
 
-        System.out.println("❄️ Ice Splash applied! " + nearbyZombies.size() + " zombies chilled.");
+        notify("❄️ Ice Splash applied! " + nearbyZombies.size() + " zombies chilled.");
     }
 
     @Override

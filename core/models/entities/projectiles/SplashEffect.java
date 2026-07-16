@@ -22,7 +22,7 @@ public class SplashEffect implements ProjectileEffect {
             }
         }
 
-        System.out.println("🍉 Splash damage applied to " + (nearbyZombies.size() - 1) + " nearby zombies!");
+        notify("🍉 Splash damage applied to " + (nearbyZombies.size() - 1) + " nearby zombies!");
     }
 
     @Override

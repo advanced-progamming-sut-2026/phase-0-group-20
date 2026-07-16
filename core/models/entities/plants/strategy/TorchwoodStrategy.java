@@ -34,12 +34,12 @@ public class TorchwoodStrategy implements IPlantStrategy {
             projectile.setDamage(newDamage);
             projectile.setEffect(new FireEffect());
 
-            System.out.println("🔥 Torchwood ignited a passing projectile! Damage is now " + newDamage);
+            notify("🔥 Torchwood ignited a passing projectile! Damage is now " + newDamage);
         }
     }
 
     public void activateBlueFlame() {
         this.blueFlame = true;
-        System.out.println("🔵 Torchwood activated Blue Flame mode!");
+        notify("🔵 Torchwood activated Blue Flame mode!");
     }
 }
