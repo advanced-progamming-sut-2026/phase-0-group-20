@@ -7,6 +7,6 @@ public class GrowToMaxSizeStrategy implements PlantFoodStrategy {
     @Override
     public void executeStrategy(Plant plant) {
         plant.setSize(plant.getMaxSize());
-        System.out.println(plant.getName() + " grew to its maximum size!");
+        notify(plant.getName() + " grew to its maximum size!");
     }
 }

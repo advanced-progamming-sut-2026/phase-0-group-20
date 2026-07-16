@@ -12,6 +12,14 @@ import models.timeManager.TimeManager;
 
 public class LobberStrategy implements IPlantStrategy {
     private int lastLobTick = 0;
+    private int splashDamageBonus = 0;
+    private float paperRadiusBonus = 0;
+
+    private float butterChanceBonus = 0.0f;
+
+    public void increaseButterChance(float chance) {
+        this.butterChanceBonus += chance;
+    }
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -43,38 +51,39 @@ public class LobberStrategy implements IPlantStrategy {
         float spawnY = context.getPlacedTile().getRow();
 
         ProjectileType type = null;
-        ProjectileEffect effect = new NormalEffect();
         int damage = 0;
+        ProjectileEffect effect = new NormalEffect();
 
         switch (name) {
             case "Cabbage-pult":
                 type = ProjectileType.CABBAGE;
-                damage = 40;
+                damage = context.getDamage();
                 break;
             case "Kernel-pult": //25% for butter and 75% for corn
-                if (Math.random() < 0.25) {
+                double finalButterChance = 0.25 + butterChanceBonus;
+                if (Math.random() < finalButterChance) {
                     type = ProjectileType.BUTTER;
-                    damage = 40;
+                    damage = context.getDamage();
                     effect = new ButterEffect();
                 } else {
                     type = ProjectileType.CORN;
-                    damage = 20;
+                    damage = context.getDamage();
                 }
                 break;
             case "Melon-pult":
                 type = ProjectileType.MELON;
-                damage = 80;
-                effect = new SplashEffect();
+                damage = context.getDamage();
+                effect = new SplashEffect(damage + splashDamageBonus);
                 break;
             case "Winter Melon":
                 type = ProjectileType.WINTER_MELON;
-                damage = 80;
-                effect = new IceSplashEffect();
+                damage = context.getDamage();
+                effect = new IceSplashEffect(damage + splashDamageBonus);
                 break;
             case "Pepper-pult":
                 type = ProjectileType.PEPPER;
-                damage = 50;
-                effect = new FireSplashEffect();
+                damage = context.getDamage();
+                effect = new FireSplashEffect(paperRadiusBonus + 1.5);
                 break;
         }
 
@@ -88,7 +97,15 @@ public class LobberStrategy implements IPlantStrategy {
                     true
             );
             GameSession.getInstance().getArena().addProjectile(projectile);
-            System.out.println("🥔 " + name + " lobbed a " + type.name() + "!");
+            notify("🥔 " + name + " lobbed a " + type.name() + "!");
         }
+    }
+
+    public void increaseSplashDamage(int damage) {
+        this.splashDamageBonus += damage;
+    }
+
+    public void increaseWarmRadius(float r) {
+        this.paperRadiusBonus += r;
     }
 }

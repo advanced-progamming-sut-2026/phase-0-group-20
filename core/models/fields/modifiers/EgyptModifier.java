@@ -37,7 +37,7 @@ public class EgyptModifier implements SeasonModifier {
 
                 zombie.setSpawnEffect(Zombie.SpawnEffect.SANDSTORM); //for graphic phase
 
-                System.out.println("A zombie was spawned by a tornado to column " + targetCol + "!");
+                notify("A zombie was spawned by a tornado to column " + targetCol + "!");
             }
 
         }
@@ -66,6 +66,6 @@ public class EgyptModifier implements SeasonModifier {
                 gravesPlanted++;
             }
         }
-        System.out.println(numberOfGraves + " graves generated for Egypt!");
+        notify(numberOfGraves + " graves generated for Egypt!");
     }
 }

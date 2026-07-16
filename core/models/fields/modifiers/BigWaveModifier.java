@@ -56,7 +56,7 @@ public class BigWaveModifier implements SeasonModifier {
 
         zombie.setSpawnEffect(Zombie.SpawnEffect.WATER_SPLASH); //for graphic phase
 
-        System.out.println("A zombie emerged from the water at row " + shore.getRow()
+        notify("A zombie emerged from the water at row " + shore.getRow()
                 + ", col " + shore.getCol() + "!");
     }
 
@@ -79,7 +79,7 @@ public class BigWaveModifier implements SeasonModifier {
                     arena.changeTile(r, c, new LowShoreTile(r, c));
             }
         }
-        System.out.println("The " + PERMANENT_WATER_COLS + " rightmost columns are open sea;"
+        notify("The " + PERMANENT_WATER_COLS + " rightmost columns are open sea;"
                 + " the tide can reach up to column " + (arena.getCols() - MAX_WATER_COLS) + ".");
     }
 
@@ -92,9 +92,9 @@ public class BigWaveModifier implements SeasonModifier {
         if (newWaterCols == currentWaterCols) return;
 
         if (newWaterCols > currentWaterCols)
-            System.out.println("The tide is rising! Water now covers the " + newWaterCols + " rightmost columns.");
+            notify("The tide is rising! Water now covers the " + newWaterCols + " rightmost columns.");
         else
-            System.out.println("The tide is receding! Water now covers the " + newWaterCols + " rightmost columns.");
+            notify("The tide is receding! Water now covers the " + newWaterCols + " rightmost columns.");
         currentWaterCols = newWaterCols;
 
         int cols = arena.getCols();
@@ -118,7 +118,7 @@ public class BigWaveModifier implements SeasonModifier {
         if (plantsOnTile.get(0).getTags().contains(PlantTag.WATER)) return;
 
         for (Plant plant : new ArrayList<>(plantsOnTile)) {
-            System.out.println(plant.getName() + " at row " + shore.getRow()
+            notify(plant.getName() + " at row " + shore.getRow()
                     + ", col " + shore.getCol() + " was swallowed by the water!");
             plant.takeDamage(plant.getCurrentHp());
             plantsOnTile.remove(plant);

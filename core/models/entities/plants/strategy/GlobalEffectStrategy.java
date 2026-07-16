@@ -22,17 +22,21 @@ public class GlobalEffectStrategy implements IPlantStrategy {
         if (currentTick - startTick >= ACTIVATION_DELAY) {
 
             if (context.getName().equals("Ice-shroom")) {
-                System.out.println("❄️ Ice-shroom exploded and froze the entire board!");
+                notify("❄️ Ice-shroom exploded and froze the entire board!");
 
                 for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
                     if (!z.isDead()) {
                         // freeze zombie
-                        System.out.println("-> " + z.getName() + " is completely frozen!");
+                        notify("-> " + z.getName() + " is completely frozen!");
                     }
                 }
             }
 
             context.takeDamage(context.getCurrentHp());
         }
+    }
+
+    public void increaseFreezeDuration(float value) {
+
     }
 }

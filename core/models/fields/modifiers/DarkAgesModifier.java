@@ -74,8 +74,7 @@ public class DarkAgesModifier implements SeasonModifier {
                 remainTiles--;
             }
         }
-
-        System.out.println(numberOfTiles + " cursed necromancy grounds lie hidden on this map...");
+        notify(numberOfTiles + " cursed necromancy grounds lie hidden on this map...");
     }
 
     private void spawnRandomGraves(Arena arena) {
@@ -128,7 +127,7 @@ public class DarkAgesModifier implements SeasonModifier {
         String contents = "";
         if (graveStone.hasSun()) contents = " It holds 50 sun!";
         else if (graveStone.hasPlantFood()) contents = " It holds a plant food!";
-        System.out.println("A grave emerged from the ground at row " + row + ", col " + col + "!" + contents);
+        notify("A grave emerged from the ground at row " + row + ", col " + col + "!" + contents);
     }
 
     private void raiseZombiesFromGraves(Arena arena) {
@@ -141,7 +140,7 @@ public class DarkAgesModifier implements SeasonModifier {
         for (NecromanceTile tile : hauntedTiles) {
             Zombie zombie = ZombieFactory.create(ZombieType.NORMAL, tile.getRow());
             tile.spawnZombieFromBelow(zombie);
-            System.out.println("A zombie crawled out from under the grave at row "
+            notify("A zombie crawled out from under the grave at row "
                     + tile.getRow() + ", col " + tile.getCol() + "!");
         }
     }

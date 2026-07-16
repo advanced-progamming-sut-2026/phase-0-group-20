@@ -1,9 +1,13 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
+import models.entities.zombies.Zombie;
 import models.fields.tiles.GraveStoneTile;
 import models.fields.tiles.Tile;
+import models.game.GameSession;
 import models.timeManager.TimeManager;
+
+import java.util.List;
 
 /**
  * Grave Buster Strategy:
@@ -12,8 +16,10 @@ import models.timeManager.TimeManager;
  */
 
 public class GraveBusterStrategy implements IPlantStrategy {
-    private static final int BUST_DELAY = 4 * TimeManager.TICKS_PER_SECOND;
+    private float eatTimeReduction = 0;
     private int startTick = -1;
+
+    private boolean explodeOnFinish = false;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -22,15 +28,49 @@ public class GraveBusterStrategy implements IPlantStrategy {
         Tile currentTile = context.getPlacedTile();
 
         if (!(currentTile instanceof GraveStoneTile)) {
-            System.out.println("❌ Grave Buster must be planted on a GraveStone!");
+            notify("❌ Grave Buster must be planted on a GraveStone!");
             context.takeDamage(context.getCurrentHp());
             return;
         }
 
-        if (currentTick - startTick >= BUST_DELAY) {
-            System.out.println("🪦 Grave Buster successfully destroyed the grave!");
+        float finalDelaySeconds = Math.max(0, 4.0f - eatTimeReduction);
+        int bustDelayTicks = (int) (finalDelaySeconds * TimeManager.TICKS_PER_SECOND);
+
+        if (currentTick - startTick >= bustDelayTicks) {
+            notify("🪦 Grave Buster successfully destroyed the grave!");
             // change type of tile
+
+            if (explodeOnFinish) {
+                triggerExplosion(context);
+            }
             context.takeDamage(context.getCurrentHp());
         }
+    }
+
+    private void triggerExplosion(Plant context) {
+        int plantRow = context.getPlacedTile().getRow();
+        int plantCol = context.getPlacedTile().getCol();
+        int damage = 1800;
+
+        notify("💥 " + context.getName() + " triggered a post-work explosion!");
+
+        List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5f);
+        for (Zombie z : targets) {
+            if (!z.isDead()) {
+                boolean killed = z.takeDirectDamage(damage);
+                if (killed) {
+                    context.onZombieDeath(z);
+                }
+            }
+        }
+        // this method for explod
+    }
+
+    public void reduceEatTime(float seconds) {
+        this.eatTimeReduction += seconds;
+    }
+
+    public void setExplodeOnFinish(boolean explode) {
+        this.explodeOnFinish = explode;
     }
 }

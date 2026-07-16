@@ -18,7 +18,7 @@ public class DeadLineLoseCondition implements LoseCondition {
         List<Zombie> activeZombies = session.getArena().getActiveZombies();
         for (Zombie z : activeZombies) {
             if (z.getCol() <= loseCol && !z.isDead()) {
-                System.out.println("A zombie has passed the DeadLine. YOU LOST.");
+                notify("A zombie has passed the DeadLine. YOU LOST.");
                 return true;
             }
         }

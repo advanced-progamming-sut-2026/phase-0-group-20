@@ -2,6 +2,9 @@ package models.entities;
 
 import models.Position;
 import models.game.GameSession;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
 
 public class Sun implements Ticker {
@@ -48,18 +51,24 @@ public class Sun implements Ticker {
             this.type = SunType.NORMAL_SUN;
             this.amountProduced = this.type.getValue();
         }
-
-        System.out.printf("Sun reached the ground at position (%d, %d)\n", getCol(), getRow());
+        notify(String.format("Sun reached the ground at position (%d, %d)\n", getCol(), getRow()));
     }
 
     public void collect() {
         this.isCollected = true;
 
         if (isFalling && type == SunType.RADIOACTIVE_SUN) {
-            System.out.println("Radioactive sun exploded mid-air!");
+            notify("Radioactive sun exploded mid-air!");
         } else {
             GameSession.getInstance().addSun(amountProduced);
         }
+    }
+
+    public void notify(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(message)
+                        .build());
     }
 
     public int getCol() {

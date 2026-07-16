@@ -125,12 +125,13 @@ public class Zombie implements Ticker {
         return applyHealthDamage(remaining, projectile);
     }
 
-    public void takeDamage(int damage) {
+    public boolean takeDamage(int damage) {
         health -= damage;
         if (health <= 0) {
             health = 0;
             dead = true;
         }
+        return dead;
     }
 
 
@@ -146,7 +147,7 @@ public class Zombie implements Ticker {
             if (this.attackBehavior instanceof LaserAttack laserAttack) {
                 int sunsToDrop = laserAttack.getStolenSuns() / 2;
                 if (sunsToDrop > 0) {
-                    System.out.println(this.getName() + " died and dropped " + sunsToDrop + " stolen suns!");
+                    notify(this.getName() + " died and dropped " + sunsToDrop + " stolen suns!");
                 }
             }
             return true;
@@ -167,24 +168,6 @@ public class Zombie implements Ticker {
         return false;
     }
 
-    public boolean takeDirectDamage(int damage, Plant plant) { //implement harchi lazeme
-        if (dead) return false;
-
-        health -= damage;
-        if (health <= 0) {
-            health = 0;
-            dead = true;
-            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
-                    .zombie(this)
-                    .plant(plant)
-                    .coordinate(this.getRow(), this.getCol())
-                    .build();
-            GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
-            return true;
-        }
-        return false;
-    }
-
     public void hypnotize() {
         if (this.isHypnotized || this.dead) return;
 
@@ -193,7 +176,7 @@ public class Zombie implements Ticker {
 
         //implement new behavior for hypnotizing
 
-        System.out.println(this.getName() + " has switched sides!");
+        notify(this.getName() + " has switched sides!");
     }
 
     private float eatSpeedMultiplier = 1f;
@@ -227,6 +210,13 @@ public class Zombie implements Ticker {
     public void removeFreezeEffect() {
         activeEffects.removeIf(e -> e instanceof FreezeEffect);
         resetSpeed();
+    }
+
+    public void notify(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(message)
+                        .build());
     }
 
     public void applySpeedMultiplier(float multiplier) {

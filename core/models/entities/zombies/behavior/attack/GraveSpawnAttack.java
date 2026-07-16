@@ -39,7 +39,7 @@ public class GraveSpawnAttack implements AttackBehavior {
             session.getArena().changeTile(targetTile.getRow(), targetTile.getCol(),
                     new GraveStoneTile(targetTile.getRow(), targetTile.getCol()));
 
-            System.out.println("Grave spawned at: " + targetTile.getRow() + ", " + targetTile.getCol());
+            notify("Grave spawned at: " + targetTile.getRow() + ", " + targetTile.getCol());
         }
 
         zombie.setAttacking(false);

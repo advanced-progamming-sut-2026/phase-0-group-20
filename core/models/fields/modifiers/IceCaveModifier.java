@@ -81,7 +81,7 @@ public class IceCaveModifier implements SeasonModifier {
             if (tile instanceof NormalTile && tile.getPlants().isEmpty()) {
                 SlipperyTile.SlideDirection direction = pickDirection(randomRow, rows);
                 arena.changeTile(randomRow, randomCol, new SlipperyTile(randomRow, randomCol, direction));
-                System.out.println("An ice floe sliding " + direction
+                notify("An ice floe sliding " + direction
                         + " covers row " + randomRow + ", col " + randomCol + ".");
                 placed++;
                 remainTiles--;
@@ -106,7 +106,7 @@ public class IceCaveModifier implements SeasonModifier {
         }
 
         for (int Row : frozenRow) {
-            System.out.println("A freezing wind sweeps through lane " + Row + "!");
+            notify("A freezing wind sweeps through lane " + Row + "!");
             for (Plant plant : new ArrayList<>(arena.getActivePlants())) {
                 Tile tile = plant.getPlacedTile();
                 if (tile == null || tile.getRow() != Row) continue;
@@ -124,7 +124,7 @@ public class IceCaveModifier implements SeasonModifier {
             frostbiteLevels.remove(plant);
             freezePlant(plant, arena);
         } else
-            System.out.println(plant.getName() + " is at frostbite level " + level + "/" + MAX_FROSTBITE_LEVEL + ".");
+            notify(plant.getName() + " is at frostbite level " + level + "/" + MAX_FROSTBITE_LEVEL + ".");
 
     }
 
@@ -144,7 +144,7 @@ public class IceCaveModifier implements SeasonModifier {
             IceBlock iceBlock = new IceBlock(plant, row, col);
             ((IceHolder) tile).setIceBlock(iceBlock);
             session.getTimeManager().registerNewTicker(iceBlock);
-            System.out.println(plant.getName() + " is completely frozen inside an IceBlock at row " +
+            notify(plant.getName() + " is completely frozen inside an IceBlock at row " +
                     row + ", col " + col + "!");
         }
     }
@@ -173,14 +173,14 @@ public class IceCaveModifier implements SeasonModifier {
                     if (!plants.isEmpty()) {
                         Plant randomPlant = plants.get(rand.nextInt(plants.size()));
                         iceBlock = new IceBlock(randomPlant, randomRow, randomCol);
-                        System.out.println("A pre-frozen Plant was placed at row " + randomRow + ", col " + randomCol);
+                        notify("A pre-frozen Plant was placed at row " + randomRow + ", col " + randomCol);
                     }
                 } else {
                     List<Zombie> zombies = GameSession.getInstance().getChosenZombies();
                     if (!zombies.isEmpty()) {
                         Zombie randomZombie = zombies.get(rand.nextInt(zombies.size()));
                         iceBlock = new IceBlock(randomZombie, randomRow, randomCol);
-                        System.out.println("A pre-frozen Zombie was placed at row " + randomRow + ", col " + randomCol);
+                        notify("A pre-frozen Zombie was placed at row " + randomRow + ", col " + randomCol);
                     }
                 }
 

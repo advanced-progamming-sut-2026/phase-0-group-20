@@ -158,9 +158,15 @@ public class Projectile implements Ticker {
         int finalDamage = damage * effect.getDamageMultiplier();
 
         if (effect.ignoresArmor()) {
-            z.takeDirectDamage(finalDamage);
+            boolean killed =z.takeDirectDamage(finalDamage);
+            if(killed){
+                this.getPlant().onZombieDeath(z);
+            }
         } else {
-            z.takeDamage(finalDamage, this);
+            boolean killed = z.takeDamage(finalDamage, this);
+            if(killed){
+                this.getPlant().onZombieDeath(z);
+            }
         }
 
         effect.applyEffect(z, this);

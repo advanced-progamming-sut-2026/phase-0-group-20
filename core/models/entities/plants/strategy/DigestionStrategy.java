@@ -13,16 +13,16 @@ import models.timeManager.TimeManager;
  */
 
 public class DigestionStrategy implements IPlantStrategy {
-    private static final int DIGESTION_DURATION_TICKS = 40 * TimeManager.TICKS_PER_SECOND;
     private boolean isDigesting = false;
     private int digestionStartTick = -1;
 
     @Override
     public void execute(Plant context, int currentTick) {
         if (isDigesting) {
-            if (currentTick - digestionStartTick >= DIGESTION_DURATION_TICKS) {
+            int currentDigestionTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
+            if (currentTick - digestionStartTick >= currentDigestionTicks) {
                 isDigesting = false;
-                System.out.println("🦷 " + context.getName() + " finished digesting and is hungry again!");
+                notify("🦷 " + context.getName() + " finished digesting and is hungry again!");
             }
         } else {
             int plantRow = context.getPlacedTile().getRow();
@@ -44,8 +44,11 @@ public class DigestionStrategy implements IPlantStrategy {
             }
 
             if (target != null) {
-                System.out.println("🦖 " + context.getName() + " swallowed " + target.getName() + " whole!");
-                target.takeDirectDamage(9999, context);
+                notify("🦖 " + context.getName() + " swallowed " + target.getName() + " whole!");
+                boolean killed = target.takeDirectDamage(9999);
+                if(killed){
+                    context.onZombieDeath(target);
+                }
 
                 isDigesting = true;
                 digestionStartTick = currentTick;

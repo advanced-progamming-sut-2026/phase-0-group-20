@@ -21,6 +21,7 @@ import java.util.Random;
 public class HomingStrategy implements IPlantStrategy {
     private final Random random = new Random();
     private int lastShotTick = 0;
+    private boolean prioritizeGargantuars = false;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -49,14 +50,26 @@ public class HomingStrategy implements IPlantStrategy {
                         }
                     }
                 } else {
-                    target = validTargets.get(random.nextInt(validTargets.size()));
+                    if (prioritizeGargantuars) {
+                        List<Zombie> gargantuars = validTargets.stream()
+                                .filter(z -> z.getName().toLowerCase().contains("gargantuar"))
+                                .toList();
+
+                        if (!gargantuars.isEmpty()) {
+                            target = gargantuars.get(random.nextInt(gargantuars.size()));
+                        }
+                    }
+
+                    if (target == null) {
+                        target = validTargets.get(random.nextInt(validTargets.size()));
+                    }
                 }
 
                 if (target != null) {
                     int burstCount = plantName.equals("Cat-tail") ? 2 : 1;
                     for (int i = 0; i < burstCount; i++)
                         ProjectileMechanism.executeTargetedProjectile(context, target, i);
-                    System.out.println(context.getName() + " locked onto " + target.getName() + "!");
+                    notify(context.getName() + " locked onto " + target.getName() + "!");
                     lastShotTick = currentTick;
 
 //                    shootHomingProjectile(context, target, gameSession);
@@ -68,48 +81,8 @@ public class HomingStrategy implements IPlantStrategy {
         }
     }
 
-//
-//    private void shootHomingProjectile(Plant context, Zombie target, GameSession gameSession) {
-//        float spawnX = context.getPlacedTile().getCol();
-//        float spawnY = context.getPlacedTile().getRow();
-//        String name = context.getName();
-//
-//        ProjectileEffect effect = null;
-//        ProjectileType type = null;
-//        int damage = 0;
-//        int burstCount = 1;
-//
-//        if (name.equals("Caulipower")) {
-//            effect = new HypnotizeEffect();
-//            type = ProjectileType.MAGIC_BEAM;
-//            damage = 0;
-//        } else if (name.equals("Electric Blueberry")) {
-//            effect = new LightningEffect();
-//            type = ProjectileType.LIGHTNING_CLOUD;
-//            damage = 5000;
-//        } else if (name.equals("Cat-tail")) {
-//            effect = new NormalEffect();
-//            type = ProjectileType.PEA;
-//            damage = 15;
-//            burstCount = 2;
-//        }
-//
-//        if (effect != null) {
-//            for (int i = 0; i < burstCount; i++) {
-//                int offset = -i;
-//
-//                Projectile projectile = new Projectile(
-//                        context,
-//                        type, effect, gameSession, damage,
-//                        new Position(spawnX + offset, spawnY),
-//                        0, 0,
-//                        true, true
-//                );
-//
-//                projectile.setHomingTarget(target, 1.5f);
-//                gameSession.addProjectile(projectile);
-//            }
-//        }
-//    }
+    public void setPrioritizeGargantuars(boolean prioritize) {
+        this.prioritizeGargantuars = prioritize;
+    }
 
 }

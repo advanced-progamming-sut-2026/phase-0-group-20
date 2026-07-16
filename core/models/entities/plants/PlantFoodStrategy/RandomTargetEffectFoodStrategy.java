@@ -52,7 +52,7 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
         }
 
         if (targets.isEmpty()) {
-            System.out.println(plant.getName() + " found no zombies to target with its Plant Food effect!");
+            notify(plant.getName() + " found no zombies to target with its Plant Food effect!");
             return;
         }
 
@@ -69,23 +69,30 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
                 applyDirectEffect(target, plant);
         }
 
-        System.out.println(plant.getName() + " targeted " + hits + " random zombie(s) and applied effect: " + effectDescription);
+        notify(plant.getName() + " targeted " + hits + " random zombie(s) and applied effect: " + effectDescription);
     }
 
     private void applyDirectEffect(Zombie target, Plant plant) {
         switch (plant.getName().toLowerCase()) {
-            case "electric blueberry", "tangle kelp", "chomper" ->
-                    target.takeDirectDamage(10000, plant); //yahtamel plant be kar biad
+            case "electric blueberry", "tangle kelp", "chomper" ->{
+                boolean killed =target.takeDirectDamage(10000); //yahtamel plant be kar biad
+                if(killed){
+                    plant.onZombieDeath(target);
+                }
+            }
             case "squash" -> {
                 int damage = ProjectileMechanism.parseDamage(plant.getDamage());
-                target.takeDirectDamage(damage, plant);
+                boolean killed =target.takeDirectDamage(damage);
+                if(killed){
+                    plant.onZombieDeath(target);
+                }
             }
             case "caulipower" -> {
                 target.hypnotize();
-                System.out.println(target.getName() + " was hypnotized!");
+                notify(target.getName() + " was hypnotized!");
             }
             default ->
-                    System.out.println(target.getName() + " was hit by an unmapped random-target Plant Food effect.");
+                    notify(target.getName() + " was hit by an unmapped random-target Plant Food effect.");
         }
     }
 }

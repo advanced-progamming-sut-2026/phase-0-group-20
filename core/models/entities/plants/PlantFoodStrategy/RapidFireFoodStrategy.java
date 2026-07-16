@@ -51,7 +51,7 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
             if (tickTimer % 2 == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, false);
             if (tickTimer == 2)
-                System.out.println(plant.getName() + " unleashed a rapid-fire barrage!");
+                notify(plant.getName() + " unleashed a rapid-fire barrage!");
             return;
         }
 
@@ -77,7 +77,7 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
                 giantShotsFired++;
 
-                System.out.println(plant.getName() + " fired giant projectile " + giantShotsFired + "/" + totalGiantShots);
+                notify(plant.getName() + " fired giant projectile " + giantShotsFired + "/" + totalGiantShots);
             }
         }
 

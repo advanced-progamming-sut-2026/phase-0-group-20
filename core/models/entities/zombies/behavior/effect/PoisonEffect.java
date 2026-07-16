@@ -20,6 +20,7 @@ public class PoisonEffect extends Effect {
         super.execute();
         if (currentTick % 10 == 0) { // each 1 sec
             zombie.takeDamage(dps);
+
         }
     }
 

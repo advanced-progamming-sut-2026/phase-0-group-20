@@ -68,7 +68,7 @@ public class QuestFactory {
                 //after difficulties
             }
             case 13 -> {
-                return new KillWithNoLawnmowerCondition(10);
+                return new KillWithNoLawnmowerCondition(10 ,0);
             }
             case 14 -> {
                 return new SymmetryLogicCondition(false);
@@ -160,14 +160,10 @@ public class QuestFactory {
             return defaultValue;
         }
 
-        String englishNumbersText = text
-                .replace("۰", "0").replace("۱", "1").replace("۲", "2")
-                .replace("۳", "3").replace("۴", "4").replace("۵", "5")
-                .replace("۶", "6").replace("۷", "7").replace("۸", "8").replace("۹", "9");
-
         try {
-            String[] parts = englishNumbersText.split("-");
+            String[] parts = text.split("-");
             int randomIndex = random.nextInt(parts.length);
+
             Matcher matcher = Pattern.compile("\\d+").matcher(parts[randomIndex]);
             if (matcher.find()) {
                 return Integer.parseInt(matcher.group());

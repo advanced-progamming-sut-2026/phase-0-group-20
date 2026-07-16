@@ -6,12 +6,15 @@ import models.game.GameSession;
 import java.util.List;
 
 public class IceSplashEffect implements ProjectileEffect {
-    private final double SPLASH_RADIUS = 1.5;
+    private static final double SPLASH_RADIUS = 1.5;
+    private final int splashDamage;
 
+    public IceSplashEffect(int splashDamage) {
+        this.splashDamage = splashDamage;
+    }
 
     @Override
     public void applyEffect(Zombie zombie, Projectile projectile) {
-        int splashDamage = projectile.getDamage() / 2;
 
         List<Zombie> nearbyZombies = GameSession.getInstance().getArena().getZombiesInRadius(
                 zombie.getCol(), zombie.getRow(), SPLASH_RADIUS
@@ -23,11 +26,14 @@ public class IceSplashEffect implements ProjectileEffect {
             // add effect for zombie
 
             if (z != zombie) {
-                z.takeDamage(splashDamage);
+                boolean killed = z.takeDamage(splashDamage);
+                if(killed){
+                    projectile.getPlant().onZombieDeath(z);
+                }
             }
         }
 
-        System.out.println("❄️ Ice Splash applied! " + nearbyZombies.size() + " zombies chilled.");
+        notify("❄️ Ice Splash applied! " + nearbyZombies.size() + " zombies chilled.");
     }
 
     @Override

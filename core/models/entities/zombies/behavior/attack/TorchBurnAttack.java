@@ -40,7 +40,7 @@ public class TorchBurnAttack implements AttackBehavior {
 
         targetPlant.takeDamage(99999);
         currentTile.getPlants().remove(targetPlant);
-        System.out.println(zombie.getName() + " instantly burned " + targetPlant.getName() + " to ashes!");
+        notify(zombie.getName() + " instantly burned " + targetPlant.getName() + " to ashes!");
 
         resumeWalking();
     }
@@ -53,14 +53,14 @@ public class TorchBurnAttack implements AttackBehavior {
     public void extinguishTorch() {
         if (this.isTorchLit) {
             this.isTorchLit = false;
-            System.out.println(zombie.getName() + "'s torch was extinguished by ice!");
+            notify(zombie.getName() + "'s torch was extinguished by ice!");
         }
     }
 
     public void igniteTorch() {
         if (!this.isTorchLit) {
             this.isTorchLit = true;
-            System.out.println(zombie.getName() + "'s torch was reignited by fire!");
+            notify(zombie.getName() + "'s torch was reignited by fire!");
         }
     }
 

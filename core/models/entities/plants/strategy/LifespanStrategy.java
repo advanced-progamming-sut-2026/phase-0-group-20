@@ -13,7 +13,7 @@ import models.timeManager.TimeManager;
  */
 
 public class LifespanStrategy implements IPlantStrategy {
-    private final int lifespanTicks;
+    private int lifespanTicks;
     private int aliveTicks = 0;
 
     public LifespanStrategy(int seconds) {
@@ -25,11 +25,15 @@ public class LifespanStrategy implements IPlantStrategy {
         aliveTicks++;
         if (aliveTicks >= lifespanTicks) {
             context.takeDamage(context.getCurrentHp());
-            System.out.println(context.getName() + " vanished due to limited lifespan!");
+            notify(context.getName() + " vanished due to limited lifespan!");
         }
     }
 
     public void resetLifespan() {
         this.aliveTicks = 0;
+    }
+
+    public void increaseLifespan(float extraSeconds) {
+        this.lifespanTicks += (int) (extraSeconds * TimeManager.TICKS_PER_SECOND);
     }
 }

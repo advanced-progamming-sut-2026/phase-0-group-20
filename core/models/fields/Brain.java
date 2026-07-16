@@ -2,8 +2,12 @@ package models.fields;
 
 
 import models.timeManager.Ticker;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 
 public class Brain implements Ticker {
+
     private final int row;
     private int hp = 100;
     private boolean isEaten;
@@ -15,7 +19,11 @@ public class Brain implements Ticker {
 
     public void eat() {
         this.isEaten = true;
-        System.out.println("A brain in row " + row + " was eaten! Ahh such a delicious brain !");// print for now
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("A brain in row " + row + " was eaten! Ahh such a delicious brain !")
+                        .build());
+        // print for now
     }
 
     public boolean isEaten() {

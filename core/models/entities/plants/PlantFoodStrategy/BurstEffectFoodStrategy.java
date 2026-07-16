@@ -35,7 +35,10 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
         if (name.equalsIgnoreCase("fume-shroom")) {
             for (Zombie zombie : gameSession.getArena().zombieInRow(row)) {
                 if (!zombie.isDead() && zombie.getCol() >= col) {
-                    zombie.takeDirectDamage(damage, plant);
+                    boolean killed = zombie.takeDirectDamage(damage);
+                    if(killed){
+                        plant.onZombieDeath(zombie);
+                    }
 
                     float pushBackDistance = PhysicalConstants.TILE_UNIT_LENGTH * 3;
                     zombie.getPosition().moveX(pushBackDistance);
@@ -48,10 +51,13 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
             List<Zombie> nearZombies = gameSession.getArena().getZombiesInRadius(col, row, 1.5);
             for (Zombie zombie : nearZombies) {
                 if (zombie.isDead()) continue;
-                zombie.takeDirectDamage(damage, plant);
+                boolean killed =zombie.takeDirectDamage(damage);
+                if(killed){
+                   plant.onZombieDeath(zombie);
+                }
             }
         }
 
-        System.out.println(plant.getName() + " unleashed an area burst: " + description);
+        notify(plant.getName() + " unleashed an area burst: " + description);
     }
 }

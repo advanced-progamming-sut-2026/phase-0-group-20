@@ -7,10 +7,14 @@ import java.util.List;
 
 public class SplashEffect implements ProjectileEffect {
     private static final double SPLASH_RADIUS = 1.5;
+    private final int splashDamage;
+
+    public SplashEffect(int splashDamage) {
+        this.splashDamage = splashDamage;
+    }
 
     @Override
     public void applyEffect(Zombie zombie, Projectile projectile) {
-        int splashDamage = projectile.getDamage() / 2;
 
         List<Zombie> nearbyZombies = GameSession.getInstance().getArena().getZombiesInRadius(
                 zombie.getCol(), zombie.getRow(), SPLASH_RADIUS
@@ -18,11 +22,14 @@ public class SplashEffect implements ProjectileEffect {
 
         for (Zombie z : nearbyZombies) {
             if (z != zombie && !z.isDead()) {
-                z.takeDamage(splashDamage, projectile);
+               boolean killed =  z.takeDamage(splashDamage, projectile);
+               if (killed) {
+                   projectile.getPlant().onZombieDeath(z);
+               }
             }
         }
 
-        System.out.println("🍉 Splash damage applied to " + (nearbyZombies.size() - 1) + " nearby zombies!");
+        notify("🍉 Splash damage applied to " + (nearbyZombies.size() - 1) + " nearby zombies!");
     }
 
     @Override

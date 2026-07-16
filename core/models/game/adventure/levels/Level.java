@@ -13,6 +13,9 @@ import models.game.LoseCondition;
 import models.game.WinCondition;
 import models.game.adventure.Chapter;
 import models.game.adventure.SeasonType;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +88,7 @@ public abstract class Level implements GameMode {
         Wave newWave = new Wave(currentWave, isLastWave, currentDifficulty);
         session.getArena().setCurrentActiveWave(newWave);
 
-        System.out.println(isLastWave ? "The final wave has come." : "Wave " + currentWave + " started.");
+        notify(isLastWave ? "The final wave has come." : "Wave " + currentWave + " started.");
 
         spawnWave(newWave, session);
 
@@ -115,9 +118,16 @@ public abstract class Level implements GameMode {
             session.getArena().addZombie(newZombie);
             session.getTimeManager().registerNewTicker(newZombie);
 
-            System.out.println("Zombie " + newZombie.getType().name() +
+            notify("Zombie " + newZombie.getType().name() +
                     " spawned in lane " + lane + " (Cost: " + newZombie.getWaveCost() + ").");
         }
+    }
+
+    public void notify(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(message)
+                        .build());
     }
 
     public boolean skipsPlantSelection() {

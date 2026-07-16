@@ -18,6 +18,6 @@ public class DeadLine extends SpecialLevel {
 
     @Override
     public void onStart(GameSession session) {
-        System.out.println("The dead line has been set to the" + loseCol + 1 + ".");
+        notify("The dead line has been set to the" + loseCol + 1 + ".");
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 public class MeleeStrategy implements IPlantStrategy {
     private int lastAttackTick = 0;
     private int aliveTicks = 0;
+    private float rangeExtension = 0;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -31,11 +32,13 @@ public class MeleeStrategy implements IPlantStrategy {
                 Zombie target = null;
                 double minDistance = Double.MAX_VALUE;
 
+                double forwardRange = 1.5 + rangeExtension;
+
                 for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                     if (z.isDead()) continue;
                     double dist = z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - plantCol;
 
-                    if (dist >= -1.0 && dist <= 1.5) {
+                    if (dist >= -1.0 && dist <= forwardRange) {
                         if (Math.abs(dist) < minDistance) {
                             minDistance = Math.abs(dist);
                             target = z;
@@ -45,14 +48,17 @@ public class MeleeStrategy implements IPlantStrategy {
 
                 if (target != null) {
                     int damage = name.equals("Bonk Choy") ? 15 : 40;
-                    target.takeDamage(damage);
+                    boolean killed = target.takeDamage(damage);
+                    if(killed){
+                        context.onZombieDeath(target);
+                    }
                     attacked = true;
 
                     if (name.equals("Wasabi Whip")) {
                         target.removeChillEffect();
                         target.removeFreezeEffect();
                     }
-                    System.out.println("🥊 " + name + " landed a melee strike on " + target.getName() + "!");
+                    notify("🥊 " + name + " landed a melee strike on " + target.getName() + "!");
                 }
             } else if (name.equals("Phat Beet") || name.equals("Kiwibeast")) {
                 List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5);
@@ -68,12 +74,15 @@ public class MeleeStrategy implements IPlantStrategy {
 
                     for (Zombie z : targets) {
                         if (!z.isDead()) {
-                            z.takeDamage(damage);
+                            boolean killed =z.takeDamage(damage);
+                            if(killed){
+                                context.onZombieDeath(z);
+                            }
                             attacked = true;
                         }
                     }
                     if (attacked) {
-                        System.out.println("🔊 " + name + " slammed a 3x3 area, hitting " + targets.size() + " zombies!");
+                        notify("🔊 " + name + " slammed a 3x3 area, hitting " + targets.size() + " zombies!");
                     }
                 }
             }
@@ -81,5 +90,9 @@ public class MeleeStrategy implements IPlantStrategy {
                 lastAttackTick = currentTick;
             }
         }
+    }
+
+    public void increaseRange(float range) {
+        this.rangeExtension += range;
     }
 }
