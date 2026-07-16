@@ -6,12 +6,16 @@ import models.game.GameSession;
 import java.util.List;
 
 public class FireSplashEffect implements ProjectileEffect {
-    private final double SPLASH_RADIUS = 1.5;
+    private double SPLASH_RADIUS;
 
+    public FireSplashEffect(double splashRadius) {
+        this.SPLASH_RADIUS = splashRadius;
+    }
 
     @Override
     public void applyEffect(Zombie zombie, Projectile projectile) {
         int splashDamage = projectile.getDamage() / 2;
+
 
         List<Zombie> nearbyZombies = GameSession.getInstance().getArena().getZombiesInRadius(
                 zombie.getCol(), zombie.getRow(), SPLASH_RADIUS

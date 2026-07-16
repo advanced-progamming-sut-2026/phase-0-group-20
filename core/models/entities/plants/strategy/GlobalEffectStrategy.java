@@ -35,4 +35,8 @@ public class GlobalEffectStrategy implements IPlantStrategy {
             context.takeDamage(context.getCurrentHp());
         }
     }
+
+    public void increaseFreezeDuration(float value) {
+
+    }
 }

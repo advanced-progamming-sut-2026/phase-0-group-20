@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PlantLoader {
 
@@ -54,21 +56,14 @@ public class PlantLoader {
                 PlantCategory category = parseCategory(dto.category);
                 List<PlantTag> tags = parseTags(dto.tags);
 
-                String damageStr = String.valueOf(dto.damage);
-
-                String baseAbility = dto.abilityType + (dto.abilityValue != 0 ? ":" + dto.abilityValue : "");
-                String plantFoodEffect = dto.plantFoodType + (dto.plantFoodValue != 0 ? ":" + dto.plantFoodValue : "");
-
-                String lvl2 = "-", lvl3 = "-", lvl4 = "-";
+                Map<Integer, PlantUpgrade> upgradesMap = new HashMap<>();
                 if (dto.upgrades != null) {
                     for (UpgradeDto upgrade : dto.upgrades) {
-                        String upgradeStr = upgrade.type + ":" + upgrade.value +
-                                (upgrade.specialTag != null && !upgrade.specialTag.isEmpty() ? ":" + upgrade.specialTag : "");
-                        switch (upgrade.level) {
-                            case 2 -> lvl2 = upgradeStr;
-                            case 3 -> lvl3 = upgradeStr;
-                            case 4 -> lvl4 = upgradeStr;
-                        }
+                        UpgradeType type = UpgradeType.valueOf(upgrade.type);
+                        upgradesMap.put(
+                                upgrade.level,
+                                new PlantUpgrade(type, upgrade.value, upgrade.specialTag)
+                        );
                     }
                 }
 
@@ -79,14 +74,14 @@ public class PlantLoader {
                         tags,
                         dto.cost,
                         dto.baseHp,
-                        damageStr,
-                        baseAbility,
-                        plantFoodEffect,
-                        lvl2,
-                        lvl3,
-                        lvl4,
+                        dto.damage,
+                        dto.abilityType,
+                        dto.abilityValue,
+                        dto.plantFoodType,
+                        dto.plantFoodValue,
+                        upgradesMap,
                         dto.actionInterval,
-                        (int) dto.recharge
+                        dto.recharge
                 ));
             }
         } catch (Exception e) {

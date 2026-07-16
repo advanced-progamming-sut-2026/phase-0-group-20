@@ -23,6 +23,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
 
     private static final int EXPLOSION_DELAY_TICKS = TimeManager.TICKS_PER_SECOND; // 1 sec delay for animation
     private int startTick = -1;
+    private int extraBounces = 0;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -58,7 +59,8 @@ public class ExplosiveStrategy implements IPlantStrategy {
                             );
 
                             grape.setLifespanTicks(5 * TimeManager.TICKS_PER_SECOND);
-                            grape.setBouncesLeft(20);
+                            int finalBounceLimit = 3 + extraBounces;
+                            grape.setBouncesLeft(finalBounceLimit);
 
                             GameSession.getInstance().getArena().addProjectile(grape);
                         }
@@ -100,5 +102,9 @@ public class ExplosiveStrategy implements IPlantStrategy {
                 }
             }
         }
+    }
+
+    public void increaseBounceLimit(int amount) {
+        this.extraBounces += amount;
     }
 }

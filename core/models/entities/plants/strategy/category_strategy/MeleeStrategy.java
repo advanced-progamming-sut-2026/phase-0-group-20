@@ -12,6 +12,7 @@ import java.util.List;
 public class MeleeStrategy implements IPlantStrategy {
     private int lastAttackTick = 0;
     private int aliveTicks = 0;
+    private float rangeExtension = 0;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -31,11 +32,13 @@ public class MeleeStrategy implements IPlantStrategy {
                 Zombie target = null;
                 double minDistance = Double.MAX_VALUE;
 
+                double forwardRange = 1.5 + rangeExtension;
+
                 for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                     if (z.isDead()) continue;
                     double dist = z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - plantCol;
 
-                    if (dist >= -1.0 && dist <= 1.5) {
+                    if (dist >= -1.0 && dist <= forwardRange) {
                         if (Math.abs(dist) < minDistance) {
                             minDistance = Math.abs(dist);
                             target = z;
@@ -87,5 +90,9 @@ public class MeleeStrategy implements IPlantStrategy {
                 lastAttackTick = currentTick;
             }
         }
+    }
+
+    public void increaseRange(float range) {
+        this.rangeExtension += range;
     }
 }

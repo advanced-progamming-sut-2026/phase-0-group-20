@@ -14,6 +14,7 @@ public class SunOnHitStrategy implements IPlantStrategy {
     private int lastRecordedHp = -1;
     private int sunPerHit = 5;
 
+
     @Override
     public void execute(Plant context, int currentTick) {
         // Initialize the HP tracker on the first tick

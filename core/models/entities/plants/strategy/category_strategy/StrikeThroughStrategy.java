@@ -18,6 +18,8 @@ import models.timeManager.TimeManager;
 
 public class StrikeThroughStrategy implements IPlantStrategy {
     private int lastShotTick = 0;
+    private int rangeExtension = 0;
+    private int pierceExtension = 0;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -31,7 +33,7 @@ public class StrikeThroughStrategy implements IPlantStrategy {
             for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                 if (!z.isDead() && z.getCol() >= plantCol) {
                     if (context.getName().equals("Fume-shroom")) {
-                        if (z.getCol() <= plantCol + 4) {
+                        if (z.getCol() <= plantCol + 4 + rangeExtension) {
                             zombieFound = true;
                             break;
                         }
@@ -61,11 +63,11 @@ public class StrikeThroughStrategy implements IPlantStrategy {
 
         if (name.equals("Cactus")) {
             type = ProjectileType.SPIKE;
-            damage = 30;
-            pierceLimit = 3;
+            damage = context.getDamage();
+            pierceLimit = 3 + pierceExtension;
         } else if (name.equals("Fume-shroom")) {
             type = ProjectileType.FUME;
-            damage = 20;
+            damage = context.getDamage();
             lifespan = 40;
         }
 
@@ -90,5 +92,13 @@ public class StrikeThroughStrategy implements IPlantStrategy {
             GameSession.getInstance().getArena().addProjectile(projectile);
             notify("💨 " + name + " fired a strike-through attack!");
         }
+    }
+
+    public void increaseRange(int range) {
+        this.rangeExtension += range;
+    }
+
+    public void increasePierceLimit(int amount) {
+        this.pierceExtension += amount;
     }
 }

@@ -23,6 +23,8 @@ public class ChargeStrategy implements IPlantStrategy {
     private final Random random = new Random();
     private int chargeStartTick = -1;
 
+    private float regenSpeedup = 0;
+
     @Override
     public void execute(Plant context, int currentTick) {
         if (context.getTags().contains(PlantTag.TRAP)) return;
@@ -44,12 +46,16 @@ public class ChargeStrategy implements IPlantStrategy {
         boolean isHoming = false;
 
         if (name.equals("Bowling Bulb")) {
-            if (chargedTicks >= 2 * TimeManager.TICKS_PER_SECOND) {
+            float cyanTime = Math.max(0, 2.0f - regenSpeedup);
+            float blueTime = Math.max(0, 5.0f - regenSpeedup);
+            float orangeTime = Math.max(0, 10.0f - regenSpeedup);
+
+            if (chargedTicks >= cyanTime * TimeManager.TICKS_PER_SECOND) {
                 canFire = true;
                 projType = ProjectileType.PEA;
 
-                if (chargedTicks >= 10 * TimeManager.TICKS_PER_SECOND) currentDamage = 180; // Orange Bulb
-                else if (chargedTicks >= 5 * TimeManager.TICKS_PER_SECOND) currentDamage = 120; // Blue Bulb
+                if (chargedTicks >= orangeTime * TimeManager.TICKS_PER_SECOND) currentDamage = 180; // Orange Bulb
+                else if (chargedTicks >= blueTime * TimeManager.TICKS_PER_SECOND) currentDamage = 120; // Blue Bulb
                 else currentDamage = 40; // Cyan Bulb
             }
         } else {
@@ -117,5 +123,9 @@ public class ChargeStrategy implements IPlantStrategy {
                 chargeStartTick = currentTick;
             }
         }
+    }
+
+    public void speedUpRegen(float seconds) {
+        this.regenSpeedup += seconds;
     }
 }

@@ -8,6 +8,7 @@ import models.timeManager.TimeManager;
 
 public class MagnetStrategy implements IPlantStrategy {
     private int lastStealTick = 0;
+    private float rangeExtension = 0;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -20,13 +21,16 @@ public class MagnetStrategy implements IPlantStrategy {
             int plantCol = context.getPlacedTile().getCol();
             boolean foundMetal = false;
 
+            float maxRowDist = 2.0f + rangeExtension;
+            float maxColDist = 2.5f + rangeExtension;
+
             for (Zombie zombie : GameSession.getInstance().getArena().getActiveZombies()) {
                 if (zombie.isDead()) continue;
 
                 int rowDiff = Math.abs(zombie.getRow() - plantRow);
                 double colDiff = Math.abs(zombie.getCol() - plantCol);
 
-                if (rowDiff <= 2 && colDiff <= 2.5f) {
+                if (rowDiff <= maxRowDist && colDiff <= maxColDist) {
                     for (Armor armor : zombie.getArmorPieces()) {
 
                         if (!armor.isDestroyed() && armor.isMetallic()) {
@@ -45,5 +49,9 @@ public class MagnetStrategy implements IPlantStrategy {
                 lastStealTick = currentTick;
             }
         }
+    }
+
+    public void increaseRange(float extraRange) {
+        this.rangeExtension += extraRange;
     }
 }

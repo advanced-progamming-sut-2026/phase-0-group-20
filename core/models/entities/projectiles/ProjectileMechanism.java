@@ -14,7 +14,7 @@ public class ProjectileMechanism {
 
 
     public static void executeNewProjectile(Plant plant, boolean shootForward, boolean shootBackward) {
-        int damage = parseDamage(plant.getDamage());
+        int damage = plant.getDamage();
         ProjectileType type = getProjectileType(plant.getName());
         int plantRow = plant.getPlacedTile().getRow();
         int plantCol = plant.getPlacedTile().getCol();
@@ -50,7 +50,7 @@ public class ProjectileMechanism {
     }
 
     public static void executeTargetedProjectile(Plant plant, Zombie target, int burstIndex) {
-        int damage = parseDamage(plant.getDamage());
+        int damage = plant.getDamage();
         ProjectileType type = getProjectileType(plant.getName());
 
         ProjectileEffect effect = getProjectileEffect(plant.getName());

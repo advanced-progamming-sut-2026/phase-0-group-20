@@ -13,7 +13,7 @@ import models.timeManager.TimeManager;
  */
 
 public class LifespanStrategy implements IPlantStrategy {
-    private final int lifespanTicks;
+    private int lifespanTicks;
     private int aliveTicks = 0;
 
     public LifespanStrategy(int seconds) {
@@ -31,5 +31,9 @@ public class LifespanStrategy implements IPlantStrategy {
 
     public void resetLifespan() {
         this.aliveTicks = 0;
+    }
+
+    public void increaseLifespan(float extraSeconds) {
+        this.lifespanTicks += (int) (extraSeconds * TimeManager.TICKS_PER_SECOND);
     }
 }
