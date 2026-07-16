@@ -18,7 +18,7 @@ public enum ZombieType {
     PROSPECTOR("ZombieProspector", null),
     PIANIST("ZombiePiano", null),
     NEWSPAPER("ZombieNewspaper", null),
-    BARREL_ROLLER("", null), // WARNING : We don't have this yet
+//    BARREL_ROLLER("", null), // WARNING : We don't have this yet
 
 
     // Ancient Egypt

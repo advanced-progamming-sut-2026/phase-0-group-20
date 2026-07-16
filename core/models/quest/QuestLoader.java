@@ -27,11 +27,11 @@ public class QuestLoader {
                 String rewardStr = jsonObject.has("Reward") && !jsonObject.get("Reward").isJsonNull() ? jsonObject.get("Reward").getAsString() : "";
                 String priorityStr = jsonObject.has("Priority") && !jsonObject.get("Priority").isJsonNull() ? jsonObject.get("Priority").getAsString() : "";
                 String variableStr = jsonObject.has("Variables") && !jsonObject.get("Variables").isJsonNull() ? jsonObject.get("Variables").getAsString() : "";
-
+                boolean onMission = jsonObject.has("onMission") && !jsonObject.get("onMission").isJsonNull() && jsonObject.get("onMission").getAsBoolean();
                 QuestCategory category = parseCategory(categoryStr);
                 QuestPriority priority = parsePriority(priorityStr);
 
-                Quest quest = new Quest(title, category, priority);
+                Quest quest = new Quest(title, category, priority,onMission);
 
                 quest.setCondition(QuestFactory.createCondition(rowIndex, title, conditionStr, variableStr));
                 quest.setReward(QuestFactory.createReward(rowIndex, rewardStr, variableStr));

@@ -20,4 +20,8 @@ public abstract class QuestCondition implements IQuestCondition {
         return targetProgress;
     }
 
+    public void resetCurrentProgress() {
+        currentProgress = 0;
+    }
+
 }

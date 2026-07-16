@@ -81,7 +81,7 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
                 }
             }
             case "squash" -> {
-                int damage = ProjectileMechanism.parseDamage(plant.getDamage());
+                int damage = plant.getDamage();
                 boolean killed =target.takeDirectDamage(damage);
                 if(killed){
                     plant.onZombieDeath(target);

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
 import models.game.events.GameEventPayload;
 import models.quest.conditions.IQuestCondition;
+import models.quest.conditions.QuestCondition;
 import models.quest.reward.Reward;
 import models.users.User;
 
@@ -15,16 +16,17 @@ public class Quest {
     private String title;
     private QuestCategory category;
     private QuestPriority priority;
-    private IQuestCondition condition;
+    private QuestCondition condition;
     private Reward reward;
     private boolean isCompleted;
-
-    public Quest(String title, QuestCategory category, QuestPriority priority) {
+    private boolean onMission;
+    public Quest(String title, QuestCategory category, QuestPriority priority, boolean onMission) {
         this.id = UUID.randomUUID().toString();
         this.title = title;
         this.category = category;
         this.priority = priority;
         this.isCompleted = false;
+        this.onMission = onMission;
     }
 
     @JsonCreator
@@ -32,7 +34,7 @@ public class Quest {
                  @JsonProperty("title") String title,
                  @JsonProperty("category") QuestCategory category,
                  @JsonProperty("priority") QuestPriority priority,
-                 @JsonProperty("condition") IQuestCondition condition,
+                 @JsonProperty("condition") QuestCondition condition,
                  @JsonProperty("reward") Reward reward,
                  @JsonProperty("completed") boolean isCompleted) {
         this.id = id;
@@ -83,11 +85,11 @@ public class Quest {
         return priority;
     }
 
-    public IQuestCondition getCondition() {
+    public QuestCondition getCondition() {
         return condition;
     }
 
-    public void setCondition(IQuestCondition condition) {
+    public void setCondition(QuestCondition condition) {
         this.condition = condition;
     }
 
@@ -101,5 +103,9 @@ public class Quest {
 
     public boolean isCompleted() {
         return isCompleted;
+    }
+
+    public boolean isOnMission() {
+        return onMission;
     }
 }
