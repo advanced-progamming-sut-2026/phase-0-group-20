@@ -74,11 +74,18 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
 
     private void applyDirectEffect(Zombie target, Plant plant) {
         switch (plant.getName().toLowerCase()) {
-            case "electric blueberry", "tangle kelp", "chomper" ->
-                    target.takeDirectDamage(10000, plant); //yahtamel plant be kar biad
+            case "electric blueberry", "tangle kelp", "chomper" ->{
+                boolean killed =target.takeDirectDamage(10000); //yahtamel plant be kar biad
+                if(killed){
+                    plant.onZombieDeath(target);
+                }
+            }
             case "squash" -> {
                 int damage = ProjectileMechanism.parseDamage(plant.getDamage());
-                target.takeDirectDamage(damage, plant);
+                boolean killed =target.takeDirectDamage(damage);
+                if(killed){
+                    plant.onZombieDeath(target);
+                }
             }
             case "caulipower" -> {
                 target.hypnotize();

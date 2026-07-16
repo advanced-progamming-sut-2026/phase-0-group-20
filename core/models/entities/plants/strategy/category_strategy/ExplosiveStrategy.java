@@ -71,7 +71,10 @@ public class ExplosiveStrategy implements IPlantStrategy {
                         if (!z.isDead()) {
                             z.removeChillEffect();
                             z.removeFreezeEffect();
-                            z.takeDirectDamage(damage, context);
+                            boolean killed = z.takeDirectDamage(damage);
+                            if(killed){
+                               context.onZombieDeath(z);
+                            }
                         }
                     }
                     notify("🔥 Jalapeno burned the entire lane!");
@@ -91,7 +94,10 @@ public class ExplosiveStrategy implements IPlantStrategy {
         List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(col, row, radius);
         for (Zombie z : targets) {
             if (!z.isDead()) {
-                z.takeDirectDamage(damage, plant);
+                boolean killed =z.takeDirectDamage(damage);
+                if(killed){
+                    plant.onZombieDeath(z);
+                }
             }
         }
     }

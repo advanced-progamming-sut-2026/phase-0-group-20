@@ -69,27 +69,41 @@ public class TrapStrategy implements IPlantStrategy {
 
         if (target != null) {
             notify("🚨 " + name + " TRAP TRIGGERED!");
-
+            boolean killed ;
             switch (name) {
                 case "Potato Mine":
-                    target.takeDirectDamage(1800, context);
+                    killed =target.takeDirectDamage(1800);
+                    if(killed){
+                        context.onZombieDeath(target);
+                    }
                     break;
 
                 case "Primal Potato Mine":
                     List<Zombie> aoeTargets = GameSession.getInstance().getArena().getZombiesInRadius((int) plantCol, plantRow, 1.5);
                     for (Zombie z : aoeTargets) {
-                        if (!z.isDead()) z.takeDirectDamage(2400, context);
+                        if (!z.isDead()) {
+                            killed = z.takeDirectDamage(2400);
+                            if(killed){
+                                context.onZombieDeath(target);
+                            }
+                        }
                     }
                     notify("💥 Primal Potato Mine dealt massive AoE damage!");
                     break;
 
                 case "Squash":
-                    target.takeDirectDamage(1800, context);
+                    killed = target.takeDirectDamage(1800);
+                    if(killed){
+                        context.onZombieDeath(target);
+                    }
                     notify("🪨 Squash crushed " + target.getName() + "!");
                     break;
 
                 case "Tangle Kelp":
-                    target.takeDirectDamage(9999, context);
+                    killed = target.takeDirectDamage(9999);
+                    if(killed){
+                        context.onZombieDeath(target);
+                    }
                     notify("🌊 Tangle Kelp pulled " + target.getName() + " underwater!");
                     break;
 
@@ -99,10 +113,7 @@ public class TrapStrategy implements IPlantStrategy {
                     break;
             }
             context.takeDamage(context.getCurrentHp());
-            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
-                    .plant(context)
-                    .build();
-            GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST, payload);
+
         }
 
     }

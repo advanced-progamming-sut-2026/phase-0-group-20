@@ -43,7 +43,10 @@ public class SpikeStrategy implements IPlantStrategy {
                     if (hasArmor) //more hp = having armor
                         damage *= 2;
 
-                    z.takeDamage(damage);
+                    boolean killed = z.takeDamage(damage);
+                    if(killed){
+                        context.onZombieDeath(z);
+                    }
                     dealtDamage = true;
                 }
             }

@@ -125,12 +125,13 @@ public class Zombie implements Ticker {
         return applyHealthDamage(remaining, projectile);
     }
 
-    public void takeDamage(int damage) {
+    public boolean takeDamage(int damage) {
         health -= damage;
         if (health <= 0) {
             health = 0;
             dead = true;
         }
+        return dead;
     }
 
 
@@ -162,24 +163,6 @@ public class Zombie implements Ticker {
         if (health <= 0) {
             health = 0;
             dead = true;
-            return true;
-        }
-        return false;
-    }
-
-    public boolean takeDirectDamage(int damage, Plant plant) { //implement harchi lazeme
-        if (dead) return false;
-
-        health -= damage;
-        if (health <= 0) {
-            health = 0;
-            dead = true;
-            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
-                    .zombie(this)
-                    .plant(plant)
-                    .coordinate(this.getRow(), this.getCol())
-                    .build();
-            GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
             return true;
         }
         return false;
