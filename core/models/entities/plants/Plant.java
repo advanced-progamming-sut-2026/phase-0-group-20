@@ -6,6 +6,9 @@ import models.entities.plants.strategy.IPlantStrategy;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 import models.fields.tiles.Tile;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -57,7 +60,10 @@ public class Plant implements IPlant, Ticker {
 
     public void useFood() {
         if (plantFoodStrategy.isEmpty()) {
-            System.out.println(getName() + " has no Plant Food effect wired up yet!");
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                            .message(getName() + " has no Plant Food effect wired up yet!")
+                            .build());
             return;
         }
 

@@ -1,7 +1,7 @@
 # IntelliJ IDEA Target and configuration files
 .idea/
 *.iml
-*.json
+data/*.json
 !assets/zombies.json
 !assets/ArmorTypeData.json
 # Maven target directory (Compiled bytecode)

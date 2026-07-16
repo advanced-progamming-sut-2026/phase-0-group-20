@@ -12,7 +12,7 @@ import models.entities.plants.strategy.TorchwoodStrategy;
 public class BlueFlameFoodStrategy implements PlantFoodStrategy {
     @Override
     public void executeStrategy(Plant plant) {
-        System.out.println(plant.getName() + " ignited a blue flame - passing projectiles now deal 3x damage!");
+        notify(plant.getName() + " ignited a blue flame - passing projectiles now deal 3x damage!");
         plant.getStrategies().stream()
                 .filter(s -> s instanceof TorchwoodStrategy)
                 .map(s -> (TorchwoodStrategy) s)

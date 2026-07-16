@@ -32,6 +32,7 @@ public class GameEventPayload {
     private final Plant plant;
     private final int amount;
     private final Position position;
+    private final String message;
 
     private GameEventPayload(Builder builder) {
         this.type = builder.type;
@@ -41,6 +42,7 @@ public class GameEventPayload {
         this.plant = builder.plant;
         this.amount = builder.amount;
         this.position = builder.position != null ? new Position(builder.position.getCol(), builder.position.getRow()) : null;
+        this.message = builder.message;
     }
 
 
@@ -76,6 +78,10 @@ public class GameEventPayload {
         return arena;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
 
     public static class Builder {
         private final GameEvent type;
@@ -86,6 +92,7 @@ public class GameEventPayload {
         private Plant plant;
         private int amount = 0;
         private Position position;
+        private String message;
 
         public Builder(GameEvent type) {
             this.type = type;
@@ -117,8 +124,12 @@ public class GameEventPayload {
         }
 
         public Builder coordinate(int row, int col) {
-            position.setRow(row);
-            position.setCol(col);
+            this.position = new Position(col, row);
+            return this;
+        }
+
+        public Builder message(String message) {
+            this.message = message;
             return this;
         }
 

@@ -16,7 +16,7 @@ public class GargantuarHypnotizeFoodStrategy implements PlantFoodStrategy {
         // we should implement it in collision logic that Hossein khahad zad
         // if the zombie eats a hypno-shroom plant that has been boosted, it will be destroyed
         // and new a gargantuar zombie will be born and hypnotized (working for plants)
-        System.out.println(plant.getName() + " is now empowered: the next zombie to eat it will become a friendly Gargantuar!");
+        notify(plant.getName() + " is now empowered: the next zombie to eat it will become a friendly Gargantuar!");
     }
 
     @Override

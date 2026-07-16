@@ -1,6 +1,9 @@
 package models.entities.plants.effect;
 
 import models.entities.plants.Plant;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 
 public class FreezeEffect implements PlantEffect {
     private int stacks;
@@ -14,11 +17,11 @@ public class FreezeEffect implements PlantEffect {
     public void addStack(Plant plant) {
         if (stacks < 3) {
             stacks++;
-            System.out.println(plant.getName() + " got chilled! Ice stacks: " + stacks);
+            notify(plant.getName() + " got chilled! Ice stacks: " + stacks);
 
             if (stacks >= 3) {
                 plant.setFrozen(true);
-                System.out.println(plant.getName() + " is now completely FROZEN!");
+                notify(plant.getName() + " is now completely FROZEN!");
             }
         }
     }
@@ -40,7 +43,7 @@ public class FreezeEffect implements PlantEffect {
 
     @Override
     public void apply(Plant plant) {
-        System.out.println(plant.getName() + " got chilled! Ice stacks: " + stacks);
+        notify(plant.getName() + " got chilled! Ice stacks: " + stacks);
     }
 
     @Override
@@ -51,7 +54,7 @@ public class FreezeEffect implements PlantEffect {
     @Override
     public void remove(Plant plant) {
         plant.setFrozen(false);
-        System.out.println("The ice block on " + plant.getName() + " shattered!");
+        notify("The ice block on " + plant.getName() + " shattered!");
     }
 
     @Override

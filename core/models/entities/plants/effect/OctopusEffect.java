@@ -21,7 +21,7 @@ public class OctopusEffect implements PlantEffect {
     @Override
     public void apply(Plant plant) {
         plant.setStunned(true);
-        System.out.println(plant.getName() + " is trapped under an Octopus!");
+        notify(plant.getName() + " is trapped under an Octopus!");
     }
 
     @Override
@@ -32,7 +32,7 @@ public class OctopusEffect implements PlantEffect {
     @Override
     public void remove(Plant plant) {
         plant.setStunned(false);
-        System.out.println("The Octopus on " + plant.getName() + " was destroyed!");
+        notify("The Octopus on " + plant.getName() + " was destroyed!");
     }
 
     @Override

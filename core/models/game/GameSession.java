@@ -53,7 +53,7 @@ public class GameSession {
 
     public static GameSession getInstance() {
         if (instance == null) {
-            System.out.println("Instance is null");
+            notify("Instance is null");
         }
         return instance;
     }
@@ -129,6 +129,13 @@ public class GameSession {
         });
     }
 
+    public static void notify(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(message)
+                        .build());
+    }
+
     public void addSun(int amount) {
         this.currentSun += amount;
     }
@@ -141,12 +148,12 @@ public class GameSession {
             this.state = GameState.LOST;
             this.isGameOver = true;
             this.event = GameEvent.GAME_OVER;
-            System.out.println("Zombies ate your brains! GAME OVER.");
+            notify("Zombies ate your brains! GAME OVER.");
         } else if (result == GameState.WON) {
             this.state = GameState.WON;
             this.isGameOver = true;
             this.event = GameEvent.LEVEL_COMPLETED;
-            System.out.println("You survived! LEVEL COMPLETED.");
+            notify("You survived! LEVEL COMPLETED.");
         }
     }
 

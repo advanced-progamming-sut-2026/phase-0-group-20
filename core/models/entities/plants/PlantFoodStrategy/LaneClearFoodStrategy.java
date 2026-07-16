@@ -45,6 +45,6 @@ public class LaneClearFoodStrategy implements PlantFoodStrategy {
             );
         }
 
-        System.out.println(plant.getName() + " unleashed a lane-clearing attack: " + description);
+        notify(plant.getName() + " unleashed a lane-clearing attack: " + description);
     }
 }

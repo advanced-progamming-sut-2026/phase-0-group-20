@@ -5,6 +5,6 @@ import models.entities.plants.Plant;
 public class NoFoodEffectStrategy implements PlantFoodStrategy {
     @Override
     public void executeStrategy(Plant plant) {
-        System.out.println(plant.getName() + " has no Plant Food effect (one-shot/consumable plant).");
+        notify(plant.getName() + " has no Plant Food effect (one-shot/consumable plant).");
     }
 }

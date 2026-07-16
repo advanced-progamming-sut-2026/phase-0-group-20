@@ -17,7 +17,6 @@ public class BidirectionalRapidFireFoodStrategy implements PlantFoodStrategy {
     @Override
     public void executeStrategy(Plant plant) {
         tickTimer++;
-        GameSession session = GameSession.getInstance();
 
         if (tickTimer <= durationTicks) {
 
@@ -25,7 +24,7 @@ public class BidirectionalRapidFireFoodStrategy implements PlantFoodStrategy {
                 ProjectileMechanism.executeNewProjectile(plant, true, false); //khodesh be aghab ham shelik mikone
 
             if (tickTimer == 2)
-                System.out.println(plant.getName() + " fired a rapid barrage forward AND backward!");
+                notify(plant.getName() + " fired a rapid barrage forward AND backward!");
         }
     }
 

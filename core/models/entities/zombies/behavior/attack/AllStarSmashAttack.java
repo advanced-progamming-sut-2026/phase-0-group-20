@@ -28,7 +28,7 @@ public class AllStarSmashAttack implements AttackBehavior {
         targetPlant.takeDamage(lethalDamage);
         currentTile.getPlants().remove(targetPlant);
 
-        System.out.println(zombie.getName() + " trampled " + targetPlant.getName() + " instantly!");
+        notify(zombie.getName() + " trampled " + targetPlant.getName() + " instantly!");
 
         MoveBehavior move = zombie.getMoveBehavior();
         if (move instanceof AllStarMove allStarMove) {

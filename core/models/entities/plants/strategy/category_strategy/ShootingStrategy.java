@@ -70,7 +70,7 @@ public class ShootingStrategy implements IPlantStrategy {
 
             if (shootForward || shootBackward) {
                 executeNewProjectile(context, shootForward, shootBackward);
-                System.out.println(plantName + " fired projectiles!");
+                notify(plantName + " fired projectiles!");
                 lastShotTick = currentTick;
             }
         }

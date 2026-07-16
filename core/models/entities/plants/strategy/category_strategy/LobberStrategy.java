@@ -88,7 +88,7 @@ public class LobberStrategy implements IPlantStrategy {
                     true
             );
             GameSession.getInstance().getArena().addProjectile(projectile);
-            System.out.println("🥔 " + name + " lobbed a " + type.name() + "!");
+            notify("🥔 " + name + " lobbed a " + type.name() + "!");
         }
     }
 }

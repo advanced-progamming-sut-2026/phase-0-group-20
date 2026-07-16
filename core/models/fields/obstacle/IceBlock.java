@@ -5,6 +5,9 @@ import models.entities.zombies.Zombie;
 import models.enums.plants.PlantTag;
 import models.fields.tiles.Tile;
 import models.game.GameSession;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
 
 public class IceBlock implements Ticker {
@@ -74,7 +77,10 @@ public class IceBlock implements Ticker {
         }
 
         session.getTimeManager().unregisterTicker(this);
-        System.out.println("IceBlock melted at [" + row + "][" + col + "]!");
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("IceBlock melted at [" + row + "][" + col + "]!")
+                        .build());
     }
 
     public boolean hasFrozenPlant() {

@@ -29,7 +29,7 @@ public class FishermanHookAttack implements AttackBehavior {
 
         if (currentCol == zombie.getCol() - 1) {
             target.getPlacedTile().getPlants().remove(target);
-            System.out.println(zombie.getName() + " yanked " + target.getName() + " into the water!");
+            notify(zombie.getName() + " yanked " + target.getName() + " into the water!");
             return;
         }
 

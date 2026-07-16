@@ -32,7 +32,7 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
             }
 
             if (tickTimer == 2)
-                System.out.println(plant.getName() + " unleashed a targeted rapid-fire barrage!");
+                notify(plant.getName() + " unleashed a targeted rapid-fire barrage!");
 
         }
     }

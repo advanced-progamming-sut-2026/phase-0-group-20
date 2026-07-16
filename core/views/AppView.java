@@ -12,6 +12,8 @@ public class AppView {
 
 
     public static void run() {
+        ConsoleNotifier.register();
+
         User stayedUser = DataBaseManager.getLoggedInUser();
 
         if (stayedUser != null) {

@@ -4,7 +4,7 @@ public enum PlantTag {
     DAY,
     NIGHT,
     SHROOM,
-    WRAMP_UP,
+    WARM_UP,
     PEA,
     ICE,
     FIRE,

@@ -52,7 +52,7 @@ public class MeleeStrategy implements IPlantStrategy {
                         target.removeChillEffect();
                         target.removeFreezeEffect();
                     }
-                    System.out.println("🥊 " + name + " landed a melee strike on " + target.getName() + "!");
+                    notify("🥊 " + name + " landed a melee strike on " + target.getName() + "!");
                 }
             } else if (name.equals("Phat Beet") || name.equals("Kiwibeast")) {
                 List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5);
@@ -73,7 +73,7 @@ public class MeleeStrategy implements IPlantStrategy {
                         }
                     }
                     if (attacked) {
-                        System.out.println("🔊 " + name + " slammed a 3x3 area, hitting " + targets.size() + " zombies!");
+                        notify("🔊 " + name + " slammed a 3x3 area, hitting " + targets.size() + " zombies!");
                     }
                 }
             }
