@@ -12,6 +12,9 @@ import models.game.Arena;
 import models.game.GameMode;
 import models.game.GameSession;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.TimeManager;
 
 import java.util.Collections;
@@ -49,6 +52,11 @@ public class GameFlowController {
         }
 
         sun.collect();
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.SUN_COLLECTED)
+                .amount(sun.getType().getValue())
+                .build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.SUN_COLLECTED, payload);
+
         return new Result(true, "You collected a " + sun.getType().getLabel().toLowerCase() +
                 "sun.");
     }
@@ -74,6 +82,13 @@ public class GameFlowController {
 
         for (Zombie zombie : activeZombies) {
             zombie.takeDirectDamage(10000);
+            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
+                    .zombie(zombie)
+                    .coordinate(zombie.getRow(), zombie.getCol())
+                    .arena(arena)
+                    .seasonType(GameSession.getInstance().getCurrentChapter().getSeasonType())
+                    .build();
+            GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
         }
 
         return new Result(true, "Nuked the whole arena!! Dast Khosh Donald.J.Trump.");
@@ -140,6 +155,12 @@ public class GameFlowController {
         Plant newPlant = PlantFactory.create(plant.getId());
         desiredTile.addPlant(newPlant);
         GameSession.getInstance().setPlantCooldown(newPlant);
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
+                .plant(newPlant)
+                .arena(arena)
+                .coordinate(newPlant.getPlacedTile().getRow(),newPlant.getPlacedTile().getCol())
+                .build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY + " with the name of" + newPlant.getName() + ".");
     }
 

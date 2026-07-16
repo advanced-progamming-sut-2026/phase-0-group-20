@@ -23,7 +23,10 @@ public class IceSplashEffect implements ProjectileEffect {
             // add effect for zombie
 
             if (z != zombie) {
-                z.takeDamage(splashDamage);
+                boolean killed = z.takeDamage(splashDamage);
+                if(killed){
+                    projectile.getPlant().onZombieDeath(z);
+                }
             }
         }
 

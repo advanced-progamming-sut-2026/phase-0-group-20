@@ -1,0 +1,162 @@
+[
+  {
+    "Title": "Daily Sunblock",
+    "Category": "Daily",
+    "Condition": "Collect sun_amount of sun during one day",
+    "Reward": "sun_amount / 100 Coins",
+    "Priority": "Medium",
+    "Variables": "3000-4000-5000"
+  },
+  {
+    "Title": "Chapter Hunter",
+    "Category": "Main",
+    "Condition": "Defeat 50 zombies from a chapter",
+    "Reward": "10 Seed Packets",
+    "Priority": "High",
+    "Variables": "Any game chapter"
+  },
+  {
+    "Title": "Pro Plant Player",
+    "Category": "Daily",
+    "Condition": "Kill 10 zombies using only a specific plant",
+    "Reward": "Random New Plant",
+    "Priority": "High",
+    "Variables": "Any plant capable of killing"
+  },
+  {
+    "Title": "Only Cactus",
+    "Category": "Daily",
+    "Condition": "Kill 10 zombies using only Cactus",
+    "Reward": "20 Gems",
+    "Priority": "High",
+    "Variables": null
+  },
+  {
+    "Title": "Economical Herbivore",
+    "Category": "Main",
+    "Condition": "Win a level losing no more than n plants",
+    "Reward": "20 - n Seed Packets",
+    "Priority": "High",
+    "Variables": "0-1-2-3-4-5"
+  },
+  {
+    "Title": "Defense Master",
+    "Category": "Epic",
+    "Condition": "Finish a level with exactly 0 suns",
+    "Reward": "200 Gems",
+    "Priority": "Critical",
+    "Variables": null
+  },
+  {
+    "Title": "Quick Reaction",
+    "Category": "Main",
+    "Condition": "Kill 10 zombies in less than 30 seconds from the first wave",
+    "Reward": "500 Coins",
+    "Priority": "Medium",
+    "Variables": null
+  },
+  {
+    "Title": "Pro Demolition",
+    "Category": "Daily",
+    "Condition": "Use 3 explosive plants in one level",
+    "Reward": "100 Coins",
+    "Priority": "Low",
+    "Variables": null
+  },
+  {
+    "Title": "Symmetry",
+    "Category": "Daily",
+    "Condition": "Garden must be symmetrical at the end",
+    "Reward": "500 Coins",
+    "Priority": "High",
+    "Variables": null
+  },
+  {
+    "Title": "Family Massacre",
+    "Category": "Daily",
+    "Condition": "Use only family_type plants to kill zombies",
+    "Reward": "1000 Coins",
+    "Priority": "Medium",
+    "Variables": "Plant family"
+  },
+  {
+    "Title": "Flourish in Limits",
+    "Category": "Daily",
+    "Condition": "Win without using any plant from family_type",
+    "Reward": "100 Gems",
+    "Priority": "High",
+    "Variables": "Plant family"
+  },
+  {
+    "Title": "Night or Morning",
+    "Category": "Epic",
+    "Condition": "Finish a day level with night plants (mushrooms)",
+    "Reward": "20 Gems",
+    "Priority": "High",
+    "Variables": null
+  },
+  {
+    "Title": "Win Streak",
+    "Category": "Daily",
+    "Condition": "Win 5 levels in a row on highest difficulty",
+    "Reward": "5000 Coins",
+    "Priority": "Medium",
+    "Variables": null
+  },
+  {
+    "Title": "Almost Won",
+    "Category": "Daily",
+    "Condition": "Kill 10 zombies in the first column of a row without a lawnmower",
+    "Reward": "300 Coins",
+    "Priority": "Medium",
+    "Variables": null
+  },
+  {
+    "Title": "What OCD?",
+    "Category": "Daily",
+    "Condition": "Win a level with completely asymmetrical garden (except middle row)",
+    "Reward": "800 Coins",
+    "Priority": "Medium",
+    "Variables": null
+  },
+  {
+    "Title": "Cloudy Day",
+    "Category": "Daily",
+    "Condition": "Beat a level using only 3 sun-producing plants",
+    "Reward": "10 Gems",
+    "Priority": "High",
+    "Variables": null
+  },
+  {
+    "Title": "One Column Less",
+    "Category": "Daily",
+    "Condition": "Win a level without planting in the nth column",
+    "Reward": "10 Gems",
+    "Priority": "High",
+    "Variables": "Number of columns"
+  },
+  {
+    "Title": "Defenseless Row",
+    "Category": "Daily",
+    "Condition": "Win a level without planting in the nth row",
+    "Reward": "20 Gems",
+    "Priority": "High",
+    "Variables": "Number of rows"
+  },
+  {
+    "Title": "Defenseless Cross",
+    "Category": "Daily",
+    "Condition": "Win a level with the nth row and column empty",
+    "Reward": "25 Gems",
+    "Priority": "High",
+    "Variables": "Minimum number of rows/columns"
+  },
+  {
+    "Title": "Lawnmower Time",
+    "Category": "Epic",
+    "Condition": "Kill at least n zombies with lawnmowers",
+    "Reward": "n Gems",
+    "Priority": "Medium",
+    "Variables": "10-20-30-40-50"
+  }
+]

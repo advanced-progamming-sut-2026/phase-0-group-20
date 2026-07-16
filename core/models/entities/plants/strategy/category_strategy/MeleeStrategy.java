@@ -45,7 +45,10 @@ public class MeleeStrategy implements IPlantStrategy {
 
                 if (target != null) {
                     int damage = name.equals("Bonk Choy") ? 15 : 40;
-                    target.takeDamage(damage);
+                    boolean killed = target.takeDamage(damage);
+                    if(killed){
+                        context.onZombieDeath(target);
+                    }
                     attacked = true;
 
                     if (name.equals("Wasabi Whip")) {
@@ -68,7 +71,10 @@ public class MeleeStrategy implements IPlantStrategy {
 
                     for (Zombie z : targets) {
                         if (!z.isDead()) {
-                            z.takeDamage(damage);
+                            boolean killed =z.takeDamage(damage);
+                            if(killed){
+                                context.onZombieDeath(z);
+                            }
                             attacked = true;
                         }
                     }

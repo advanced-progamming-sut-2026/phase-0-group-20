@@ -147,12 +147,18 @@ public class GameSession {
         if (result == GameState.LOST) {
             this.state = GameState.LOST;
             this.isGameOver = true;
-            this.event = GameEvent.GAME_OVER;
+            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.GAME_OVER)
+                    .arena(arena)
+                    .build();
+            GameEventMessenger.getInstance().dispatch(GameEvent.GAME_OVER, payload);
             notify("Zombies ate your brains! GAME OVER.");
         } else if (result == GameState.WON) {
             this.state = GameState.WON;
             this.isGameOver = true;
-            this.event = GameEvent.LEVEL_COMPLETED;
+            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.LEVEL_COMPLETED)
+                    .arena(arena)
+                    .build();
+            GameEventMessenger.getInstance().dispatch(GameEvent.LEVEL_COMPLETED, payload);
             notify("You survived! LEVEL COMPLETED.");
         }
     }
@@ -236,7 +242,14 @@ public class GameSession {
                 }
                 for (Zombie z : arena.getActiveZombies()) {
                     if (z.isDead() || !affectedTiles.contains(z.getTile())) continue;
-                    z.takeDamage(150);
+                    boolean killed = z.takeDamage(150);
+                    if(killed){
+                        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
+                                .seasonType(getCurrentChapter().getSeasonType())
+                                .coordinate(z.getRow(),z.getCol())
+                                .build();
+                        GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED,payload);
+                    }
                 }
                 rightTile = Math.min(sunTile.getCol() + 1, arena.getCols() - 1);
                 leftTile = Math.max(sunTile.getCol() - 1, 0);

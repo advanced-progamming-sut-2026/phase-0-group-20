@@ -1,35 +1,32 @@
 package models.quest;
 
-import java.io.BufferedReader;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.io.FileReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class QuestLoader {
 
-    public static List<Quest> loadQuestsFromCSV(String filePath) {
+    public static List<Quest> loadQuestsFromJson(String filePath) {
         List<Quest> allQuests = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            boolean isFirstLine = true;
+        try (Reader reader = new FileReader(filePath)) {
+            JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
             int rowIndex = 0;
 
-            while ((line = br.readLine()) != null) {
-                if (isFirstLine) {
-                    isFirstLine = false;
-                    continue;
-                }
-
-                String[] values = line.split(",");
-                if (values.length < 5) continue;
-
-                String title = values[0].trim();
-                String categoryStr = values[1].trim();
-                String conditionStr = values[2].trim();
-                String rewardStr = values[3].trim();
-                String priorityStr = values[4].trim();
-                String variableStr = values.length > 5 ? values[5].trim() : "";
+            for (JsonElement element : jsonArray) {
+                JsonObject jsonObject = element.getAsJsonObject();
+                String title = jsonObject.has("Title") && !jsonObject.get("Title").isJsonNull() ? jsonObject.get("Title").getAsString() : "";
+                String categoryStr = jsonObject.has("Category") && !jsonObject.get("Category").isJsonNull() ? jsonObject.get("Category").getAsString() : "";
+                String conditionStr = jsonObject.has("Condition") && !jsonObject.get("Condition").isJsonNull() ? jsonObject.get("Condition").getAsString() : "";
+                String rewardStr = jsonObject.has("Reward") && !jsonObject.get("Reward").isJsonNull() ? jsonObject.get("Reward").getAsString() : "";
+                String priorityStr = jsonObject.has("Priority") && !jsonObject.get("Priority").isJsonNull() ? jsonObject.get("Priority").getAsString() : "";
+                String variableStr = jsonObject.has("Variables") && !jsonObject.get("Variables").isJsonNull() ? jsonObject.get("Variables").getAsString() : "";
 
                 QuestCategory category = parseCategory(categoryStr);
                 QuestPriority priority = parsePriority(priorityStr);
@@ -43,22 +40,22 @@ public class QuestLoader {
                 rowIndex++;
             }
         } catch (Exception e) {
-            System.err.println("Error reading quests.csv: " + e.getMessage());
+            System.err.println("Error reading quests.json: " + e.getMessage());
         }
         return allQuests;
     }
 
     private static QuestPriority parsePriority(String priorityStr) {
-        if (priorityStr.contains("بحرانی")) return QuestPriority.CRITICAL;
-        if (priorityStr.contains("بالا")) return QuestPriority.HIGH;
-        if (priorityStr.contains("متوسط")) return QuestPriority.MEDIUM;
+        if (priorityStr.equalsIgnoreCase("Critical")) return QuestPriority.CRITICAL;
+        if (priorityStr.equalsIgnoreCase("High")) return QuestPriority.HIGH;
+        if (priorityStr.equalsIgnoreCase("Medium")) return QuestPriority.MEDIUM;
         return QuestPriority.LOW;
     }
 
     private static QuestCategory parseCategory(String categoryStr) {
-        if (categoryStr.contains("روزانه")) return QuestCategory.DAILY;
-        if (categoryStr.contains("اصلی")) return QuestCategory.MAIN;
-        if (categoryStr.contains("چالش")) return QuestCategory.EPIC;
+        if (categoryStr.equalsIgnoreCase("Daily")) return QuestCategory.DAILY;
+        if (categoryStr.equalsIgnoreCase("Main")) return QuestCategory.MAIN;
+        if (categoryStr.equalsIgnoreCase("Epic")) return QuestCategory.EPIC;
         return QuestCategory.MINIGAME;
     }
 }

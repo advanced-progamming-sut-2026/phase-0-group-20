@@ -15,7 +15,7 @@ public class MainMenuController {
             return new Result(false, "no user is currently logged in");
 
         DataBaseManager.logoutUser(currentUser.getId());
-
+        currentUser.getQuestManager().unregisterFromAllEvents();
         App.setActiveUser(null);
         App.setActiveMenu(Menu.LOGIN_MENU);
 

@@ -35,6 +35,13 @@ public class QuestManager implements GameEventListener {
         }
     }
 
+    public void unregisterFromAllEvents() {
+        GameEventMessenger messenger = GameEventMessenger.getInstance();
+        for (GameEvent event : GameEvent.values()) {
+            messenger.removeListener(event, this);
+        }
+    }
+
 
     public void dispose() {
         GameEventMessenger messenger = GameEventMessenger.getInstance();

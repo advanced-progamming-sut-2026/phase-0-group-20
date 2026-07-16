@@ -5,6 +5,7 @@ import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.plants.PlantCategory;
 import models.game.adventure.SeasonType;
+import models.game.events.GameEvent;
 import models.game.events.GameEventPayload;
 
 import java.util.ArrayList;
@@ -41,7 +42,9 @@ public class KillZombieCondition extends QuestCondition {
 
     @Override
     public void updateProgress(GameEventPayload payload) {
-
+        if(payload.getType() != GameEvent.ZOMBIE_KILLED) {
+            return;
+        }
         Zombie zombie = payload.getZombie();
         if (zombie == null) return;
         if (!(plantIncluded || chapterIncluded)) {
