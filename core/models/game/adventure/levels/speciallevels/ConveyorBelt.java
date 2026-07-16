@@ -20,7 +20,7 @@ public class ConveyorBelt extends SpecialLevel {
     private static final int BELT_SPEED_SECONDS = 13;
     private static final int BELT_CAPACITY = 10;
 
-    protected ConveyorBelt(String name, SeasonType season, int waveCount, int baseWaveDifficulty) {
+    public ConveyorBelt(String name, SeasonType season, int waveCount, int baseWaveDifficulty) {
         super(name, season, waveCount, baseWaveDifficulty);
     }
 

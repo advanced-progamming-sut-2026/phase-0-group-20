@@ -7,6 +7,8 @@ import models.game.Arena;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
+import models.game.GameSession;
+import models.game.adventure.levels.Level;
 
 public interface SeasonModifier {
     void onWaveStart(Wave wave);
@@ -20,5 +22,12 @@ public interface SeasonModifier {
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
                         .message(message)
                         .build());
+    }
+
+    default int getCurrentLevelNumber() {
+        if (GameSession.getInstance().getCurrentMode() instanceof Level currentLevel)
+            return currentLevel.getLevelNumber();
+
+        return 1;
     }
 }

@@ -11,7 +11,7 @@ public class LovePlants extends SpecialLevel {
     private final LovePlantLoseCondition loseCondition;
     private final int limit;
 
-    protected LovePlants(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int limit) {
+    public LovePlants(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int limit) {
         super(name, season, waveCount, baseWaveDifficulty);
         this.limit = limit;
         this.loseCondition = new LovePlantLoseCondition(limit);
