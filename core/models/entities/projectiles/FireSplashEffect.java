@@ -24,11 +24,14 @@ public class FireSplashEffect implements ProjectileEffect {
             z.removeFreezeEffect();
 
             if (z != zombie) {
-                z.takeDamage(splashDamage);
+                boolean killed = z.takeDamage(splashDamage);
+                if(killed){
+                    projectile.getPlant().onZombieDeath(z);
+                }
             }
         }
 
-        System.out.println("🔥 Fire Splash applied! Melted ice on nearby zombies.");
+        notify("🔥 Fire Splash applied! Melted ice on nearby zombies.");
     }
 
     @Override

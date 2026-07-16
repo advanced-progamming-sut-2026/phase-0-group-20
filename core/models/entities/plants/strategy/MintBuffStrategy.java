@@ -30,7 +30,7 @@ public class MintBuffStrategy implements IPlantStrategy {
 //            gameSession.resetCooldownForTag(PlantTag.PEA);
 
             isActivated = true;
-            System.out.println("🌿 " + context.getName() + " activated its family buff and reset cooldowns!");
+            notify("🌿 " + context.getName() + " activated its family buff and reset cooldowns!");
         }
 
         aliveTicks++;

@@ -45,7 +45,7 @@ public class TrapStrategy implements IPlantStrategy {
         if (!isArmed && (currentTick - startTick) >= armingTimeTicks) {
             isArmed = true;
             if (armingTimeTicks > 0) {
-                System.out.println("💣 " + name + " is now armed and ready!");
+                notify("💣 " + name + " is now armed and ready!");
             }
         }
 
@@ -68,41 +68,52 @@ public class TrapStrategy implements IPlantStrategy {
         }
 
         if (target != null) {
-            System.out.println("🚨 " + name + " TRAP TRIGGERED!");
-
+            notify("🚨 " + name + " TRAP TRIGGERED!");
+            boolean killed ;
             switch (name) {
                 case "Potato Mine":
-                    target.takeDirectDamage(1800, context);
+                    killed =target.takeDirectDamage(1800);
+                    if(killed){
+                        context.onZombieDeath(target);
+                    }
                     break;
 
                 case "Primal Potato Mine":
                     List<Zombie> aoeTargets = GameSession.getInstance().getArena().getZombiesInRadius((int) plantCol, plantRow, 1.5);
                     for (Zombie z : aoeTargets) {
-                        if (!z.isDead()) z.takeDirectDamage(2400, context);
+                        if (!z.isDead()) {
+                            killed = z.takeDirectDamage(2400);
+                            if(killed){
+                                context.onZombieDeath(target);
+                            }
+                        }
                     }
-                    System.out.println("💥 Primal Potato Mine dealt massive AoE damage!");
+                    notify("💥 Primal Potato Mine dealt massive AoE damage!");
                     break;
 
                 case "Squash":
-                    target.takeDirectDamage(1800, context);
-                    System.out.println("🪨 Squash crushed " + target.getName() + "!");
+                    killed = target.takeDirectDamage(1800);
+                    if(killed){
+                        context.onZombieDeath(target);
+                    }
+                    notify("🪨 Squash crushed " + target.getName() + "!");
                     break;
 
                 case "Tangle Kelp":
-                    target.takeDirectDamage(9999, context);
-                    System.out.println("🌊 Tangle Kelp pulled " + target.getName() + " underwater!");
+                    killed = target.takeDirectDamage(9999);
+                    if(killed){
+                        context.onZombieDeath(target);
+                    }
+                    notify("🌊 Tangle Kelp pulled " + target.getName() + " underwater!");
                     break;
 
                 case "Iceberg Lettuce":
                     // freeze zombie
-                    System.out.println("❄️ Iceberg Lettuce completely froze " + target.getName() + "!");
+                    notify("❄️ Iceberg Lettuce completely froze " + target.getName() + "!");
                     break;
             }
             context.takeDamage(context.getCurrentHp());
-            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
-                    .plant(context)
-                    .build();
-            GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST, payload);
+
         }
 
     }

@@ -4,9 +4,14 @@ import models.Position;
 import models.entities.plants.PlantFoodStrategy.PlantFoodStrategy;
 import models.entities.plants.effect.PlantEffect;
 import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.zombies.Zombie;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 import models.fields.tiles.Tile;
+import models.game.GameSession;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -59,7 +64,10 @@ public class Plant implements IPlant, Ticker {
 
     public void useFood() {
         if (plantFoodStrategy.isEmpty()) {
-            System.out.println(getName() + " has no Plant Food effect wired up yet!");
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                            .message(getName() + " has no Plant Food effect wired up yet!")
+                            .build());
             return;
         }
 
@@ -252,6 +260,17 @@ public class Plant implements IPlant, Ticker {
     public void upgrade() {
         this.level += 1;
         // implement the effect of levels
+    }
+
+    public void onZombieDeath(Zombie z) {
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
+                .zombie(z)
+                .plant(this)
+                .seasonType(GameSession.getInstance().getCurrentChapter().getSeasonType())
+                .arena(GameSession.getInstance().getArena())
+                .coordinate(z.getRow(),z.getCol())
+                .build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
     }
 
     public void setCurrentHp(int currentHp) {

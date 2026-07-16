@@ -4,6 +4,7 @@ import models.entities.zombies.Zombie;
 import models.game.Arena;
 import models.game.GameSession;
 import models.game.events.GameEvent;
+import models.game.events.GameEventListener;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
@@ -33,8 +34,14 @@ public class LawnMower implements Ticker {
                     destroyZombies();
                 } else {
                     // we lost the game and it depends on how we implement the Win and Lose Conditions.
-                    System.out.println("The zombie ate your brain; LOSER!!!\n");
                     GameSession.getInstance().setZombieBreached(true);
+
+                    GameEventMessenger.getInstance().dispatch(
+                            GameEvent.GAME_OVER,
+                            new GameEventPayload.Builder(GameEvent.GAME_OVER)
+                                    .message("The zombie ate your brain; LOSER!!!")
+                                    .build()
+                    );
                 }
             }
         }
@@ -54,6 +61,8 @@ public class LawnMower implements Ticker {
                 killedZombiesNames.add(z.getName());
             }
         }
+        if (killedZombiesNames.isEmpty()) return;
+
         StringBuilder sb = new StringBuilder();
         sb.append("The lawn mower in the row " + this.row + 1 + "is triggered and killed these zombies:\n");
         for (String zombieName : killedZombiesNames) {
@@ -62,7 +71,10 @@ public class LawnMower implements Ticker {
 
         sb.deleteCharAt(sb.length() - 1);
 
-        System.out.println(sb.toString()); // not done
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(sb.toString())
+                        .build()); // not done
     }
 
     public boolean isActivate() {

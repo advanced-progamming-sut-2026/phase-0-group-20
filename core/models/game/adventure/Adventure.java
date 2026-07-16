@@ -1,6 +1,9 @@
 package models.game.adventure;
 
 import models.game.adventure.levels.Level;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +50,15 @@ public class Adventure {
         if (currentChapterIndex + 1 < chapters.size()) {
             currentChapterIndex++;
             chapters.get(currentChapterIndex).setUnlocked(true);
-            System.out.println("New Chapter Unlocked: " + chapters.get(currentChapterIndex).getDisplayName());
+            notify("New Chapter Unlocked: " + chapters.get(currentChapterIndex).getDisplayName());
         }
+    }
+
+    public void notify(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(message)
+                        .build());
     }
 
     public List<Chapter> getChapters() {

@@ -45,14 +45,17 @@ public class MeleeStrategy implements IPlantStrategy {
 
                 if (target != null) {
                     int damage = name.equals("Bonk Choy") ? 15 : 40;
-                    target.takeDamage(damage);
+                    boolean killed = target.takeDamage(damage);
+                    if(killed){
+                        context.onZombieDeath(target);
+                    }
                     attacked = true;
 
                     if (name.equals("Wasabi Whip")) {
                         target.removeChillEffect();
                         target.removeFreezeEffect();
                     }
-                    System.out.println("🥊 " + name + " landed a melee strike on " + target.getName() + "!");
+                    notify("🥊 " + name + " landed a melee strike on " + target.getName() + "!");
                 }
             } else if (name.equals("Phat Beet") || name.equals("Kiwibeast")) {
                 List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5);
@@ -68,12 +71,15 @@ public class MeleeStrategy implements IPlantStrategy {
 
                     for (Zombie z : targets) {
                         if (!z.isDead()) {
-                            z.takeDamage(damage);
+                            boolean killed =z.takeDamage(damage);
+                            if(killed){
+                                context.onZombieDeath(z);
+                            }
                             attacked = true;
                         }
                     }
                     if (attacked) {
-                        System.out.println("🔊 " + name + " slammed a 3x3 area, hitting " + targets.size() + " zombies!");
+                        notify("🔊 " + name + " slammed a 3x3 area, hitting " + targets.size() + " zombies!");
                     }
                 }
             }

@@ -46,7 +46,7 @@ public class SunProductionStrategy implements IPlantStrategy {
         gameSession.getArena().addSun(newSun);
         gameSession.getTimeManager().registerNewTicker(newSun);
 
-        System.out.println(context.getName() + " produced a " + type.getLabel() + " sun! (Value: " + type.getValue() + ")");
+        notify(context.getName() + " produced a " + type.getLabel() + " sun! (Value: " + type.getValue() + ")");
     }
 
     private SunType getSunTypeForPlant(String plantName, int aliveTicks) {

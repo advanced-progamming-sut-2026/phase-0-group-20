@@ -42,6 +42,6 @@ public class DuplicateSelfFoodStrategy implements PlantFoodStrategy {
             }
         }
 
-        System.out.println(plant.getName() + " spawned extra copies of itself on nearby empty water tiles!");
+        notify(plant.getName() + " spawned extra copies of itself on nearby empty water tiles!");
     }
 }

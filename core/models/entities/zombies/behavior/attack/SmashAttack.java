@@ -29,7 +29,7 @@ public class SmashAttack implements AttackBehavior {
         targetPlant.takeDamage(lethalDamage);
         currentTile.getPlants().remove(targetPlant);
 
-        System.out.println(zombie.getName() + " smashed " + targetPlant.getName() + " to bits!");
+        notify(zombie.getName() + " smashed " + targetPlant.getName() + " to bits!");
 
         resumeWalking();
     }

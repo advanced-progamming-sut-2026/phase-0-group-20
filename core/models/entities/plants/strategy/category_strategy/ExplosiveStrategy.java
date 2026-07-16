@@ -35,7 +35,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
 
             int damage = 1800;
 
-            System.out.println("💥 " + name + " DETONATED!");
+            notify("💥 " + name + " DETONATED!");
 
             switch (name) {
                 case "Cherry Bomb":
@@ -62,7 +62,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
 
                             GameSession.getInstance().getArena().addProjectile(grape);
                         }
-                        System.out.println("🍇 Grapeshot scattered 8 bouncing grapes in all directions!");
+                        notify("🍇 Grapeshot scattered 8 bouncing grapes in all directions!");
                     }
                     break;
 
@@ -71,16 +71,19 @@ public class ExplosiveStrategy implements IPlantStrategy {
                         if (!z.isDead()) {
                             z.removeChillEffect();
                             z.removeFreezeEffect();
-                            z.takeDirectDamage(damage, context);
+                            boolean killed = z.takeDirectDamage(damage);
+                            if(killed){
+                               context.onZombieDeath(z);
+                            }
                         }
                     }
-                    System.out.println("🔥 Jalapeno burned the entire lane!");
+                    notify("🔥 Jalapeno burned the entire lane!");
                     break;
 
                 case "Doom-shroom":
                     applyAreaDamage(plantCol, plantRow, 3.5f, damage, context);
                     // change tile type
-                    System.out.println("🕳️ Doom-shroom left a massive crater behind!");
+                    notify("🕳️ Doom-shroom left a massive crater behind!");
                     break;
             }
             context.takeDamage(context.getCurrentHp());
@@ -91,7 +94,10 @@ public class ExplosiveStrategy implements IPlantStrategy {
         List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(col, row, radius);
         for (Zombie z : targets) {
             if (!z.isDead()) {
-                z.takeDirectDamage(damage, plant);
+                boolean killed =z.takeDirectDamage(damage);
+                if(killed){
+                    plant.onZombieDeath(z);
+                }
             }
         }
     }

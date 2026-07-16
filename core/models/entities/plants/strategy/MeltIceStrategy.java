@@ -23,10 +23,10 @@ public class MeltIceStrategy implements IPlantStrategy {
             Tile currentTile = context.getPlacedTile();
 
             if (currentTile instanceof IceHolder && ((IceHolder) currentTile).isBlockedByIce()) {
-                System.out.println("🔥 Hot Potato melted the ice on its tile!");
+                notify("🔥 Hot Potato melted the ice on its tile!");
                 // change type of tile
             } else {
-                System.out.println("🔥 Hot Potato was planted, but there was no ice to melt!");
+                notify("🔥 Hot Potato was planted, but there was no ice to melt!");
             }
 
             context.takeDamage(context.getCurrentHp());

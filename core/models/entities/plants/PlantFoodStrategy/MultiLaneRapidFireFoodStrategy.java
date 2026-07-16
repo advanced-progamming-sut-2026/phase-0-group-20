@@ -46,7 +46,7 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
 
 
         if (tickTimer == 2)
-            System.out.println(plant.getName() + " fired a fan-shaped rapid barrage across all its lanes!");
+            notify(plant.getName() + " fired a fan-shaped rapid barrage across all its lanes!");
 
     }
 

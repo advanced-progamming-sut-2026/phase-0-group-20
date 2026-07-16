@@ -22,7 +22,7 @@ public class DigestionStrategy implements IPlantStrategy {
         if (isDigesting) {
             if (currentTick - digestionStartTick >= DIGESTION_DURATION_TICKS) {
                 isDigesting = false;
-                System.out.println("🦷 " + context.getName() + " finished digesting and is hungry again!");
+                notify("🦷 " + context.getName() + " finished digesting and is hungry again!");
             }
         } else {
             int plantRow = context.getPlacedTile().getRow();
@@ -44,8 +44,11 @@ public class DigestionStrategy implements IPlantStrategy {
             }
 
             if (target != null) {
-                System.out.println("🦖 " + context.getName() + " swallowed " + target.getName() + " whole!");
-                target.takeDirectDamage(9999, context);
+                notify("🦖 " + context.getName() + " swallowed " + target.getName() + " whole!");
+                boolean killed =target.takeDirectDamage(9999);
+                if(killed){
+                    context.onZombieDeath(target);
+                }
 
                 isDigesting = true;
                 digestionStartTick = currentTick;

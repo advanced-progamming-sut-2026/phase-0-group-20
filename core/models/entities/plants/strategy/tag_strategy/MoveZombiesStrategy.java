@@ -34,7 +34,7 @@ public class MoveZombiesStrategy implements IPlantStrategy {
                 for (Zombie z : attackers) {
                     if (!z.isDead() && z.getRow() == plantRow) {
                         moveZombieToAdjacentLane(z, plantRow, GameSession.getInstance());
-                        System.out.println("🧄 Garlic forced " + z.getName() + " to switch lanes!");
+                        notify("🧄 Garlic forced " + z.getName() + " to switch lanes!");
                     }
                 }
                 lastRecordedHp = currentHp;
@@ -52,7 +52,7 @@ public class MoveZombiesStrategy implements IPlantStrategy {
                     if (Math.abs(zRow - plantRow) == 1) {
                         if (Math.abs(z.getCol() - plantCol) <= 2) {
                             z.setRow(plantRow);
-                            System.out.println("🍠 Sweet Potato pulled " + z.getName() + " into its lane!");
+                            notify("🍠 Sweet Potato pulled " + z.getName() + " into its lane!");
                         }
                     }
                 }

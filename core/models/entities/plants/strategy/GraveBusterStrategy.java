@@ -22,13 +22,13 @@ public class GraveBusterStrategy implements IPlantStrategy {
         Tile currentTile = context.getPlacedTile();
 
         if (!(currentTile instanceof GraveStoneTile)) {
-            System.out.println("❌ Grave Buster must be planted on a GraveStone!");
+            notify("❌ Grave Buster must be planted on a GraveStone!");
             context.takeDamage(context.getCurrentHp());
             return;
         }
 
         if (currentTick - startTick >= BUST_DELAY) {
-            System.out.println("🪦 Grave Buster successfully destroyed the grave!");
+            notify("🪦 Grave Buster successfully destroyed the grave!");
             // change type of tile
             context.takeDamage(context.getCurrentHp());
         }

@@ -14,7 +14,7 @@ public class CraterStrategy implements IPlantStrategy {
     @Override
     public void execute(Plant context, int currentTick) {
         if (context.getCurrentHp() <= 0 && !craterCreated) {
-            System.out.println("🕳️ " + context.getName() + " exploded and left a deep crater on the tile!");
+            notify("🕳️ " + context.getName() + " exploded and left a deep crater on the tile!");
 
             if (context.getPlacedTile() != null) {
                 int row = context.getPlacedTile().getRow();
