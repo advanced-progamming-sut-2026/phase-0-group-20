@@ -34,7 +34,7 @@ public class SpikeStrategy implements IPlantStrategy {
                 damage = 20;
                 if (!z.isDead()) {
                     try {
-                        damage = Integer.parseInt(context.getDamage());
+                        damage =context.getDamage();
                     } catch (NumberFormatException e) {
                     }
 

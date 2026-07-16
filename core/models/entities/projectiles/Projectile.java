@@ -198,13 +198,22 @@ public class Projectile implements Ticker {
             System.out.println("Explode-o-nut bowled and exploded!");
             List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(position.getCol(), position.getRow(), 1.5);
             for (Zombie target : targets)
-                if (!target.isDead()) target.takeDirectDamage(1800, plant);
+                if (!target.isDead()){
+                    boolean killed = target.takeDirectDamage(1800);
+                    if(killed){
+                        plant.onZombieDeath(target);
+                    }
+
+                }
 
             isDestroyed = true;
             return true;
 
         } else if (type == ProjectileType.GIANT_NUT_BOWL) {
-            zombie.takeDirectDamage(zombie.getHealth(), plant);
+            boolean killed = zombie.takeDirectDamage(zombie.getHealth());
+            if(killed){
+                plant.onZombieDeath(zombie);
+            }
             System.out.println("Giant nut crushed " + zombie.getName());
             return true;
         }

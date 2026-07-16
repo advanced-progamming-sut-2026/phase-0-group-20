@@ -16,7 +16,7 @@ public class QuestFactory {
 
     private static final Random random = new Random();
 
-    public static IQuestCondition createCondition(int rowIndex, String title, String conditionStr, String variableStr) {
+    public static QuestCondition createCondition(int rowIndex, String title, String conditionStr, String variableStr) {
 
         switch (rowIndex) {
             case 0 -> {

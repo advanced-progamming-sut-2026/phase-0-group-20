@@ -31,8 +31,9 @@ public class PlantFactory {
         Plant plant = new Plant(data);
         String nameKey = data.name().toLowerCase();
 
-        if (nameKey.equals("imitater")) {
-            throw new UnsupportedOperationException("Imitater should not be instantiated on the board!");
+        if (data.name().equalsIgnoreCase("Imitater")) {
+            System.out.println("Skipping Imitater...");
+            return null;
         }
 
         switch (data.abilityType()) {

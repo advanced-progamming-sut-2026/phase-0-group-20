@@ -5,7 +5,8 @@
     "Condition": "Collect sun_amount of sun during one day",
     "Reward": "sun_amount / 100 Coins",
     "Priority": "Medium",
-    "Variables": "3000-4000-5000"
+    "Variables": "3000-4000-5000",
+    "onMission" : false
   },
   {
     "Title": "Chapter Hunter",
@@ -13,7 +14,8 @@
     "Condition": "Defeat 50 zombies from a chapter",
     "Reward": "10 Seed Packets",
     "Priority": "High",
-    "Variables": "Any game chapter"
+    "Variables": "Any game chapter",
+    "onMission" : false
   },
   {
     "Title": "Pro Plant Player",
@@ -21,7 +23,8 @@
     "Condition": "Kill 10 zombies using only a specific plant",
     "Reward": "Random New Plant",
     "Priority": "High",
-    "Variables": "Any plant capable of killing"
+    "Variables": "Any plant capable of killing",
+    "onMission" : false
   },
   {
     "Title": "Only Cactus",
@@ -29,7 +32,8 @@
     "Condition": "Kill 10 zombies using only Cactus",
     "Reward": "20 Gems",
     "Priority": "High",
-    "Variables": null
+    "Variables": null,
+    "onMission" : false
   },
   {
     "Title": "Economical Herbivore",
@@ -37,7 +41,8 @@
     "Condition": "Win a level losing no more than n plants",
     "Reward": "20 - n Seed Packets",
     "Priority": "High",
-    "Variables": "0-1-2-3-4-5"
+    "Variables": "0-1-2-3-4-5",
+    "onMission" : true
   },
   {
     "Title": "Defense Master",
@@ -45,7 +50,8 @@
     "Condition": "Finish a level with exactly 0 suns",
     "Reward": "200 Gems",
     "Priority": "Critical",
-    "Variables": null
+    "Variables": null,
+    "onMission" : true
   },
   {
     "Title": "Quick Reaction",
@@ -53,7 +59,8 @@
     "Condition": "Kill 10 zombies in less than 30 seconds from the first wave",
     "Reward": "500 Coins",
     "Priority": "Medium",
-    "Variables": null
+    "Variables": null,
+    "onMission" : true
   },
   {
     "Title": "Pro Demolition",
@@ -61,7 +68,8 @@
     "Condition": "Use 3 explosive plants in one level",
     "Reward": "100 Coins",
     "Priority": "Low",
-    "Variables": null
+    "Variables": null,
+    "onMission" : true
   },
   {
     "Title": "Symmetry",
@@ -69,7 +77,8 @@
     "Condition": "Garden must be symmetrical at the end",
     "Reward": "500 Coins",
     "Priority": "High",
-    "Variables": null
+    "Variables": null,
+    "onMission" : true
   },
   {
     "Title": "Family Massacre",
@@ -77,7 +86,8 @@
     "Condition": "Use only family_type plants to kill zombies",
     "Reward": "1000 Coins",
     "Priority": "Medium",
-    "Variables": "Plant family"
+    "Variables": "Plant family",
+    "onMission" : true
   },
   {
     "Title": "Flourish in Limits",
@@ -85,7 +95,8 @@
     "Condition": "Win without using any plant from family_type",
     "Reward": "100 Gems",
     "Priority": "High",
-    "Variables": "Plant family"
+    "Variables": "Plant family",
+    "onMission" : true
   },
   {
     "Title": "Night or Morning",
@@ -93,7 +104,8 @@
     "Condition": "Finish a day level with night plants (mushrooms)",
     "Reward": "20 Gems",
     "Priority": "High",
-    "Variables": null
+    "Variables": null,
+    "onMission" : true
   },
   {
     "Title": "Win Streak",
@@ -101,7 +113,8 @@
     "Condition": "Win 5 levels in a row on highest difficulty",
     "Reward": "5000 Coins",
     "Priority": "Medium",
-    "Variables": null
+    "Variables": null,
+    "onMission" : false
   },
   {
     "Title": "Almost Won",
@@ -109,7 +122,8 @@
     "Condition": "Kill 10 zombies in the first column of a row without a lawnmower",
     "Reward": "300 Coins",
     "Priority": "Medium",
-    "Variables": null
+    "Variables": null,
+    "onMission" : false
   },
   {
     "Title": "What OCD?",
@@ -117,7 +131,8 @@
     "Condition": "Win a level with completely asymmetrical garden (except middle row)",
     "Reward": "800 Coins",
     "Priority": "Medium",
-    "Variables": null
+    "Variables": null,
+    "onMission" : true
   },
   {
     "Title": "Cloudy Day",
@@ -125,7 +140,8 @@
     "Condition": "Beat a level using only 3 sun-producing plants",
     "Reward": "10 Gems",
     "Priority": "High",
-    "Variables": null
+    "Variables": null,
+    "onMission" : true
   },
   {
     "Title": "One Column Less",
@@ -133,7 +149,8 @@
     "Condition": "Win a level without planting in the nth column",
     "Reward": "10 Gems",
     "Priority": "High",
-    "Variables": "Number of columns"
+    "Variables": "Number of columns",
+    "onMission" : true
   },
   {
     "Title": "Defenseless Row",
@@ -141,7 +158,8 @@
     "Condition": "Win a level without planting in the nth row",
     "Reward": "20 Gems",
     "Priority": "High",
-    "Variables": "Number of rows"
+    "Variables": "Number of rows",
+    "onMission" : true
   },
   {
     "Title": "Defenseless Cross",
@@ -149,7 +167,8 @@
     "Condition": "Win a level with the nth row and column empty",
     "Reward": "25 Gems",
     "Priority": "High",
-    "Variables": "Minimum number of rows/columns"
+    "Variables": "Minimum number of rows/columns",
+    "onMission" : true
   },
   {
     "Title": "Lawnmower Time",
@@ -157,6 +176,7 @@
     "Condition": "Kill at least n zombies with lawnmowers",
     "Reward": "n Gems",
     "Priority": "Medium",
-    "Variables": "10-20-30-40-50"
+    "Variables": "10-20-30-40-50",
+    "onMission" : false
   }
 ]

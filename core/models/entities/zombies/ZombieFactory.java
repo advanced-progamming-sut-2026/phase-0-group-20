@@ -49,7 +49,8 @@ public class ZombieFactory {
             case ALL_STAR -> new AllStarMove(zombie);
             case PROSPECTOR -> new ProspectorMove(zombie);
             case CRYSTAL_SKULL -> new TurquoiseMove(zombie);
-            case ARCADE, TROGLOBITE, BARREL_ROLLER -> new PushMove(zombie);
+//            case ARCADE, TROGLOBITE, BARREL_ROLLER -> new PushMove(zombie);
+            case ARCADE, TROGLOBITE -> new PushMove(zombie);
             case NEWSPAPER -> new NewspaperMove(zombie);
             case RA -> new RaMove(zombie);
             case DODO -> new DodoMove(zombie);
@@ -99,7 +100,9 @@ public class ZombieFactory {
 
     private static AttackBehavior getAttackAI(ZombieType type, Zombie zombie, ZombieData data) {
         return switch (type) {
-            case ARCADE, BARREL_ROLLER, PIANIST -> new SquashHit(zombie);
+//            case ARCADE, BARREL_ROLLER, PIANIST -> new SquashHit(zombie);
+            case ARCADE, PIANIST -> new SquashHit(zombie);
+
             case GARGANTUAR -> new SmashAttack(zombie, data.getSmashDamage());
             case ALL_STAR -> new AllStarSmashAttack(zombie);
             case EXPLORER -> new TorchBurnAttack(zombie);

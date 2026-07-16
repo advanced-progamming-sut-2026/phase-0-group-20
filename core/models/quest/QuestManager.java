@@ -43,6 +43,22 @@ public class QuestManager implements GameEventListener {
     }
 
 
+    public void resetDailyQuests() {
+        for (Quest quest : activeQuests) {
+            if(!quest.isCompleted()&&quest.getCategory() == QuestCategory.DAILY){
+                quest.getCondition().resetCurrentProgress();
+            }
+        }
+    }
+
+    public void resetOneMissionQuests(){
+        for(Quest quest : activeQuests){
+            if(!quest.isCompleted()&&quest.isOnMission()){
+                quest.getCondition().resetCurrentProgress();
+            }
+        }
+    }
+
     public void dispose() {
         GameEventMessenger messenger = GameEventMessenger.getInstance();
         for (GameEvent event : GameEvent.values()) {

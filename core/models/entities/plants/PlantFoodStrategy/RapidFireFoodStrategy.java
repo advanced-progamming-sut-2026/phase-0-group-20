@@ -59,7 +59,7 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
             if (tickTimer % 5 == 0) { //giant shots take more time
                 ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
-                int giantDamage = ProjectileMechanism.parseDamage(plant.getDamage()) * 20;
+                int giantDamage = plant.getDamage() * 20;
                 int col = plant.getPlacedTile().getCol();
                 int row = plant.getPlacedTile().getRow();
 
