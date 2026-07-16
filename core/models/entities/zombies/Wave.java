@@ -7,11 +7,11 @@ public class Wave {
     private boolean lastWave;
     private int currentNumber;
     private List<Zombie> zombies;
-    private int difficulty;
+    private float difficulty;
     private int totalWaveCost;
     private int totalBaseHp;
 
-    public Wave(int currentNumber, boolean lastWave, int difficulty) {
+    public Wave(int currentNumber, boolean lastWave, float difficulty) {
         this.currentNumber = currentNumber;
         this.lastWave = lastWave;
         this.difficulty = difficulty;
@@ -63,7 +63,7 @@ public class Wave {
         this.zombies = zombies;
     }
 
-    public int getDifficulty() {
+    public float getDifficulty() {
         return difficulty;
     }
 

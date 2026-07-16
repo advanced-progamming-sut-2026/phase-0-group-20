@@ -19,19 +19,13 @@ public class Adventure {
         // in this method we should initialize the levels
 
 
-        List<Level> egyptLevels = new ArrayList<>();
-        Chapter egypt = new Chapter(egyptLevels, SeasonType.ANCIENT_EGYPT);
-        egypt.setUnlocked(true);
-        chapters.add(egypt);
+        SeasonType[] seasons = SeasonType.values();
 
-        Chapter iceCaves = new Chapter(new ArrayList<>(), SeasonType.FROZEN_CAVES);
-        chapters.add(iceCaves);
-
-        Chapter beach = new Chapter(new ArrayList<>(), SeasonType.BIG_WAVE_BEACH);
-        chapters.add(beach);
-
-        Chapter darkAges = new Chapter(new ArrayList<>(), SeasonType.DARK_AGES);
-        chapters.add(darkAges);
+        for (int i = 0; i < seasons.length; i++) {
+            Chapter chapter = new Chapter(seasons[i], i);
+            if (i == 0) chapter.setUnlocked(true);
+            chapters.add(chapter);
+        }
     }
 
     public Chapter findChapterByName(String name) {

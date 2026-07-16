@@ -35,7 +35,9 @@ public class IceCaveModifier implements SeasonModifier {
             isInitialized = true;
         }
 
-        if (rand.nextDouble() < FREEZING_WIND_CHANCE)
+        double currentWindChance = Math.min(0.8, FREEZING_WIND_CHANCE + 0.05 * getCurrentLevelNumber());
+
+        if (rand.nextDouble() < currentWindChance)
             blowFreezingWind(arena);
     }
 
@@ -62,10 +64,16 @@ public class IceCaveModifier implements SeasonModifier {
 
         int rows = arena.getRows();
         int cols = arena.getCols();
-        int numberOfFTiles = rand.nextInt(2) + 2;
+        int numberOfFTiles = rand.nextInt(2) + 2 + getCurrentLevelNumber();
 
         int placed = 0;
-        while (placed < numberOfFTiles) {
+
+        long remainTiles = Arrays.stream(arena.getTiles())
+                .flatMap(Arrays::stream)
+                .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
+                .count();
+
+        while (placed < numberOfFTiles && remainTiles > 0) {
             int randomRow = rand.nextInt(rows);
             int randomCol = rand.nextInt(cols / 2) + (cols / 4);
 
@@ -76,6 +84,7 @@ public class IceCaveModifier implements SeasonModifier {
                 System.out.println("An ice floe sliding " + direction
                         + " covers row " + randomRow + ", col " + randomCol + ".");
                 placed++;
+                remainTiles--;
             }
         }
     }
@@ -88,7 +97,7 @@ public class IceCaveModifier implements SeasonModifier {
 
     private void blowFreezingWind(Arena arena) {
         int rows = arena.getRows();
-        int numberOfLanes = rand.nextInt(2) + 1;
+        int numberOfLanes = rand.nextInt(2) + 1 + getCurrentLevelNumber() / 2;
 
         List<Integer> frozenRow = new ArrayList<>();
         while (frozenRow.size() < numberOfLanes) {
@@ -143,7 +152,7 @@ public class IceCaveModifier implements SeasonModifier {
     private void setupInitialIceBlocks(Arena arena) {
         int rows = arena.getRows();
         int cols = arena.getCols();
-        int numberOfIceBlocks = rand.nextInt(3) + 2;
+        int numberOfIceBlocks = rand.nextInt(3) + getCurrentLevelNumber();
 
         int placed = 0;
         GameSession session = GameSession.getInstance();

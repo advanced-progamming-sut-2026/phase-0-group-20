@@ -9,13 +9,15 @@ public class BossLevel extends Level {
         super(name, season, waveCount, baseWaveDifficulty, levelNumber);
     }
 
+
     @Override
     public void onStart(GameSession session) {
 
     }
 
-    @Override
-    public void engineLoop(GameSession session, int currentTick) {
 
+    @Override
+    public float getDifficultyCoefficient() {
+        return super.getDifficultyCoefficient() * 1.5f;
     }
 }

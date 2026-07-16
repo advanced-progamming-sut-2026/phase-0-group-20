@@ -9,7 +9,7 @@ import models.game.adventure.levels.conditions.NormalWinCondition;
 public class DeadLine extends SpecialLevel {
     private final int loseCol;// zero_based
 
-    protected DeadLine(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int loseCol) {
+    public DeadLine(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int loseCol) {
         super(name, season, waveCount, baseWaveDifficulty);
         this.loseCol = loseCol;
         this.addWinCondition(new NormalWinCondition());

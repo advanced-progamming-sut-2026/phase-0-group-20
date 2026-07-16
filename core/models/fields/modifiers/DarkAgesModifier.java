@@ -13,6 +13,7 @@ import models.game.Arena;
 import models.game.GameSession;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -52,10 +53,17 @@ public class DarkAgesModifier implements SeasonModifier {
         int rows = arena.getRows();
         int cols = arena.getCols();
 
-        int numberOfTiles = rand.nextInt(2) + 2;
+
+        int numberOfTiles = (rand.nextInt(2) + 2) + getCurrentLevelNumber();
 
         int placed = 0;
-        while (placed < numberOfTiles) {
+
+        long remainTiles = Arrays.stream(arena.getTiles())
+                .flatMap(Arrays::stream)
+                .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
+                .count();
+
+        while (placed < numberOfTiles && remainTiles > 0) {
             int randomRow = rand.nextInt(rows);
             int randomCol = rand.nextInt(cols / 2) + (cols / 2);
 
@@ -63,21 +71,28 @@ public class DarkAgesModifier implements SeasonModifier {
             if (tile instanceof NormalTile && tile.getPlants().isEmpty()) {
                 arena.changeTile(randomRow, randomCol, new NecromanceTile(randomRow, randomCol));
                 placed++;
+                remainTiles--;
             }
         }
+
         System.out.println(numberOfTiles + " cursed necromancy grounds lie hidden on this map...");
     }
 
     private void spawnRandomGraves(Arena arena) {
-        if (rand.nextDouble() >= GRAVE_SPAWN_CHANCE) return;
+        double currentSpawnChance = Math.min(0.9, GRAVE_SPAWN_CHANCE + 0.5*getCurrentLevelNumber());
+        if (rand.nextDouble() >= currentSpawnChance) return;
+
 
         int rows = arena.getRows();
         int cols = arena.getCols();
-        int gravesToSpawn = rand.nextInt(2) + 1;
+        int gravesToSpawn = rand.nextInt(2) + 1 + getCurrentLevelNumber();
 
-        int attempts = 0;
-        while (gravesToSpawn > 0 && attempts < 50) {
-            attempts++;
+        long remainTiles = Arrays.stream(arena.getTiles())
+                .flatMap(Arrays::stream)
+                .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
+                .count();
+
+        while (gravesToSpawn > 0 && remainTiles > 0) {
             int randomRow = rand.nextInt(rows);
             int randomCol = rand.nextInt(cols / 2) + (cols / 2);
 
@@ -98,6 +113,7 @@ public class DarkAgesModifier implements SeasonModifier {
 
             announceGrave(randomRow, randomCol, graveStone);
             gravesToSpawn--;
+            remainTiles--;
         }
     }
 

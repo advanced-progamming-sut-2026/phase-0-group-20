@@ -1,6 +1,7 @@
 package models.game.adventure.levels;
 
 import models.InGameEntityGenerator;
+import models.Settings;
 import models.entities.plants.Plant;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
@@ -32,7 +33,7 @@ public abstract class Level implements GameMode {
     protected int currentWave = 0;
     private boolean allWavesSpawned = false;
     private Wave currentActiveWave = null; //seems useless
-    private int currentDifficulty;
+    private float currentDifficulty;
 
     protected Level(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {
         this.name = name;
@@ -73,10 +74,13 @@ public abstract class Level implements GameMode {
         boolean isLastWave = (currentWave == waveCount);
 
         if (currentWave == 1) {
-            currentDifficulty = baseWaveDifficulty;
+            currentDifficulty = Math.max(1000, baseWaveDifficulty);
         } else {
-            currentDifficulty = isLastWave ? currentDifficulty * 2 : (int) (currentDifficulty * 1.25);
+            int increment = Math.max(500, (int) (currentDifficulty * 0.25));
+            currentDifficulty += increment;
         }
+
+        currentDifficulty*= getDifficultyCoefficient();
 
         Wave newWave = new Wave(currentWave, isLastWave, currentDifficulty);
         session.getArena().setCurrentActiveWave(newWave);
@@ -91,7 +95,7 @@ public abstract class Level implements GameMode {
     }
 
     protected void spawnWave(Wave wave, GameSession session) {
-        int targetDifficulty = wave.getDifficulty();
+        float targetDifficulty = wave.getDifficulty();
         int accumulatedCost = 0;
 
         List<Zombie> allowedZombies = session.getChosenZombies();
@@ -174,6 +178,11 @@ public abstract class Level implements GameMode {
 
     public int getLevelNumber() {
         return levelNumber;
+    }
+
+    public float getDifficultyCoefficient() {
+        int diffLevel = Settings.getInstance().getDifficulty();
+        return 0.4f + (diffLevel * 0.2f);
     }
 
 }

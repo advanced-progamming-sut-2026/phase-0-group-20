@@ -39,7 +39,8 @@ public class BigWaveModifier implements SeasonModifier {
 
     @Override
     public void onZombieSpawn(Zombie zombie, Arena arena) {
-        if (zombie == null || rand.nextDouble() >= EMERGE_FROM_BELOW_CHANCE) return;
+        double currentEmergeChance = Math.min(0.8, EMERGE_FROM_BELOW_CHANCE + 0.05*getCurrentLevelNumber());
+        if (zombie == null || rand.nextDouble() >= currentEmergeChance) return;
 
         List<LowShoreTile> floodedShores = new ArrayList<>();
         for (Tile[] row : arena.getTiles())
@@ -83,7 +84,11 @@ public class BigWaveModifier implements SeasonModifier {
     }
 
     private void changeTide(Arena arena) {
-        int newWaterCols = PERMANENT_WATER_COLS + rand.nextInt(MAX_WATER_COLS - PERMANENT_WATER_COLS + 1);
+
+        int levelEffect = getCurrentLevelNumber() - 1;
+        int randomTide = rand.nextInt(MAX_WATER_COLS - PERMANENT_WATER_COLS + 1);
+        int newWaterCols = Math.min(MAX_WATER_COLS, PERMANENT_WATER_COLS + randomTide + levelEffect);
+
         if (newWaterCols == currentWaterCols) return;
 
         if (newWaterCols > currentWaterCols)

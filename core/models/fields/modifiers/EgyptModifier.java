@@ -5,6 +5,7 @@ import models.entities.zombies.Zombie;
 import models.fields.tiles.GraveStoneTile;
 import models.game.Arena;
 import models.game.GameSession;
+import models.game.adventure.levels.Level;
 
 import java.util.Random;
 
@@ -52,7 +53,8 @@ public class EgyptModifier implements SeasonModifier {
         int rows = arena.getRows();
         int cols = arena.getCols();
 
-        int numberOfGraves = rand.nextInt(3) + 3;
+
+        int numberOfGraves = (rand.nextInt(3) + 3) + getCurrentLevelNumber(); //baada age monaseb nabood bishtar mikonim
 
         int gravesPlanted = 0;
         while (gravesPlanted < numberOfGraves) {

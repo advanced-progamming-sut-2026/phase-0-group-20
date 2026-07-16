@@ -2,7 +2,9 @@ package models.game.adventure;
 
 import models.fields.modifiers.*;
 import models.game.adventure.levels.Level;
+import models.game.adventure.levels.LevelFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Chapter {
@@ -12,12 +14,20 @@ public class Chapter {
     private int currentLevelIndex;
     private boolean isUnlocked;
 
-    public Chapter(List<Level> levels, SeasonType type) {
-        this.levels = levels;
+    public Chapter( SeasonType type , int chapterIndex) {
+        this.levels = new ArrayList<>();
         this.currentLevelIndex = 0;
         this.type = type;
         this.modifier = createModifier(type);
         this.isUnlocked = false;
+        createLevels(chapterIndex);
+    }
+
+    private void createLevels(int chapterIndex) {
+        for (int i = 0; i < 4; i++) {
+            Level newLevel = LevelFactory.createLevel(this.type, i);
+            this.levels.add(newLevel);
+        }
     }
 
     public static SeasonModifier createModifier(SeasonType type) {
