@@ -12,7 +12,7 @@ import models.timeManager.TimeManager;
  */
 
 public class MintBuffStrategy implements IPlantStrategy {
-    private static final int lifespanInTicks = 10 * TimeManager.TICKS_PER_SECOND;
+    private int lifespanInTicks = 10 * TimeManager.TICKS_PER_SECOND;
     private boolean isActivated = false;
     private int aliveTicks = 0;
 
@@ -52,5 +52,9 @@ public class MintBuffStrategy implements IPlantStrategy {
             case "cattail-mint" -> targetPlant.getCategory() == PlantCategory.HOMING;
             default -> false;
         };
+    }
+
+    public void increaseBoostDuration(float extraSeconds) {
+        this.lifespanInTicks += (int) (extraSeconds * TimeManager.TICKS_PER_SECOND);
     }
 }

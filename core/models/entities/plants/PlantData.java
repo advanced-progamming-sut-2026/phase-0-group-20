@@ -4,6 +4,7 @@ import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 
 import java.util.List;
+import java.util.Map;
 
 public record PlantData(
         int id,
@@ -12,13 +13,13 @@ public record PlantData(
         List<PlantTag> tags,
         int cost,
         int baseHp,
-        String damage,
-        String baseAbility,
-        String plantFoodEffect,
-        String lvl2,
-        String lvl3,
-        String lvl4,
+        int damage,
+        String abilityType,
+        float abilityValue,
+        String plantFoodType,
+        float plantFoodValue,
+        Map<Integer, PlantUpgrade> upgrades,
         float actionInterval,
-        int recharge
+        float recharge
 ) {
 }

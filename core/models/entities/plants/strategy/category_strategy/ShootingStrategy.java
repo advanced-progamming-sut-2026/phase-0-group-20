@@ -13,6 +13,9 @@ import static models.entities.projectiles.ProjectileMechanism.executeNewProjecti
 
 public class ShootingStrategy implements IPlantStrategy {
     private int lastShotTick = 0;
+    private int rangeExtension = 0;
+    private float chillDurationExtension = 0;
+    private int poisonTickDamageBonus = 0;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -59,7 +62,8 @@ public class ShootingStrategy implements IPlantStrategy {
                     for (Zombie z : GameSession.getInstance().getArena().zombieInRow(line)) {
                         if (z.isDead()) continue;
 
-                        int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom")) ? 3 : 999;
+                        int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom"))
+                                ? (3 + rangeExtension) : 999;
 
                         if (z.getCol() >= plantCol && z.getCol() <= plantCol + maxRange) shootForward = true;
 
@@ -97,5 +101,25 @@ public class ShootingStrategy implements IPlantStrategy {
             default:
                 return 1;
         }
+    }
+
+    public void increaseRange(int range) {
+        this.rangeExtension += range;
+    }
+
+    public void increaseChillDuration(float duration) {
+        this.chillDurationExtension += duration;
+    }
+
+    public float getChillDurationExtension() {
+        return chillDurationExtension;
+    }
+
+    public void increasePoisonTickDamage(int amount) {
+        this.poisonTickDamageBonus += amount;
+    }
+
+    public int getPoisonTickDamageBonus() {
+        return poisonTickDamageBonus;
     }
 }

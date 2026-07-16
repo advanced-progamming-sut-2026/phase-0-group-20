@@ -167,7 +167,7 @@ public class CollectionController {
         plantInfo.append(String.format(format, "Category", plant.getCategory().name().toLowerCase())); // not permanent
         plantInfo.append(String.format(format, "Damage", plant.getDamage()));
         plantInfo.append(String.format(format, "Base HP", plant.getBaseHp()));
-        plantInfo.append(String.format(format, "Base Ability", plant.getBaseAbility()));
+        plantInfo.append(String.format(format, "Base Ability", plant.getAbilityType()));
         plantInfo.append("-------------------------------\n\n");
         return plantInfo.toString();
     }
