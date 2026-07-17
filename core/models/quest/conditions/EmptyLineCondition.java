@@ -19,6 +19,8 @@ public class EmptyLineCondition extends QuestCondition {
         isCol = (col != -1) ? true : false;
     }
 
+    public EmptyLineCondition(){};
+
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();

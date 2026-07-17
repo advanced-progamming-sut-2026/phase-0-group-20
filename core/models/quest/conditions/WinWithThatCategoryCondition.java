@@ -13,7 +13,7 @@ public class WinWithThatCategoryCondition extends QuestCondition {
         this.plantCategory = category;
         this.withOrWithout = modifier;
     }
-
+    public WinWithThatCategoryCondition(){}
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();

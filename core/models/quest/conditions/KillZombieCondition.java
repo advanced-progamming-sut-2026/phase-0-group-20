@@ -39,6 +39,7 @@ public class KillZombieCondition extends QuestCondition {
             }
         }
     }
+    public KillZombieCondition(){}
 
     @Override
     public void updateProgress(GameEventPayload payload) {

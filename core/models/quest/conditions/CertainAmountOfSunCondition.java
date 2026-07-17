@@ -9,7 +9,7 @@ public class CertainAmountOfSunCondition extends QuestCondition {
     public CertainAmountOfSunCondition(int amount) {
         targetProgress = amount;
     }
-
+    public CertainAmountOfSunCondition() {}
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();

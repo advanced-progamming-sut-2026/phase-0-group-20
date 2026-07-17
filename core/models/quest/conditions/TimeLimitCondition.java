@@ -11,6 +11,7 @@ public class TimeLimitCondition extends QuestCondition {
         this.timeLimit = timeLimit;
         this.targetProgress = target;
     }
+    public TimeLimitCondition(){}
 
     @Override
     public void updateProgress(GameEventPayload payload) {

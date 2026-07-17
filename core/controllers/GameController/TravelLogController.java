@@ -18,14 +18,15 @@ public class TravelLogController {
         MINIGAME;
     }
 
-    private final User activeUser;
+    private User activeUser;
     private ValidPageNames currentPage = ValidPageNames.DAILY;
 
     public TravelLogController() {
-        activeUser = App.getActiveUser();
+
     }
 
     public Result showTheCatalog() {
+        activeUser = App.getActiveUser();
         StringBuilder catalog = new StringBuilder();
         QuestCategory[] categories = QuestCategory.values();
 
@@ -49,6 +50,7 @@ public class TravelLogController {
     }
 
     public Result changePage(String pageName) {
+        activeUser = App.getActiveUser();
         pageName = pageName.toUpperCase();
         if (ValidPageNames.valueOf(pageName) == null) {
             return new Result(false, "Invalid page name\nValid page names:\n" +
@@ -70,6 +72,7 @@ public class TravelLogController {
     } // temporary
 
     private Result showCategoryQuests() {
+        activeUser = App.getActiveUser();
         QuestManager questManager = activeUser.getQuestManager();
         List<Quest> quests = new ArrayList<>();
         QuestCategory category = findQuestCategory();
@@ -88,14 +91,25 @@ public class TravelLogController {
 
         for (int i = 0; i < quests.size(); i++) {
             Quest quest = quests.get(i);
+
             String rewardText = (quest.getReward() != null) ? quest.getReward().toString() : "No Reward";
 
-            pageDisplay.append(i + 1).append(". ")
-                    .append(quest.getTitle())
-                    .append(" | Reward: ").append(rewardText);
-            pageDisplay.append("\n");
+            String progressText = "0/0";
+            if (quest.getCondition() != null) {
+                int current = quest.getCondition().getCurrentProgress();
+                int target = quest.getCondition().getTargetProgress();
+                progressText = current + "/" + target;
+            }
+
+            pageDisplay.append(i + 1).append(". ").append(quest.getTitle()).append("\n")
+                    .append("   Description: ").append(quest.getDescription()).append("\n")
+                    .append("   Progress:    [").append(progressText).append("]\n")
+                    .append("   Reward:      ").append(rewardText).append("\n\n");
         }
-        pageDisplay.deleteCharAt(pageDisplay.length() - 1);
+
+        if (pageDisplay.length() > 0) {
+            pageDisplay.setLength(pageDisplay.length() - 2);
+        }
 
         return new Result(true, pageDisplay.toString());
     }

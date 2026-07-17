@@ -7,6 +7,7 @@ import models.game.events.GameEvent;
 import models.game.events.GameEventListener;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
+import models.quest.conditions.QuestCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,10 @@ public class QuestManager implements GameEventListener {
     public void resetDailyQuests() {
         for (Quest quest : activeQuests) {
             if(!quest.isCompleted()&&quest.getCategory() == QuestCategory.DAILY){
-                quest.getCondition().resetCurrentProgress();
+                if(quest.getCondition() instanceof QuestCondition condition){
+                    condition.resetCurrentProgress();
+
+                }
             }
         }
     }
@@ -54,7 +58,10 @@ public class QuestManager implements GameEventListener {
     public void resetOneMissionQuests(){
         for(Quest quest : activeQuests){
             if(!quest.isCompleted()&&quest.isOnMission()){
-                quest.getCondition().resetCurrentProgress();
+                if(quest.getCondition() instanceof QuestCondition condition){
+                    condition.resetCurrentProgress();
+
+                }
             }
         }
     }

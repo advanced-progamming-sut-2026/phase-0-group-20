@@ -14,36 +14,43 @@ import java.util.UUID;
 public class Quest {
     private String id;
     private String title;
+    private String description;
     private QuestCategory category;
     private QuestPriority priority;
-    private QuestCondition condition;
+    private IQuestCondition condition;
     private Reward reward;
     private boolean isCompleted;
     private boolean onMission;
-    public Quest(String title, QuestCategory category, QuestPriority priority, boolean onMission) {
+    public Quest(String title, QuestCategory category, QuestPriority priority, boolean onMission,String conditionStr) {
         this.id = UUID.randomUUID().toString();
         this.title = title;
         this.category = category;
         this.priority = priority;
         this.isCompleted = false;
         this.onMission = onMission;
+        this.description =conditionStr;
+
     }
 
     @JsonCreator
     public Quest(@JsonProperty("id") String id,
                  @JsonProperty("title") String title,
+                 @JsonProperty("description") String description,
                  @JsonProperty("category") QuestCategory category,
                  @JsonProperty("priority") QuestPriority priority,
                  @JsonProperty("condition") QuestCondition condition,
                  @JsonProperty("reward") Reward reward,
-                 @JsonProperty("completed") boolean isCompleted) {
+                 @JsonProperty("completed") boolean isCompleted,
+                 @JsonProperty ("onMission") boolean onMission) {
         this.id = id;
         this.title = title;
+        this.description = description;
         this.category = category;
         this.priority = priority;
         this.condition = condition;
         this.reward = reward;
         this.isCompleted = isCompleted;
+        this.onMission = onMission;
     }
 
     public void onEvent(GameEventPayload payload) {
@@ -69,6 +76,9 @@ public class Quest {
         }
     }
 
+    public String getDescription() {
+        return description;
+    }
     public String getId() {
         return id;
     }
@@ -85,11 +95,11 @@ public class Quest {
         return priority;
     }
 
-    public QuestCondition getCondition() {
+    public IQuestCondition getCondition() {
         return condition;
     }
 
-    public void setCondition(QuestCondition condition) {
+    public void setCondition(IQuestCondition condition) {
         this.condition = condition;
     }
 
