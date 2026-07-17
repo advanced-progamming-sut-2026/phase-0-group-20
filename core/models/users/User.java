@@ -1,11 +1,10 @@
 package models.users;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.*;
 import models.entities.plants.Plant;
+import models.entities.plants.PlantSaveData;
 import models.entities.zombies.Zombie;
+import models.entities.zombies.ZombieSaveData;
 import models.enums.Gender;
 import models.enums.SecurityQuestion;
 import models.greenhouse.GreenHouse;
@@ -226,11 +225,12 @@ public class User {
         this.greenHouse = greenHouse;
     }
 
+    @JsonIgnore
     public ArrayList<Zombie> getUnlockedZombies() {
         return unlockedZombies;
     }
 
-    @JsonSetter
+    @JsonIgnore
     public void setUnlockedZombies(ArrayList<Zombie> zombies) {
         if (zombies != null) {
             this.unlockedZombies.clear();
@@ -238,15 +238,65 @@ public class User {
         }
     }
 
+    @JsonIgnore
     public ArrayList<Plant> getUnlockedPlants() {
         return unlockedPlants;
     }
 
-    @JsonSetter
+    @JsonIgnore
     public void setUnlockedPlants(ArrayList<Plant> plants) {
         if (plants != null) {
             this.unlockedPlants.clear();
             this.unlockedPlants.addAll(plants);
+        }
+    }
+
+    @JsonProperty("unlockedZombiesData")
+    public ArrayList<ZombieSaveData> getUnlockedZombiesData() {
+        ArrayList<ZombieSaveData> data = new ArrayList<>();
+        for (Zombie zombie : unlockedZombies) {
+            data.add(new ZombieSaveData(zombie.getType()));
+        }
+        return data;
+    }
+
+    @JsonProperty("unlockedZombiesData")
+    public void setUnlockedZombiesData(ArrayList<ZombieSaveData> dataList) {
+        this.unlockedZombies.clear();
+        if (dataList != null) {
+            for (ZombieSaveData data : dataList) {
+                Zombie rebuiltZombie = models.entities.zombies.ZombieFactory.create(data.getType(),-1);
+                if (rebuiltZombie != null) {
+                    this.unlockedZombies.add(rebuiltZombie);
+                }
+            }
+        }
+    }
+
+    @JsonProperty("unlockedPlantsData")
+    public ArrayList<PlantSaveData> getUnlockedPlantsData() {
+        ArrayList<PlantSaveData> data = new ArrayList<>();
+        for (Plant plant : unlockedPlants) {
+            data.add(new PlantSaveData(plant.getId(), plant.getLevel(), plant.isBoosted()));
+        }
+        return data;
+    }
+
+    @JsonProperty("unlockedPlantsData")
+    public void setUnlockedPlantsData(ArrayList<PlantSaveData> dataList) {
+        this.unlockedPlants.clear();
+        if (dataList != null) {
+            for (PlantSaveData data : dataList) {
+                Plant rebuiltPlant = models.entities.plants.PlantFactory.create(data.getId());
+                if (rebuiltPlant != null) {
+                    rebuiltPlant.setBoosted(data.isBoosted());
+
+                    while (rebuiltPlant.getLevel() < data.getLevel()) {
+                        rebuiltPlant.upgrade();
+                    }
+                    this.unlockedPlants.add(rebuiltPlant);
+                }
+            }
         }
     }
 
