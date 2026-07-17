@@ -9,7 +9,7 @@ public class MaxPlantLossCondition extends QuestCondition {
     public MaxPlantLossCondition(int amount) {
         targetProgress = amount;
     }
-
+    public MaxPlantLossCondition() {}
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();

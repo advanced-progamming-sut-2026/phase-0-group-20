@@ -11,6 +11,7 @@ public class PlantCategoryUseCondition extends QuestCondition {
         this.plantCategory = PlantCategory.findByName(category);
         targetProgress = target;
     }
+    public PlantCategoryUseCondition(){}
 
     @Override
     public void updateProgress(GameEventPayload payload) {

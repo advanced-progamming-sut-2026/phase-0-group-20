@@ -1,5 +1,6 @@
 package controllers.GameController;
 
+import models.InGameEntityGenerator;
 import models.Result;
 import models.entities.PlantFood;
 import models.entities.Sun;
@@ -152,9 +153,11 @@ public class GameFlowController {
         if (!desiredTile.isPlantable(plant)) {
             return new Result(false, "You can not plant this plant here");
         }
-        Plant newPlant = PlantFactory.create(plant.getId());
+
+        Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
         desiredTile.addPlant(newPlant);
         GameSession.getInstance().setPlantCooldown(newPlant);
+        GameSession.getInstance().getArena().addPlant(newPlant);
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
                 .plant(newPlant)
                 .arena(arena)

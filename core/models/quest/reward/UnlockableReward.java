@@ -1,5 +1,8 @@
 package models.quest.reward;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
 import models.entities.plants.Plant;
 import models.users.User;
@@ -9,12 +12,15 @@ import java.util.List;
 import java.util.Random;
 
 public class UnlockableReward implements Reward {
+    @JsonProperty("plantToUnlock")
     private Plant plantToUnlock;
 
-    public UnlockableReward(Plant plantToUnlock) {
+    @JsonCreator
+    public UnlockableReward(@JsonProperty("plantToUnlock") Plant plantToUnlock) {
         this.plantToUnlock = plantToUnlock;
     }
 
+    @JsonIgnore
     @Override
     public RewardType getRewardType() {
         return RewardType.UNLOCK_PLANT;

@@ -8,6 +8,7 @@ import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
 import models.enums.PhysicalConstants;
+import models.enums.plants.PlantCategory;
 import models.fields.Brain;
 import models.fields.LawnMower;
 import models.fields.tiles.Tile;
@@ -70,6 +71,14 @@ public class GameSession {
     public void instantiateCooldowns(List<Plant> chosenPlants) {
         for (Plant plant : chosenPlants) {
             plantsCooldown.put(plant, 0);
+        }
+    }
+
+    public void resetCooldownsForCategory(PlantCategory category) {
+        if (plantsCooldown != null) {
+            plantsCooldown.replaceAll((plant, cooldown) ->
+                    (plant.getCategory() == category) ? 0 : cooldown
+            );
         }
     }
 
@@ -211,6 +220,10 @@ public class GameSession {
 
             Tile targetTile = arena.getTile(row, targetCol);
 
+//            if (z.isHypnotized()) {
+//                Zombie z =
+//            }
+
             if (targetTile != null) {
                 List<Plant> plantToEat = targetTile.getPlants();
                 Plant eatingPlant = null;
@@ -223,7 +236,7 @@ public class GameSession {
                     if (!z.isAttacking()) {
                         z.setAttacking(true);
                         z.setTile(targetTile);
-                        eatingPlant.takeDamage(z.getEatDPS() / 10);
+                        eatingPlant.takeDamage(z.getEatDPS() / TimeManager.TICKS_PER_SECOND);
                     }
                 } else if (z.isAttacking()) {
                     z.setAttacking(false);

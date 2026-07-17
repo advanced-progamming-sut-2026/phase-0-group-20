@@ -71,6 +71,15 @@ public class App {
         return null;
     }
 
+    public static Zombie findZombieByName(String name) {
+        for (Zombie z : allZombies) {
+            if (z.getName().equals(name)) {
+                return z;
+            }
+        }
+        return null;
+    }
+
     public static void setAllZombies(ArrayList<Zombie> allZombies) {
         App.allZombies = allZombies;
     }

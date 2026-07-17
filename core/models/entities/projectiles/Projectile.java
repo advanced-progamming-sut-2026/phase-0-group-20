@@ -153,23 +153,27 @@ public class Projectile implements Ticker {
     public void onHit(Zombie z) {
         if (isDestroyed || z == null || z.isDead()) return;
 
+        if (this.effect != null) {
+            this.effect.applyEffect(z, this);
+        }
+
+        int multiplier = (this.effect != null) ? this.effect.getDamageMultiplier() : 1;
+        int finalDamage = this.damage * multiplier;
+
         if (onHitBowlingMinigame(z)) return;
 
-        int finalDamage = damage * effect.getDamageMultiplier();
 
         if (effect.ignoresArmor()) {
-            boolean killed =z.takeDirectDamage(finalDamage);
+            boolean killed = z.takeDirectDamage(finalDamage);
             if(killed){
                 this.getPlant().onZombieDeath(z);
             }
         } else {
             boolean killed = z.takeDamage(finalDamage, this);
-            if(killed){
+            if (killed) {
                 this.getPlant().onZombieDeath(z);
             }
         }
-
-        effect.applyEffect(z, this);
 
         if (piercing) {
             pierceCount--;
@@ -184,7 +188,7 @@ public class Projectile implements Ticker {
 
     public boolean onHitBowlingMinigame(Zombie zombie) {
 
-        Random  rand = new Random();
+        Random rand = new Random();
 
         if (type == ProjectileType.WALLNUT_BOWL) {
             zombie.takeDamage(damage);

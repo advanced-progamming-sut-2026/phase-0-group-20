@@ -1,22 +1,34 @@
 package models.greenhouse;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
 import models.entities.plants.Plant;
+import models.entities.plants.PlantFactory;
+import models.entities.plants.PlantSaveData;
 import models.timeManager.Ticker;
 
 import java.util.List;
 import java.util.Random;
 
 public class Pot implements Ticker {
-    private PotCondition potCondition;
+
+    @JsonProperty("potCondition")
+    private PotCondition potCondition = PotCondition.EMPTY;
+
+    @JsonIgnore
     private Plant plantedPlant = null;
+
+    @JsonProperty("remainedTimeToCollect")
     private int remainedTimeToCollect;
+
+    @JsonProperty("isItMari")
     private boolean isItMari = false;
+
     private static final int TIME_TO_HATCH_MARIGOLD = 72000;
     private static final int TIME_TO_HATCH_PLANT = 288000;
 
     public Pot() {
-        potCondition = PotCondition.EMPTY;
     }
 
     @Override
@@ -52,7 +64,6 @@ public class Pot implements Ticker {
 
     }
 
-
     public PotCondition getPotCondition() {
         return potCondition;
     }
@@ -61,12 +72,38 @@ public class Pot implements Ticker {
         this.potCondition = potCondition;
     }
 
+    @JsonIgnore
     public Plant getPlantedPlant() {
         return plantedPlant;
     }
 
-    public void setPlantedPlant() {
+    @JsonIgnore
+    public void setPlantedPlant(Plant plantedPlant) {
+        this.plantedPlant = plantedPlant;
+    }
 
+    @JsonProperty("plantedPlantData")
+    public PlantSaveData getPlantedPlantData() {
+        if (plantedPlant == null) {
+            return null;
+        }
+        return new PlantSaveData(plantedPlant.getId(), plantedPlant.getLevel(), plantedPlant.isBoosted());
+    }
+
+    @JsonProperty("plantedPlantData")
+    public void setPlantedPlantData(PlantSaveData data) {
+        if (data == null) {
+            this.plantedPlant = null;
+        } else {
+            this.plantedPlant = models.entities.plants.PlantFactory.create(data.getId());
+            if (this.plantedPlant != null) {
+                this.plantedPlant.setBoosted(data.isBoosted());
+
+                while (this.plantedPlant.getLevel() < data.getLevel()) {
+                    this.plantedPlant.upgrade();
+                }
+            }
+        }
     }
 
     public int getRemainedTimeToCollect() {
@@ -77,10 +114,12 @@ public class Pot implements Ticker {
         this.remainedTimeToCollect = remainedTimeToCollect;
     }
 
+    @JsonIgnore
     public boolean isItMari() {
         return isItMari;
     }
 
+    @JsonIgnore
     public void setItMari(boolean itMari) {
         isItMari = itMari;
     }
@@ -88,7 +127,7 @@ public class Pot implements Ticker {
     private boolean getTheType() {
         Random rand = new Random();
         int chance = rand.nextInt(100);
-        if (chance < 50) {
+        if (chance < 50 || App.getActiveUser().getUnlockedPlants().isEmpty()) {
             return true;
         } else {
             return false;
@@ -99,8 +138,6 @@ public class Pot implements Ticker {
         List<Plant> plants = App.getActiveUser().getUnlockedPlants();
         Random rand = new Random();
         int index = rand.nextInt(plants.size());
-        return plants.get(index);
+        return PlantFactory.create(plants.get(index).getId());
     }
-
-
 }

@@ -64,7 +64,8 @@ public enum Menu {
             case SIGNUP_MENU -> EnumSet.of(LOGIN_MENU);
             case LOGIN_MENU -> EnumSet.of(SIGNUP_MENU);
             case SETTINGS_MENU, NEWS_MENU, SHOP_MENU, LEADERBOARD_MENU, COLLECTION_MENU -> null;
-            case MAIN_MENU -> EnumSet.of(GAME_MENU, PROFILE_MENU, SETTINGS_MENU);
+
+            case MAIN_MENU -> EnumSet.of(GAME_MENU, PROFILE_MENU, SETTINGS_MENU,NEWS_MENU);
 
             case PLANTSELLECTION_MENU -> EnumSet.of(GAME_MENU);
             case PROFILE_MENU -> EnumSet.of(PLANTSELLECTION_MENU);
@@ -81,8 +82,8 @@ public enum Menu {
         return switch (this) {
             case SIGNUP_MENU -> null;
             case LOGIN_MENU -> SIGNUP_MENU;
-            case SETTINGS_MENU, GAME_MENU, MAIN_MENU, PROFILE_MENU -> MAIN_MENU;
-            case COLLECTION_MENU, NEWS_MENU, LEADERBOARD_MENU, GREENHOUSE_MENU, PLANTSELLECTION_MENU, SHOP_MENU,
+            case SETTINGS_MENU, GAME_MENU, MAIN_MENU, PROFILE_MENU, NEWS_MENU -> MAIN_MENU;
+            case COLLECTION_MENU, LEADERBOARD_MENU, GREENHOUSE_MENU, PLANTSELLECTION_MENU, SHOP_MENU,
                  TRAVELLOG_MENU -> GAME_MENU;
             case GAME_FLOW_MENU -> { //maybe use stack in phase2
                 GameSession session = GameSession.getInstance();

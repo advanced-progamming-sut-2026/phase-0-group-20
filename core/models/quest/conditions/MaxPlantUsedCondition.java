@@ -13,7 +13,7 @@ public class MaxPlantUsedCondition extends QuestCondition {
         this.plantCategory = plantCategory;
         this.targetProgress = amount;
     }
-
+    public MaxPlantUsedCondition(){}
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();

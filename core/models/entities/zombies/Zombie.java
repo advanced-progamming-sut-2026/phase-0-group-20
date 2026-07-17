@@ -13,6 +13,7 @@ import models.entities.zombies.behavior.effect.ZombieEffect;
 import models.entities.zombies.behavior.move.MoveBehavior;
 import models.enums.plants.ProjectileType;
 import models.fields.tiles.Tile;
+import models.game.GameSession;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
@@ -49,6 +50,8 @@ public class Zombie implements Ticker {
     private SpawnEffect spawnEffect = SpawnEffect.NORMAL;
     private boolean isHypnotized = false;
     private GameEventMessenger messenger = GameEventMessenger.getInstance();
+    private boolean hypnotized = false;
+    private Zombie targetZombie = null;
 
     private Position position;
 
@@ -344,7 +347,15 @@ public class Zombie implements Ticker {
     }
 
     public void moveForward() {
-        position.moveX(-this.currentSpeed);
+        if (this.isHypnotized()) {
+            this.position.moveX(this.currentSpeed);
+
+            if (this.getCol() >= GameSession.getInstance().getArena().getCols()) {
+                this.setDead(true);
+            }
+        } else {
+            this.position.moveX(-this.currentSpeed);
+        }
     }
 
     public Tile getTile() {
@@ -433,5 +444,17 @@ public class Zombie implements Ticker {
 
     public Position getPosition() {
         return position;
+    }
+
+    public void setHypnotized(boolean hypnotized) {
+        this.hypnotized = hypnotized;
+    }
+
+    public Zombie getTargetZombie() {
+        return targetZombie;
+    }
+
+    public void setTargetZombie(Zombie targetZombie) {
+        this.targetZombie = targetZombie;
     }
 }
