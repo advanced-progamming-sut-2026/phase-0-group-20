@@ -1,10 +1,16 @@
 package models.greenhouse;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GreenHouse {
-    private Pot[][] pots = new Pot[4][5];
+    private static int ROW = 4;
+    private static int COL = 5;
+
+    @JsonProperty("pots")
+    private Pot[][] pots = new Pot[ROW][COL];
 
     public GreenHouse() {
         for (int i = 0; i < pots.length; i++) {
@@ -64,5 +70,15 @@ public class GreenHouse {
 
     public Pot getSpecificPot(int x, int y) {
         return pots[x][y];
+    }
+
+    @JsonIgnore
+    public static int getROW() {
+        return ROW;
+    }
+
+    @JsonIgnore
+    public static int getCOL() {
+        return COL;
     }
 }

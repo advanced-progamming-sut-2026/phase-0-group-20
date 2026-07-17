@@ -1,22 +1,33 @@
 package models.greenhouse;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
 import models.entities.plants.Plant;
+import models.entities.plants.PlantFactory;
 import models.timeManager.Ticker;
 
 import java.util.List;
 import java.util.Random;
 
 public class Pot implements Ticker {
-    private PotCondition potCondition;
+
+    @JsonProperty("potCondition")
+    private PotCondition potCondition = PotCondition.EMPTY;
+
+    @JsonProperty("plantedPlant")
     private Plant plantedPlant = null;
+
+    @JsonProperty("remainedTimeToCollect")
     private int remainedTimeToCollect;
+
+    @JsonProperty("isItMari")
     private boolean isItMari = false;
+
     private static final int TIME_TO_HATCH_MARIGOLD = 72000;
     private static final int TIME_TO_HATCH_PLANT = 288000;
 
     public Pot() {
-        potCondition = PotCondition.EMPTY;
     }
 
     @Override
@@ -52,7 +63,6 @@ public class Pot implements Ticker {
 
     }
 
-
     public PotCondition getPotCondition() {
         return potCondition;
     }
@@ -65,8 +75,8 @@ public class Pot implements Ticker {
         return plantedPlant;
     }
 
-    public void setPlantedPlant() {
-
+    public void setPlantedPlant(Plant plantedPlant) {
+        this.plantedPlant = plantedPlant;
     }
 
     public int getRemainedTimeToCollect() {
@@ -77,10 +87,12 @@ public class Pot implements Ticker {
         this.remainedTimeToCollect = remainedTimeToCollect;
     }
 
+    @JsonIgnore
     public boolean isItMari() {
         return isItMari;
     }
 
+    @JsonIgnore
     public void setItMari(boolean itMari) {
         isItMari = itMari;
     }
@@ -88,7 +100,7 @@ public class Pot implements Ticker {
     private boolean getTheType() {
         Random rand = new Random();
         int chance = rand.nextInt(100);
-        if (chance < 50) {
+        if (chance < 50 || App.getActiveUser().getUnlockedPlants().isEmpty()) {
             return true;
         } else {
             return false;
@@ -99,8 +111,6 @@ public class Pot implements Ticker {
         List<Plant> plants = App.getActiveUser().getUnlockedPlants();
         Random rand = new Random();
         int index = rand.nextInt(plants.size());
-        return plants.get(index);
+        return PlantFactory.create(plants.get(index).getId());
     }
-
-
 }
