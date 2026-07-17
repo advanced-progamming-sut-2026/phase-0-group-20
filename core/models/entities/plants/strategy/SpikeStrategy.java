@@ -18,6 +18,7 @@ public class SpikeStrategy implements IPlantStrategy {
     private int lastDamageTick = 0;
     boolean hasArmor = false;
     int damage;
+    private int reflectDamageBonus = 0;
 
 
     @Override
@@ -38,6 +39,8 @@ public class SpikeStrategy implements IPlantStrategy {
                     } catch (NumberFormatException e) {
                     }
 
+                    damage += reflectDamageBonus;
+
                     hasArmor = context.getCurrentHp() > context.getBaseHp();
 
                     if (hasArmor) //more hp = having armor
@@ -52,8 +55,7 @@ public class SpikeStrategy implements IPlantStrategy {
             }
 
             if (dealtDamage) {
-                int d = hasArmor ? damage * 2 : 20;
-                notify("🦔 " + context.getName() + " reflected " + d + " damage to attacking zombies!");
+                notify("🦔 " + context.getName() + " reflected " + damage + " damage to attacking zombies!");
                 lastDamageTick = currentTick;
             }
         }
@@ -61,6 +63,10 @@ public class SpikeStrategy implements IPlantStrategy {
 
     public void setHasArmor(boolean hasArmor) {
         this.hasArmor = hasArmor;
+    }
+
+    public void increaseReflectDamage(int amount) {
+        this.reflectDamageBonus += amount;
     }
 
 }

@@ -3,7 +3,11 @@ package models.entities.plants.strategy;
 import models.entities.plants.Plant;
 import models.entities.projectiles.FireEffect;
 import models.entities.projectiles.Projectile;
+import models.entities.zombies.Zombie;
 import models.enums.plants.ProjectileType;
+import models.game.GameSession;
+
+import java.util.List;
 
 /**
  * Torchwood Strategy:
@@ -12,14 +16,32 @@ import models.enums.plants.ProjectileType;
  * and it gains the ability to melt ice / count as a fire projectile.
  */
 public class TorchwoodStrategy implements IPlantStrategy {
-
     private boolean blueFlame = false; // set to true when boosted by Plant Food
+
+    private boolean explodesOnDeath = false;
+    private boolean hasExploded = false;
 
     @Override
     public void execute(Plant context, int currentTick) {
-        // Passive: nothing happens on tick by itself.
-        // Hook point: ProjectileManager should call igniteIfPassing(projectile)
-        // whenever a pea-type projectile crosses this plant's tile.
+        if (explodesOnDeath && !hasExploded && context.getCurrentHp() <= 0) {
+            hasExploded = true;
+
+            int plantRow = context.getPlacedTile().getRow();
+            int plantCol = context.getPlacedTile().getCol();
+            int explosionDamage = 1800;
+
+            notify("💥 Torchwood was destroyed and triggered a massive FIRE EXPLOSION!");
+
+            List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5f);
+            for (Zombie z : targets) {
+                if (!z.isDead()) {
+                    boolean killed = z.takeDirectDamage(explosionDamage);
+                    if (killed) {
+                        context.onZombieDeath(z);
+                    }
+                }
+            }
+        }
     }
 
     public void igniteProjectile(Projectile projectile) {
@@ -41,5 +63,9 @@ public class TorchwoodStrategy implements IPlantStrategy {
     public void activateBlueFlame() {
         this.blueFlame = true;
         notify("🔵 Torchwood activated Blue Flame mode!");
+    }
+
+    public void setExplodesOnDeath(boolean explodesOnDeath) {
+        this.explodesOnDeath = explodesOnDeath;
     }
 }

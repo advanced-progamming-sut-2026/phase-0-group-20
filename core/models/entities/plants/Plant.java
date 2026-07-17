@@ -439,12 +439,28 @@ public class Plant implements IPlant, Ticker {
                 this.setSize(this.getSize() + (int) value);
             }
 
-            case "REFLECT_DAMAGE_BUFF" -> { // we dont have this strategy
+
+
+            case "REFLECT_DAMAGE_BUFF" -> {
+                for (IPlantStrategy s : this.strategies) {
+                    if (s instanceof SpikeStrategy spike) {
+                        spike.increaseReflectDamage((int) value);
+                    }
+                }
             }
-            case "EXPLODE_DAMAGE_BUFF" -> { // we dont have this strategy
+            case "EXPLODE_DAMAGE_BUFF" -> {
+                for (IPlantStrategy s : this.strategies) {
+                    if (s instanceof DeathExplosionStrategy deathExplode) {
+                        deathExplode.increaseExplosionDamage((int) value);
+                    }
+                }
             }
-            case "DEATH_EXPLOSION_AOE" -> { // new strategy
-//                this.addStrategy(new DeathExplosionStrategy((int) value));
+            case "DEATH_EXPLOSION_AOE" -> {
+                for (IPlantStrategy s : this.strategies) {
+                    if (s instanceof TorchwoodStrategy torchwood) {
+                        torchwood.setExplodesOnDeath(value > 0);
+                    }
+                }
             }
             case "EXPLODE_ON_FINISH" -> {
                 for (IPlantStrategy s : this.strategies) {
@@ -456,19 +472,42 @@ public class Plant implements IPlant, Ticker {
                 }
             }
 
-            case "ZOMBIE_HEALTH_MULTIPLIER" -> { // we dont have this strategy
+            case "ZOMBIE_HEALTH_MULTIPLIER" -> {
+                for (IPlantStrategy s : this.strategies) {
+                    if (s instanceof HypnotizeStrategy hypno) {
+                        hypno.setHealthMultiplier(value);
+                    }
+                }
             }
-            case "ZOMBIE_DAMAGE_MULTIPLIER" -> { // we dont have this strategy
+            case "ZOMBIE_DAMAGE_MULTIPLIER" -> {
+                for (IPlantStrategy s : this.strategies) {
+                    if (s instanceof HypnotizeStrategy hypno) {
+                        hypno.setDamageMultiplier(value);
+                    }
+                }
             }
 
-            case "AUTO_PLANT_FOOD_CHANCE" -> { // new strategy
-//                this.addStrategy(new AutoPlantFoodChanceStrategy(value));
+
+            case "AUTO_PLANT_FOOD_CHANCE" -> {
+                for (IPlantStrategy s : this.strategies) {
+                    if (s instanceof ShootingStrategy shoot) {
+                        shoot.setAutoPlantFoodChance(value);
+                    }
+                }
             }
-            case "AUTO_PLANTFOOD_ON_ENTER" -> { // new strategy
-//                this.addStrategy(new AutoPlantFoodOnEnterStrategy());
+            case "AUTO_PLANTFOOD_ON_ENTER" -> {
+                for (IPlantStrategy s : this.strategies) {
+                    if (s instanceof ImitateStrategy imitate) {
+                        imitate.setAutoPlantFood(value > 0);
+                    }
+                }
             }
             case "RESET_FAMILY_COOLDOWNS" -> { // new strategy
-//                this.addStrategy(new ResetFamilyCooldownStrategy(this.data.category()));
+                for (IPlantStrategy s : this.strategies) {
+                    if (s instanceof MintBuffStrategy mint) {
+                        mint.setResetCooldowns(value > 0);
+                    }
+                }
             }
 
             default -> System.out.println("Unhandled special mechanic: " + tag);
@@ -524,6 +563,15 @@ public class Plant implements IPlant, Ticker {
 
     public void setPosition(Position position) {
         this.position = position;
+    }
+
+
+    public int getMaxHp() {
+        return maxHp;
+    }
+
+    public int getBonusDamage() {
+        return bonusDamage;
     }
 
 }

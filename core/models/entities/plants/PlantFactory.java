@@ -8,6 +8,7 @@ import models.entities.plants.strategy.tag_strategy.ChargeStrategy;
 import models.entities.plants.strategy.tag_strategy.MoveZombiesStrategy;
 import models.entities.plants.strategy.tag_strategy.SleepStrategy;
 import models.entities.plants.strategy.tag_strategy.TrapStrategy;
+import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 
 import java.util.ArrayList;
@@ -31,13 +32,8 @@ public class PlantFactory {
         Plant plant = new Plant(data);
         String nameKey = data.name().toLowerCase();
 
-        if (data.name().equalsIgnoreCase("Imitater")) {
-            System.out.println("Skipping Imitater...");
-            return null;
-        }
-
         switch (data.abilityType()) {
-            case "PRODUCE_SUN" -> plant.addStrategy(new SunProductionStrategy());
+            case "PRODUCE_SUN", "INSTANT_SUN_BURST" -> plant.addStrategy(new SunProductionStrategy());
 
             case "SHOOT_PROJECTILE" -> {
                 switch (data.category()) {
@@ -83,6 +79,7 @@ public class PlantFactory {
 
         switch (nameKey) {
             case "chomper" -> plant.addStrategy(new DigestionStrategy());
+            case "explode-o-nut" -> plant.addStrategy(new DeathExplosionStrategy());
             case "magnet-shroom" -> plant.addStrategy(new MagnetStrategy());
             case "endurian" -> plant.addStrategy(new SpikeStrategy());
             case "tall-nut" -> plant.addStrategy(new AntiJumpStrategy());
@@ -92,7 +89,9 @@ public class PlantFactory {
             case "hot potato" -> plant.addStrategy(new MeltIceStrategy());
             case "torchwood" -> plant.addStrategy(new TorchwoodStrategy());
             case "lily pad" -> plant.addStrategy(new LilyPadStrategy());
-            case "puff-shroom", "sea-shroom" -> plant.addStrategy(new LifespanStrategy(60));
+            case "hypno-shroom" -> plant.addStrategy(new HypnotizeStrategy());
+            case "imitater" -> plant.addStrategy(new ImitateStrategy());
+            case "puff-shroom", "sea-shroom" -> plant.addStrategy(new LifespanStrategy((int) plant.getPlantFoodValue()));
         }
 
         wirePlantFoodStrategy(plant, data);
@@ -116,12 +115,28 @@ public class PlantFactory {
                 plant.addPlantFoodStrategy(new SunBurstFoodStrategy(foodValue));
                 if (nameKey.equals("sun-shroom")) plant.addPlantFoodStrategy(new GrowToMaxSizeStrategy());
             }
-            case "GRANT_PERMANENT_ARMOR" -> plant.addPlantFoodStrategy(new ArmorFoodStrategy(foodValue));
-            case "SPAWN_CLONES" -> plant.addPlantFoodStrategy(new CloneAndArmFoodStrategy(foodValue));
-            case "MAP_WIDE_FREEZE" -> plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy("freezes every zombie currently visible"));
-            case "PULL_UNDERWATER" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(foodValue, "dragged underwater"));
-            case "RANDOM_HYPNOTIZE" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(foodValue, "hypnotized"));
-            case "KNOCKBACK_BLAST" -> plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("a giant smoke cloud that pushes zombies back"));
+            case "GRANT_PERMANENT_ARMOR" -> {
+                if (!nameKey.equals("sweet potato")) plant.addPlantFoodStrategy(new ArmorFoodStrategy(foodValue));
+            }
+            case "SPAWN_CLONES" -> {
+                if (!nameKey.equals("lily pad")) plant.addPlantFoodStrategy(new CloneAndArmFoodStrategy(foodValue));
+            }
+            case "MAP_WIDE_FREEZE" -> {
+                if (!nameKey.equals("kernel-pult"))
+                    plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy("freezes every zombie currently visible"));
+            }
+            case "PULL_UNDERWATER" -> {
+                if (!nameKey.equals("chomper"))
+                    plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(foodValue, "dragged underwater"));
+            }
+            case "RANDOM_HYPNOTIZE" -> {
+                if (!nameKey.equals("hypno-shroom"))
+                    plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(foodValue, "hypnotized"));
+            }
+            case "KNOCKBACK_BLAST" -> {
+                if (!nameKey.equals("garlic") && !nameKey.equals("magnet-shroom"))
+                    plant.addPlantFoodStrategy(new BurstEffectFoodStrategy("a giant smoke cloud that pushes zombies back"));
+            }
             case "NONE" -> plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
 
             case "PROJECTILE_BURST" -> {
@@ -141,7 +156,8 @@ public class PlantFactory {
                     plant.addPlantFoodStrategy(new MultiDirectionRapidFireFoodStrategy(4));
                 } else if (nameKey.equals("starfruit")) {
                     plant.addPlantFoodStrategy(new MultiDirectionRapidFireFoodStrategy(5));
-                } else if (!data.category().equals("LOBBER") && !data.category().equals("HOMING")) {
+                } else if (data.category() != PlantCategory.LOBBER && data.category() != PlantCategory.HOMING
+                        && !nameKey.equals("torchwood")) {
                     plant.addPlantFoodStrategy(new RapidFireFoodStrategy());
                 }
 

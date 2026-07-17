@@ -8,6 +8,7 @@ import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
 import models.enums.PhysicalConstants;
+import models.enums.plants.PlantCategory;
 import models.fields.tiles.Tile;
 import models.game.adventure.Chapter;
 import models.game.events.GameEvent;
@@ -68,6 +69,14 @@ public class GameSession {
     public void instantiateCooldowns(List<Plant> chosenPlants) {
         for (Plant plant : chosenPlants) {
             plantsCooldown.put(plant, 0);
+        }
+    }
+
+    public void resetCooldownsForCategory(PlantCategory category) {
+        if (plantsCooldown != null) {
+            plantsCooldown.replaceAll((plant, cooldown) ->
+                    (plant.getCategory() == category) ? 0 : cooldown
+            );
         }
     }
 
