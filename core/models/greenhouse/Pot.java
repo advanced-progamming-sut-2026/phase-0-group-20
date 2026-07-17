@@ -19,23 +19,22 @@ public class Pot implements Ticker {
     @JsonIgnore
     private Plant plantedPlant = null;
 
-    @JsonProperty("remainedTimeToCollect")
-    private int remainedTimeToCollect;
+    @JsonProperty("readyTime")
+    private long readyTime = 0;;
 
     @JsonProperty("isItMari")
     private boolean isItMari = false;
 
-    private static final int TIME_TO_HATCH_MARIGOLD = 72000;
-    private static final int TIME_TO_HATCH_PLANT = 288000;
+    private static final long TIME_TO_HATCH_MARIGOLD = 7200000L;
+    private static final long TIME_TO_HATCH_PLANT = 28800000L;
 
     public Pot() {
     }
 
     @Override
     public void onTick(int currentTick) {
-        if (currentTick > 0) {
-            currentTick--;
-            if (currentTick == 0) {
+        if (potCondition == PotCondition.PLANTED) {
+            if (System.currentTimeMillis() >= readyTime) {
                 potCondition = PotCondition.COLLECTABLE;
             }
         }
@@ -43,13 +42,16 @@ public class Pot implements Ticker {
 
     public void plantPlant() {
         isItMari = getTheType();
+        long currentTime = System.currentTimeMillis();
+
         if (isItMari) {
-            remainedTimeToCollect = TIME_TO_HATCH_MARIGOLD;
+            readyTime = currentTime + TIME_TO_HATCH_MARIGOLD;
             potCondition = PotCondition.PLANTED;
         } else {
             Plant plant = getRandomUnlockedPlant();
             plantedPlant = plant;
-            remainedTimeToCollect = TIME_TO_HATCH_PLANT;
+
+            readyTime = currentTime + TIME_TO_HATCH_PLANT;
             potCondition = PotCondition.PLANTED;
         }
     }
@@ -106,12 +108,33 @@ public class Pot implements Ticker {
         }
     }
 
-    public int getRemainedTimeToCollect() {
-        return remainedTimeToCollect;
+    @JsonIgnore
+    public String getFormattedRemainingTime() {
+        if (potCondition != PotCondition.PLANTED) return "Ready";
+
+        long remainingMilli = readyTime - System.currentTimeMillis();
+
+        if (remainingMilli <= 0) return "Ready";
+
+        long totalSeconds = remainingMilli / 1000;
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            return String.format("%d:%02d:%02d", hours, minutes, seconds);
+        }
+        else {
+            return String.format("%d:%02d", minutes, seconds);
+        }
     }
 
-    public void setRemainedTimeToCollect(int remainedTimeToCollect) {
-        this.remainedTimeToCollect = remainedTimeToCollect;
+    public long getReadyTime() {
+        return readyTime;
+    }
+
+    public void setReadyTime(long readyTime) {
+        this.readyTime = readyTime;
     }
 
     @JsonIgnore
