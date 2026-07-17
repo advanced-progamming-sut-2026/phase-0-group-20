@@ -8,10 +8,13 @@ import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.Gender;
 import models.enums.SecurityQuestion;
+import models.game.minigame.MiniGameType;
 import models.greenhouse.GreenHouse;
 import models.quest.QuestManager;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -34,6 +37,9 @@ public class User {
     private Inventory inventory;
     private GreenHouse greenHouse;
     private QuestManager questManager;
+    private int highestUnlockedChapterIndex;
+    private int highestUnlockedLevelIndex;
+    private Map<MiniGameType, Integer> unlockedMinigames = new EnumMap<>(MiniGameType.class);
 
     public User(String username, String passwordHash,
                 String nickname, String email, Gender gender,
@@ -55,6 +61,10 @@ public class User {
         this.inventory = new Inventory();
         this.greenHouse = new GreenHouse();
         this.questManager = new QuestManager();
+        this.highestUnlockedChapterIndex = 0; //start with Egypt
+        this.highestUnlockedLevelIndex = 0;
+        for (MiniGameType type : MiniGameType.values())
+            this.unlockedMinigames.put(type, 0);
 
     }
 
@@ -74,7 +84,11 @@ public class User {
                 @JsonProperty("levelsCompleted") int levelsCompleted,
                 @JsonProperty("stayLoggedIn") boolean stayLoggedIn,
                 @JsonProperty("greenHouse") GreenHouse greenHouse,
-                @JsonProperty("questManager") QuestManager questManager) {
+                @JsonProperty("questManager") QuestManager questManager,
+                @JsonProperty("highestUnlockedChapterIndex") int highestUnlockedChapterIndex,
+                @JsonProperty("highestUnlockedLevelIndex") int highestUnlockedLevelIndex,
+                @JsonProperty("unlockedMinigames") Map<MiniGameType, Integer> unlockedMinigames) {
+
 
         this.id = id;
         this.username = username;
@@ -92,6 +106,12 @@ public class User {
         this.greenHouse = (greenHouse != null) ? greenHouse : new GreenHouse();
         this.questManager = (questManager != null) ? questManager : new QuestManager();
         this.inventory = (inventory != null) ? inventory : new Inventory();
+        this.highestUnlockedChapterIndex = highestUnlockedChapterIndex;
+        this.highestUnlockedLevelIndex = highestUnlockedLevelIndex;
+        this.unlockedMinigames = (unlockedMinigames != null) ? unlockedMinigames : new EnumMap<>(MiniGameType.class);
+        if (this.unlockedMinigames.isEmpty())
+            for (MiniGameType type : MiniGameType.values())
+                this.unlockedMinigames.put(type, 0);
     }
 
     public String getId() {
@@ -257,4 +277,42 @@ public class User {
     public void setQuestManager(QuestManager questManager) {
         this.questManager = questManager;
     }
+
+    public int getHighestUnlockedChapterIndex() {
+        return highestUnlockedChapterIndex;
+    }
+
+    public void setHighestUnlockedChapterIndex(int index) {
+        this.highestUnlockedChapterIndex = index;
+    }
+
+    public int getHighestUnlockedLevelIndex() {
+        return highestUnlockedLevelIndex;
+    }
+
+    public void setHighestUnlockedLevelIndex(int index) {
+        this.highestUnlockedLevelIndex = index;
+    }
+
+
+    public Map<MiniGameType, Integer> getUnlockedMinigames() {
+        return unlockedMinigames;
+    }
+
+    @JsonSetter
+    public void setUnlockedMinigames(Map<MiniGameType, Integer> unlockedMinigames) {
+        if (unlockedMinigames != null)
+            this.unlockedMinigames = unlockedMinigames;
+    }
+
+    public int getUnlockedLevel(MiniGameType type) {
+        return unlockedMinigames.getOrDefault(type, 1);
+    }
+
+    public void unlockNextLevel(MiniGameType type) {
+        int currentUnlocked = getUnlockedLevel(type);
+        if (currentUnlocked < 2)
+            unlockedMinigames.put(type, currentUnlocked + 1);
+    }
+
 }
