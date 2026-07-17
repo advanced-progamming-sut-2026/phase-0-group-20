@@ -142,9 +142,6 @@ public class Plant implements IPlant, Ticker {
 
     public void takeDamage(int amount) {
         this.currentHp -= amount;
-        if (this.currentHp <= 0) {
-            die();
-        }
     }
 
     public int getStackCount() {

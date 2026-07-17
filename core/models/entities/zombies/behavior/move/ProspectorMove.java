@@ -28,7 +28,8 @@ public class ProspectorMove implements MoveBehavior {
         }
 
         if (isBlownToBack) {
-            zombie.getPosition().moveX(zombie.getCurrentSpeed());
+            float directionMultiplier = zombie.isHypnotized() ? -1.0f : 1.0f;
+            zombie.getPosition().moveX(zombie.getCurrentSpeed() * directionMultiplier);
         } else {
             zombie.moveForward();
         }

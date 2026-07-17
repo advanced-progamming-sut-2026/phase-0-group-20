@@ -210,13 +210,18 @@ public class GameSession {
             }
         }
         // for plants&zombies
-        for (Zombie z : chosenZombies) {
+        for (Zombie z : activeZombies) {
             if (z.isDead()) continue;
 
             int row = z.getRow();
             int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - 0.2);//mostly for phase 2... If you want You can remove the front threshold
 
             Tile targetTile = arena.getTile(row, targetCol);
+
+//            if (z.isHypnotized()) {
+//                Zombie z =
+//            }
+
             List<Plant> plantToEat = targetTile.getPlants();
             Plant eatingPlant = null;
             if (!plantToEat.isEmpty()) {
@@ -228,7 +233,7 @@ public class GameSession {
                 if (!z.isAttacking()) {
                     z.setAttacking(true);
                     z.setTile(targetTile);
-                    eatingPlant.takeDamage(z.getEatDPS() / 10);
+                    eatingPlant.takeDamage(z.getEatDPS() / TimeManager.TICKS_PER_SECOND);
                 }
             } else if (z.isAttacking()) {
                 z.setAttacking(false);
