@@ -1,30 +1,73 @@
 package models.game.minigame;
 
+import models.App;
+import models.InGameEntityGenerator;
+import models.entities.plants.Plant;
+import models.entities.zombies.Zombie;
+import models.entities.zombies.ZombieType;
 import models.fields.Brain;
 import models.game.GameSession;
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.Level;
+import models.game.minigame.minigameCondition.IZombieLoseCondition;
+import models.game.minigame.minigameCondition.IZombieWinCondition;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class IZombieLevel extends Level {
 
     private final Random rand = new Random();
-    private static final int RED_LINE_COL = 5;
+    private int redLineCol = 6;
 
     public IZombieLevel(String name, int levelNumber) {
         super(name, SeasonType.DARK_AGES, 1, -1, levelNumber);
-        // this.addWinCondition(new IZombieWinCondition());
-        // this.addLoseCondition(new IZombieLoseCondition());
+        this.addWinCondition(new IZombieWinCondition());
+        this.addLoseCondition(new IZombieLoseCondition());
     }
 
     @Override
     public void onStart(GameSession session) {
+        System.out.println("iZombie Level " + levelNumber + " Started!");
+
+        session.getArena().removeLawnMowers();
+
+        for (int row = 0; row < session.getArena().getRows(); row++) {
+            Brain brain = new Brain(row);
+            session.getArena().setBrainInRow(row, brain);
+            spawnPrePlacedPlants(session, row);
+        }
 
     }
 
     private void spawnPrePlacedPlants(GameSession session, int row) {
-        //logic for placing plant
+        int cols = session.getArena().getCols();
+
+        Zombie sunZombie = InGameEntityGenerator.getZombieForGame(ZombieType.SUN_PRODUCER, row);
+        sunZombie.setCol(cols - 1);
+        session.getArena().addZombie(sunZombie);
+        session.getTimeManager().registerNewTicker(sunZombie);
+
+
+        int numPlants = rand.nextInt(6) + 3 + levelNumber; // min: 3 different types
+        List<Plant> availableTemplates = new ArrayList<>(App.getAllPlants());
+        Collections.shuffle(availableTemplates);
+        List<Plant> selectedTemplates = availableTemplates.subList(0, Math.min(numPlants, availableTemplates.size()));
+
+        redLineCol = rand.nextInt(4) + levelNumber;
+
+        for (int i = 0; i < redLineCol; i++) {
+            Plant template = selectedTemplates.get(rand.nextInt(selectedTemplates.size()));
+            Plant newPlant = models.entities.plants.PlantFactory.create(template.getId());
+
+            if (newPlant != null) {
+                session.getArena().addPlant(newPlant);
+                session.getArena().getTile(row, i).addPlant(newPlant);
+                session.getTimeManager().registerNewTicker(newPlant);
+            }
+        }
     }
 
     @Override
@@ -33,7 +76,11 @@ public class IZombieLevel extends Level {
     }
 
     public boolean isValidZombiePlacement(int col) {
-        return col >= RED_LINE_COL;
+        return col >= redLineCol;
+    }
+
+    public int getRedLineCol() {
+        return redLineCol;
     }
 
     @Override
