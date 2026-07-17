@@ -6,13 +6,13 @@ import models.game.events.GameEvent;
 import models.game.events.GameEventPayload;
 
 public class WinWithSpecificTagCondition extends QuestCondition {
-    private final PlantTag plantTag;
+    private PlantTag plantTag;
     boolean isHappened = false;
 
     public WinWithSpecificTagCondition(PlantTag plantTag) {
         this.plantTag = plantTag;
     }
-
+    public WinWithSpecificTagCondition(){}
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();

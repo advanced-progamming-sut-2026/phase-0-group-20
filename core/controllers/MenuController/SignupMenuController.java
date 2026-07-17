@@ -59,6 +59,7 @@ public class SignupMenuController {
         SecurityQuestion[] questions = SecurityQuestion.values();
         for (int i = 0; i < questions.length; i++)
             sb.append(i + 1).append(". ").append(questions[i].getQuestion()).append("\n");
+        sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
     }
 
@@ -104,7 +105,7 @@ public class SignupMenuController {
     }
 
     private void loadInitialQuestsForUser(User user) {
-        List<Quest> loadedQuests = QuestLoader.loadQuestsFromJson("resources/quests.json");
+        List<Quest> loadedQuests = QuestLoader.loadQuestsFromJson("core/resources/quests.json");
         for (Quest q : loadedQuests) {
             user.getQuestManager().addQuest(q);
         }

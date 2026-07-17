@@ -31,7 +31,7 @@ public class GreenHouseMenu implements AppMenu {
         } else if ((matcher = GreenHouseCommands.PLANT_POT.getMatcher(input)) != null) {
             String x = matcher.group("x");
             String y = matcher.group("y");
-            controller.plantPot(x, y, greenHouse);
+            System.out.println(controller.plantPot(x, y, greenHouse));
         } else if ((matcher = GreenHouseCommands.COLLECT_POT.getMatcher(input)) != null) {
             String x = matcher.group("x");
             String y = matcher.group("y");
