@@ -72,6 +72,23 @@ public class Arena {
         return null;
     }
 
+    public Zombie getCollidingEnemyZombie(Zombie attacker, float collisionRadius) {
+        for (Zombie z : activeZombies) {
+            if (z == attacker || z.isDead()) continue;
+
+            if (attacker.isHypnotized() != z.isHypnotized()) {
+
+                if (z.getRow() == attacker.getRow()) {
+                    float distance = Math.abs(attacker.getX() - z.getX());
+                    if (distance <= collisionRadius) {
+                        return z;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 
     public List<Zombie> zombieInRow(int row) {
         List<Zombie> zombies = new ArrayList<>();

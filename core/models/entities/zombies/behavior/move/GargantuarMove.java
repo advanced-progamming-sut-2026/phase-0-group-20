@@ -1,5 +1,6 @@
 package models.entities.zombies.behavior.move;
 
+import models.App;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieFactory;
 import models.entities.zombies.ZombieType;
@@ -32,9 +33,8 @@ public class GargantuarMove implements MoveBehavior {
         imp.setCol(IMP_LANDING_COLUMN);
 
         GameSession session = GameSession.getInstance();
-
-
-//        session.getArena().spawnZombie(imp); // TODO : SPAWN IMP
+        session.getTimeManager().registerNewTicker(imp);
+        session.getArena().addZombie(imp);
 
         notify(zombie.getName() + " threw its Imp onto column "
                 + IMP_LANDING_COLUMN + " of row " + zombie.getRow() + "!");
