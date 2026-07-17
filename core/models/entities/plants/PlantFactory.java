@@ -31,11 +31,6 @@ public class PlantFactory {
         Plant plant = new Plant(data);
         String nameKey = data.name().toLowerCase();
 
-        if (data.name().equalsIgnoreCase("Imitater")) {
-            System.out.println("Skipping Imitater...");
-            return null;
-        }
-
         switch (data.abilityType()) {
             case "PRODUCE_SUN" -> plant.addStrategy(new SunProductionStrategy());
 
@@ -83,6 +78,7 @@ public class PlantFactory {
 
         switch (nameKey) {
             case "chomper" -> plant.addStrategy(new DigestionStrategy());
+            case "explode-o-nut" -> plant.addStrategy(new DeathExplosionStrategy());
             case "magnet-shroom" -> plant.addStrategy(new MagnetStrategy());
             case "endurian" -> plant.addStrategy(new SpikeStrategy());
             case "tall-nut" -> plant.addStrategy(new AntiJumpStrategy());
@@ -92,6 +88,8 @@ public class PlantFactory {
             case "hot potato" -> plant.addStrategy(new MeltIceStrategy());
             case "torchwood" -> plant.addStrategy(new TorchwoodStrategy());
             case "lily pad" -> plant.addStrategy(new LilyPadStrategy());
+            case "hypno-shroom" -> plant.addStrategy(new HypnotizeStrategy());
+            case "imitater" -> plant.addStrategy(new ImitateStrategy());
             case "puff-shroom", "sea-shroom" -> plant.addStrategy(new LifespanStrategy(60));
         }
 
