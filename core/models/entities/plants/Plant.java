@@ -1,7 +1,5 @@
 package models.entities.plants;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import models.Position;
 import models.entities.plants.PlantFoodStrategy.PlantFoodStrategy;
 import models.entities.plants.effect.PlantEffect;
@@ -21,12 +19,10 @@ import models.timeManager.Ticker;
 
 import java.util.ArrayList;
 import java.util.List;
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class Plant implements IPlant, Ticker {
-    @JsonProperty("data")
-    protected PlantData data;
 
-    @JsonProperty("strategies")
+public class Plant implements IPlant, Ticker {
+
+    protected PlantData data;
     protected List<IPlantStrategy> strategies = new ArrayList<>();
     protected int currentHp;
     protected Position position;
@@ -38,11 +34,9 @@ public class Plant implements IPlant, Ticker {
     protected float currentRecharge;
     protected int bonusDamage = 0;
 
-    @JsonProperty("plantFoodStrategy")
     protected List<PlantFoodStrategy> plantFoodStrategy = new ArrayList<>();
     private int stackCount = 1;
 
-    @JsonProperty("activeEffects")
     protected List<PlantEffect> activeEffects = new ArrayList<>();
     protected boolean frozen = false;
     protected boolean stunned = false;
@@ -59,8 +53,6 @@ public class Plant implements IPlant, Ticker {
         this.currentCost = data.cost();
         this.currentActionInterval = data.actionInterval();
         this.currentRecharge = data.recharge();
-    }
-    public Plant() {
     }
 
     public void addStrategy(IPlantStrategy strategy) {
@@ -118,7 +110,6 @@ public class Plant implements IPlant, Ticker {
 
     }
 
-
     @Override
     public void onTick(int currentTick) {
         activeEffects.removeIf(effect -> {
@@ -171,7 +162,6 @@ public class Plant implements IPlant, Ticker {
     public void die() {
 
     }
-
 
     @Override
     public int getCost() { return currentCost; }
@@ -339,7 +329,7 @@ public class Plant implements IPlant, Ticker {
                     } else if (s instanceof MeleeStrategy melee) {
                         melee.increaseRange(value);
                     } else if (s instanceof MagnetStrategy magnet) {
-                         magnet.increaseRange(value);
+                        magnet.increaseRange(value);
                     }
                 }
             }
@@ -364,7 +354,6 @@ public class Plant implements IPlant, Ticker {
                     }
                 }
             }
-
 
             case "LIFESPAN_EXT" -> {
                 for (IPlantStrategy s : this.strategies) {
@@ -451,6 +440,7 @@ public class Plant implements IPlant, Ticker {
             }
 
 
+
             case "REFLECT_DAMAGE_BUFF" -> {
                 for (IPlantStrategy s : this.strategies) {
                     if (s instanceof SpikeStrategy spike) {
@@ -496,6 +486,7 @@ public class Plant implements IPlant, Ticker {
                     }
                 }
             }
+
 
             case "AUTO_PLANT_FOOD_CHANCE" -> {
                 for (IPlantStrategy s : this.strategies) {
@@ -573,6 +564,7 @@ public class Plant implements IPlant, Ticker {
     public void setPosition(Position position) {
         this.position = position;
     }
+
 
     public int getMaxHp() {
         return maxHp;

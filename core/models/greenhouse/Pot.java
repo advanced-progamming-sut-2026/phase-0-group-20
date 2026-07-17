@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
 import models.entities.plants.Plant;
 import models.entities.plants.PlantFactory;
+import models.entities.plants.PlantSaveData;
 import models.timeManager.Ticker;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class Pot implements Ticker {
     @JsonProperty("potCondition")
     private PotCondition potCondition = PotCondition.EMPTY;
 
-    @JsonProperty("plantedPlant")
+    @JsonIgnore
     private Plant plantedPlant = null;
 
     @JsonProperty("remainedTimeToCollect")
@@ -71,12 +72,38 @@ public class Pot implements Ticker {
         this.potCondition = potCondition;
     }
 
+    @JsonIgnore
     public Plant getPlantedPlant() {
         return plantedPlant;
     }
 
+    @JsonIgnore
     public void setPlantedPlant(Plant plantedPlant) {
         this.plantedPlant = plantedPlant;
+    }
+
+    @JsonProperty("plantedPlantData")
+    public PlantSaveData getPlantedPlantData() {
+        if (plantedPlant == null) {
+            return null;
+        }
+        return new PlantSaveData(plantedPlant.getId(), plantedPlant.getLevel(), plantedPlant.isBoosted());
+    }
+
+    @JsonProperty("plantedPlantData")
+    public void setPlantedPlantData(PlantSaveData data) {
+        if (data == null) {
+            this.plantedPlant = null;
+        } else {
+            this.plantedPlant = models.entities.plants.PlantFactory.create(data.getId());
+            if (this.plantedPlant != null) {
+                this.plantedPlant.setBoosted(data.isBoosted());
+
+                while (this.plantedPlant.getLevel() < data.getLevel()) {
+                    this.plantedPlant.upgrade();
+                }
+            }
+        }
     }
 
     public int getRemainedTimeToCollect() {
