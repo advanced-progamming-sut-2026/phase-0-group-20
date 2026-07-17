@@ -574,5 +574,12 @@ public class Plant implements IPlant, Ticker {
         this.position = position;
     }
 
+    public int getMaxHp() {
+        return maxHp;
+    }
+
+    public int getBonusDamage() {
+        return bonusDamage;
+    }
 
 }
