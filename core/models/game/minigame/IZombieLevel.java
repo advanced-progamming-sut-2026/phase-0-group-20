@@ -3,6 +3,7 @@ package models.game.minigame;
 import models.App;
 import models.InGameEntityGenerator;
 import models.entities.plants.Plant;
+import models.entities.plants.PlantFactory;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieType;
 import models.fields.Brain;
@@ -34,15 +35,17 @@ public class IZombieLevel extends Level {
 
         session.getArena().removeLawnMowers();
 
+        redLineCol = rand.nextInt(4) + levelNumber;
+
         for (int row = 0; row < session.getArena().getRows(); row++) {
             Brain brain = new Brain(row);
             session.getArena().setBrainInRow(row, brain);
-            spawnPrePlacedPlants(session, row);
+            spawnPrePlacedPlants(session, row,redLineCol);
         }
 
     }
 
-    private void spawnPrePlacedPlants(GameSession session, int row) {
+    private void spawnPrePlacedPlants(GameSession session, int row, int redLineCol) {
         int cols = session.getArena().getCols();
 
         Zombie sunZombie = InGameEntityGenerator.getZombieForGame(ZombieType.SUN_PRODUCER, row);
@@ -56,17 +59,15 @@ public class IZombieLevel extends Level {
         Collections.shuffle(availableTemplates);
         List<Plant> selectedTemplates = availableTemplates.subList(0, Math.min(numPlants, availableTemplates.size()));
 
-        redLineCol = rand.nextInt(4) + levelNumber;
 
         for (int i = 0; i < redLineCol; i++) {
             Plant template = selectedTemplates.get(rand.nextInt(selectedTemplates.size()));
-            Plant newPlant = models.entities.plants.PlantFactory.create(template.getId());
+            Plant newPlant = PlantFactory.create(template.getId());
 
-            if (newPlant != null) {
-                session.getArena().addPlant(newPlant);
-                session.getArena().getTile(row, i).addPlant(newPlant);
-                session.getTimeManager().registerNewTicker(newPlant);
-            }
+            session.getArena().addPlant(newPlant);
+            session.getArena().getTile(row, i).addPlant(newPlant);
+            session.getTimeManager().registerNewTicker(newPlant);
+
         }
     }
 

@@ -355,12 +355,12 @@ public class User {
             this.unlockedMinigames = unlockedMinigames;
     }
 
-    public int getUnlockedLevel(MiniGameType type) {
+    public int getUnlockedLevelInMinigame(MiniGameType type) {
         return unlockedMinigames.getOrDefault(type, 1);
     }
 
-    public void unlockNextLevel(MiniGameType type) {
-        int currentUnlocked = getUnlockedLevel(type);
+    public void unlockNextLevelInMinigame(MiniGameType type) {
+        int currentUnlocked = getUnlockedLevelInMinigame(type);
         if (currentUnlocked < 2)
             unlockedMinigames.put(type, currentUnlocked + 1);
     }

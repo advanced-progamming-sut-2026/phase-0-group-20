@@ -134,12 +134,16 @@ public class PlantSelectionController {
         }
 
 
+
         Adventure adventure = App.getActiveAdventure();
         Level currentLevel = App.getActiveAdventure().getCurrentChapter().getCurrentLevel();
         List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(adventure.getCurrentChapter().getSeasonType(), currentLevel.getLevelNumber());
 
         Arena arena = new Arena();
 
+
+        GameSession.destroyInstance(); // for safety
+        GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
 
         TimeManager timeManager = GameSession.getInstance().getTimeManager();
 
@@ -150,10 +154,6 @@ public class PlantSelectionController {
         for (Plant p : selectedPlants) {
             timeManager.registerNewTicker(p);
         }
-
-        GameSession.destroyInstance(); // for safety
-        GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
-
 
         App.setActiveSession(session);
         App.setActiveMenu(Menu.GAME_FLOW_MENU);

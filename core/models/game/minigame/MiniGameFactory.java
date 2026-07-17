@@ -20,7 +20,7 @@ public class MiniGameFactory {
                             levelNumber
                     );
 
-            case BEGHOULED -> null;
+            case BEGHOULED -> throw new UnsupportedOperationException("Beghouled is not implemented yet");
         };
     }
 }

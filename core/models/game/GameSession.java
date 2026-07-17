@@ -16,6 +16,7 @@ import models.game.adventure.Chapter;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
+import models.game.events.ProgressListener;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -39,7 +40,8 @@ public class GameSession {
     private HashMap<Plant, Integer> plantsCooldown;
     private GameMode currentMode;
     private boolean zombieBreached = false;
-
+    private ZombieDropListener dropListener;
+    private ProgressListener progressListener;
 
     private GameSession(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         this.currentChapter = chapter;
@@ -52,6 +54,11 @@ public class GameSession {
         this.currentSun = 0;
         this.sunManager = new SunManager(this.arena);
         this.timeManager.registerNewTicker(sunManager);
+        this.dropListener = new ZombieDropListener();
+        GameEventMessenger.getInstance().addListener(GameEvent.ZOMBIE_KILLED, this.dropListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, this.dropListener);
+
+        this.progressListener = new ProgressListener();
     }
 
     public static GameSession getInstance() {
@@ -83,6 +90,13 @@ public class GameSession {
     }
 
     public static void destroyInstance() {
+        if (instance.dropListener != null) {
+            GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED, instance.dropListener);
+            GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, instance.dropListener);
+        }
+        if (instance.progressListener != null)
+            instance.progressListener.unregisterFromAllEvents();
+
         instance = null;
     }
 

@@ -107,7 +107,7 @@ public class MiniGameController {
     public Result handlePutZombie(String zombieAlias, int row, int col) {
         GameSession session = GameSession.getInstance();
 
-        if (!(session.getCurrentChapter().getCurrentLevel() instanceof IZombieLevel level))
+        if (!(session.getCurrentMode() instanceof IZombieLevel level))
             return new Result(false, "You can only spawn zombies in iZombie minigame!");
 
         if (!level.isValidZombiePlacement(col))
