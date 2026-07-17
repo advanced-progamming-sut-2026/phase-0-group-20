@@ -17,6 +17,8 @@ public class ShootingStrategy implements IPlantStrategy {
     private float chillDurationExtension = 0;
     private int poisonTickDamageBonus = 0;
 
+    private float autoPlantFoodChance = 0.0f;
+
     @Override
     public void execute(Plant context, int currentTick) {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
@@ -73,8 +75,12 @@ public class ShootingStrategy implements IPlantStrategy {
             }
 
             if (shootForward || shootBackward) {
-                executeNewProjectile(context, shootForward, shootBackward);
-                notify(plantName + " fired projectiles!");
+                if (autoPlantFoodChance > 0 && Math.random() < autoPlantFoodChance) {
+                    context.useFood();
+                } else {
+                    executeNewProjectile(context, shootForward, shootBackward);
+                    notify(plantName + " fired projectiles!");
+                }
                 lastShotTick = currentTick;
             }
         }
@@ -121,5 +127,9 @@ public class ShootingStrategy implements IPlantStrategy {
 
     public int getPoisonTickDamageBonus() {
         return poisonTickDamageBonus;
+    }
+
+    public void setAutoPlantFoodChance(float chance) {
+        this.autoPlantFoodChance = chance;
     }
 }
