@@ -57,7 +57,7 @@ public class GreenHouse {
                         }
 
                         sb.append("Growing - Plant: ").append(plantName)
-                                .append(" | Time left: ").append(currentPot.getRemainedTimeToCollect()).append(" ticks");
+                                .append(" | Time left: ").append(currentPot.getFormattedRemainingTime()).append(" hours");
                     }
                     case COLLECTABLE -> sb.append("Ready");
                     default -> sb.append("Unknown State");

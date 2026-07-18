@@ -143,7 +143,7 @@ public class GameSession {
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
                         .message(message)
                         .build());
-    }
+}
 
     public void addSun(int amount) {
         this.currentSun += amount;
