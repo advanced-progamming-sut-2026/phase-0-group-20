@@ -66,12 +66,6 @@ public class QuestManager implements GameEventListener {
         }
     }
 
-    public void dispose() {
-        GameEventMessenger messenger = GameEventMessenger.getInstance();
-        for (GameEvent event : GameEvent.values()) {
-            messenger.removeListener(event, this);
-        }
-    }
 
     @Override
     public void onEvent(GameEvent event, GameEventPayload payload) {

@@ -10,15 +10,15 @@ import java.util.ArrayList;
 
 public class LevelFactory {
 
-    public static Level createLevel(SeasonType season, int chapterLevelIndex) {
+    public static Level createLevel(SeasonType season, int chapterLevelIndex) { //the index of level in each chapter
         int waveCount = 2 + (chapterLevelIndex / 2);
         int baseDifficulty = chapterLevelIndex * 5;
 
         return switch (chapterLevelIndex) {
-            case 1, 2 ->
+            case 0, 1 ->
                     new NormalLevel("Level " + (chapterLevelIndex + 1), season, waveCount, baseDifficulty, chapterLevelIndex + 1);
-            case 3 -> createSpecialLevel(season, (chapterLevelIndex + 1), waveCount, baseDifficulty);
-            case 4 -> new BossLevel("Boss Level" + season.toString().toLowerCase(), season,
+            case 2 -> createSpecialLevel(season, (chapterLevelIndex + 1), waveCount, baseDifficulty);
+            case 3 -> new BossLevel("Boss Level" + season.toString().toLowerCase(), season,
                     waveCount + 2, baseDifficulty * 2, (chapterLevelIndex + 1));
             default -> throw new IllegalArgumentException("Invalid chapter level index");
         };

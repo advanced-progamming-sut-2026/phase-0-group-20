@@ -7,7 +7,7 @@ import models.game.GameSession;
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.Level;
 import models.game.adventure.levels.conditions.NormalLoseCondition;
-import models.game.minigame.minigameCondition.BowlingCondition;
+import models.game.adventure.levels.conditions.NormalWinCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class BowlingLevel extends Level {
 
     public BowlingLevel(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {
         super(name, season, waveCount, baseWaveDifficulty, levelNumber);
-        this.addWinCondition(new BowlingCondition());
+        this.addWinCondition(new NormalWinCondition());
         this.addLoseCondition(new NormalLoseCondition());
     }
 

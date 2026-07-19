@@ -14,18 +14,18 @@ public class Chapter {
     private int currentLevelIndex;
     private boolean isUnlocked;
 
-    public Chapter( SeasonType type , int chapterIndex) {
+    public Chapter(SeasonType type) {
         this.levels = new ArrayList<>();
         this.currentLevelIndex = 0;
         this.type = type;
         this.modifier = createModifier(type);
         this.isUnlocked = false;
-        createLevels(chapterIndex);
+        createLevels();
     }
 
-    private void createLevels(int chapterIndex) {
+    private void createLevels() {
         for (int i = 0; i < 4; i++) {
-            Level newLevel = LevelFactory.createLevel(this.type, i);
+            Level newLevel = LevelFactory.createLevel(this.type, i + 1);
             this.levels.add(newLevel);
         }
     }
@@ -95,4 +95,11 @@ public class Chapter {
         currentLevelIndex++;
     }
 
+    public int getCurrentLevelIndex() {
+        return currentLevelIndex;
+    }
+
+    public void setCurrentLevelIndex(int currentLevelIndex) {
+        this.currentLevelIndex = currentLevelIndex;
+    }
 }

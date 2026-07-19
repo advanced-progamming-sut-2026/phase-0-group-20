@@ -161,7 +161,7 @@ public class GameFlowController {
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
                 .plant(newPlant)
                 .arena(arena)
-                .coordinate(newPlant.getPlacedTile().getRow(),newPlant.getPlacedTile().getCol())
+                .coordinate(newPlant.getPlacedTile().getRow(), newPlant.getPlacedTile().getCol())
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY + " with the name of" + newPlant.getName() + ".");

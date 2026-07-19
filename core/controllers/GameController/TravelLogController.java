@@ -1,7 +1,12 @@
 package controllers.GameController;
 
+import controllers.NavigationController;
 import models.App;
 import models.Result;
+import models.game.GameSession;
+import models.game.adventure.levels.Level;
+import models.game.minigame.MiniGameFactory;
+import models.game.minigame.MiniGameType;
 import models.quest.Quest;
 import models.quest.QuestCategory;
 import models.quest.QuestManager;
@@ -121,6 +126,35 @@ public class TravelLogController {
             case MINIGAME -> QuestCategory.MINIGAME;
             case DAILY -> QuestCategory.DAILY;
         };
+    }
+
+
+    public Result startMiniGame(String miniGameName, int levelNumber) {
+        if (currentPage != ValidPageNames.MINIGAME)
+            return new Result(false, "You must be in the MINIGAME page to start a minigame.");
+
+        if (levelNumber < 1 || levelNumber > 3)
+            return new Result(false, "Invalid level number! Minigames only have levels 1, 2, and 3.");
+
+        try {
+            MiniGameType type = MiniGameType.valueOf(miniGameName.toUpperCase());
+            int maxUnlocked = activeUser.getUnlockedLevelInMinigame(type);
+            if (levelNumber > maxUnlocked)
+                return new Result(false, "Level " + levelNumber + " is LOCKED! You must beat level " + (levelNumber - 1) + " first.");
+
+            Level minigameLevel = MiniGameFactory.createLevel(type, levelNumber);
+            GameSession session = GameSession.getInstance();
+            session.setCurrentMode(minigameLevel);
+            minigameLevel.onStart(session);
+            NavigationController.enterMenu("game flow menu");
+
+            return new Result(true, "Started " + type.name() + " Level " + levelNumber + "! Good luck!");
+
+        } catch (IllegalArgumentException e) {
+            return new Result(false, "Invalid minigame name! Available: VASE_BREAKER, BOWLING, I_ZOMBIE");
+        } catch (Exception e) {
+            return new Result(false, "Something bad happened. Please try again.");
+        }
     }
 
 }

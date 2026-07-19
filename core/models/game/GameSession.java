@@ -9,11 +9,14 @@ import models.entities.zombies.Zombie;
 import models.enums.GameState;
 import models.enums.PhysicalConstants;
 import models.enums.plants.PlantCategory;
+import models.fields.Brain;
+import models.fields.LawnMower;
 import models.fields.tiles.Tile;
 import models.game.adventure.Chapter;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
+import models.game.events.ProgressListener;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -37,7 +40,8 @@ public class GameSession {
     private HashMap<Plant, Integer> plantsCooldown;
     private GameMode currentMode;
     private boolean zombieBreached = false;
-
+    private ZombieDropListener dropListener;
+    private ProgressListener progressListener;
 
     private GameSession(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         this.currentChapter = chapter;
@@ -50,6 +54,11 @@ public class GameSession {
         this.currentSun = 0;
         this.sunManager = new SunManager(this.arena);
         this.timeManager.registerNewTicker(sunManager);
+        this.dropListener = new ZombieDropListener();
+        GameEventMessenger.getInstance().addListener(GameEvent.ZOMBIE_KILLED, this.dropListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, this.dropListener);
+
+        this.progressListener = new ProgressListener();
     }
 
     public static GameSession getInstance() {
@@ -81,6 +90,13 @@ public class GameSession {
     }
 
     public static void destroyInstance() {
+        if (instance.dropListener != null) {
+            GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED, instance.dropListener);
+            GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, instance.dropListener);
+        }
+        if (instance.progressListener != null)
+            instance.progressListener.unregisterFromAllEvents();
+
         instance = null;
     }
 
@@ -222,23 +238,46 @@ public class GameSession {
 //                Zombie z =
 //            }
 
-            List<Plant> plantToEat = targetTile.getPlants();
-            Plant eatingPlant = null;
-            if (!plantToEat.isEmpty()) {
-                eatingPlant = plantToEat.get(plantToEat.size() - 1);
-            }
-
-
-            if (eatingPlant != null) {
-                if (!z.isAttacking()) {
-                    z.setAttacking(true);
-                    z.setTile(targetTile);
-                    eatingPlant.takeDamage(z.getEatDPS() / TimeManager.TICKS_PER_SECOND);
+            if (targetTile != null) {
+                List<Plant> plantToEat = targetTile.getPlants();
+                Plant eatingPlant = null;
+                if (!plantToEat.isEmpty()) {
+                    eatingPlant = plantToEat.get(plantToEat.size() - 1);
                 }
-            } else if (z.isAttacking()) {
-                z.setAttacking(false);
-                z.setTile(null);//plant got plucked.
+
+
+                if (eatingPlant != null) {
+                    if (!z.isAttacking()) {
+                        z.setAttacking(true);
+                        z.setTile(targetTile);
+                        eatingPlant.takeDamage(z.getEatDPS() / TimeManager.TICKS_PER_SECOND);
+                    }
+                } else if (z.isAttacking()) {
+                    z.setAttacking(false);
+                    z.setTile(null);//plant got plucked.
+                }
+            } else if (targetCol < 0) {
+
+                LawnMower lawnMower = arena.getLawnMowers()[row];
+
+                if (lawnMower != null && !lawnMower.isActivate()) continue; //lawn mower will handle by itself
+
+                else {
+                    Brain targetBrain = arena.getBrainInRow(row);
+
+                    if (targetBrain != null && !targetBrain.isEaten()) {
+                        if (!z.isAttacking()) {
+                            z.setAttacking(true);
+                            z.setTile(null);
+                        }
+                        targetBrain.takeDamage(z.getEatDPS() / 10);
+                    } else {
+                        if (z.isAttacking()) z.setAttacking(false);
+                        if (z.getX() < -PhysicalConstants.TILE_UNIT_LENGTH) this.zombieBreached = true;
+                    }
+                }
             }
+
         }
 
         for (Sun sun : arena.getActiveSuns()) {
@@ -257,12 +296,12 @@ public class GameSession {
                 for (Zombie z : arena.getActiveZombies()) {
                     if (z.isDead() || !affectedTiles.contains(z.getTile())) continue;
                     boolean killed = z.takeDamage(150);
-                    if(killed){
+                    if (killed) {
                         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
                                 .seasonType(getCurrentChapter().getSeasonType())
-                                .coordinate(z.getRow(),z.getCol())
+                                .coordinate(z.getRow(), z.getCol())
                                 .build();
-                        GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED,payload);
+                        GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
                     }
                 }
                 rightTile = Math.min(sunTile.getCol() + 1, arena.getCols() - 1);

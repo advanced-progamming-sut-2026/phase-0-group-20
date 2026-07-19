@@ -1,5 +1,10 @@
 package models.enums;
 
+import models.game.GameMode;
+import models.game.GameSession;
+import models.game.minigame.BowlingLevel;
+import models.game.minigame.IZombieLevel;
+import models.game.minigame.VaseBreakerLevel;
 import views.*;
 
 import java.util.EnumSet;
@@ -58,8 +63,8 @@ public enum Menu {
         return switch (this) {
             case SIGNUP_MENU -> EnumSet.of(LOGIN_MENU);
             case LOGIN_MENU -> EnumSet.of(SIGNUP_MENU);
-            case SETTINGS_MENU, NEWS_MENU, SHOP_MENU, LEADERBOARD_MENU, COLLECTION_MENU,
-                 TRAVELLOG_MENU -> null;
+            case SETTINGS_MENU, NEWS_MENU, SHOP_MENU, LEADERBOARD_MENU, COLLECTION_MENU -> null;
+
             case MAIN_MENU -> EnumSet.of(GAME_MENU, PROFILE_MENU, SETTINGS_MENU,NEWS_MENU);
 
             case PLANTSELLECTION_MENU -> EnumSet.of(GAME_MENU);
@@ -69,6 +74,7 @@ public enum Menu {
                     SHOP_MENU, TRAVELLOG_MENU, NEWS_MENU);
             case GREENHOUSE_MENU -> EnumSet.of(SHOP_MENU);
             case GAME_FLOW_MENU -> null;
+            case TRAVELLOG_MENU -> EnumSet.of(GAME_FLOW_MENU);
         };
     }
 
@@ -79,7 +85,19 @@ public enum Menu {
             case SETTINGS_MENU, GAME_MENU, MAIN_MENU, PROFILE_MENU, NEWS_MENU -> MAIN_MENU;
             case COLLECTION_MENU, LEADERBOARD_MENU, GREENHOUSE_MENU, PLANTSELLECTION_MENU, SHOP_MENU,
                  TRAVELLOG_MENU -> GAME_MENU;
-            case GAME_FLOW_MENU -> GAME_MENU;
+            case GAME_FLOW_MENU -> { //maybe use stack in phase2
+                GameSession session = GameSession.getInstance();
+                if (session != null && session.getCurrentMode() != null) {
+                    GameMode mode = session.getCurrentMode();
+
+                    if (mode instanceof VaseBreakerLevel ||
+                            mode instanceof BowlingLevel ||
+                            mode instanceof IZombieLevel) {
+                        yield TRAVELLOG_MENU;
+                    }
+                }
+                yield GAME_MENU;
+            }
         };
     }
 

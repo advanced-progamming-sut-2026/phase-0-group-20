@@ -6,11 +6,14 @@ import models.entities.projectiles.Projectile;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.PhysicalConstants;
+import models.fields.Brain;
 import models.fields.LawnMower;
 import models.fields.tiles.NormalTile;
 import models.fields.tiles.Tile;
+import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +24,7 @@ public class Arena {
     private final List<Zombie> activeZombies;//these are the zombies that are already in the arena and moving/attacking.
     private final List<Projectile> activeProjectiles = new ArrayList<>();
     private final LawnMower[] lawnMowers;
+    private final Brain[] brains;
     private Tile[][] tiles;
     private List<Sun> activeSuns = new ArrayList<>();
     private Wave currentActiveWave;
@@ -35,6 +39,8 @@ public class Arena {
         this.activePlants = new ArrayList<>();
         this.activeZombies = new ArrayList<>();
         this.lawnMowers = new LawnMower[ROWS];
+        this.brains = new Brain[ROWS];
+
 
         for (int i = 0; i < ROWS; i++) {
             lawnMowers[i] = new LawnMower(i, this);
@@ -216,4 +222,22 @@ public class Arena {
         return spawnedWaves;
     }
 
+    public void setBrainInRow(int row, Brain brain) {
+        if (row >= 0 && row < ROWS) {
+            this.brains[row] = brain;
+            GameSession.getInstance().getTimeManager().registerNewTicker(this.brains[row]);
+        }
+    }
+
+    public Brain getBrainInRow(int row) {
+        if (row < 0 || row >= ROWS) return null;
+        return brains[row];
+    }
+
+    public void removeLawnMowers() {
+        TimeManager timeManager =  GameSession.getInstance().getTimeManager();
+        for (LawnMower lawnMower : lawnMowers)
+            if (lawnMower != null) timeManager.unregisterTicker(lawnMower);
+        Arrays.fill(lawnMowers, null);
+    }
 }

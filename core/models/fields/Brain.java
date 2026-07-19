@@ -23,7 +23,6 @@ public class Brain implements Ticker {
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
                         .message("A brain in row " + row + " was eaten! Ahh such a delicious brain !")
                         .build());
-        // print for now
     }
 
     public boolean isEaten() {
@@ -34,10 +33,17 @@ public class Brain implements Ticker {
         return row;
     }
 
+    public void takeDamage(int amount) {
+        if (isEaten) return;
+        this.hp -= amount;
+    }
+
     @Override
     public void onTick(int currentTick) {
-        if (hp <= 0)
-            isEaten = true;
-
+        if (hp <= 0 && !isEaten)
+            eat();
     }
+
+
+
 }
