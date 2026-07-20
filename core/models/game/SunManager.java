@@ -38,7 +38,7 @@ public class SunManager implements Ticker {
         int spawnY = rand.nextInt(arena.getRows());
         Sun sun = new Sun(type, spawnX, spawnY, currentTick);
         GameSession.getInstance().getTimeManager().registerNewTicker(sun);
-        String message = "New sun reached from the sky at " + (spawnX+1) + ", " + (spawnY+1) + ".";
+        String message = "New "+sun.getType().getLabel()+" sun reached from the sky at " + (spawnX+1) + ", " + (spawnY+1) + ".";
         GameSession.notify(message);
         arena.addSun(sun);
 
@@ -47,10 +47,11 @@ public class SunManager implements Ticker {
 
     private SunType randomSunType() {
         int chance = rand.nextInt(100);
-        if (chance <= 80) {
-            return SunType.NORMAL_SUN;
-        } else if (chance <= 95) {
-            return SunType.SPECIAL_SUN;
-        } else return SunType.RADIOACTIVE_SUN;
+//        if (chance <= 80) {
+//            return SunType.NORMAL_SUN;
+//        } else if (chance <= 95) {
+//            return SunType.SPECIAL_SUN;
+//        } else return SunType.RADIOACTIVE_SUN;
+        return SunType.RADIOACTIVE_SUN;
     }
 }

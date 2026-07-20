@@ -48,7 +48,12 @@ public class GameFlowController {
         } catch (NumberFormatException e) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
-        Sun sun = arena.getSunInCoordinate(col, row);
+
+        if (col < 1 || row < 1) {
+            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
+        }
+
+        Sun sun = arena.getSunInCoordinate(col - 1, row - 1);
         if (sun == null) {
             return new Result(false, "There is no sun in this coordinate.");
         }
@@ -59,8 +64,7 @@ public class GameFlowController {
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.SUN_COLLECTED, payload);
 
-        return new Result(true, "You collected a " + sun.getType().getLabel().toLowerCase() +
-                "sun.");
+        return new Result(true, "You collected a " + sun.getType().getLabel().toLowerCase() + " sun.");
     }
 
     public Result cheatAddSun(String amount) {
@@ -515,24 +519,32 @@ public class GameFlowController {
     }
 
     public Result showTileStatus(String x, String y) {
-        int row, col;
+        int userCol, userRow;
         try {
-            col = Integer.parseInt(x);
-            row = Integer.parseInt(y);
+            userCol = Integer.parseInt(x);
+            userRow = Integer.parseInt(y);
         } catch (NumberFormatException e) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
+
+        if (userCol < 1 || userRow < 1) {
+            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
+        }
+
+        int internalCol = userCol - 1;
+        int internalRow = userRow - 1;
+
         GameSession session = GameSession.getInstance();
         Arena arena = session.getArena();
 
-        if (row < 0 || row >= arena.getRows() || col < 0 || col >= arena.getCols()) {
+        if (internalRow >= arena.getRows() || internalCol >= arena.getCols()) {
             return new Result(false, "Invalid coordinates");
         }
 
         StringBuilder statusDisplay = new StringBuilder();
-        Tile tile = arena.getTile(row, col);
+        Tile tile = arena.getTile(internalRow, internalCol);
 
-        statusDisplay.append("Tile ").append(row).append(" / ").append(col).append(" Status:\n");
+        statusDisplay.append("Tile ").append(userRow).append(" / ").append(userCol).append(" Status:\n");
 
         String tileShape = "Normal";
         if (tile instanceof WaterTile || tile instanceof LowShoreTile) {
@@ -554,9 +566,10 @@ public class GameFlowController {
 
         statusDisplay.append("- Zombies:\n");
         boolean zombieFound = false;
-        if (session.getArena().zombieInRow(row) != null) {
-            for (Zombie z : session.getArena().zombieInRow(row)) {
-                if (!z.isDead() && z.getCol() == col) {
+
+        if (session.getArena().zombieInRow(internalRow) != null) {
+            for (Zombie z : session.getArena().zombieInRow(internalRow)) {
+                if (!z.isDead() && (int) z.getCol() == internalCol) {
                     zombieFound = true;
                     statusDisplay.append("    - Name: ").append(z.getName()).append("\n");
                     statusDisplay.append("      Health: ").append(z.getHealth()).append("\n");

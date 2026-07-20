@@ -122,7 +122,7 @@ public class Zombie implements Ticker {
             if (!a.isDestroyed()) {
                 remaining = a.takeDamage(remaining);
                 if (remaining <= 0) return false;
-                break;
+
             }
         }
 
