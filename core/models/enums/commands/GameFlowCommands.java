@@ -11,7 +11,7 @@ public enum GameFlowCommands implements Commands {
 
     RELEASE_NUKE("^\\s*release\\s+the\\s+nuke\\s*$"),
 
-    PLANT_PLANT("^\\s*plant\\s+plant\\s+-t\\s+(?<plantName>\\S+)\\s+-l\\s+\\(\\s*(?<x>\\S+)\\s*,\\s*(?<y>\\S+)\\s*\\)\\s*$"),
+    PLANT_PLANT("^\\s*plant\\s+plant\\s+-t\\s+(?<plantName>.+?)\\s+-l\\s+\\(\\s*(?<x>\\S+)\\s*,\\s*(?<y>\\S+)\\s*\\)\\s*$"),
 
     CHEAT_REMOVE_COOLDOWN("^\\s*cheat\\s+remove-cooldown\\s*$"),
 

@@ -5,7 +5,6 @@ import models.Result;
 import models.entities.PlantFood;
 import models.entities.Sun;
 import models.entities.plants.Plant;
-import models.entities.plants.PlantFactory;
 import models.entities.zombies.Zombie;
 import models.fields.LawnMower;
 import models.fields.tiles.*;
@@ -145,7 +144,7 @@ public class GameFlowController {
                     ? "There is no such plant named " + plantName + "in the belt"
                     : "There no such plant named " + plantName);
         }
-        Tile desiredTile = arena.getTile(spawnX, spawnY);
+        Tile desiredTile = arena.getTile(spawnX - 1, spawnY - 1);
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
         }
@@ -166,6 +165,7 @@ public class GameFlowController {
                 .coordinate(newPlant.getPlacedTile().getRow(), newPlant.getPlacedTile().getCol())
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
+        GameSession.getInstance().getTimeManager().registerNewTicker(newPlant);
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY + " with the name of " + newPlant.getName() + ".");
     }
 
@@ -194,8 +194,12 @@ public class GameFlowController {
         if (desiredTile.getPlants().isEmpty()) {
             return new Result(false, "There is nothing to pluck my friend");
         }
-        arena.getActivePlants().removeIf(p -> p.getPlacedTile().equals(desiredTile));// hal kardi parham?
-        desiredTile.setPlants(Collections.emptyList());
+        for (Plant p : desiredTile.getPlants()) {
+            GameSession.getInstance().getTimeManager().unregisterTicker(p);
+            arena.getActivePlants().remove(p);
+        }
+
+        desiredTile.setPlants(Collections.emptyList()); // hal kardi parham?
         return new Result(true, "You successfully plucked all the plants in the tile");
     }
 
@@ -243,79 +247,135 @@ public class GameFlowController {
     public Result showMap() {
         GameSession session = GameSession.getInstance();
         Arena arena = session.getArena();
-        StringBuilder mapDisplay = new StringBuilder();
+        StringBuilder mapOutput = new StringBuilder();
 
-        int currentWave = (session.getArena().getCurrentActiveWave() != null) ?
-                session.getArena().getCurrentActiveWave().getCurrentNumber() : 0;
+        mapOutput.append(buildHeader(arena, session));
+        mapOutput.append(buildVisualGrid(arena));
+        mapOutput.append(buildDetailedEntities(arena));
+
+        return new Result(true, mapOutput.toString().trim());
+    }
+
+    private String buildHeader(Arena arena, GameSession session) {
+        int currentWave = (arena.getCurrentActiveWave() != null) ? arena.getCurrentActiveWave().getCurrentNumber() : 0;
         int sunAmount = session.getCurrentSun();
         int plantFoodsCount = (session.getPlantFoods() != null) ? session.getPlantFoods().size() : 0;
 
-        mapDisplay.append("Wave: ").append(currentWave).append("\n");
-        mapDisplay.append("Sun: ").append(sunAmount).append("\n");
-        mapDisplay.append("Plant Food: ").append(plantFoodsCount).append("\n");
+        StringBuilder header = new StringBuilder();
+        header.append("====================================================\n");
+        header.append(String.format(" Wave: %d | Sun: %d | Plant Food: %d\n", currentWave, sunAmount, plantFoodsCount));
+        header.append("====================================================\n");
 
+        return header.toString();
+    }
+
+    private String buildVisualGrid(Arena arena) {
+        StringBuilder grid = new StringBuilder();
+        grid.append("\n--- Board Visual ---\n");
+
+        int rows = arena.getRows();
+        int cols = arena.getCols();
         LawnMower[] lawnMowers = arena.getLawnMowers();
+
+        for (int row = 0; row < rows; row++) {
+            boolean isMowerAvailable = (lawnMowers != null && row < lawnMowers.length && lawnMowers[row] != null);
+            grid.append(isMowerAvailable ? "[LM] | " : "[  ] | ");
+
+            java.util.List<Zombie> rowZombies = arena.zombieInRow(row);
+            if (rowZombies == null) rowZombies = new java.util.ArrayList<>();
+
+            for (int col = 0; col < cols; col++) {
+                grid.append(getTileSymbol(arena.getTile(row, col), rowZombies, col));
+            }
+            grid.append("\n");
+        }
+
+        return grid.toString();
+    }
+
+    private String getTileSymbol(Tile tile, java.util.List<Zombie> rowZombies, int col) {
+        boolean hasPlant = (tile != null && tile.getPlants() != null && !tile.getPlants().isEmpty());
+        boolean hasZombie = false;
+
+        for (Zombie z : rowZombies) {
+            if (!z.isDead() && (int) z.getCol() == col) {
+                hasZombie = true;
+                break;
+            }
+        }
+
+        if (hasPlant && hasZombie) return "[!X!] ";
+        if (hasPlant) return "[ P ] ";
+        if (hasZombie) return "[ Z ] ";
+
+        return "[   ] ";
+    }
+
+    private String buildDetailedEntities(Arena arena) {
+        StringBuilder details = new StringBuilder();
+        details.append("\n--- Active Entities ---\n");
+        boolean hasActiveEntities = false;
+
         int rows = arena.getRows();
         int cols = arena.getCols();
 
-        for (int i = 0; i < rows; i++) {
-            boolean isMowerAvailable = (lawnMowers != null && i < lawnMowers.length && lawnMowers[i] != null);
-            mapDisplay.append("LawnMower ").append(i).append(": ")
-                    .append(isMowerAvailable ? "activated" : "not activated").append("\n");
-        }
-
         for (int row = 0; row < rows; row++) {
+            java.util.List<Zombie> rowZombies = arena.zombieInRow(row);
+            if (rowZombies == null) rowZombies = new java.util.ArrayList<>();
+
             for (int col = 0; col < cols; col++) {
-                Tile tile = arena.getTile(row, col);
-
-                mapDisplay.append("Tile ").append(row).append(" / ").append(col).append(":\n");
-
-                java.util.List<Zombie> zombiesInTile = new java.util.ArrayList<>();
-                if (session.getArena().zombieInRow(row) != null) {
-                    for (Zombie z : session.getArena().zombieInRow(row)) {
-                        if (!z.isDead() && (int) z.getCol() == col) {
-                            zombiesInTile.add(z);
-                        }
-                    }
-                }
-
-                mapDisplay.append("-zombies:\n");
-                if (zombiesInTile.isEmpty()) {
-                    mapDisplay.append("     -None\n");
-                } else {
-                    mapDisplay.append("     -");
-                    for (int k = 0; k < zombiesInTile.size(); k++) {
-                        Zombie z = zombiesInTile.get(k);
-                        mapDisplay.append(z.getName()).append(":")
-                                .append(z.getCol()).append(",")
-                                .append(z.getRow());
-
-                        if (k < zombiesInTile.size() - 1) {
-                            mapDisplay.append(", ");
-                        }
-                    }
-                    mapDisplay.append("\n");
-                }
-
-                mapDisplay.append("-plants:\n");
-                if (tile == null || tile.getPlants() == null || tile.getPlants().isEmpty()) {
-                    mapDisplay.append("    -None\n");
-                } else {
-                    mapDisplay.append("    -");
-                    java.util.List<Plant> plantsInTile = tile.getPlants();
-                    for (int k = 0; k < plantsInTile.size(); k++) {
-                        mapDisplay.append(plantsInTile.get(k).getName());
-
-                        if (k < plantsInTile.size() - 1) {
-                            mapDisplay.append(", ");
-                        }
-                    }
-                    mapDisplay.append("\n");
+                String tileDetails = getTileDetails(arena.getTile(row, col), rowZombies, row, col);
+                if (!tileDetails.isEmpty()) {
+                    hasActiveEntities = true;
+                    details.append(tileDetails);
                 }
             }
         }
 
-        return new Result(true, mapDisplay.toString().trim());
+        if (!hasActiveEntities) {
+            details.append("The lawn is currently empty.\n");
+        }
+
+        return details.toString();
+    }
+
+    private String getTileDetails(Tile tile, java.util.List<Zombie> rowZombies, int row, int col) {
+        StringBuilder sb = new StringBuilder();
+        java.util.List<Zombie> zombiesInTile = new java.util.ArrayList<>();
+
+        for (Zombie z : rowZombies) {
+            if (!z.isDead() && (int) z.getCol() == col) {
+                zombiesInTile.add(z);
+            }
+        }
+
+        java.util.List<Plant> plantsInTile = (tile != null && tile.getPlants() != null) ? tile.getPlants() : new java.util.ArrayList<>();
+
+        if (zombiesInTile.isEmpty() && plantsInTile.isEmpty()) {
+            return "";
+        }
+        sb.append(String.format("Tile (%d, %d):\n", col, row));
+
+        if (!plantsInTile.isEmpty()) {
+            sb.append("  [Plants]  ");
+            java.util.List<String> plantNames = new java.util.ArrayList<>();
+            for (Plant p : plantsInTile) {
+                plantNames.add(p.getName());
+            }
+            sb.append(String.join(", ", plantNames)).append("\n");
+        }
+
+        if (!zombiesInTile.isEmpty()) {
+            sb.append("  [Zombies] ");
+            java.util.List<String> zombieDetails = new java.util.ArrayList<>();
+            for (Zombie z : zombiesInTile) {
+                zombieDetails.add(String.format("%s (%d)", z.getName(), z.getCol()));
+            }
+            sb.append(String.join(", ", zombieDetails)).append("\n");
+        }
+        sb.append("\n");
+
+        return sb.toString();
     }
 
     public Result showCurrentState() {

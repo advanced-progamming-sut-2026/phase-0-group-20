@@ -23,11 +23,7 @@ public class AppView {
             App.setActiveUser(stayedUser);
             App.setActiveMenu(Menu.MAIN_MENU);
             System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
-            if (stayedUser.getUnlockedPlants().isEmpty()) {
-                App.setPlantForNewUsers();
-            }
 
-            App.setActiveAdventure(new Adventure());
         }
 
         while (true) {

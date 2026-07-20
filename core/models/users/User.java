@@ -65,6 +65,11 @@ public class User {
         this.highestUnlockedLevelIndex = 0;
         for (MiniGameType type : MiniGameType.values())
             this.unlockedMinigames.put(type, 0);
+        if(unlockedPlants.isEmpty()){
+            for (int i = 1 ; i<70;i++){
+                unlockedPlants.add(PlantFactory.create(i));
+            }
+        }
     }
 
     @JsonCreator
