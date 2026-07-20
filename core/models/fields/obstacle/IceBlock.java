@@ -1,5 +1,6 @@
 package models.fields.obstacle;
 
+import models.Position;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.plants.PlantTag;
@@ -13,22 +14,18 @@ import models.timeManager.Ticker;
 public class IceBlock implements Ticker {
     public static final int MELT_RATE_PER_TICK = 6;
     private int iceHp = 600;
-    private int row;
-    private int col;
-
+    private Position position;
     private Plant frozenPlant;
     private Zombie frozenZombie;
 
     public IceBlock(Plant frozenPlant, int row, int col) {
         this.frozenPlant = frozenPlant;
-        this.row = row;
-        this.col = col;
+        position = new Position(col, row);
     }
 
     public IceBlock(Zombie frozenZombie, int row, int col) {
         this.frozenZombie = frozenZombie;
-        this.row = row;
-        this.col = col;
+        position = new Position(col, row);
     }
 
     @Override
@@ -44,8 +41,8 @@ public class IceBlock implements Ticker {
             if (plant.getCurrentHp() <= 0 || plant.getPlacedTile() == null) continue;
             if (!plant.getTags().contains(PlantTag.FIRE)) continue;
 
-            int dRow = Math.abs(plant.getPlacedTile().getRow() - row);
-            int dCol = Math.abs(plant.getPlacedTile().getCol() - col);
+            int dRow = Math.abs(plant.getPlacedTile().getRow() - position.getRow());
+            int dCol = Math.abs(plant.getPlacedTile().getCol() - position.getCol());
             if (dRow <= 1 && dCol <= 1 && (dRow != 0 || dCol != 0)) return true;
         }
         return false;
@@ -58,7 +55,7 @@ public class IceBlock implements Ticker {
 
     public void melt() {
         GameSession session = GameSession.getInstance();
-        Tile thisTile = session.getArena().getTile(row, col);
+        Tile thisTile = session.getArena().getTile(position.getRow(), position.getCol());
 
         if (frozenPlant != null) {
             thisTile.addPlant(frozenPlant);
@@ -68,8 +65,8 @@ public class IceBlock implements Ticker {
         }
 
         if (frozenZombie != null) {
-            frozenZombie.setRow(row);
-            frozenZombie.setCol(col);
+            frozenZombie.setRow(position.getRow());
+            frozenZombie.setCol(position.getCol());
             session.getArena().addZombie(frozenZombie);
             session.getTimeManager().registerNewTicker(frozenZombie);
             frozenZombie = null;
@@ -78,7 +75,7 @@ public class IceBlock implements Ticker {
         session.getTimeManager().unregisterTicker(this);
         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message("IceBlock melted at [" + row + "][" + col + "]!")
+                        .message("IceBlock melted at [" + position.getRow() + "][" + position.getCol() + "]!")
                         .build());
     }
 
@@ -115,19 +112,19 @@ public class IceBlock implements Ticker {
     }
 
     public int getRow() {
-        return row;
+        return position.getRow();
     }
 
     public void setRow(int row) {
-        this.row = row;
+        this.position.setRow(row);
     }
 
     public int getCol() {
-        return col;
+        return position.getCol();
     }
 
     public void setCol(int col) {
-        this.col = col;
+        position.setCol(col);
     }
 
 }

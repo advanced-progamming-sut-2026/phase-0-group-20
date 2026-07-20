@@ -9,7 +9,7 @@ import models.greenhouse.PotCondition;
 import models.users.User;
 
 public class GreenHouseController {
-    private User user ;
+    private User user;
 
     public Result showGreenHouse(GreenHouse greenHouse) {
         return new Result(true, greenHouse.showGreenHouse());
@@ -79,9 +79,12 @@ public class GreenHouseController {
         if (user.getDiamond() < 1) {
             return new Result(false, "Not enough diamond for boost the growing.Get a job!");
         }
+        user.costDiamond(1);
         desiredPot.setPotCondition(PotCondition.COLLECTABLE);
         return collectThePot(desiredPot);
     }
+
+
     private Result collectThePot(Pot desiredPot) {
         if (desiredPot.isItMari()) {
             user.earnCoin(500);
@@ -95,7 +98,7 @@ public class GreenHouseController {
                     .filter(p -> p.getName().equalsIgnoreCase(collectedPlant.getName()))
                     .findFirst()
                     .orElse(null);
-            if(userPlant!= null){
+            if (userPlant != null) {
                 userPlant.setBoosted(true);
             }
             desiredPot.collectPlant();

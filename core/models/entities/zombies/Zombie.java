@@ -131,6 +131,7 @@ public class Zombie implements Ticker {
 
     public boolean takeDamage(int damage) {
         health -= damage;
+        notify(name + " take " + damage);
         if (health <= 0) {
             health = 0;
             dead = true;
@@ -145,6 +146,7 @@ public class Zombie implements Ticker {
 
     private boolean applyHealthDamage(int remaining) {
         health -= remaining;
+        notify(name + " take " + remaining);
         if (health <= 0) {
             health = 0;
             dead = true;
@@ -164,6 +166,7 @@ public class Zombie implements Ticker {
         if (dead) return false;
 
         health -= damage;
+        notify(name + " take " + damage);
         if (health <= 0) {
             health = 0;
             dead = true;

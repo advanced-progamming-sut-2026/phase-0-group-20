@@ -61,25 +61,21 @@ public class PlantUpgradeTest {
             assertEquals(targetLevel, actualPlant.getLevel(), "Plant level did not increase properly");
 
             switch (upgrade.type()) {
-                case BUFF_HP ->
-                        assertEquals(oldMaxHp + (int) upgrade.value(), actualPlant.getMaxHp(),
-                                "Max HP should increase by the upgrade value " + actualPlant.getName());
+                case BUFF_HP -> assertEquals(oldMaxHp + (int) upgrade.value(), actualPlant.getMaxHp(),
+                        "Max HP should increase by the upgrade value " + actualPlant.getName());
 
-                case BUFF_DAMAGE ->
-                        assertEquals((int) upgrade.value(), actualPlant.getBonusDamage(),
-                                "Bonus damage should be applied exactly as the upgrade value "  + actualPlant.getName());
+                case BUFF_DAMAGE -> assertEquals((int) upgrade.value(), actualPlant.getBonusDamage(),
+                        "Bonus damage should be applied exactly as the upgrade value " + actualPlant.getName());
 
-                case BUFF_COST ->
-                        assertEquals(oldCost + (int) upgrade.value(), actualPlant.getCost(),
-                                "Cost should be modified by the upgrade value " + actualPlant.getName());
+                case BUFF_COST -> assertEquals(oldCost + (int) upgrade.value(), actualPlant.getCost(),
+                        "Cost should be modified by the upgrade value " + actualPlant.getName());
 
                 case BUFF_ACTION_INTERVAL ->
                         assertEquals(oldActionInterval + upgrade.value(), actualPlant.getActionInterval(), 0.001f,
                                 "Action interval should decrease/increase by the upgrade value " + actualPlant.getName());
 
-                case BUFF_RECHARGE ->
-                        assertEquals(oldRecharge + upgrade.value(), actualPlant.getRecharge(), 0.001f,
-                                "Recharge time should be modified by the upgrade value ");
+                case BUFF_RECHARGE -> assertEquals(oldRecharge + upgrade.value(), actualPlant.getRecharge(), 0.001f,
+                        "Recharge time should be modified by the upgrade value ");
 
                 case SPECIAL_MECHANIC -> {
                     // For special mechanics, we verify that the plant method processed it without throwing exceptions.

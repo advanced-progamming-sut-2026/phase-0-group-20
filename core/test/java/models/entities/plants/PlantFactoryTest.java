@@ -4,11 +4,7 @@ import models.entities.plants.Plant;
 import models.entities.plants.PlantData;
 import models.entities.plants.PlantFactory;
 import models.entities.plants.PlantLoader;
-import models.enums.plants.PlantCategory;
-import models.enums.plants.PlantTag;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 

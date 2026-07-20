@@ -179,7 +179,7 @@ public class GameSession {
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
                         .message(message)
                         .build());
-}
+    }
 
     public void addSun(int amount) {
         this.currentSun += amount;
@@ -216,35 +216,14 @@ public class GameSession {
         //for projectiles
         for (Projectile proj : getArena().getActiveProjectiles()) {
             if (proj.isDestroyed()) continue;
-            float projectileHitRadius = 0.25f;
-            float zombieHitRadius = 0.25f;
-            int topRow = (int) (proj.getY() + projectileHitRadius);
-            int bottomRow = (int) (proj.getY() - projectileHitRadius);
 
-            topRow = Math.min(arena.getRows() - 1, Math.max(0, topRow));
-            bottomRow = Math.min(arena.getRows() - 1, Math.max(0, bottomRow));
 
-            List<Zombie> nearbyZombies = new ArrayList<>();
-            for (int row = bottomRow; row <= topRow; row++) {
-                nearbyZombies.addAll(arena.zombieInRow(row));
-            }
+            if (proj.isFiredByZombie())
+                checkProjectileForPlantCollision(proj);
+            else
+                checkProjectileForZombieCollision(proj);
 
-            for (Zombie z : nearbyZombies) {
-                if (z.isDead()) continue;
 
-                double dx = proj.getX() - z.getX();
-                double dy = proj.getY() - z.getY();
-                double distanceSquared = (dx * dx) + (dy * dy);
-
-                double combinedRadius = projectileHitRadius + zombieHitRadius;
-
-                if (distanceSquared <= (combinedRadius * combinedRadius)) {
-                    proj.onHit(z);
-                    if (!proj.isPiercing() || proj.isDestroyed()) {
-                        break;
-                    }
-                }
-            }
         }
         // for plants&zombies
         for (Zombie z : activeZombies) {
@@ -449,4 +428,54 @@ public class GameSession {
     public void setCurrentMode(GameMode currentMode) {
         this.currentMode = currentMode;
     }
+
+
+    private void checkProjectileForPlantCollision(Projectile projectile) {
+        int row = projectile.getPosition().getRow();
+        int col = projectile.getPosition().getCol();
+        if (col < 0 || col >= arena.getCols()) return;
+
+        Tile tile = arena.getTile(row, col);
+        if (tile == null || tile.getPlants().isEmpty()) return;
+
+        List<Plant> plantsHere = tile.getPlants();
+        Plant target = plantsHere.get(plantsHere.size() - 1);
+
+        projectile.onHit(target);
+    }
+
+
+    private void checkProjectileForZombieCollision(Projectile projectile) {
+        float projectileHitRadius = 0.25f;
+        float zombieHitRadius = 0.25f;
+
+        int bottomRow = (int) Math.floor(projectile.getY() - projectileHitRadius);
+        int topRow = (int) Math.floor(projectile.getY() + projectileHitRadius);
+
+        bottomRow = Math.max(0, bottomRow);
+        topRow = Math.min(arena.getRows() - 1, topRow);
+
+        List<Zombie> nearbyZombies = new ArrayList<>();
+        for (int row = bottomRow; row <= topRow; row++) {
+            nearbyZombies.addAll(arena.zombieInRow(row));
+        }
+
+        float combinedRadius = projectileHitRadius + zombieHitRadius;
+
+        for (Zombie z : nearbyZombies) {
+            if (z.isDead()) continue;
+
+            double dx = projectile.getX() - z.getX();
+            double dy = projectile.getY() - z.getY();
+            double distanceSquared = (dx * dx) + (dy * dy);
+
+            if (distanceSquared <= (combinedRadius * combinedRadius)) {
+                projectile.onHit(z);
+                if (!projectile.isPiercing() || projectile.isDestroyed()) {
+                    break;
+                }
+            }
+        }
+    }
+
 }

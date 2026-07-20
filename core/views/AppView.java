@@ -3,7 +3,6 @@ package views;
 import models.App;
 import models.database.DataBaseManager;
 import models.enums.Menu;
-import models.game.adventure.Adventure;
 import models.users.User;
 
 import java.util.Scanner;
@@ -16,7 +15,6 @@ public class AppView {
         ConsoleNotifier.register();
 
         User stayedUser = DataBaseManager.getLoggedInUser();
-
 
 
         if (stayedUser != null) {

@@ -13,6 +13,7 @@ public abstract class Tile implements Ticker {
     protected SeasonType currentSeason;
     protected List<Plant> plants = new ArrayList<>();
     protected Position position;
+    protected boolean isCrater;
 
     public Tile(int row, int col) {
         position = new Position(col, row);
@@ -56,4 +57,30 @@ public abstract class Tile implements Ticker {
 
         return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK);
     }
+
+
+    public String getType() {
+        return switch (this) {
+            case GraveStoneTile t -> "GraveStone";
+            case PlantVaseTile t -> "PlantVaseTile";
+            case RandomVaseTile t -> "RandomVaseTile";
+            case ZombieVaseTile t -> "ZombieVaseTile";
+            case VaseTile t -> "VaseTile";
+            case WaterTile t -> "WaterTile";
+            case NormalTile t -> "NormalTile";
+            case SlipperyTile t -> "SlipperyTile";
+            case LowShoreTile t -> "LowShoreTile";
+            case NecromanceTile t -> "NecromanceTile";
+            default -> getClass().getSimpleName();
+        };
+    }
+
+    public boolean isCrater() {
+        return isCrater;
+    }
+
+    public void setCrater(boolean isCrater) {
+        this.isCrater = isCrater;
+    }
+
 }
