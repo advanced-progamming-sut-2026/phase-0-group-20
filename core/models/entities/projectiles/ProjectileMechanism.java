@@ -25,8 +25,8 @@ public class ProjectileMechanism {
             for (float[] config : shotConfigs) {
 
 
-                float spawnCol = plantCol + config[0];
-                float spawnRow = plantRow + config[1];
+                int spawnCol = plantCol + (int) config[0];
+                int spawnRow = plantRow + (int) config[1];
                 int speedX = (int) config[2];
                 int speedY = (int) config[3];
 
@@ -37,7 +37,7 @@ public class ProjectileMechanism {
                     Projectile.spawnNewProjectile(
                             plant,
                             type,
-                            50,
+                            damage,
                             new Position(spawnCol, spawnRow),
                             speedX,
                             speedY,
@@ -56,9 +56,9 @@ public class ProjectileMechanism {
         ProjectileEffect effect = getProjectileEffect(plant.getName());
 
         if (damage != -1 && type != null) {
-            float spawnCol = plant.getPlacedTile().getCol();
-            float spawnRow = plant.getPlacedTile().getRow();
-            float spawnX = spawnCol - burstIndex;
+            int spawnCol = plant.getPlacedTile().getCol();
+            int spawnRow = plant.getPlacedTile().getRow();
+            int spawnX = spawnCol - burstIndex;
 
             Projectile projectile = Projectile.spawnNewProjectile(
                     plant,

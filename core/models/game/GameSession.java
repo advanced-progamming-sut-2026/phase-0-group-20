@@ -76,6 +76,7 @@ public class GameSession {
         }
         return instance;
     }
+
     public void instantiateCooldowns(List<Plant> chosenPlants) {
         for (Plant plant : chosenPlants) {
             plantsCooldown.put(plant, 0);
@@ -90,7 +91,7 @@ public class GameSession {
         }
     }
 
-    public void setCooldownForPlant(Plant plant){
+    public void setCooldownForPlant(Plant plant) {
         plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
     }
 
@@ -310,8 +311,10 @@ public class GameSession {
                 for (int row = downTile; row <= upTile; row++) {
                     for (int col = leftTile; col <= rightTile; col++) {
                         List<Plant> tilePlants = arena.getTile(row, col).getPlants();
-                        Plant damagePlant = tilePlants.getLast();
-                        damagePlant.takeDamage(80);
+                        if (!tilePlants.isEmpty()) {
+                            Plant damagePlant = tilePlants.getLast();
+                            damagePlant.takeDamage(80);
+                        }
                     }
                 }
 
@@ -445,11 +448,15 @@ public class GameSession {
 
 
     private void checkProjectileForZombieCollision(Projectile projectile) {
+        int tileLength = PhysicalConstants.TILE_UNIT_LENGTH;
         float projectileHitRadius = 0.25f;
         float zombieHitRadius = 0.25f;
 
-        int bottomRow = (int) Math.floor(projectile.getY() - projectileHitRadius);
-        int topRow = (int) Math.floor(projectile.getY() + projectileHitRadius);
+        float physProjectileRadius = projectileHitRadius * tileLength;
+        float physZombieRadius = zombieHitRadius * tileLength;
+
+        int bottomRow = (int) Math.floor((projectile.getY() - physProjectileRadius) / tileLength);
+        int topRow = (int) Math.floor((projectile.getY() + physProjectileRadius) / tileLength);
 
         bottomRow = Math.max(0, bottomRow);
         topRow = Math.min(arena.getRows() - 1, topRow);
@@ -459,7 +466,7 @@ public class GameSession {
             nearbyZombies.addAll(arena.zombieInRow(row));
         }
 
-        float combinedRadius = projectileHitRadius + zombieHitRadius;
+        float combinedRadius = physProjectileRadius + physZombieRadius;
 
         for (Zombie z : nearbyZombies) {
             if (z.isDead()) continue;
