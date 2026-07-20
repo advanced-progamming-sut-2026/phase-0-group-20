@@ -3,7 +3,8 @@ package models;
 
 import static models.enums.PhysicalConstants.TILE_UNIT_LENGTH;
 
-public final class Position {
+public final class
+Position {
 
     private float x;
     private float y;
@@ -22,8 +23,8 @@ public final class Position {
     public Position(int col, int row) {
         this.row = row;
         this.col = col;
-        this.y = row * TILE_UNIT_LENGTH - TILE_UNIT_LENGTH / 2f;
-        this.x = col * TILE_UNIT_LENGTH - TILE_UNIT_LENGTH / 2f;
+        this.y = row * TILE_UNIT_LENGTH + TILE_UNIT_LENGTH / 2f;
+        this.x = col * TILE_UNIT_LENGTH + TILE_UNIT_LENGTH / 2f;
     }
 
 

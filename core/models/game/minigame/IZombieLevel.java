@@ -1,11 +1,5 @@
 package models.game.minigame;
 
-import models.App;
-import models.InGameEntityGenerator;
-import models.entities.plants.Plant;
-import models.entities.plants.PlantFactory;
-import models.entities.zombies.Zombie;
-import models.entities.zombies.ZombieType;
 import models.fields.Brain;
 import models.game.GameSession;
 import models.game.adventure.SeasonType;
@@ -13,9 +7,6 @@ import models.game.adventure.levels.Level;
 import models.game.minigame.minigameCondition.IZombieLoseCondition;
 import models.game.minigame.minigameCondition.IZombieWinCondition;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 public class IZombieLevel extends Level {
@@ -40,7 +31,7 @@ public class IZombieLevel extends Level {
         for (int row = 0; row < session.getArena().getRows(); row++) {
             Brain brain = new Brain(row);
             session.getArena().setBrainInRow(row, brain);
-            spawnPrePlacedPlants(session, row,redLineCol);
+            spawnPrePlacedPlants(session, row, redLineCol);
         }
 
     }
