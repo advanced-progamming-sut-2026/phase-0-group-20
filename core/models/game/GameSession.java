@@ -446,15 +446,11 @@ public class GameSession {
 
 
     private void checkProjectileForZombieCollision(Projectile projectile) {
-        int tileLength = PhysicalConstants.TILE_UNIT_LENGTH;
         float projectileHitRadius = 0.25f;
         float zombieHitRadius = 0.25f;
 
-        float physProjectileRadius = projectileHitRadius * tileLength;
-        float physZombieRadius = zombieHitRadius * tileLength;
-
-        int bottomRow = (int) Math.floor((projectile.getY() - physProjectileRadius) / tileLength);
-        int topRow = (int) Math.floor((projectile.getY() + physProjectileRadius) / tileLength);
+        int bottomRow = (int) Math.floor(projectile.getY() - projectileHitRadius);
+        int topRow = (int) Math.floor(projectile.getY() + projectileHitRadius);
 
         bottomRow = Math.max(0, bottomRow);
         topRow = Math.min(arena.getRows() - 1, topRow);
@@ -464,7 +460,7 @@ public class GameSession {
             nearbyZombies.addAll(arena.zombieInRow(row));
         }
 
-        float combinedRadius = physProjectileRadius + physZombieRadius;
+        float combinedRadius = projectileHitRadius + zombieHitRadius;
 
         for (Zombie z : nearbyZombies) {
             if (z.isDead()) continue;
