@@ -40,10 +40,10 @@ public enum ZombieType {
     JUGGLER("ZombieDarkJuggler", SeasonType.DARK_AGES),
     WIZARD("ZombieWizard", SeasonType.DARK_AGES),
     KING("ZombieDarkKing", SeasonType.DARK_AGES),
-    IMP_DRAGON("ZombieDarkImpDragon", SeasonType.DARK_AGES),
+    IMP_DRAGON("ZombieDarkImpDragon", SeasonType.DARK_AGES);
 
     // minigame
-    SUN_PRODUCER("ZombieSunProducer", null);
+//    SUN_PRODUCER("ZombieSunProducer", null);
 
 
     private final String jsonAlias;

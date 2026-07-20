@@ -1,7 +1,7 @@
 package models.enums.commands;
 
 public enum GameFlowCommands implements Commands {
-    ADVANCE_TIME("^\\s*advance\\s+time\\s+t\\s+(?<count>\\S+)\\s+ticks\\s*$"),
+    ADVANCE_TIME("^\\s*advance\\s+time\\s+-t\\s+(?<count>\\S+)\\s+ticks\\s*$"),
 
     COLLECT_SUN("^\\s*collect\\s+sun\\s+-l\\s+\\(\\s*(?<x>\\S+)\\s*,\\s*(?<y>\\S+)\\s*\\)\\s*$"),
 
@@ -22,6 +22,8 @@ public enum GameFlowCommands implements Commands {
     CHEAT_ADD_PLANT_FOOD("^\\s*cheat\\s+add-plant-food\\s*$"),
 
     SHOW_MAP("^\\s*show\\s+map\\s*$"),
+
+    SHOW_STATE("^\\s*show\\s+state\\s*$"),
 
     SHOW_PLANTS_STATUS("^\\s*show\\s+plants\\s+status\\s*$"),
 

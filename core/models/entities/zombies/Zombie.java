@@ -95,12 +95,13 @@ public class Zombie implements Ticker {
     }
 
     public boolean takeDamage(int damage, Projectile projectile) {
-        ProjectileType projectileType = projectile.getType();
         if (dead) return false;
 
-        if (projectileType == null) { // for lawn
-            return applyHealthDamage(health, projectile);
+        if (projectile == null) { // for lawn
+            return applyHealthDamage(health);
         }
+
+        ProjectileType projectileType = projectile.getType();
 
         if (defenseBehavior != null && defenseBehavior.deflectProjectile(projectileType)) {
             return false;
@@ -113,7 +114,7 @@ public class Zombie implements Ticker {
         if (remaining <= 0) return false;
 
         if (isArmorBypassingProjectile(projectileType)) {
-            return applyHealthDamage(remaining, projectile);
+            return applyHealthDamage(remaining);
         }
 
         for (int i = 0; i < armorPieces.size(); i++) {
@@ -125,7 +126,7 @@ public class Zombie implements Ticker {
             }
         }
 
-        return applyHealthDamage(remaining, projectile);
+        return applyHealthDamage(remaining);
     }
 
     public boolean takeDamage(int damage) {
@@ -142,7 +143,7 @@ public class Zombie implements Ticker {
         return projectileType == ProjectileType.GOO_PEA;
     }
 
-    private boolean applyHealthDamage(int remaining, Projectile projectile) {
+    private boolean applyHealthDamage(int remaining) {
         health -= remaining;
         if (health <= 0) {
             health = 0;

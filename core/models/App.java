@@ -1,6 +1,7 @@
 package models;
 
 import models.entities.plants.Plant;
+import models.entities.plants.PlantFactory;
 import models.entities.zombies.Zombie;
 import models.enums.Menu;
 import models.game.GameSession;
@@ -24,6 +25,11 @@ public class App {
 
     public static void changeDifficulty(int difficulty) {
         return; // We need to implement the Zombies and Plants Mechanism before make this
+    }
+
+    public static void setPlantForNewUsers() {
+        activeUser.getUnlockedPlants().add(PlantFactory.create(1));
+        activeUser.getUnlockedPlants().add(PlantFactory.create(6));
     }
 
     public static User getActiveUser() {

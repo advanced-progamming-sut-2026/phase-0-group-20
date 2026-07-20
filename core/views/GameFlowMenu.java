@@ -34,6 +34,8 @@ public class GameFlowMenu implements AppMenu {
                     matcher.group("y")
             ));
 
+        } else if (GameFlowCommands.SHOW_STATE.getMatcher(input) != null) {
+            System.out.println(gameFlowcontroller.showCurrentState());
         } else if ((matcher = GameFlowCommands.SHOW_SUN_AMOUNT.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.showSunAmount());
 

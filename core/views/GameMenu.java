@@ -13,16 +13,20 @@ public class GameMenu implements AppMenu {
     public void check(Scanner scanner) {
         String input = scanner.nextLine().trim();
 
-        if (checkGlobalCommand(input)) {
-            return;
-        }
 
         Matcher matcher;
 
         if ((matcher = GameMenuCommands.ENTER_CHAPTER.getMatcher(input)) != null) {
             String chapterStr = matcher.group("chaptername");
             System.out.println(controller.enterChapter(chapterStr));
-        } else if ((matcher = GameMenuCommands.ENTER_GREEN_HOUSE.getMatcher(input)) != null) {
+            return;
+        }
+
+        if (checkGlobalCommand(input)) {
+            return;
+        }
+
+        if ((matcher = GameMenuCommands.ENTER_GREEN_HOUSE.getMatcher(input)) != null) {
             System.out.println(controller.enterGreenHouse());
         } else if ((matcher = GameMenuCommands.ENTER_LEADERBOARD.getMatcher(input)) != null) {
             System.out.println(controller.enterLeaderboard());

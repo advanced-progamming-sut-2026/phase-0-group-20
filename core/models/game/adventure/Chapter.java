@@ -25,7 +25,7 @@ public class Chapter {
 
     private void createLevels() {
         for (int i = 0; i < 4; i++) {
-            Level newLevel = LevelFactory.createLevel(this.type, i + 1);
+            Level newLevel = LevelFactory.createLevel(this.type, i);
             this.levels.add(newLevel);
         }
     }

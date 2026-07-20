@@ -64,7 +64,7 @@ public class LawnMower implements Ticker {
         if (killedZombiesNames.isEmpty()) return;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("The lawn mower in the row " + this.row + 1 + "is triggered and killed these zombies:\n");
+        sb.append("The lawn mower in the row " + (this.row + 1) + "is triggered and killed these zombies:\n");
         for (String zombieName : killedZombiesNames) {
             sb.append(zombieName + "\n");
         }
