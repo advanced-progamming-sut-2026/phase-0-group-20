@@ -5,7 +5,6 @@ import models.entities.zombies.Zombie;
 import models.fields.tiles.GraveStoneTile;
 import models.game.Arena;
 import models.game.GameSession;
-import models.game.adventure.levels.Level;
 
 import java.util.Random;
 

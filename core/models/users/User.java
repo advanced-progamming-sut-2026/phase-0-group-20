@@ -65,8 +65,8 @@ public class User {
         this.highestUnlockedLevelIndex = 0;
         for (MiniGameType type : MiniGameType.values())
             this.unlockedMinigames.put(type, 0);
-        if(unlockedPlants.isEmpty()){
-            for (int i = 1 ; i<70;i++){
+        if (unlockedPlants.isEmpty()) {
+            for (int i = 1; i < 70; i++) {
                 unlockedPlants.add(PlantFactory.create(i));
             }
         }
@@ -290,7 +290,7 @@ public class User {
         this.unlockedZombies.clear();
         if (dataList != null) {
             for (ZombieSaveData data : dataList) {
-                Zombie rebuiltZombie = models.entities.zombies.ZombieFactory.create(data.getType(),-1);
+                Zombie rebuiltZombie = models.entities.zombies.ZombieFactory.create(data.getType(), -1);
                 if (rebuiltZombie != null) {
                     this.unlockedZombies.add(rebuiltZombie);
                 }

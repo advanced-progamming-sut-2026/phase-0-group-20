@@ -78,7 +78,7 @@ public class BeghouledManager {
                             upperTile.getPlants().clear();
                             targetTile.addPlant(fallingPlant);
 
-                            fallingPlant.setPosition(new Position(targetTile.getCol(),  targetTile.getRow()));
+                            fallingPlant.setPosition(new Position(targetTile.getCol(), targetTile.getRow()));
 
                             foundAbove = true;
                             movedAny = true;

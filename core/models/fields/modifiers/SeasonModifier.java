@@ -2,13 +2,12 @@ package models.fields.modifiers;
 
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
-import models.enums.GameState;
 import models.game.Arena;
+import models.game.GameSession;
+import models.game.adventure.levels.Level;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
-import models.game.GameSession;
-import models.game.adventure.levels.Level;
 
 public interface SeasonModifier {
     void onWaveStart(Wave wave);

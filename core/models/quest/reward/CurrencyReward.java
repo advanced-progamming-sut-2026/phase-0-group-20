@@ -11,6 +11,7 @@ public class CurrencyReward implements Reward {
 
     @JsonProperty("amount")
     private final int amount;
+
     @JsonCreator
     public CurrencyReward(@JsonProperty("isDiamond") boolean isDiamond,
                           @JsonProperty("amount") int amount) {

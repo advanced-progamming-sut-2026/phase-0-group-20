@@ -46,8 +46,8 @@ public class QuestManager implements GameEventListener {
 
     public void resetDailyQuests() {
         for (Quest quest : activeQuests) {
-            if(!quest.isCompleted()&&quest.getCategory() == QuestCategory.DAILY){
-                if(quest.getCondition() instanceof QuestCondition condition){
+            if (!quest.isCompleted() && quest.getCategory() == QuestCategory.DAILY) {
+                if (quest.getCondition() instanceof QuestCondition condition) {
                     condition.resetCurrentProgress();
 
                 }
@@ -55,10 +55,10 @@ public class QuestManager implements GameEventListener {
         }
     }
 
-    public void resetOneMissionQuests(){
-        for(Quest quest : activeQuests){
-            if(!quest.isCompleted()&&quest.isOnMission()){
-                if(quest.getCondition() instanceof QuestCondition condition){
+    public void resetOneMissionQuests() {
+        for (Quest quest : activeQuests) {
+            if (!quest.isCompleted() && quest.isOnMission()) {
+                if (quest.getCondition() instanceof QuestCondition condition) {
                     condition.resetCurrentProgress();
 
                 }

@@ -176,18 +176,18 @@ public class Projectile implements Ticker {
 
         if (bouncesLeft > 0) {
             boolean bounced = false;
-            if (position.getX() >= GameSession.getInstance().getArena().getCols() && speedX > 0) {
+            if (position.getCol() >= GameSession.getInstance().getArena().getCols() && speedX > 0) {
                 speedX = -speedX;
                 bounced = true;
-            } else if (position.getX() < 0 && speedX < 0) {
+            } else if (position.getCol() < 0 && speedX < 0) {
                 speedX = -speedX;
                 bounced = true;
             }
 
-            if (position.getY() >= GameSession.getInstance().getArena().getRows() && speedY > 0) {
+            if (position.getRow() >= GameSession.getInstance().getArena().getRows() && speedY > 0) {
                 speedY = -speedY;
                 bounced = true;
-            } else if (position.getY() < 0 && speedY < 0) {
+            } else if (position.getRow() < 0 && speedY < 0) {
                 speedY = -speedY;
                 bounced = true;
             }
@@ -299,8 +299,8 @@ public class Projectile implements Ticker {
 
     public boolean isOutOfBounds() {
         if (bouncesLeft > 0) return false;
-        return position.getX() < 0 || position.getX() >= GameSession.getInstance().getArena().getCols()
-                || position.getY() < 0 || position.getY() >= GameSession.getInstance().getArena().getRows();
+        return position.getCol() < 0 || position.getCol() >= GameSession.getInstance().getArena().getCols()
+                || position.getRow() < 0 || position.getRow() >= GameSession.getInstance().getArena().getRows();
     }
 
     public ProjectileType getType() {

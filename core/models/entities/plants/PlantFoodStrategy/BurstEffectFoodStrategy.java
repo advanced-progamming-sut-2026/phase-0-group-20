@@ -36,7 +36,7 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
             for (Zombie zombie : gameSession.getArena().zombieInRow(row)) {
                 if (!zombie.isDead() && zombie.getCol() >= col) {
                     boolean killed = zombie.takeDirectDamage(damage);
-                    if(killed){
+                    if (killed) {
                         plant.onZombieDeath(zombie);
                     }
 
@@ -51,9 +51,9 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
             List<Zombie> nearZombies = gameSession.getArena().getZombiesInRadius(col, row, 1.5);
             for (Zombie zombie : nearZombies) {
                 if (zombie.isDead()) continue;
-                boolean killed =zombie.takeDirectDamage(damage);
-                if(killed){
-                   plant.onZombieDeath(zombie);
+                boolean killed = zombie.takeDirectDamage(damage);
+                if (killed) {
+                    plant.onZombieDeath(zombie);
                 }
             }
         }

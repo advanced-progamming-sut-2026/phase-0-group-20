@@ -1,7 +1,6 @@
 package models.entities.zombies;
 
 import models.Position;
-import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.behavior.attack.AttackBehavior;

@@ -84,13 +84,32 @@ public class BeghouledLevel extends Level {
         int cost;
 
         switch (fromPlantName.toLowerCase()) {
-            case "peashooter": toPlantName = "repeater"; cost = 500; break;
-            case "repeater": toPlantName = "mega gatling pea"; cost = 1500; break;
-            case "wall-nut": toPlantName = "tall-nut"; cost = 500; break;
-            case "puff-shroom": toPlantName = "fume-shroom"; cost = 250; break;
-            case "cabbage-pult": toPlantName = "melon-pult"; cost = 1000; break;
-            case "melon-pult": toPlantName = "winter melon"; cost = 750; break;
-            default: return "Upgrade not available for " + fromPlantName;
+            case "peashooter":
+                toPlantName = "repeater";
+                cost = 500;
+                break;
+            case "repeater":
+                toPlantName = "mega gatling pea";
+                cost = 1500;
+                break;
+            case "wall-nut":
+                toPlantName = "tall-nut";
+                cost = 500;
+                break;
+            case "puff-shroom":
+                toPlantName = "fume-shroom";
+                cost = 250;
+                break;
+            case "cabbage-pult":
+                toPlantName = "melon-pult";
+                cost = 1000;
+                break;
+            case "melon-pult":
+                toPlantName = "winter melon";
+                cost = 750;
+                break;
+            default:
+                return "Upgrade not available for " + fromPlantName;
         }
 
         if (session.getCurrentSun() < cost) {

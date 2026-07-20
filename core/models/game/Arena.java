@@ -237,7 +237,7 @@ public class Arena {
     }
 
     public void removeLawnMowers() {
-        TimeManager timeManager =  GameSession.getInstance().getTimeManager();
+        TimeManager timeManager = GameSession.getInstance().getTimeManager();
         for (LawnMower lawnMower : lawnMowers)
             if (lawnMower != null) timeManager.unregisterTicker(lawnMower);
         Arrays.fill(lawnMowers, null);

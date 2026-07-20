@@ -1,9 +1,6 @@
 package models.entities.plants.effect;
 
 import models.entities.plants.Plant;
-import models.game.events.GameEvent;
-import models.game.events.GameEventMessenger;
-import models.game.events.GameEventPayload;
 
 public class FreezeEffect implements PlantEffect {
     private int stacks;

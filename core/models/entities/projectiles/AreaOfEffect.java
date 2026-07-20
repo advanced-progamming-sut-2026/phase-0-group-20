@@ -23,8 +23,8 @@ public class AreaOfEffect implements ProjectileEffect {
         List<Zombie> nearby = GameSession.getInstance().getArena().getZombiesInRadius((int) projectile.getY(), (int) projectile.getY(), radius);
         for (Zombie zombie : nearby) {
             if (zombie == mainZombie) continue;
-            boolean killed =zombie.takeDamage(splashDamage, projectile);
-            if(killed){
+            boolean killed = zombie.takeDamage(splashDamage, projectile);
+            if (killed) {
                 projectile.getPlant().onZombieDeath(zombie);
             }
             if (inner != null) inner.applyEffect(zombie, projectile);
