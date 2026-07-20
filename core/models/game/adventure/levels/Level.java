@@ -119,7 +119,7 @@ public abstract class Level implements GameMode {
             session.getTimeManager().registerNewTicker(newZombie);
 
             notify("Zombie " + newZombie.getType().name() +
-                    " spawned in lane " + lane + " (Cost: " + newZombie.getWaveCost() + ").");
+                    " spawned in lane " + (lane + 1) + " (Cost: " + newZombie.getWaveCost() + ").");
         }
     }
 
