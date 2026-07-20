@@ -20,7 +20,7 @@ public class SunManager implements Ticker {
     public void onTick(int currentTick) {
         timeToNextSun--;
         if (timeToNextSun == 0) {
-
+            spawnSun(currentTick);
         }
     }
 

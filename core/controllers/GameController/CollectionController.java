@@ -21,6 +21,10 @@ public class CollectionController {
         User activeUser = App.getActiveUser();
         ArrayList<Plant> unlockedPlants = activeUser.getUnlockedPlants();
         StringBuilder result = new StringBuilder();
+        if(unlockedPlants.isEmpty()) {
+            result.append("You have no plants in this game!");
+            return new Result(false, result.toString());
+        }
         for (Plant plant : unlockedPlants) {
             result.append(getPlantInfo(plant));
         }

@@ -6,6 +6,8 @@ import models.entities.plants.PlantData;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieFactory;
 import models.entities.zombies.ZombieType;
+import models.game.adventure.Adventure;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +21,7 @@ public class GameInitializer {
     public static void loadAllResources() {
         initPlants();
         initZombies();
+        App.setActiveAdventure(new Adventure());
     }
 
     private static void initPlants() {

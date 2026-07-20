@@ -24,7 +24,11 @@ public class GameMenuController {
 
         Level currentLevel = targetChapter.getCurrentLevel(); // for now when we chose a chapter we enter a level that is last unlocked
 
-        App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
+        if(currentLevel!=null && !currentLevel.skipsPlantSelection()) {
+            App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
+        }// needs an else
+
+
 
         return new Result(true, "Enter Chapter " + targetChapter.getDisplayName() + " - Level: " + currentLevel.getName());
     }
