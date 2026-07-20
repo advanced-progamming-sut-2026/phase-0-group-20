@@ -13,7 +13,9 @@ import java.util.Random;
 
 public class Projectile implements Ticker {
 
+
     private final Plant plant;
+    private final Zombie zombie;
     private ProjectileType type;
     private ProjectileEffect effect;
     private int damage;
@@ -42,7 +44,30 @@ public class Projectile implements Ticker {
                       float speedY,
                       boolean piercing,
                       boolean canPassObstacles) {
+        this.zombie = null;
         this.plant = plant;
+        this.type = type;
+        this.effect = effect;
+        this.damage = damage;
+        this.position = position;
+        this.speedX = speedX;
+        this.speedY = speedY;
+        this.piercing = piercing;
+        this.canPassObstacles = canPassObstacles;
+        this.isDestroyed = false;
+    }
+
+    public Projectile(Zombie zombie,
+                      ProjectileType type,
+                      ProjectileEffect effect,
+                      int damage,
+                      Position position,
+                      float speedX,
+                      float speedY,
+                      boolean piercing,
+                      boolean canPassObstacles) {
+        this.plant = null;
+        this.zombie = zombie;
         this.type = type;
         this.effect = effect;
         this.damage = damage;
@@ -84,6 +109,30 @@ public class Projectile implements Ticker {
                                                 boolean canPassObstacles) {
         Projectile projectile = new Projectile(
                 plant,
+                type,
+                projectileEffect(type),
+                damage,
+                position,
+                speedX,
+                speedY,
+                piercing,
+                canPassObstacles
+        );
+        GameSession.getInstance().getArena().addProjectile(projectile);
+        return projectile;
+    }
+
+
+    public static Projectile spawnZombieProjectile(Zombie zombie,
+                                                   ProjectileType type,
+                                                   int damage,
+                                                   Position position,
+                                                   int speedX,
+                                                   int speedY,
+                                                   boolean piercing,
+                                                   boolean canPassObstacles) {
+        Projectile projectile = new Projectile(
+                zombie,
                 type,
                 projectileEffect(type),
                 damage,
@@ -165,7 +214,7 @@ public class Projectile implements Ticker {
 
         if (effect.ignoresArmor()) {
             boolean killed = z.takeDirectDamage(finalDamage);
-            if(killed){
+            if (killed) {
                 this.getPlant().onZombieDeath(z);
             }
         } else {
@@ -180,6 +229,20 @@ public class Projectile implements Ticker {
             if (pierceCount <= 0) {
                 isDestroyed = true;
             }
+        } else {
+            isDestroyed = true;
+        }
+    }
+
+
+    public void onHit(Plant p) {
+        if (isDestroyed || p == null || p.isDead()) return;
+
+        p.takeDamage(this.damage);
+
+        if (piercing) {
+            pierceCount--;
+            if (pierceCount <= 0) isDestroyed = true;
         } else {
             isDestroyed = true;
         }
@@ -202,9 +265,9 @@ public class Projectile implements Ticker {
             System.out.println("Explode-o-nut bowled and exploded!");
             List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(position.getCol(), position.getRow(), 1.5);
             for (Zombie target : targets)
-                if (!target.isDead()){
+                if (!target.isDead()) {
                     boolean killed = target.takeDirectDamage(1800);
-                    if(killed){
+                    if (killed) {
                         plant.onZombieDeath(target);
                     }
 
@@ -215,7 +278,7 @@ public class Projectile implements Ticker {
 
         } else if (type == ProjectileType.GIANT_NUT_BOWL) {
             boolean killed = zombie.takeDirectDamage(zombie.getHealth());
-            if(killed){
+            if (killed) {
                 plant.onZombieDeath(zombie);
             }
             System.out.println("Giant nut crushed " + zombie.getName());
@@ -339,5 +402,12 @@ public class Projectile implements Ticker {
         this.lifespanTicks = ticks;
     }
 
+    public boolean isFiredByZombie() {
+        return zombie != null;
+    }
+
+    public Zombie getOwnerZombie() {
+        return zombie;
+    }
 
 }

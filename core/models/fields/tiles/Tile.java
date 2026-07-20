@@ -56,4 +56,22 @@ public abstract class Tile implements Ticker {
 
         return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK);
     }
+
+
+    public String getType() {
+        return switch (this) {
+            case GraveStoneTile t -> "GraveStone";
+            case PlantVaseTile t -> "PlantVaseTile";
+            case RandomVaseTile t -> "RandomVaseTile";
+            case ZombieVaseTile t -> "ZombieVaseTile";
+            case VaseTile t -> "VaseTile";
+            case WaterTile t -> "WaterTile";
+            case NormalTile t -> "NormalTile";
+            case SlipperyTile t -> "SlipperyTile";
+            case LowShoreTile t -> "LowShoreTile";
+            case NecromanceTile t -> "NecromanceTile";
+            default -> getClass().getSimpleName();
+        };
+    }
+
 }
