@@ -91,6 +91,10 @@ public class GameSession {
         }
     }
 
+    public void setCooldownForPlant(Plant plant){
+        plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
+    }
+
     public static void startNewGame(List<Plant> inGamePlants) {
         Adventure adventure = models.App.getActiveAdventure();
         Level currentLevel = adventure.getCurrentChapter().getCurrentLevel();
@@ -129,11 +133,6 @@ public class GameSession {
                 currentMode.engineLoop(this, timeManager.getCurrentTick());
             }
 
-//            for (Plant p : getArena().getActivePlants()) p.onTick(timeManager.getCurrentTick());
-//            for (Zombie z : getArena().getActiveZombies()) z.onTick(timeManager.getCurrentTick());
-//            for (Projectile proj : getArena().getActiveProjectiles()) proj.onTick(timeManager.getCurrentTick());
-
-            checkCollisions();
             removeDeadEntities();
             checkGameConditions();
             checkCollisions();
