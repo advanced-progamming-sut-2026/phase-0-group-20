@@ -8,12 +8,16 @@ public class WinWithThatCategoryCondition extends QuestCondition {
     boolean lost = false;
     boolean withOrWithout;// true for just the family and false for without the family
     PlantCategory plantCategory;
+    boolean levelCompleted = false;
 
     public WinWithThatCategoryCondition(PlantCategory category, boolean modifier) {
         this.plantCategory = category;
         this.withOrWithout = modifier;
     }
-    public WinWithThatCategoryCondition(){}
+
+    public WinWithThatCategoryCondition() {
+    }
+
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();
@@ -26,11 +30,13 @@ public class WinWithThatCategoryCondition extends QuestCondition {
             if (event == GameEvent.PLANT_PLACED && payload.getPlant().getCategory() == plantCategory) {
                 lost = true;
             }
+        } else if (event == GameEvent.LEVEL_COMPLETED) {
+            levelCompleted = true;
         }
     }
 
     @Override
     public boolean isHappened() {
-        return !lost;
+        return levelCompleted && !lost;
     }
 }

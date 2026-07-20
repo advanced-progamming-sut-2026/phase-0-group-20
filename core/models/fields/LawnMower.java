@@ -25,24 +25,28 @@ public class LawnMower implements Ticker {
 
     @Override
     public void onTick(int currentTick) {
-        this.activate = false;
-        for (Zombie zombie : arena.getActiveZombies()) {
-            if (!(zombie.isDead()) && zombie.getRow() == row && zombie.getX() <= 0) {
-                if (!activate) {
-                    activate = true;
-                    GameSession.getInstance().setEvent(GameEvent.LAWNMOWER_TRIGGERED);
-                    destroyZombies();
-                } else {
-                    // we lost the game and it depends on how we implement the Win and Lose Conditions.
+        if (this.activate) {
+            for (Zombie zombie : arena.getActiveZombies()) {
+                if (!zombie.isDead() && zombie.getRow() == row && zombie.getX() <= 0) {
                     GameSession.getInstance().setZombieBreached(true);
-
                     GameEventMessenger.getInstance().dispatch(
                             GameEvent.GAME_OVER,
                             new GameEventPayload.Builder(GameEvent.GAME_OVER)
                                     .message("The zombie ate your brain; LOSER!!!")
                                     .build()
                     );
+                    return;
                 }
+            }
+            return;
+        }
+
+        for (Zombie zombie : arena.getActiveZombies()) {
+            if (!zombie.isDead() && zombie.getRow() == row && zombie.getX() <= 0) {
+                this.activate = true;
+                GameSession.getInstance().setEvent(GameEvent.LAWNMOWER_TRIGGERED);
+                destroyZombies();
+                return;
             }
         }
     }

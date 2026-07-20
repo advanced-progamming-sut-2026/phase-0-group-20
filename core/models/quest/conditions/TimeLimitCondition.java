@@ -4,20 +4,28 @@ import models.game.events.GameEvent;
 import models.game.events.GameEventPayload;
 
 public class TimeLimitCondition extends QuestCondition {
-    private int timeLimit;
-    private int timer = 0;
+    private int timeLimitSeconds;
+    private long waveStartTime = 0;
 
-    public TimeLimitCondition(int timeLimit, int target) {
-        this.timeLimit = timeLimit;
+    public TimeLimitCondition(int timeLimitSeconds, int target) {
+        this.timeLimitSeconds = timeLimitSeconds;
         this.targetProgress = target;
     }
     public TimeLimitCondition(){}
 
     @Override
     public void updateProgress(GameEventPayload payload) {
-        timer++;
-        if (timer <= timeLimit && payload.getType() == GameEvent.ZOMBIE_KILLED) {
-            currentProgress++;
+        GameEvent event = payload.getType();
+
+        if (event == GameEvent.WAVE_STARTED && waveStartTime == 0) {
+            waveStartTime = System.currentTimeMillis();
+        }
+
+        if (event == GameEvent.ZOMBIE_KILLED && waveStartTime > 0) {
+            long elapsedTime = (System.currentTimeMillis() - waveStartTime) / 1000;
+            if (elapsedTime <= timeLimitSeconds) {
+                currentProgress++;
+            }
         }
     }
 }

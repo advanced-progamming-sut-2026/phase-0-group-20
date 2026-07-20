@@ -14,7 +14,9 @@ import models.enums.plants.PlantCategory;
 import models.fields.Brain;
 import models.fields.LawnMower;
 import models.fields.tiles.Tile;
+import models.game.adventure.Adventure;
 import models.game.adventure.Chapter;
+import models.game.adventure.levels.Level;
 import models.game.events.*;
 import models.timeManager.TimeManager;
 
@@ -87,6 +89,22 @@ public class GameSession {
                     (plant.getCategory() == category) ? 0 : cooldown
             );
         }
+    }
+
+    public static void startNewGame(List<Plant> inGamePlants) {
+        Adventure adventure = models.App.getActiveAdventure();
+        Level currentLevel = adventure.getCurrentChapter().getCurrentLevel();
+
+        List<models.entities.zombies.Zombie> inGameZombies = models.InGameEntityGenerator.getZombiesForLevel(
+                adventure.getCurrentChapter().getSeasonType(),
+                currentLevel.getLevelNumber()
+        );
+
+        Arena arena = new models.game.Arena();
+        GameSession.destroyInstance();
+        GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
+        arena.registerLawnMowers();
+        models.App.setActiveSession(session);
     }
 
     public static void destroyInstance() {
