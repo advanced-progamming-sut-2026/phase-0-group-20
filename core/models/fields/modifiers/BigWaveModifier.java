@@ -39,7 +39,7 @@ public class BigWaveModifier implements SeasonModifier {
 
     @Override
     public void onZombieSpawn(Zombie zombie, Arena arena) {
-        double currentEmergeChance = Math.min(0.8, EMERGE_FROM_BELOW_CHANCE + 0.05*getCurrentLevelNumber());
+        double currentEmergeChance = Math.min(0.8, EMERGE_FROM_BELOW_CHANCE + 0.05 * getCurrentLevelNumber());
         if (zombie == null || rand.nextDouble() >= currentEmergeChance) return;
 
         List<LowShoreTile> floodedShores = new ArrayList<>();

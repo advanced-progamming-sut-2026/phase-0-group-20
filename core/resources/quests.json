@@ -6,7 +6,7 @@
     "Reward": "sun_amount / 100 Coins",
     "Priority": "Medium",
     "Variables": "3000-4000-5000",
-    "onMission" : false
+    "onMission": false
   },
   {
     "Title": "Chapter Hunter",
@@ -15,7 +15,7 @@
     "Reward": "10 Seed Packets",
     "Priority": "High",
     "Variables": "Any game chapter",
-    "onMission" : false
+    "onMission": false
   },
   {
     "Title": "Pro Plant Player",
@@ -24,7 +24,7 @@
     "Reward": "Random New Plant",
     "Priority": "High",
     "Variables": "Any plant capable of killing",
-    "onMission" : false
+    "onMission": false
   },
   {
     "Title": "Only Cactus",
@@ -33,7 +33,7 @@
     "Reward": "20 Gems",
     "Priority": "High",
     "Variables": null,
-    "onMission" : false
+    "onMission": false
   },
   {
     "Title": "Economical Herbivore",
@@ -42,7 +42,7 @@
     "Reward": "20 - n Seed Packets",
     "Priority": "High",
     "Variables": "0-1-2-3-4-5",
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Defense Master",
@@ -51,7 +51,7 @@
     "Reward": "200 Gems",
     "Priority": "Critical",
     "Variables": null,
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Quick Reaction",
@@ -60,7 +60,7 @@
     "Reward": "500 Coins",
     "Priority": "Medium",
     "Variables": null,
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Pro Demolition",
@@ -69,7 +69,7 @@
     "Reward": "100 Coins",
     "Priority": "Low",
     "Variables": null,
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Symmetry",
@@ -78,7 +78,7 @@
     "Reward": "500 Coins",
     "Priority": "High",
     "Variables": null,
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Family Massacre",
@@ -87,7 +87,7 @@
     "Reward": "1000 Coins",
     "Priority": "Medium",
     "Variables": "Plant family",
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Flourish in Limits",
@@ -96,7 +96,7 @@
     "Reward": "100 Gems",
     "Priority": "High",
     "Variables": "Plant family",
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Night or Morning",
@@ -105,7 +105,7 @@
     "Reward": "20 Gems",
     "Priority": "High",
     "Variables": null,
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Win Streak",
@@ -114,7 +114,7 @@
     "Reward": "5000 Coins",
     "Priority": "Medium",
     "Variables": null,
-    "onMission" : false
+    "onMission": false
   },
   {
     "Title": "Almost Won",
@@ -123,7 +123,7 @@
     "Reward": "300 Coins",
     "Priority": "Medium",
     "Variables": null,
-    "onMission" : false
+    "onMission": false
   },
   {
     "Title": "What OCD?",
@@ -132,7 +132,7 @@
     "Reward": "800 Coins",
     "Priority": "Medium",
     "Variables": null,
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Cloudy Day",
@@ -141,7 +141,7 @@
     "Reward": "10 Gems",
     "Priority": "High",
     "Variables": null,
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "One Column Less",
@@ -150,7 +150,7 @@
     "Reward": "10 Gems",
     "Priority": "High",
     "Variables": "Number of columns",
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Defenseless Row",
@@ -159,7 +159,7 @@
     "Reward": "20 Gems",
     "Priority": "High",
     "Variables": "Number of rows",
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Defenseless Cross",
@@ -168,7 +168,7 @@
     "Reward": "25 Gems",
     "Priority": "High",
     "Variables": "Minimum number of rows/columns",
-    "onMission" : true
+    "onMission": true
   },
   {
     "Title": "Lawnmower Time",
@@ -177,6 +177,6 @@
     "Reward": "n Gems",
     "Priority": "Medium",
     "Variables": "10-20-30-40-50",
-    "onMission" : false
+    "onMission": false
   }
 ]

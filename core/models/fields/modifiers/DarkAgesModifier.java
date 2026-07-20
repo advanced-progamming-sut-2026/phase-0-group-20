@@ -78,7 +78,7 @@ public class DarkAgesModifier implements SeasonModifier {
     }
 
     private void spawnRandomGraves(Arena arena) {
-        double currentSpawnChance = Math.min(0.9, GRAVE_SPAWN_CHANCE + 0.5*getCurrentLevelNumber());
+        double currentSpawnChance = Math.min(0.9, GRAVE_SPAWN_CHANCE + 0.5 * getCurrentLevelNumber());
         if (rand.nextDouble() >= currentSpawnChance) return;
 
 

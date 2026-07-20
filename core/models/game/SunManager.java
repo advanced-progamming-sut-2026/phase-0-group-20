@@ -39,6 +39,7 @@ public class SunManager implements Ticker {
         Sun sun = new Sun(type, spawnX, spawnY, currentTick);
         GameSession.getInstance().getTimeManager().registerNewTicker(sun);
         String message = "New "+sun.getType().getLabel()+" sun reached from the sky at " + (spawnX+1) + ", " + (spawnY+1) + ".";
+
         GameSession.notify(message);
         arena.addSun(sun);
 

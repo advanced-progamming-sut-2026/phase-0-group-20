@@ -7,12 +7,15 @@ import models.game.events.GameEvent;
 import models.game.events.GameEventPayload;
 
 public class KillWithNoLawnmowerCondition extends QuestCondition {
-    private  int column ;
-    public KillWithNoLawnmowerCondition(int amount , int col) {
+    private int column;
+
+    public KillWithNoLawnmowerCondition(int amount, int col) {
         targetProgress = amount;
         column = col;
     }
-    public KillWithNoLawnmowerCondition() {}
+
+    public KillWithNoLawnmowerCondition() {
+    }
 
     @Override
     public void updateProgress(GameEventPayload payload) {

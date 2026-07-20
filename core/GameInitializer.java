@@ -1,8 +1,8 @@
 import models.App;
 import models.entities.plants.Plant;
-import models.entities.plants.PlantLoader;
-import models.entities.plants.PlantFactory;
 import models.entities.plants.PlantData;
+import models.entities.plants.PlantFactory;
+import models.entities.plants.PlantLoader;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieFactory;
 import models.entities.zombies.ZombieType;
@@ -27,7 +27,7 @@ public class GameInitializer {
     private static void initPlants() {
         System.out.println("Loading plants...");
         List<PlantData> loadedPlants = PlantLoader.loadAll(PLANTS_JSON_PATH);
-        ArrayList <Plant> plants = new ArrayList<>();
+        ArrayList<Plant> plants = new ArrayList<>();
 
         if (loadedPlants.isEmpty()) {
             throw new RuntimeException("CRITICAL: Failed to load plant data. Halting startup.");
@@ -39,9 +39,9 @@ public class GameInitializer {
         }
 
         new PlantFactory(plantMap);
-        for(Integer id : plantMap.keySet()) {
+        for (Integer id : plantMap.keySet()) {
             Plant newPlant = PlantFactory.create(id);
-            if(newPlant == null)
+            if (newPlant == null)
                 continue;
             plants.add(newPlant);
             System.out.println("Successfully loaded plant: " + newPlant.getName());

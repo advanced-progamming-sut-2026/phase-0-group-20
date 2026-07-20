@@ -12,7 +12,9 @@ public class WinWithSpecificTagCondition extends QuestCondition {
     public WinWithSpecificTagCondition(PlantTag plantTag) {
         this.plantTag = plantTag;
     }
-    public WinWithSpecificTagCondition(){}
+
+    public WinWithSpecificTagCondition() {
+    }
 
     @Override
     public void updateProgress(GameEventPayload payload) {

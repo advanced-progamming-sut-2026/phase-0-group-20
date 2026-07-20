@@ -31,7 +31,7 @@ public class QuestLoader {
                 QuestCategory category = parseCategory(categoryStr);
                 QuestPriority priority = parsePriority(priorityStr);
 
-                Quest quest = new Quest(title, category, priority,onMission , conditionStr);
+                Quest quest = new Quest(title, category, priority, onMission, conditionStr);
 
                 quest.setCondition(QuestFactory.createCondition(rowIndex, title, conditionStr, variableStr));
                 quest.setReward(QuestFactory.createReward(rowIndex, rewardStr, variableStr));

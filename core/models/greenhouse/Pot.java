@@ -20,7 +20,8 @@ public class Pot implements Ticker {
     private Plant plantedPlant = null;
 
     @JsonProperty("readyTime")
-    private long readyTime = 0;;
+    private long readyTime = 0;
+    ;
 
     @JsonProperty("isItMari")
     private boolean isItMari = false;
@@ -123,8 +124,7 @@ public class Pot implements Ticker {
 
         if (hours > 0) {
             return String.format("%d:%02d:%02d", hours, minutes, seconds);
-        }
-        else {
+        } else {
             return String.format("%d:%02d", minutes, seconds);
         }
     }

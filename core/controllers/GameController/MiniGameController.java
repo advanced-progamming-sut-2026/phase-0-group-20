@@ -1,6 +1,5 @@
 package controllers.GameController;
 
-import controllers.NavigationController;
 import models.InGameEntityGenerator;
 import models.Position;
 import models.Result;
@@ -18,7 +17,6 @@ import models.game.adventure.levels.Level;
 import models.game.minigame.BowlingLevel;
 import models.game.minigame.IZombieLevel;
 import models.game.minigame.VaseBreakerLevel;
-import views.GameFlowMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -198,7 +196,7 @@ public class MiniGameController {
                     for (int k = 0; k < zombiesInTile.size(); k++) {
                         Zombie z = zombiesInTile.get(k);
                         mapDisplay.append(z.getName()).append(":")
-                                .append((int)(z.getX() / models.enums.PhysicalConstants.TILE_UNIT_LENGTH)).append(",")
+                                .append((int) (z.getX() / models.enums.PhysicalConstants.TILE_UNIT_LENGTH)).append(",")
                                 .append(z.getRow());
 
                         if (k < zombiesInTile.size() - 1) {

@@ -7,8 +7,6 @@ import models.entities.plants.strategy.IPlantStrategy;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 
-import java.util.Random;
-
 public class SunProductionStrategy implements IPlantStrategy {
     private int lastProductionTick = 0;
     private int aliveTicks = 0;

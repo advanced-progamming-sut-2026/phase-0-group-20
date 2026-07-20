@@ -68,7 +68,7 @@ public class QuestFactory {
                 //after difficulties
             }
             case 13 -> {
-                return new KillWithNoLawnmowerCondition(10 ,0);
+                return new KillWithNoLawnmowerCondition(10, 0);
             }
             case 14 -> {
                 return new SymmetryLogicCondition(false);

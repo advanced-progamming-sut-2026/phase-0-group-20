@@ -7,7 +7,10 @@ public class LawnMoverKillsCondition extends QuestCondition {
     public LawnMoverKillsCondition(int amount) {
         targetProgress = amount;
     }
-    public LawnMoverKillsCondition() {}
+
+    public LawnMoverKillsCondition() {
+    }
+
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();

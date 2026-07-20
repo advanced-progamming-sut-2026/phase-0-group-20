@@ -65,7 +65,7 @@ public enum Menu {
             case LOGIN_MENU -> EnumSet.of(SIGNUP_MENU);
             case SETTINGS_MENU, NEWS_MENU, SHOP_MENU, LEADERBOARD_MENU, COLLECTION_MENU -> null;
 
-            case MAIN_MENU -> EnumSet.of(GAME_MENU, PROFILE_MENU, SETTINGS_MENU,NEWS_MENU);
+            case MAIN_MENU -> EnumSet.of(GAME_MENU, PROFILE_MENU, SETTINGS_MENU, NEWS_MENU);
 
             case PLANTSELLECTION_MENU -> EnumSet.of(GAME_MENU);
             case PROFILE_MENU -> EnumSet.of(PLANTSELLECTION_MENU);

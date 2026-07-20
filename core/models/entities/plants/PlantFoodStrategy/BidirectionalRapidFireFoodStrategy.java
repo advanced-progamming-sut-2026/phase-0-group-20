@@ -2,7 +2,6 @@ package models.entities.plants.PlantFoodStrategy;
 
 import models.entities.plants.Plant;
 import models.entities.projectiles.ProjectileMechanism;
-import models.game.GameSession;
 
 /**
  * Fires a rapid barrage simultaneously forward and backward.

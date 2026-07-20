@@ -4,7 +4,6 @@ import models.entities.zombies.Zombie;
 import models.game.Arena;
 import models.game.GameSession;
 import models.game.events.GameEvent;
-import models.game.events.GameEventListener;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
