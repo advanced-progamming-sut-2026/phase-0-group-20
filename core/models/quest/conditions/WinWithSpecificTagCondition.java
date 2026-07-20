@@ -13,6 +13,7 @@ public class WinWithSpecificTagCondition extends QuestCondition {
         this.plantTag = plantTag;
     }
     public WinWithSpecificTagCondition(){}
+
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();
@@ -23,8 +24,8 @@ public class WinWithSpecificTagCondition extends QuestCondition {
                     return;
                 }
             }
+            isHappened = true;
         }
-        isHappened = true;
     }
 
     @Override

@@ -133,30 +133,9 @@ public class PlantSelectionController {
             inGamePlants.add(InGameEntityGenerator.getPlantForGame(p, p.isBoosted()));
         }
 
+        GameSession.startNewGame(inGamePlants);
 
-
-        Adventure adventure = App.getActiveAdventure();
-        Level currentLevel = App.getActiveAdventure().getCurrentChapter().getCurrentLevel();
-        List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(adventure.getCurrentChapter().getSeasonType(), currentLevel.getLevelNumber());
-
-        Arena arena = new Arena();
-        GameSession.destroyInstance(); // for safety
-        GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
-        arena.registerLawnMowers();
-
-//        TimeManager timeManager = GameSession.getInstance().getTimeManager();
-
-//        for (Zombie z : inGameZombies) {
-//            timeManager.registerNewTicker(z);
-//        }
-//
-//        for (Plant p : inGamePlants) {
-//            timeManager.registerNewTicker(p);
-//        }
-
-        App.setActiveSession(session);
         App.setActiveMenu(Menu.GAME_FLOW_MENU);
-
         selectedPlants.clear();
         boostedPlantNames.clear();
 

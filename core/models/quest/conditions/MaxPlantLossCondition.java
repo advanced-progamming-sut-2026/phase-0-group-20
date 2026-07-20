@@ -5,11 +5,15 @@ import models.game.events.GameEventPayload;
 
 public class MaxPlantLossCondition extends QuestCondition {
     boolean lost = false;
+    boolean levelCompleted = false;
 
     public MaxPlantLossCondition(int amount) {
         targetProgress = amount;
     }
-    public MaxPlantLossCondition() {}
+
+    public MaxPlantLossCondition() {
+    }
+
     @Override
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();
@@ -19,11 +23,13 @@ public class MaxPlantLossCondition extends QuestCondition {
                 lost = true;
                 return;
             }
+        } else if (event == GameEvent.LEVEL_COMPLETED) {
+            levelCompleted = true;
         }
     }
 
     @Override
     public boolean isHappened() {
-        return !lost;
+        return levelCompleted && !lost;
     }
 }

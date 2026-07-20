@@ -3,6 +3,7 @@ package controllers.GameController;
 import models.App;
 import models.Result;
 import models.enums.Menu;
+import models.game.GameSession;
 import models.game.adventure.Adventure;
 import models.game.adventure.Chapter;
 import models.game.adventure.levels.Level;
@@ -26,7 +27,10 @@ public class GameMenuController {
 
         if(currentLevel!=null && !currentLevel.skipsPlantSelection()) {
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
-        }// needs an else
+        }else if ( currentLevel != null){
+            GameSession.startNewGame(App.getActiveUser().getUnlockedPlants());
+            App.setActiveMenu(Menu.GAME_FLOW_MENU);
+        }
 
 
 

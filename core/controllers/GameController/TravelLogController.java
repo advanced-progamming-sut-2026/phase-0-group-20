@@ -103,6 +103,7 @@ public class TravelLogController {
             if (quest.getCondition() != null) {
                 int current = quest.getCondition().getCurrentProgress();
                 int target = quest.getCondition().getTargetProgress();
+                if(target ==0 ) target = 1;
                 progressText = current + "/" + target;
             }
 

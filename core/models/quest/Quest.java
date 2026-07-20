@@ -3,6 +3,7 @@ package models.quest;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
+import models.game.GameSession;
 import models.game.events.GameEventPayload;
 import models.quest.conditions.IQuestCondition;
 import models.quest.conditions.QuestCondition;
@@ -67,12 +68,13 @@ public class Quest {
     public void complete() {
         if (!isCompleted) {
             this.isCompleted = true;
-            System.out.println("Quest Completed: " + title + "!"); // for testing
 
             User activeUser = App.getActiveUser();
             if (activeUser != null && reward != null) {
                 reward.claimReward(activeUser);
             }
+            String message = "Quest Completed: " + title + "! You gained "+reward.toString();
+            GameSession.notify(message);
         }
     }
 

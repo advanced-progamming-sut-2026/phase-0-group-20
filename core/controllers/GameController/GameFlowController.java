@@ -17,6 +17,9 @@ import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
 import models.timeManager.TimeManager;
 
+
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -281,8 +284,8 @@ public class GameFlowController {
             boolean isMowerAvailable = (lawnMowers != null && row < lawnMowers.length && lawnMowers[row] != null);
             grid.append(isMowerAvailable ? "[LM] | " : "[  ] | ");
 
-            java.util.List<Zombie> rowZombies = arena.zombieInRow(row);
-            if (rowZombies == null) rowZombies = new java.util.ArrayList<>();
+            List<Zombie> rowZombies = arena.zombieInRow(row);
+            if (rowZombies == null) rowZombies = new ArrayList<>();
 
             for (int col = 0; col < cols; col++) {
                 grid.append(getTileSymbol(arena.getTile(row, col), rowZombies, col));
@@ -293,7 +296,7 @@ public class GameFlowController {
         return grid.toString();
     }
 
-    private String getTileSymbol(Tile tile, java.util.List<Zombie> rowZombies, int col) {
+    private String getTileSymbol(Tile tile, List<Zombie> rowZombies, int col) {
         boolean hasPlant = (tile != null && tile.getPlants() != null && !tile.getPlants().isEmpty());
         boolean hasZombie = false;
 
@@ -320,8 +323,8 @@ public class GameFlowController {
         int cols = arena.getCols();
 
         for (int row = 0; row < rows; row++) {
-            java.util.List<Zombie> rowZombies = arena.zombieInRow(row);
-            if (rowZombies == null) rowZombies = new java.util.ArrayList<>();
+            List<Zombie> rowZombies = arena.zombieInRow(row);
+            if (rowZombies == null) rowZombies = new ArrayList<>();
 
             for (int col = 0; col < cols; col++) {
                 String tileDetails = getTileDetails(arena.getTile(row, col), rowZombies, row, col);
@@ -339,9 +342,9 @@ public class GameFlowController {
         return details.toString();
     }
 
-    private String getTileDetails(Tile tile, java.util.List<Zombie> rowZombies, int row, int col) {
+    private String getTileDetails(Tile tile, List<Zombie> rowZombies, int row, int col) {
         StringBuilder sb = new StringBuilder();
-        java.util.List<Zombie> zombiesInTile = new java.util.ArrayList<>();
+        List<Zombie> zombiesInTile = new ArrayList<>();
 
         for (Zombie z : rowZombies) {
             if (!z.isDead() && (int) z.getCol() == col) {
@@ -349,7 +352,7 @@ public class GameFlowController {
             }
         }
 
-        java.util.List<Plant> plantsInTile = (tile != null && tile.getPlants() != null) ? tile.getPlants() : new java.util.ArrayList<>();
+        List<Plant> plantsInTile = (tile != null && tile.getPlants() != null) ? tile.getPlants() : new ArrayList<>();
 
         if (zombiesInTile.isEmpty() && plantsInTile.isEmpty()) {
             return "";
@@ -358,7 +361,7 @@ public class GameFlowController {
 
         if (!plantsInTile.isEmpty()) {
             sb.append("  [Plants]  ");
-            java.util.List<String> plantNames = new java.util.ArrayList<>();
+            List<String> plantNames = new ArrayList<>();
             for (Plant p : plantsInTile) {
                 plantNames.add(p.getName());
             }
@@ -367,7 +370,7 @@ public class GameFlowController {
 
         if (!zombiesInTile.isEmpty()) {
             sb.append("  [Zombies] ");
-            java.util.List<String> zombieDetails = new java.util.ArrayList<>();
+            List<String> zombieDetails = new ArrayList<>();
             for (Zombie z : zombiesInTile) {
                 zombieDetails.add(String.format("%s (%d)", z.getName(), z.getCol()));
             }
@@ -377,7 +380,6 @@ public class GameFlowController {
 
         return sb.toString();
     }
-
     public Result showCurrentState() {
         GameSession session = GameSession.getInstance();
         Arena arena = session.getArena();
