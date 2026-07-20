@@ -18,8 +18,6 @@ import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
 import models.timeManager.TimeManager;
 
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -148,7 +146,7 @@ public class GameFlowController {
                     ? "There is no such plant named " + plantName + "in the belt"
                     : "There no such plant named " + plantName);
         }
-        Tile desiredTile = arena.getTile(spawnX - 1, spawnY - 1);
+        Tile desiredTile = arena.getTile(spawnY - 1, spawnX - 1);
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
         }
@@ -192,7 +190,7 @@ public class GameFlowController {
         if (posX < 1 || posY < 1) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
-        Tile desiredTile = arena.getTile(posX - 1, posY - 1);
+        Tile desiredTile = arena.getTile(posY - 1, posX - 1);
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
         }
@@ -220,7 +218,7 @@ public class GameFlowController {
         if (posX < 1 || posY < 1) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
-        Tile desiredTile = arena.getTile(posX - 1, posY - 1);
+        Tile desiredTile = arena.getTile(posY - 1, posX - 1);
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
         }
@@ -382,6 +380,7 @@ public class GameFlowController {
 
         return sb.toString();
     }
+
     public Result showCurrentState() {
         GameSession session = GameSession.getInstance();
         Arena arena = session.getArena();
@@ -518,8 +517,8 @@ public class GameFlowController {
     public Result showTileStatus(String x, String y) {
         int row, col;
         try {
-            row = Integer.parseInt(x);
-            col = Integer.parseInt(y);
+            col = Integer.parseInt(x);
+            row = Integer.parseInt(y);
         } catch (NumberFormatException e) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
@@ -573,5 +572,88 @@ public class GameFlowController {
 
         return new Result(true, statusDisplay.toString().trim());
     }
+
+
+    public Result printMap() {
+        GameSession session = GameSession.getInstance();
+        Arena arena = session.getArena();
+        StringBuilder sb = new StringBuilder();
+
+        String horizontalBorder = "+----------".repeat(arena.getCols()) + "+\n";
+
+        sb.append("\n=== PIXEL-PERFECT ARENA MAP ===\n");
+
+        for (int r = 0; r < arena.getRows(); r++) {
+            sb.append(horizontalBorder);
+
+            char[] rowContent = new char[arena.getCols() * 10];
+
+            for (int c = 0; c < arena.getCols(); c++) {
+                Tile tile = arena.getTile(r, c);
+                char bg = ' ';
+
+                if (tile.getType().equals("WaterTile") || tile.getType().equals("LowShoreTile"))
+                    bg = '~';
+                else if (tile.getType().equals("SlipperyTile"))
+                    bg = '#';
+
+
+                for (int i = 0; i < 10; i++)
+                    rowContent[c * 10 + i] = bg;
+
+
+                if (tile.getType().equals("GraveStone") || tile.getType().equals("NecromancyTile"))
+                    rowContent[c * 10] = 'G';
+                else if (tile.isCrater())
+                    rowContent[c * 10] = 'O';
+
+            }
+
+            for (Sun sun : arena.getActiveSuns()) {
+                if (!sun.isCollected() && sun.getRow() == r) {
+                    int pos = sun.getCol() * 10 + 1;
+                    if (pos >= 0 && pos < rowContent.length) rowContent[pos] = 's';
+                }
+            }
+
+            for (Plant p : arena.getActivePlants()) {
+                if (p.getPlacedTile() != null && p.getPlacedTile().getRow() == r) {
+                    int pos = p.getPlacedTile().getCol() * 10 + 4;
+                    if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '+';
+                }
+            }
+
+            for (Zombie z : arena.getActiveZombies()) {
+                if (!z.isDead() && z.getRow() == r) {
+                    int pos = (int) z.getX();
+                    if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '*';
+                }
+            }
+
+            for (Projectile p : arena.getActiveProjectiles()) {
+                if (!p.isDestroyed() && p.getPosition().getRow() == r) {
+                    int pos = (int) p.getX();
+                    if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '-';
+                }
+            }
+
+            sb.append("|");
+            for (int c = 0; c < arena.getCols(); c++)
+                sb.append(new String(rowContent, c * 10, 10)).append("|");
+
+
+            LawnMower lm = arena.getLawnMowers()[r];
+            if (lm != null && !lm.isActivate())
+                sb.append(" [LM]");
+
+            sb.append("\n");
+        }
+        sb.append(horizontalBorder);
+
+        sb.append("\nLegend: [+] Plant | [*] Zombie | [-] Projectile | [s] Sun | [~] Water | [G] Grave | [O] Crater | [#] Frozen Tile\n");
+
+        return new Result(true, sb.toString());
+    }
+
 
 }
