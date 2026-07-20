@@ -3,7 +3,9 @@
     "id": 1,
     "name": "Sunflower",
     "category": "SUN_PRODUCER",
-    "tags": ["DAY"],
+    "tags": [
+      "DAY"
+    ],
     "cost": 50,
     "baseHp": 300,
     "damage": 0,
@@ -14,16 +16,33 @@
     "plantFoodType": "SPAWN_SUN_ITEMS",
     "plantFoodValue": 150.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -2.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DOUBLE_SUN_CHANCE" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -2.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DOUBLE_SUN_CHANCE"
+      }
     ]
   },
   {
     "id": 2,
     "name": "Twin Sunflower",
     "category": "SUN_PRODUCER",
-    "tags": ["DAY"],
+    "tags": [
+      "DAY"
+    ],
     "cost": 125,
     "baseHp": 300,
     "damage": 0,
@@ -34,16 +53,35 @@
     "plantFoodType": "SPAWN_SUN_ITEMS",
     "plantFoodValue": 250.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -2.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -2.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 3,
     "name": "Sun-shroom",
     "category": "SUN_PRODUCER",
-    "tags": ["SHROOM", "WARM_UP", "NIGHT"],
+    "tags": [
+      "SHROOM",
+      "WARM_UP",
+      "NIGHT"
+    ],
     "cost": 25,
     "baseHp": 300,
     "damage": 0,
@@ -54,9 +92,24 @@
     "plantFoodType": "SPAWN_SUN_ITEMS",
     "plantFoodValue": 225.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": -5.0, "specialTag": "GROW_TIME_REDUCTION" },
-      { "level": 3, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DOUBLE_SUN_CHANCE" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": -5.0,
+        "specialTag": "GROW_TIME_REDUCTION"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DOUBLE_SUN_CHANCE"
+      }
     ]
   },
   {
@@ -74,9 +127,24 @@
     "plantFoodType": "SPAWN_SUN_ITEMS",
     "plantFoodValue": 225.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -2.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -2.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -94,16 +162,33 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 50.0, "specialTag": "SUN_AMOUNT_BUFF" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 50.0,
+        "specialTag": "SUN_AMOUNT_BUFF"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 6,
     "name": "Peashooter",
     "category": "SHOOTER",
-    "tags": ["PEA"],
+    "tags": [
+      "PEA"
+    ],
     "cost": 100,
     "baseHp": 300,
     "damage": 20,
@@ -114,16 +199,33 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 60.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 7,
     "name": "Repeater",
     "category": "SHOOTER",
-    "tags": ["PEA"],
+    "tags": [
+      "PEA"
+    ],
     "cost": 200,
     "baseHp": 300,
     "damage": 20,
@@ -134,16 +236,33 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 120.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 200.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 8,
     "name": "Threepeater",
     "category": "SHOOTER",
-    "tags": ["PEA"],
+    "tags": [
+      "PEA"
+    ],
     "cost": 300,
     "baseHp": 300,
     "damage": 20,
@@ -154,16 +273,34 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 180.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_COST", "value": -25.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 200.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 9,
     "name": "Snow Pea",
     "category": "SHOOTER",
-    "tags": ["ICE", "PEA"],
+    "tags": [
+      "ICE",
+      "PEA"
+    ],
     "cost": 150,
     "baseHp": 300,
     "damage": 20,
@@ -174,9 +311,24 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 60.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 2.0, "specialTag": "CHILL_DURATION_EXT" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 2.0,
+        "specialTag": "CHILL_DURATION_EXT"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -194,16 +346,34 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 40.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 11,
     "name": "Pea Pod",
     "category": "SHOOTER",
-    "tags": ["PEA", "STACK"],
+    "tags": [
+      "PEA",
+      "STACK"
+    ],
     "cost": 125,
     "baseHp": 300,
     "damage": 20,
@@ -214,16 +384,33 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 100.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 200.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 12,
     "name": "Split Pea",
     "category": "SHOOTER",
-    "tags": ["PEA"],
+    "tags": [
+      "PEA"
+    ],
     "cost": 125,
     "baseHp": 300,
     "damage": 20,
@@ -234,16 +421,33 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 90.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 200.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 13,
     "name": "Citron",
     "category": "SHOOTER",
-    "tags": ["CHARGE"],
+    "tags": [
+      "CHARGE"
+    ],
     "cost": 350,
     "baseHp": 300,
     "damage": 800,
@@ -254,16 +458,34 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 2000.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -1.0, "specialTag": "CHARGE_REDUCTION" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -50.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -1.0,
+        "specialTag": "CHARGE_REDUCTION"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -50.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 14,
     "name": "Caulipower",
     "category": "HOMING",
-    "tags": ["MAGIC", "CHARGE"],
+    "tags": [
+      "MAGIC",
+      "CHARGE"
+    ],
     "cost": 250,
     "baseHp": 300,
     "damage": 99999,
@@ -274,16 +496,33 @@
     "plantFoodType": "RANDOM_HYPNOTIZE",
     "plantFoodValue": 3.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -2.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -50.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -2.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -50.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 15,
     "name": "Electric Blueberry",
     "category": "HOMING",
-    "tags": ["CHARGE"],
+    "tags": [
+      "CHARGE"
+    ],
     "cost": 150,
     "baseHp": 300,
     "damage": 5000,
@@ -294,16 +533,33 @@
     "plantFoodType": "RANDOM_HYPNOTIZE",
     "plantFoodValue": 3.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -2.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "PRIORITIZE_GARGANTUARS" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -2.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "PRIORITIZE_GARGANTUARS"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 16,
     "name": "Bowling Bulb",
     "category": "SHOOTER",
-    "tags": ["CHARGE"],
+    "tags": [
+      "CHARGE"
+    ],
     "cost": 200,
     "baseHp": 300,
     "damage": 40,
@@ -314,9 +570,24 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 300.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -1.0, "specialTag": "REGEN_SPEEDUP" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 15.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -1.0,
+        "specialTag": "REGEN_SPEEDUP"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 15.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -334,16 +605,34 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 100.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "ADDITIONAL_PIERCE" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "ADDITIONAL_PIERCE"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 18,
     "name": "Fire Peashooter",
     "category": "SHOOTER",
-    "tags": ["FIRE", "PEA"],
+    "tags": [
+      "FIRE",
+      "PEA"
+    ],
     "cost": 175,
     "baseHp": 300,
     "damage": 40,
@@ -354,9 +643,24 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 120.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 200.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -374,16 +678,33 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 100.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -0.15, "specialTag": "" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -0.15,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 20,
     "name": "Goo Peashooter",
     "category": "SHOOTER",
-    "tags": ["POISON"],
+    "tags": [
+      "POISON"
+    ],
     "cost": 125,
     "baseHp": 300,
     "damage": 20,
@@ -394,16 +715,33 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 80.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 5.0, "specialTag": "POISON_TICK_BUFF" },
-      { "level": 3, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 5.0,
+        "specialTag": "POISON_TICK_BUFF"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 21,
     "name": "Mega Gatling Pea",
     "category": "SHOOTER",
-    "tags": ["PEA"],
+    "tags": [
+      "PEA"
+    ],
     "cost": 400,
     "baseHp": 300,
     "damage": 20,
@@ -414,16 +752,34 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 350.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 0.05, "specialTag": "AUTO_PLANT_FOOD_CHANCE" },
-      { "level": 4, "type": "BUFF_COST", "value": -50.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 0.05,
+        "specialTag": "AUTO_PLANT_FOOD_CHANCE"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -50.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 22,
     "name": "Sea-shroom",
     "category": "SHOOTER",
-    "tags": ["SHROOM", "WATER"],
+    "tags": [
+      "SHROOM",
+      "WATER"
+    ],
     "cost": 0,
     "baseHp": 300,
     "damage": 20,
@@ -434,16 +790,33 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 60.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "TILE_RANGE_EXT" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 10.0, "specialTag": "LIFESPAN_EXT" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "TILE_RANGE_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 10.0,
+        "specialTag": "LIFESPAN_EXT"
+      }
     ]
   },
   {
     "id": 23,
     "name": "Puff-shroom",
     "category": "SHOOTER",
-    "tags": ["SHROOM"],
+    "tags": [
+      "SHROOM"
+    ],
     "cost": 0,
     "baseHp": 300,
     "damage": 20,
@@ -454,16 +827,33 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 60.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 10.0, "specialTag": "LIFESPAN_EXT" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "TILE_RANGE_EXT" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 10.0,
+        "specialTag": "LIFESPAN_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "TILE_RANGE_EXT"
+      }
     ]
   },
   {
     "id": 24,
     "name": "Fume-shroom",
     "category": "STRIKE_THROUGH",
-    "tags": ["SHROOM"],
+    "tags": [
+      "SHROOM"
+    ],
     "cost": 125,
     "baseHp": 300,
     "damage": 20,
@@ -474,9 +864,24 @@
     "plantFoodType": "KNOCKBACK_BLAST",
     "plantFoodValue": 100.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "TILE_RANGE_EXT" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "TILE_RANGE_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -494,9 +899,24 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 200.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_ACTION_INTERVAL", "value": -0.4, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 150.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -0.4,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -514,16 +934,33 @@
     "plantFoodType": "MAP_WIDE_FREEZE",
     "plantFoodValue": 4.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 0.05, "specialTag": "BUTTER_CHANCE_BUFF" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 150.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 0.05,
+        "specialTag": "BUTTER_CHANCE_BUFF"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 27,
     "name": "Melon-pult",
     "category": "LOBBER",
-    "tags": ["AOE"],
+    "tags": [
+      "AOE"
+    ],
     "cost": 325,
     "baseHp": 300,
     "damage": 80,
@@ -534,16 +971,34 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 400.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_COST", "value": -25.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 15.0, "specialTag": "SPLASH_DAMAGE_BUFF" },
-      { "level": 4, "type": "BUFF_DAMAGE", "value": 30.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 15.0,
+        "specialTag": "SPLASH_DAMAGE_BUFF"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_DAMAGE",
+        "value": 30.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 28,
     "name": "Winter Melon",
     "category": "LOBBER",
-    "tags": ["ICE", "AOE"],
+    "tags": [
+      "ICE",
+      "AOE"
+    ],
     "cost": 500,
     "baseHp": 300,
     "damage": 80,
@@ -554,16 +1009,34 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 400.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_COST", "value": -50.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 15.0, "specialTag": "SPLASH_DAMAGE_BUFF" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_COST",
+        "value": -50.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 15.0,
+        "specialTag": "SPLASH_DAMAGE_BUFF"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 29,
     "name": "Pepper-pult",
     "category": "LOBBER",
-    "tags": ["FIRE", "AOE"],
+    "tags": [
+      "FIRE",
+      "AOE"
+    ],
     "cost": 200,
     "baseHp": 300,
     "damage": 50,
@@ -574,16 +1047,34 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 250.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 15.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "WARM_RADIUS_EXT" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 15.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "WARM_RADIUS_EXT"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 30,
     "name": "Potato Mine",
     "category": "EXPLOSIVE",
-    "tags": ["TRAP", "CHARGE"],
+    "tags": [
+      "TRAP",
+      "CHARGE"
+    ],
     "cost": 25,
     "baseHp": 300,
     "damage": 1800,
@@ -594,16 +1085,34 @@
     "plantFoodType": "SPAWN_CLONES",
     "plantFoodValue": 2.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -3.0, "specialTag": "ARM_TIME_REDUCTION" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_DAMAGE", "value": 600.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -3.0,
+        "specialTag": "ARM_TIME_REDUCTION"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_DAMAGE",
+        "value": 600.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 31,
     "name": "Primal Potato Mine",
     "category": "EXPLOSIVE",
-    "tags": ["TRAP", "CHARGE"],
+    "tags": [
+      "TRAP",
+      "CHARGE"
+    ],
     "cost": 50,
     "baseHp": 300,
     "damage": 2400,
@@ -614,9 +1123,24 @@
     "plantFoodType": "SPAWN_CLONES",
     "plantFoodValue": 2.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -1.0, "specialTag": "ARM_TIME_REDUCTION" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -3.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_DAMAGE", "value": 400.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -1.0,
+        "specialTag": "ARM_TIME_REDUCTION"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -3.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_DAMAGE",
+        "value": 400.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -634,16 +1158,33 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 600.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 600.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 33,
     "name": "Squash",
     "category": "EXPLOSIVE",
-    "tags": ["TRAP"],
+    "tags": [
+      "TRAP"
+    ],
     "cost": 50,
     "baseHp": 300,
     "damage": 1800,
@@ -654,9 +1195,24 @@
     "plantFoodType": "LOCAL_AOE_ATTACK",
     "plantFoodValue": 2.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_RECHARGE", "value": -3.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 600.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "BONUS_SMASH_CHARGES" }
+      {
+        "level": 2,
+        "type": "BUFF_RECHARGE",
+        "value": -3.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 600.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "BONUS_SMASH_CHARGES"
+      }
     ]
   },
   {
@@ -674,16 +1230,33 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 600.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "GRAPE_BOUNCE_EXT" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 600.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "GRAPE_BOUNCE_EXT"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 35,
     "name": "Jalapeno",
     "category": "EXPLOSIVE",
-    "tags": ["FIRE"],
+    "tags": [
+      "FIRE"
+    ],
     "cost": 125,
     "baseHp": 0,
     "damage": 1800,
@@ -694,16 +1267,33 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 600.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 600.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 36,
     "name": "Doom-shroom",
     "category": "EXPLOSIVE",
-    "tags": ["SHROOM"],
+    "tags": [
+      "SHROOM"
+    ],
     "cost": 125,
     "baseHp": 0,
     "damage": 1800,
@@ -714,16 +1304,34 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 800.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -50.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 800.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -50.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 37,
     "name": "Tangle Kelp",
     "category": "EXPLOSIVE",
-    "tags": ["TRAP", "WATER"],
+    "tags": [
+      "TRAP",
+      "WATER"
+    ],
     "cost": 25,
     "baseHp": 300,
     "damage": 99999,
@@ -734,16 +1342,34 @@
     "plantFoodType": "PULL_UNDERWATER",
     "plantFoodValue": 4.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "BONUS_GRAB_TARGETS" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "BONUS_GRAB_TARGETS"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 38,
     "name": "Iceberg Lettuce",
     "category": "EXPLOSIVE",
-    "tags": ["TRAP", "ICE"],
+    "tags": [
+      "TRAP",
+      "ICE"
+    ],
     "cost": 0,
     "baseHp": 300,
     "damage": 0,
@@ -754,9 +1380,24 @@
     "plantFoodType": "MAP_WIDE_FREEZE",
     "plantFoodValue": 10.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_RECHARGE", "value": -2.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 2.0, "specialTag": "FREEZE_DURATION_EXT" },
-      { "level": 4, "type": "BUFF_COST", "value": 0.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_RECHARGE",
+        "value": -2.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 2.0,
+        "specialTag": "FREEZE_DURATION_EXT"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": 0.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -774,16 +1415,33 @@
     "plantFoodType": "LOCAL_AOE_ATTACK",
     "plantFoodValue": 9.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 5.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_ACTION_INTERVAL", "value": -0.03, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 200.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -0.03,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 40,
     "name": "Phat Beet",
     "category": "MELEE",
-    "tags": ["AOE"],
+    "tags": [
+      "AOE"
+    ],
     "cost": 150,
     "baseHp": 300,
     "damage": 15,
@@ -794,9 +1452,24 @@
     "plantFoodType": "LOCAL_AOE_ATTACK",
     "plantFoodValue": 9.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_ACTION_INTERVAL", "value": -0.2, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 200.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -0.2,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -814,16 +1487,33 @@
     "plantFoodType": "PULL_UNDERWATER",
     "plantFoodValue": 3.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -2.0, "specialTag": "DIGEST_REDUCTION" },
-      { "level": 3, "type": "BUFF_HP", "value": 200.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_ACTION_INTERVAL", "value": -3.0, "specialTag": "DIGEST_REDUCTION" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -2.0,
+        "specialTag": "DIGEST_REDUCTION"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -3.0,
+        "specialTag": "DIGEST_REDUCTION"
+      }
     ]
   },
   {
     "id": 42,
     "name": "Wasabi Whip",
     "category": "MELEE",
-    "tags": ["FIRE"],
+    "tags": [
+      "FIRE"
+    ],
     "cost": 150,
     "baseHp": 300,
     "damage": 40,
@@ -834,16 +1524,34 @@
     "plantFoodType": "LOCAL_AOE_ATTACK",
     "plantFoodValue": 9.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "TILE_RANGE_EXT" },
-      { "level": 4, "type": "BUFF_HP", "value": 200.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "TILE_RANGE_EXT"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 43,
     "name": "Kiwibeast",
     "category": "MELEE",
-    "tags": ["AOE", "WARM_UP"],
+    "tags": [
+      "AOE",
+      "WARM_UP"
+    ],
     "cost": 175,
     "baseHp": 300,
     "damage": 15,
@@ -854,9 +1562,24 @@
     "plantFoodType": "LOCAL_AOE_ATTACK",
     "plantFoodValue": 25.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_HP", "value": 200.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 15.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "GROWTH_STAGE_MAX_UP" }
+      {
+        "level": 2,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 15.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "GROWTH_STAGE_MAX_UP"
+      }
     ]
   },
   {
@@ -874,9 +1597,24 @@
     "plantFoodType": "GRANT_PERMANENT_ARMOR",
     "plantFoodValue": 4000.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_HP", "value": 1000.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 1500.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_HP",
+        "value": 1000.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 1500.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -894,9 +1632,24 @@
     "plantFoodType": "GRANT_PERMANENT_ARMOR",
     "plantFoodValue": 8000.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_HP", "value": 2000.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 3000.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_HP",
+        "value": 2000.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 3000.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -914,16 +1667,33 @@
     "plantFoodType": "GRANT_PERMANENT_ARMOR",
     "plantFoodValue": 3000.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 5.0, "specialTag": "REFLECT_DAMAGE_BUFF" },
-      { "level": 3, "type": "BUFF_HP", "value": 1000.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 5.0,
+        "specialTag": "REFLECT_DAMAGE_BUFF"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 1000.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 47,
     "name": "Garlic",
     "category": "WALL_NUT",
-    "tags": ["MOVE_ZOMBIES"],
+    "tags": [
+      "MOVE_ZOMBIES"
+    ],
     "cost": 50,
     "baseHp": 300,
     "damage": 0,
@@ -934,16 +1704,33 @@
     "plantFoodType": "KNOCKBACK_BLAST",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -3.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 250.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -3.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 250.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 48,
     "name": "Sweet Potato",
     "category": "WALL_NUT",
-    "tags": ["MOVE_ZOMBIES"],
+    "tags": [
+      "MOVE_ZOMBIES"
+    ],
     "cost": 150,
     "baseHp": 3000,
     "damage": 0,
@@ -954,16 +1741,33 @@
     "plantFoodType": "GRANT_PERMANENT_ARMOR",
     "plantFoodValue": 3000.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_HP", "value": 1000.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 1500.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_HP",
+        "value": 1000.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 1500.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 49,
     "name": "Explode-o-nut",
     "category": "WALL_NUT",
-    "tags": ["EXPLOSIVE"],
+    "tags": [
+      "EXPLOSIVE"
+    ],
     "cost": 50,
     "baseHp": 4000,
     "damage": 1800,
@@ -974,16 +1778,33 @@
     "plantFoodType": "GRANT_PERMANENT_ARMOR",
     "plantFoodValue": 4000.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_HP", "value": 1000.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_DAMAGE", "value": 200.0, "specialTag": "EXPLODE_DAMAGE_BUFF" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_HP",
+        "value": 1000.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_DAMAGE",
+        "value": 200.0,
+        "specialTag": "EXPLODE_DAMAGE_BUFF"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 50,
     "name": "Pumpkin",
     "category": "WALL_NUT",
-    "tags": ["STACK"],
+    "tags": [
+      "STACK"
+    ],
     "cost": 150,
     "baseHp": 4000,
     "damage": 0,
@@ -994,16 +1815,33 @@
     "plantFoodType": "GRANT_PERMANENT_ARMOR",
     "plantFoodValue": 4000.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_HP", "value": 1000.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 1500.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_HP",
+        "value": 1000.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 1500.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 51,
     "name": "Sun Bean",
     "category": "WALL_NUT",
-    "tags": ["SUN"],
+    "tags": [
+      "SUN"
+    ],
     "cost": 50,
     "baseHp": 1000,
     "damage": 0,
@@ -1014,16 +1852,33 @@
     "plantFoodType": "GRANT_PERMANENT_ARMOR",
     "plantFoodValue": 1000.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 5.0, "specialTag": "SUN_DROP_INCREMENT" },
-      { "level": 3, "type": "BUFF_HP", "value": 150.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 5.0,
+        "specialTag": "SUN_DROP_INCREMENT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 150.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 52,
     "name": "Torchwood",
     "category": "MODIFIER",
-    "tags": ["FIRE"],
+    "tags": [
+      "FIRE"
+    ],
     "cost": 175,
     "baseHp": 300,
     "damage": 0,
@@ -1034,16 +1889,34 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 3.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_HP", "value": 300.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DEATH_EXPLOSION_AOE" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_HP",
+        "value": 300.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DEATH_EXPLOSION_AOE"
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 53,
     "name": "Magnet-shroom",
     "category": "HOMING",
-    "tags": ["SHROOM", "MAGIC"],
+    "tags": [
+      "SHROOM",
+      "MAGIC"
+    ],
     "cost": 100,
     "baseHp": 300,
     "damage": 0,
@@ -1054,16 +1927,34 @@
     "plantFoodType": "KNOCKBACK_BLAST",
     "plantFoodValue": 5.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "TILE_RANGE_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_HP", "value": 200.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "TILE_RANGE_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 54,
     "name": "Hypno-shroom",
     "category": "MODIFIER",
-    "tags": ["SHROOM", "MAGIC"],
+    "tags": [
+      "SHROOM",
+      "MAGIC"
+    ],
     "cost": 125,
     "baseHp": 300,
     "damage": 0,
@@ -1074,9 +1965,24 @@
     "plantFoodType": "RANDOM_HYPNOTIZE",
     "plantFoodValue": 1.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_COST", "value": -25.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 1.2, "specialTag": "ZOMBIE_HEALTH_MULTIPLIER" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.2, "specialTag": "ZOMBIE_DAMAGE_MULTIPLIER" }
+      {
+        "level": 2,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.2,
+        "specialTag": "ZOMBIE_HEALTH_MULTIPLIER"
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.2,
+        "specialTag": "ZOMBIE_DAMAGE_MULTIPLIER"
+      }
     ]
   },
   {
@@ -1094,9 +2000,24 @@
     "plantFoodType": "PROJECTILE_BURST",
     "plantFoodValue": 40.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_DAMAGE", "value": 10.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 200.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_COST", "value": -25.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_DAMAGE",
+        "value": 10.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      }
     ]
   },
   {
@@ -1114,16 +2035,34 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_RECHARGE", "value": -2.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_COST", "value": -25.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "AUTO_PLANTFOOD_ON_ENTER" }
+      {
+        "level": 2,
+        "type": "BUFF_RECHARGE",
+        "value": -2.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "AUTO_PLANTFOOD_ON_ENTER"
+      }
     ]
   },
   {
     "id": 57,
     "name": "Ice-shroom",
     "category": "EXPLOSIVE",
-    "tags": ["SHROOM", "ICE"],
+    "tags": [
+      "SHROOM",
+      "ICE"
+    ],
     "cost": 75,
     "baseHp": 0,
     "damage": 0,
@@ -1134,16 +2073,34 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 2.0, "specialTag": "FREEZE_DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_DAMAGE", "value": 50.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 2.0,
+        "specialTag": "FREEZE_DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_DAMAGE",
+        "value": 50.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 58,
     "name": "Lily Pad",
     "category": "MODIFIER",
-    "tags": ["WATER", "STACK"],
+    "tags": [
+      "WATER",
+      "STACK"
+    ],
     "cost": 25,
     "baseHp": 300,
     "damage": 0,
@@ -1154,16 +2111,33 @@
     "plantFoodType": "SPAWN_CLONES",
     "plantFoodValue": 4.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_COST", "value": -25.0, "specialTag": "" },
-      { "level": 3, "type": "BUFF_HP", "value": 200.0, "specialTag": "" },
-      { "level": 4, "type": "BUFF_RECHARGE", "value": -2.0, "specialTag": "" }
+      {
+        "level": 2,
+        "type": "BUFF_COST",
+        "value": -25.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "BUFF_HP",
+        "value": 200.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "BUFF_RECHARGE",
+        "value": -2.0,
+        "specialTag": ""
+      }
     ]
   },
   {
     "id": 59,
     "name": "Hot Potato",
     "category": "EXPLOSIVE",
-    "tags": ["FIRE"],
+    "tags": [
+      "FIRE"
+    ],
     "cost": 0,
     "baseHp": 0,
     "damage": 0,
@@ -1174,9 +2148,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_RECHARGE", "value": -2.0, "specialTag": "" },
-      { "level": 3, "type": "SPECIAL_MECHANIC", "value": 9.0, "specialTag": "MELT_AREA_3X3" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 100.0, "specialTag": "EXPLODE_ON_FINISH" }
+      {
+        "level": 2,
+        "type": "BUFF_RECHARGE",
+        "value": -2.0,
+        "specialTag": ""
+      },
+      {
+        "level": 3,
+        "type": "SPECIAL_MECHANIC",
+        "value": 9.0,
+        "specialTag": "MELT_AREA_3X3"
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 100.0,
+        "specialTag": "EXPLODE_ON_FINISH"
+      }
     ]
   },
   {
@@ -1194,9 +2183,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "BUFF_ACTION_INTERVAL", "value": -1.0, "specialTag": "EAT_TIME_REDUCTION" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -2.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 100.0, "specialTag": "EXPLODE_ON_FINISH" }
+      {
+        "level": 2,
+        "type": "BUFF_ACTION_INTERVAL",
+        "value": -1.0,
+        "specialTag": "EAT_TIME_REDUCTION"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -2.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 100.0,
+        "specialTag": "EXPLODE_ON_FINISH"
+      }
     ]
   },
   {
@@ -1214,9 +2218,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "RESET_FAMILY_COOLDOWNS" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "RESET_FAMILY_COOLDOWNS"
+      }
     ]
   },
   {
@@ -1234,9 +2253,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "RESET_FAMILY_COOLDOWNS" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "RESET_FAMILY_COOLDOWNS"
+      }
     ]
   },
   {
@@ -1254,9 +2288,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "RESET_FAMILY_COOLDOWNS" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "RESET_FAMILY_COOLDOWNS"
+      }
     ]
   },
   {
@@ -1274,9 +2323,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "RESET_FAMILY_COOLDOWNS" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "RESET_FAMILY_COOLDOWNS"
+      }
     ]
   },
   {
@@ -1294,9 +2358,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "RESET_FAMILY_COOLDOWNS" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "RESET_FAMILY_COOLDOWNS"
+      }
     ]
   },
   {
@@ -1314,9 +2393,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "RESET_FAMILY_COOLDOWNS" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "RESET_FAMILY_COOLDOWNS"
+      }
     ]
   },
   {
@@ -1334,9 +2428,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "RESET_FAMILY_COOLDOWNS" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "RESET_FAMILY_COOLDOWNS"
+      }
     ]
   },
   {
@@ -1354,9 +2463,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "RESET_FAMILY_COOLDOWNS" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "RESET_FAMILY_COOLDOWNS"
+      }
     ]
   },
   {
@@ -1374,9 +2498,24 @@
     "plantFoodType": "NONE",
     "plantFoodValue": 0.0,
     "upgrades": [
-      { "level": 2, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "DURATION_EXT" },
-      { "level": 3, "type": "BUFF_RECHARGE", "value": -5.0, "specialTag": "" },
-      { "level": 4, "type": "SPECIAL_MECHANIC", "value": 1.0, "specialTag": "RESET_FAMILY_COOLDOWNS" }
+      {
+        "level": 2,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "DURATION_EXT"
+      },
+      {
+        "level": 3,
+        "type": "BUFF_RECHARGE",
+        "value": -5.0,
+        "specialTag": ""
+      },
+      {
+        "level": 4,
+        "type": "SPECIAL_MECHANIC",
+        "value": 1.0,
+        "specialTag": "RESET_FAMILY_COOLDOWNS"
+      }
     ]
   }
 ]

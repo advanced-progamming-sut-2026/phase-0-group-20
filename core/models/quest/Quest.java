@@ -22,14 +22,15 @@ public class Quest {
     private Reward reward;
     private boolean isCompleted;
     private boolean onMission;
-    public Quest(String title, QuestCategory category, QuestPriority priority, boolean onMission,String conditionStr) {
+
+    public Quest(String title, QuestCategory category, QuestPriority priority, boolean onMission, String conditionStr) {
         this.id = UUID.randomUUID().toString();
         this.title = title;
         this.category = category;
         this.priority = priority;
         this.isCompleted = false;
         this.onMission = onMission;
-        this.description =conditionStr;
+        this.description = conditionStr;
 
     }
 
@@ -42,7 +43,7 @@ public class Quest {
                  @JsonProperty("condition") QuestCondition condition,
                  @JsonProperty("reward") Reward reward,
                  @JsonProperty("completed") boolean isCompleted,
-                 @JsonProperty ("onMission") boolean onMission) {
+                 @JsonProperty("onMission") boolean onMission) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -73,7 +74,7 @@ public class Quest {
             if (activeUser != null && reward != null) {
                 reward.claimReward(activeUser);
             }
-            String message = "Quest Completed: " + title + "! You gained "+reward.toString();
+            String message = "Quest Completed: " + title + "! You gained " + reward.toString();
             GameSession.notify(message);
         }
     }
@@ -81,6 +82,7 @@ public class Quest {
     public String getDescription() {
         return description;
     }
+
     public String getId() {
         return id;
     }

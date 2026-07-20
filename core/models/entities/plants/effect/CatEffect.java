@@ -2,9 +2,6 @@ package models.entities.plants.effect;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
-import models.game.events.GameEvent;
-import models.game.events.GameEventMessenger;
-import models.game.events.GameEventPayload;
 
 public class CatEffect implements PlantEffect {
     private final Zombie wizardZombie;

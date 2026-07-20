@@ -1,10 +1,10 @@
 package models.fields;
 
 
-import models.timeManager.Ticker;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
+import models.timeManager.Ticker;
 
 public class Brain implements Ticker {
 
@@ -43,7 +43,6 @@ public class Brain implements Ticker {
         if (hp <= 0 && !isEaten)
             eat();
     }
-
 
 
 }

@@ -39,11 +39,13 @@ public class KillZombieCondition extends QuestCondition {
             }
         }
     }
-    public KillZombieCondition(){}
+
+    public KillZombieCondition() {
+    }
 
     @Override
     public void updateProgress(GameEventPayload payload) {
-        if(payload.getType() != GameEvent.ZOMBIE_KILLED) {
+        if (payload.getType() != GameEvent.ZOMBIE_KILLED) {
             return;
         }
         Zombie zombie = payload.getZombie();

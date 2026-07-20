@@ -5,9 +5,6 @@ import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.zombies.Zombie;
 import models.enums.PhysicalConstants;
 import models.game.GameSession;
-import models.game.events.GameEvent;
-import models.game.events.GameEventMessenger;
-import models.game.events.GameEventPayload;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -72,7 +69,7 @@ public class TrapStrategy implements IPlantStrategy {
 
         if (!targets.isEmpty()) {
             notify("🚨 " + name + " TRAP TRIGGERED!");
-            boolean killed ;
+            boolean killed;
 
             boolean shouldDie = true;
 

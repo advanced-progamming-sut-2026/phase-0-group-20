@@ -1,6 +1,5 @@
 package models.entities.zombies.behavior.move;
 
-import models.App;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieFactory;
 import models.entities.zombies.ZombieType;

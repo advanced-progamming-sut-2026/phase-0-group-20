@@ -5,9 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -42,13 +40,13 @@ public class PlantLoader {
     }
 
 
-
     public static List<PlantData> loadAll(String jsonPath) {
         List<PlantData> plants = new ArrayList<>();
         Gson gson = new Gson();
 
         try (Reader reader = new FileReader(jsonPath)) {
-            Type listType = new TypeToken<ArrayList<PlantJsonDto>>(){}.getType();
+            Type listType = new TypeToken<ArrayList<PlantJsonDto>>() {
+            }.getType();
 
             List<PlantJsonDto> dots = gson.fromJson(reader, listType);
 

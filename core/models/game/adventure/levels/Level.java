@@ -83,7 +83,7 @@ public abstract class Level implements GameMode {
             currentDifficulty += increment;
         }
 
-        currentDifficulty*= getDifficultyCoefficient();
+        currentDifficulty *= getDifficultyCoefficient();
 
         Wave newWave = new Wave(currentWave, isLastWave, currentDifficulty);
         session.getArena().setCurrentActiveWave(newWave);

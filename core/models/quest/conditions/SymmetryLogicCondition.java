@@ -16,7 +16,9 @@ public class SymmetryLogicCondition extends QuestCondition {
         this.needsSymmetry = needsSymmetry;
         targetProgress = 1;
     }
-    public SymmetryLogicCondition(){}
+
+    public SymmetryLogicCondition() {
+    }
 
     @Override
     public void updateProgress(GameEventPayload payload) {
