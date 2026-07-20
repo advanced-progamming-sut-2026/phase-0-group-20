@@ -14,6 +14,7 @@ public class SunManager implements Ticker {
     public SunManager(Arena arena) {
         this.arena = arena;
         this.rand = new Random();
+        calculateTheNextSun(0);
     }
 
     @Override
@@ -21,6 +22,7 @@ public class SunManager implements Ticker {
         timeToNextSun--;
         if (timeToNextSun == 0) {
             spawnSun(currentTick);
+            calculateTheNextSun(currentTick);
         }
     }
 
@@ -36,6 +38,8 @@ public class SunManager implements Ticker {
         int spawnY = rand.nextInt(arena.getRows());
         Sun sun = new Sun(type, spawnX, spawnY, currentTick);
         GameSession.getInstance().getTimeManager().registerNewTicker(sun);
+        String message = "New sun reached from the sky at " + (spawnX+1) + ", " + (spawnY+1) + ".";
+        GameSession.notify(message);
         arena.addSun(sun);
 
 

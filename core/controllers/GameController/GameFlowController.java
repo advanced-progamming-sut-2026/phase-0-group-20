@@ -168,7 +168,8 @@ public class GameFlowController {
                 .coordinate(newPlant.getPlacedTile().getRow(), newPlant.getPlacedTile().getCol())
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
-        GameSession.getInstance().getTimeManager().registerNewTicker(newPlant);
+        session.getTimeManager().registerNewTicker(newPlant);
+//        session.setCooldownForPlant(plant);
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY + " with the name of " + newPlant.getName() + ".");
     }
 
@@ -519,10 +520,6 @@ public class GameFlowController {
         } else if (tile instanceof GraveStoneTile || tile instanceof NecromanceTile) {
             tileShape = "Grave";
         }
-//        else if (tile instanceof FrozenTile) {
-//            tileShape = "Frozen";
-//        }
-
         statusDisplay.append("- Type: ").append(tileShape).append("\n");
 
         statusDisplay.append("- Plants:\n");
