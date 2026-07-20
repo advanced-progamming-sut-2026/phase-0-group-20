@@ -13,6 +13,7 @@ public abstract class Tile implements Ticker {
     protected SeasonType currentSeason;
     protected List<Plant> plants = new ArrayList<>();
     protected Position position;
+    protected boolean isCrater;
 
     public Tile(int row, int col) {
         position = new Position(col, row);
@@ -72,6 +73,14 @@ public abstract class Tile implements Ticker {
             case NecromanceTile t -> "NecromanceTile";
             default -> getClass().getSimpleName();
         };
+    }
+
+    public boolean isCrater() {
+        return isCrater;
+    }
+
+    public void setCrater(boolean isCrater) {
+        this.isCrater = isCrater;
     }
 
 }

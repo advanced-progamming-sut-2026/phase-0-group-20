@@ -5,6 +5,7 @@ import models.Result;
 import models.entities.PlantFood;
 import models.entities.Sun;
 import models.entities.plants.Plant;
+import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
 import models.fields.LawnMower;
 import models.fields.tiles.*;
@@ -357,7 +358,7 @@ public class GameFlowController {
         if (zombiesInTile.isEmpty() && plantsInTile.isEmpty()) {
             return "";
         }
-        sb.append(String.format("Tile (%d, %d):\n", col, row));
+        sb.append(String.format("Tile (%d, %d):\n", col + 1, row + 1));
 
         if (!plantsInTile.isEmpty()) {
             sb.append("  [Plants]  ");
@@ -438,6 +439,26 @@ public class GameFlowController {
             for (int c = 0; c < cols; c++) {
                 String cell = " ";
 
+                mapDisplay.append("[").append(cell).append("]");
+            }
+            mapDisplay.append("\n");
+        }
+        mapDisplay.append("\n");
+
+
+        mapDisplay.append("--- PROJECTILES ---\n");
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                String cell = " ";
+
+                if (arena.getActiveProjectiles() != null) {
+                    for (Projectile p : arena.getActiveProjectiles()) {
+                        if (!p.isDestroyed() && (int) p.getY() == r && (int) p.getX() == c) {
+                            cell = "*";
+                            break;
+                        }
+                    }
+                }
                 mapDisplay.append("[").append(cell).append("]");
             }
             mapDisplay.append("\n");

@@ -118,6 +118,7 @@ public class Projectile implements Ticker {
                 piercing,
                 canPassObstacles
         );
+        GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
     }
@@ -142,6 +143,7 @@ public class Projectile implements Ticker {
                 piercing,
                 canPassObstacles
         );
+        GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
     }
