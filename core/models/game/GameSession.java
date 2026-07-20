@@ -76,7 +76,6 @@ public class GameSession {
         }
         return instance;
     }
-
     public void instantiateCooldowns(List<Plant> chosenPlants) {
         for (Plant plant : chosenPlants) {
             plantsCooldown.put(plant, 0);
@@ -282,7 +281,7 @@ public class GameSession {
 
         for (Sun sun : arena.getActiveSuns()) {
             if (sun.isCollected() && sun.isFalling() && sun.getType() == SunType.RADIOACTIVE_SUN) {
-                Tile sunTile = arena.getTile(sun.getCol(), sun.getRow()); //damaging zombies
+                Tile sunTile = arena.getTile(sun.getRow(), sun.getCol()); //damaging zombies
                 int rightTile = Math.min(sunTile.getCol() + 2, arena.getCols() - 1);
                 int leftTile = Math.max(sunTile.getCol() - 2, 0);
                 int upTile = Math.min(sunTile.getRow() + 2, arena.getRows() - 1);
@@ -311,7 +310,7 @@ public class GameSession {
                 for (int row = downTile; row <= upTile; row++) {
                     for (int col = leftTile; col <= rightTile; col++) {
                         List<Plant> tilePlants = arena.getTile(row, col).getPlants();
-                        Plant damagePlant = tilePlants.get(tilePlants.size() - 1);
+                        Plant damagePlant = tilePlants.getLast();
                         damagePlant.takeDamage(80);
                     }
                 }
@@ -410,7 +409,7 @@ public class GameSession {
 
     public void consumePlantFood() {
         if (plantFoods.isEmpty()) return;
-        plantFoods.remove(plantFoods.size() - 1);
+        plantFoods.removeLast();
     }
 
     public void setPlantCooldown(Plant plant) {

@@ -70,7 +70,7 @@ public abstract class Tile implements Ticker {
             case NormalTile t -> "NormalTile";
             case SlipperyTile t -> "SlipperyTile";
             case LowShoreTile t -> "LowShoreTile";
-            case NecromanceTile t -> "NecromanceTile";
+            case NecromanceTile t -> "NecromancyTile";
             default -> getClass().getSimpleName();
         };
     }
