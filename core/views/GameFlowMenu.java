@@ -88,6 +88,8 @@ public class GameFlowMenu implements AppMenu {
                     matcher.group("y")
             ));
 
+        } else if (GameFlowCommands.PRINT_MAP.getMatcher(input) != null) {
+            System.out.println(gameFlowcontroller.printMap());
         } else if ((matcher = MiniGameCommands.BREAK_VASE.getMatcher(input)) != null) {
             System.out.println(miniGameController.breakVase(
                     Integer.parseInt(matcher.group("x")),
