@@ -1,5 +1,6 @@
 package models.game.adventure;
 
+import models.App;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
@@ -24,7 +25,7 @@ public class Adventure {
 
         SeasonType[] seasons = SeasonType.values();
 
-        models.users.User currentUser = models.App.getActiveUser();
+        User currentUser = App.getActiveUser();
         int unlockedChapIndex = (currentUser != null) ? currentUser.getHighestUnlockedChapterIndex() : 0;
         int unlockedLevelIndex = (currentUser != null) ? currentUser.getHighestUnlockedLevelIndex() : 0;
 
@@ -95,7 +96,7 @@ public class Adventure {
     public void onLevelWon() {
 
         Chapter currentChap = chapters.get(currentChapterIndex);
-        User currentUser = models.App.getActiveUser();
+        User currentUser = App.getActiveUser();
         currentChap.advanceToNextLevel();
 
         if (currentChap.getCurrentLevelIndex() > 3) {

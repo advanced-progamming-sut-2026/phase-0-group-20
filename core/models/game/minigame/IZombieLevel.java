@@ -48,27 +48,27 @@ public class IZombieLevel extends Level {
     private void spawnPrePlacedPlants(GameSession session, int row, int redLineCol) {
         int cols = session.getArena().getCols();
 
-        Zombie sunZombie = InGameEntityGenerator.getZombieForGame(ZombieType.SUN_PRODUCER, row);
-        sunZombie.setCol(cols - 1);
-        session.getArena().addZombie(sunZombie);
-        session.getTimeManager().registerNewTicker(sunZombie);
+//        Zombie sunZombie = InGameEntityGenerator.getZombieForGame(ZombieType.SUN_PRODUCER, row);
+//        sunZombie.setCol(cols - 1);
+//        session.getArena().addZombie(sunZombie);
+//        session.getTimeManager().registerNewTicker(sunZombie);
+//
+//
+//        int numPlants = rand.nextInt(6) + 3 + levelNumber; // min: 3 different types
+//        List<Plant> availableTemplates = new ArrayList<>(App.getAllPlants());
+//        Collections.shuffle(availableTemplates);
+//        List<Plant> selectedTemplates = availableTemplates.subList(0, Math.min(numPlants, availableTemplates.size()));
+//
+//
+//        for (int i = 0; i < redLineCol; i++) {
+//            Plant template = selectedTemplates.get(rand.nextInt(selectedTemplates.size()));
+//            Plant newPlant = PlantFactory.create(template.getId());
+//
+//            session.getArena().addPlant(newPlant);
+//            session.getArena().getTile(row, i).addPlant(newPlant);
+//            session.getTimeManager().registerNewTicker(newPlant);
 
-
-        int numPlants = rand.nextInt(6) + 3 + levelNumber; // min: 3 different types
-        List<Plant> availableTemplates = new ArrayList<>(App.getAllPlants());
-        Collections.shuffle(availableTemplates);
-        List<Plant> selectedTemplates = availableTemplates.subList(0, Math.min(numPlants, availableTemplates.size()));
-
-
-        for (int i = 0; i < redLineCol; i++) {
-            Plant template = selectedTemplates.get(rand.nextInt(selectedTemplates.size()));
-            Plant newPlant = PlantFactory.create(template.getId());
-
-            session.getArena().addPlant(newPlant);
-            session.getArena().getTile(row, i).addPlant(newPlant);
-            session.getTimeManager().registerNewTicker(newPlant);
-
-        }
+//        }
     }
 
     @Override

@@ -40,13 +40,15 @@ public class Arena {
         this.activeZombies = new ArrayList<>();
         this.lawnMowers = new LawnMower[ROWS];
         this.brains = new Brain[ROWS];
+    }
 
-
+    public void registerLawnMowers() {
         for (int i = 0; i < ROWS; i++) {
             lawnMowers[i] = new LawnMower(i, this);
             GameSession.getInstance().getTimeManager().registerNewTicker(lawnMowers[i]);
         }
     }
+
 
     public void addZombie(Zombie zombie) {
         activeZombies.add(zombie);

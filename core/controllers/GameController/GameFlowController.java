@@ -35,7 +35,7 @@ public class GameFlowController {
             return new Result(false, "Even Dr.Strange couldn't travel to the past.\nwho the are you?");
         }
         GameSession.getInstance().update(timeAmount);
-        return new Result(true, "Successfully advanced time for " + timeAmount + " seconds.");
+        return new Result(true, "Successfully advanced time for " + timeAmount + " ticks.");
     }
 
     public Result collectSun(String colStr, String rowStr) {
@@ -145,7 +145,7 @@ public class GameFlowController {
                     ? "There is no such plant named " + plantName + "in the belt"
                     : "There no such plant named " + plantName);
         }
-        Tile desiredTile = arena.getTile(spawnX - 1, spawnY - 1);
+        Tile desiredTile = arena.getTile(spawnX, spawnY);
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
         }
@@ -158,13 +158,15 @@ public class GameFlowController {
         desiredTile.addPlant(newPlant);
         GameSession.getInstance().setPlantCooldown(newPlant);
         GameSession.getInstance().getArena().addPlant(newPlant);
+        GameSession.getInstance().useSun(newPlant.getCost());
+        GameSession.getInstance().getTimeManager().registerNewTicker(newPlant);
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
                 .plant(newPlant)
                 .arena(arena)
                 .coordinate(newPlant.getPlacedTile().getRow(), newPlant.getPlacedTile().getCol())
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
-        return new Result(true, "You plant a plant in " + spawnX + "," + spawnY + " with the name of" + newPlant.getName() + ".");
+        return new Result(true, "You plant a plant in " + spawnX + "," + spawnY + " with the name of " + newPlant.getName() + ".");
     }
 
     public Result cheatRemoveCooldown() {
@@ -312,6 +314,73 @@ public class GameFlowController {
                 }
             }
         }
+
+        return new Result(true, mapDisplay.toString().trim());
+    }
+
+    public Result showCurrentState() {
+        GameSession session = GameSession.getInstance();
+        Arena arena = session.getArena();
+        StringBuilder mapDisplay = new StringBuilder();
+
+        int currentWave = (session.getArena().getCurrentActiveWave() != null) ?
+                session.getArena().getCurrentActiveWave().getCurrentNumber() : 0;
+        int sunAmount = session.getCurrentSun();
+        int plantFoodsCount = (session.getPlantFoods() != null) ? session.getPlantFoods().size() : 0;
+
+        mapDisplay.append("==============================\n");
+        mapDisplay.append("Wave: ").append(currentWave).append(" | ");
+        mapDisplay.append("Sun: ").append(sunAmount).append(" | ");
+        mapDisplay.append("Plant Food: ").append(plantFoodsCount).append("\n");
+        mapDisplay.append("==============================\n\n");
+
+        int rows = arena.getRows();
+        int cols = arena.getCols();
+
+        mapDisplay.append("--- PLANTS ---\n");
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                Tile tile = arena.getTile(r, c);
+                String cell = " ";
+
+                if (tile != null && tile.getPlants() != null && !tile.getPlants().isEmpty()) {
+                    cell = String.valueOf(tile.getPlants().get(0).getName().charAt(0));
+                }
+                mapDisplay.append("[").append(cell).append("]");
+            }
+            mapDisplay.append("\n");
+        }
+        mapDisplay.append("\n");
+
+        mapDisplay.append("--- ZOMBIES ---\n");
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                String cell = " ";
+
+                if (session.getArena().zombieInRow(r) != null) {
+                    for (Zombie z : session.getArena().zombieInRow(r)) {
+                        if (!z.isDead() && (int) z.getCol() == c) {
+                            cell = String.valueOf(z.getName().charAt(0));
+                            break;
+                        }
+                    }
+                }
+                mapDisplay.append("[").append(cell).append("]");
+            }
+            mapDisplay.append("\n");
+        }
+        mapDisplay.append("\n");
+
+        mapDisplay.append("--- ITEMS (Suns/Coins/Etc) ---\n");
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                String cell = " ";
+
+                mapDisplay.append("[").append(cell).append("]");
+            }
+            mapDisplay.append("\n");
+        }
+        mapDisplay.append("\n");
 
         return new Result(true, mapDisplay.toString().trim());
     }

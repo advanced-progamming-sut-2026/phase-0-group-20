@@ -2,6 +2,7 @@ package models.users;
 
 import com.fasterxml.jackson.annotation.*;
 import models.entities.plants.Plant;
+import models.entities.plants.PlantFactory;
 import models.entities.plants.PlantSaveData;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieSaveData;
@@ -64,7 +65,6 @@ public class User {
         this.highestUnlockedLevelIndex = 0;
         for (MiniGameType type : MiniGameType.values())
             this.unlockedMinigames.put(type, 0);
-
     }
 
     @JsonCreator

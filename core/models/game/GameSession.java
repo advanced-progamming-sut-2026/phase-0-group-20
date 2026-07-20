@@ -1,5 +1,6 @@
 package models.game;
 
+import models.App;
 import models.entities.PlantFood;
 import models.entities.Sun;
 import models.entities.SunType;
@@ -7,16 +8,14 @@ import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
+import models.enums.Menu;
 import models.enums.PhysicalConstants;
 import models.enums.plants.PlantCategory;
 import models.fields.Brain;
 import models.fields.LawnMower;
 import models.fields.tiles.Tile;
 import models.game.adventure.Chapter;
-import models.game.events.GameEvent;
-import models.game.events.GameEventMessenger;
-import models.game.events.GameEventPayload;
-import models.game.events.ProgressListener;
+import models.game.events.*;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class GameSession {
         plantsCooldown = new HashMap<>();
         instantiateCooldowns(chosenPlants);
         this.chosenZombies = chosenZombies;// this should come from our level Modifiers or something else
-        this.currentSun = 0;
+        this.currentSun = 50;
         this.sunManager = new SunManager(this.arena);
         this.timeManager.registerNewTicker(sunManager);
         this.dropListener = new ZombieDropListener();
@@ -59,6 +58,7 @@ public class GameSession {
         GameEventMessenger.getInstance().addListener(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, this.dropListener);
 
         this.progressListener = new ProgressListener();
+        currentMode = chapter.getCurrentLevel();
     }
 
     public static GameSession getInstance() {
@@ -90,12 +90,14 @@ public class GameSession {
     }
 
     public static void destroyInstance() {
-        if (instance.dropListener != null) {
-            GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED, instance.dropListener);
-            GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, instance.dropListener);
+        if (instance != null) {
+            if (instance.dropListener != null) {
+                GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED, instance.dropListener);
+                GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, instance.dropListener);
+            }
+            if (instance.progressListener != null)
+                instance.progressListener.unregisterFromAllEvents();
         }
-        if (instance.progressListener != null)
-            instance.progressListener.unregisterFromAllEvents();
 
         instance = null;
     }
@@ -105,12 +107,13 @@ public class GameSession {
 
         for (int i = 0; i < timeAmount; i++) {
             timeManager.tick();
-            if (this.currentMode != null)
-                this.currentMode.engineLoop(this, timeManager.getCurrentTick());
+            if (currentMode != null) {
+                currentMode.engineLoop(this, timeManager.getCurrentTick());
+            }
 
-            for (Plant p : getArena().getActivePlants()) p.onTick(timeManager.getCurrentTick());
-            for (Zombie z : getArena().getActiveZombies()) z.onTick(timeManager.getCurrentTick());
-            for (Projectile proj : getArena().getActiveProjectiles()) proj.onTick(timeManager.getCurrentTick());
+//            for (Plant p : getArena().getActivePlants()) p.onTick(timeManager.getCurrentTick());
+//            for (Zombie z : getArena().getActiveZombies()) z.onTick(timeManager.getCurrentTick());
+//            for (Projectile proj : getArena().getActiveProjectiles()) proj.onTick(timeManager.getCurrentTick());
 
             checkCollisions();
             removeDeadEntities();
@@ -185,6 +188,7 @@ public class GameSession {
                     .build();
             GameEventMessenger.getInstance().dispatch(GameEvent.LEVEL_COMPLETED, payload);
             notify("You survived! LEVEL COMPLETED.");
+            App.setActiveMenu(Menu.GAME_MENU);
         }
     }
 
@@ -368,6 +372,10 @@ public class GameSession {
 
     public int getCurrentSun() {
         return currentSun;
+    }
+
+    public void useSun(int amount) {
+        this.currentSun -= amount;
     }
 
     public void setCurrentSun(int currentSun) {

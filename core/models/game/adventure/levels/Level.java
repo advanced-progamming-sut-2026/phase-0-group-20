@@ -63,11 +63,11 @@ public abstract class Level implements GameMode {
     public void engineLoop(GameSession session, int currentTick) {
         if (allWavesSpawned) return;
 
-        Wave activeWave = session.getArena().getCurrentActiveWave();
+        currentActiveWave = session.getArena().getCurrentActiveWave();
 
         if (currentWave == 0) {
             startNextWave(session);
-        } else if (activeWave != null && activeWave.is75PercentHpDestroyed()) {
+        } else if (currentActiveWave != null && currentActiveWave.is75PercentHpDestroyed()) {
             startNextWave(session);
         }
     }
