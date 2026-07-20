@@ -161,13 +161,19 @@ public class Plant implements IPlant, Ticker {
     }
 
     @Override
-    public int getCost() { return currentCost; }
+    public int getCost() {
+        return currentCost;
+    }
 
     @Override
-    public float getActionInterval() { return currentActionInterval; }
+    public float getActionInterval() {
+        return currentActionInterval;
+    }
 
     @Override
-    public float getRecharge() { return currentRecharge; }
+    public float getRecharge() {
+        return currentRecharge;
+    }
 
     @Override
     public int getId() {
@@ -370,7 +376,7 @@ public class Plant implements IPlant, Ticker {
                 for (IPlantStrategy s : this.strategies) {
                     if (s instanceof TrapStrategy freeze) {
                         freeze.increaseFreezeDuration(value);
-                    } else if (s instanceof  GlobalEffectStrategy globalEffect) {
+                    } else if (s instanceof GlobalEffectStrategy globalEffect) {
                         globalEffect.increaseFreezeDuration(value);
                     }
                 }
@@ -435,7 +441,6 @@ public class Plant implements IPlant, Ticker {
             case "GROWTH_STAGE_MAX_UP" -> {
                 this.setSize(this.getSize() + (int) value);
             }
-
 
 
             case "REFLECT_DAMAGE_BUFF" -> {
@@ -517,7 +522,7 @@ public class Plant implements IPlant, Ticker {
                 .plant(this)
                 .seasonType(GameSession.getInstance().getCurrentChapter().getSeasonType())
                 .arena(GameSession.getInstance().getArena())
-                .coordinate(z.getRow(),z.getCol())
+                .coordinate(z.getRow(), z.getCol())
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
     }
@@ -569,6 +574,10 @@ public class Plant implements IPlant, Ticker {
 
     public int getBonusDamage() {
         return bonusDamage;
+    }
+
+    public boolean isDead() {
+        return currentHp <= 0;
     }
 
 }
