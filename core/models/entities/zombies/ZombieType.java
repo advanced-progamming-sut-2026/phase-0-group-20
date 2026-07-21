@@ -40,11 +40,13 @@ public enum ZombieType {
     JUGGLER("ZombieDarkJuggler", SeasonType.DARK_AGES),
     WIZARD("ZombieWizard", SeasonType.DARK_AGES),
     KING("ZombieDarkKing", SeasonType.DARK_AGES),
-    IMP_DRAGON("ZombieDarkImpDragon", SeasonType.DARK_AGES);
+    IMP_DRAGON("ZombieDarkImpDragon", SeasonType.DARK_AGES),
 
-    // minigame
-//    SUN_PRODUCER("ZombieSunProducer", null);
-
+    //minigame
+    ZOMBOTANY_PEASHOOTER("ZombieZombotanyPeashooter", null),
+    ZOMBOTANY_WALLNUT("ZombieZombotanyWallnut", null),
+    ZOMBOTANY_JALAPENO("ZombieZombotanyJalapeno", null),
+    ZOMBOTANY_SQUASH("ZombieZombotanySquash", null);
 
     private final String jsonAlias;
     private final SeasonType type;
