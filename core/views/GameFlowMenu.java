@@ -110,9 +110,20 @@ public class GameFlowMenu implements AppMenu {
                     Integer.parseInt(matcher.group("y"))
             ));
 
+        } else if ((matcher = MiniGameCommands.SWAP_PLANTS.getMatcher(input)) != null) {
+            System.out.println(miniGameController.swapPlants(
+                    matcher.group("x1"),
+                    matcher.group("y1"),
+                    matcher.group("x2"),
+                    matcher.group("y2")
+            ));
+
+        } else if ((matcher = MiniGameCommands.UPGRADE_PLANTS.getMatcher(input)) != null) {
+            System.out.println(miniGameController.upgradeBeghouledPlants(
+                    matcher.group("plantName").trim()
+            ));
         } else {
             invalidCommands();
         }
     }
-
 }
