@@ -4,6 +4,9 @@ import models.Position;
 import models.entities.plants.Plant;
 import models.fields.tiles.Tile;
 import models.game.GameSession;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 
 import java.util.Random;
 
@@ -115,8 +118,10 @@ public class BeghouledManager {
                 sunGained += 50;
 
                 session.addSun(sunGained);
-                System.out.println("Cascade Match! You gained bonus " + sunGained + " suns.");
-
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                        new GameEventPayload.Builder(GameEvent.NOTIFY)
+                                .message("Cascade Match! You gained bonus " + sunGained + " suns.")
+                                .build());
                 applyGravity(session);
             }
         }
