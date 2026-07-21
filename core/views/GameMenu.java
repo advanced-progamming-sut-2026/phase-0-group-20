@@ -16,18 +16,15 @@ public class GameMenu implements AppMenu {
 
         Matcher matcher;
 
-        if ((matcher = GameMenuCommands.ENTER_CHAPTER.getMatcher(input)) != null) {
-            String chapterStr = matcher.group("chaptername");
-            System.out.println(controller.enterChapter(chapterStr));
-            return;
-        }
 
         if (checkGlobalCommand(input)) {
             return;
         }
 
-        if ((matcher = GameMenuCommands.ENTER_GREEN_HOUSE.getMatcher(input)) != null) {
-            System.out.println(controller.enterGreenHouse());
+        if ((matcher = GameMenuCommands.ENTER_CHAPTER.getMatcher(input)) != null) {
+            String chapterStr = matcher.group("chaptername");
+            System.out.println(controller.enterChapter(chapterStr));
+            return;
         } else if ((matcher = GameMenuCommands.ENTER_LEADERBOARD.getMatcher(input)) != null) {
             System.out.println(controller.enterLeaderboard());
         } else if ((matcher = GameMenuCommands.ENTER_COIN_WALLET.getMatcher(input)) != null) {

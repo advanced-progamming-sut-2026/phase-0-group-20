@@ -12,12 +12,17 @@ import java.util.List;
 import java.util.Random;
 
 public class UnlockableReward implements Reward {
-    @JsonProperty("plantToUnlock")
-    private Plant plantToUnlock;
+
+    @JsonProperty("plantToUnlockName")
+    private String plantToUnlockName;
 
     @JsonCreator
-    public UnlockableReward(@JsonProperty("plantToUnlock") Plant plantToUnlock) {
-        this.plantToUnlock = plantToUnlock;
+    public UnlockableReward(@JsonProperty("plantToUnlockName") String plantToUnlockName) {
+        this.plantToUnlockName = plantToUnlockName;
+    }
+
+    public UnlockableReward(Plant plantToUnlock) {
+        this.plantToUnlockName = (plantToUnlock != null) ? plantToUnlock.getName() : null;
     }
 
     @JsonIgnore
@@ -28,12 +33,16 @@ public class UnlockableReward implements Reward {
 
     @Override
     public void claimReward(User user) {
-        if (plantToUnlock == null) {
-            plantToUnlock = determineLockedPlant(user);
+        Plant targetPlant = null;
+
+        if (plantToUnlockName == null) {
+            targetPlant = determineLockedPlant(user);
+        } else {
+            targetPlant = App.findPlantByName(plantToUnlockName);
         }
 
-        if (plantToUnlock != null && !user.getUnlockedPlants().contains(plantToUnlock)) {
-            user.getUnlockedPlants().add(plantToUnlock);
+        if (targetPlant != null && !user.getUnlockedPlants().contains(targetPlant)) {
+            user.getUnlockedPlants().add(targetPlant);
         }
     }
 

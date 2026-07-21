@@ -2,7 +2,7 @@ package models.enums.commands;
 
 public enum GameMenuCommands implements Commands {
     ENTER_CHAPTER("^\\s*menu\\s+enter\\s+chapter\\s+-c\\s+(?<chaptername>.+?)\\s*$"),
-    ENTER_GREEN_HOUSE("^\\s*menu\\s+greenhouse\\s*$"),
+    ENTER_DAILY_SCORE_LEVEL("^\\s*menu\\s+enter\\s+daily\\s+score\\s+level\\s*$"),
     ENTER_TRAVEL_LOG("^\\s*menu\\s+travel-log\\s*$"),
     ENTER_LEADERBOARD("^\\s*menu\\s+leaderboard\\s*$"),
     ENTER_COIN_WALLET("^\\s*menu\\s+coin-wallet\\s*$"),

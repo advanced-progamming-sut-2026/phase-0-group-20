@@ -51,7 +51,12 @@ public class PlantSelectionController {
 
     public Result addPlant(String name) {
         User activeUser = App.getActiveUser();
-        Level currentLevel = App.getActiveAdventure().getCurrentChapter().getCurrentLevel();
+        Level currentLevel;
+        if (GameSession.getPendingBonusLevel() != null) {
+            currentLevel = GameSession.getPendingBonusLevel();
+        } else {
+            currentLevel = App.getActiveAdventure().getCurrentChapter().getCurrentLevel();
+        }
 
         if (selectedPlants.size() >= currentLevel.getPlantSlotCount()) {
             return new Result(false, "Your seed slots are full! (" + currentLevel.getPlantSlotCount() + " plants max)");
