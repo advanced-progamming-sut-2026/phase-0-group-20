@@ -1,16 +1,21 @@
 package models.entities.zombies;
 
+import models.Position;
 import models.Settings;
 import models.entities.plants.Plant;
 import models.entities.plants.effect.CatEffect;
 import models.entities.plants.effect.PlantEffect;
+import models.entities.projectiles.Projectile;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.armour.ArmorData;
 import models.entities.zombies.armour.ArmorLoader;
 import models.entities.zombies.behavior.attack.*;
 import models.entities.zombies.behavior.defense.*;
+import models.entities.zombies.behavior.effect.JalapenoTimerEffect;
 import models.entities.zombies.behavior.effect.SunAbsorber;
 import models.entities.zombies.behavior.move.*;
+import models.enums.PhysicalConstants;
+import models.enums.plants.ProjectileType;
 import models.game.GameSession;
 
 import java.util.ArrayList;
@@ -111,6 +116,8 @@ public class ZombieFactory {
             });
             case KING -> new PeriodicActionMove(zombie, 3 * 10, false,
                     () -> zombie.getAttackBehavior().execute());
+            case ZOMBOTANY_PEASHOOTER -> new PeriodicActionMove(zombie, 15, true,
+                    () -> zombie.getAttackBehavior().execute());
             default -> new NormalMove(zombie);
         };
     }
@@ -132,6 +139,8 @@ public class ZombieFactory {
             case KING -> new KingAttack(zombie);
             case WIZARD -> new WizardTransformAttack(zombie);
             case FISHERMAN -> new FishermanHookAttack(zombie);
+            case ZOMBOTANY_SQUASH -> new SquashSuicideAttack(zombie);
+            case ZOMBOTANY_PEASHOOTER -> new RangedAttack(zombie, ProjectileType.PEA, ProjectileType.NORMAL_PEA_DAMAGE);
             default -> new NormalAttack(zombie);
         };
     }
@@ -150,5 +159,8 @@ public class ZombieFactory {
         if (Objects.requireNonNull(type) == ZombieType.RA) {
             zombie.addEffect(new SunAbsorber(zombie, 10, 50));
         }
+        if (type == ZombieType.ZOMBOTANY_JALAPENO)
+            zombie.addEffect(new JalapenoTimerEffect(zombie));
+
     }
 }
