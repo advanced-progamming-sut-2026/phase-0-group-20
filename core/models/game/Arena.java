@@ -207,6 +207,7 @@ public class Arena {
     public void changeTile(int row, int col, Tile tile) {
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return;
         tiles[row][col] = tile;
+        GameSession.getInstance().getTimeManager().registerNewTicker(tile);
     }
 
     public Wave getCurrentActiveWave() {

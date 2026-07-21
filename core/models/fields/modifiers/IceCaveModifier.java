@@ -1,5 +1,6 @@
 package models.fields.modifiers;
 
+import models.Settings;
 import models.entities.plants.Plant;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
@@ -20,6 +21,11 @@ public class IceCaveModifier implements SeasonModifier {
     private static final double FREEZING_WIND_CHANCE = 0.4;
     private static final double SLIPPERY_STAGE_CHANCE = 0.5;
     private static final int MAX_FROSTBITE_LEVEL = 3;
+
+    //for chance of slippery tile:
+    private static final float DIFFICULTY_MULTIPLIER = 0.2f;
+    private static final float BASE_SLIPPERY_SCALING = 0.4f;
+    private static final float LEVEL_SCALING_FACTOR = 0.1f;
 
     private final Random rand = new Random();
     private final Map<Plant, Integer> frostbiteLevels = new HashMap<>();
@@ -60,7 +66,10 @@ public class IceCaveModifier implements SeasonModifier {
     }
 
     private void setupSlipperyTiles(Arena arena) {
-        if (rand.nextDouble() >= SLIPPERY_STAGE_CHANCE) return;
+        float chance = (float) (getCurrentLevelNumber() * LEVEL_SCALING_FACTOR *
+                (BASE_SLIPPERY_SCALING + DIFFICULTY_MULTIPLIER * Settings.getInstance().getDifficulty()));
+        if (rand.nextDouble() >= SLIPPERY_STAGE_CHANCE + chance)
+            return;
 
         int rows = arena.getRows();
         int cols = arena.getCols();
@@ -75,7 +84,7 @@ public class IceCaveModifier implements SeasonModifier {
 
         while (placed < numberOfFTiles && remainTiles > 0) {
             int randomRow = rand.nextInt(rows);
-            int randomCol = rand.nextInt(cols / 2) + (cols / 4);
+            int randomCol = rand.nextInt(cols - (cols / 2)) + (cols / 2);
 
             Tile tile = arena.getTile(randomRow, randomCol);
             if (tile instanceof NormalTile && tile.getPlants().isEmpty()) {
