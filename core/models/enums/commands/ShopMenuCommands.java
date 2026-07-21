@@ -1,8 +1,12 @@
 package models.enums.commands;
 
 public enum ShopMenuCommands implements Commands {
-    SHOW_SHOP("^\\s*show\\s+shop\\s*$"),
-    BUY_ITEM("^\\s*buy\\s+(?<item>.+?)\\s*$");
+    SHOP_LIST("^\\s*shop\\s+list\\s*$"),
+
+    // Matches: "shop daily"
+    SHOP_DAILY("^\\s*shop\\s+daily\\s*$"),
+
+    SHOP_BUY("^\\s*shop\\s+buy\\s+i\\s+(?<itemId>\\S+)\\s+-n\\s+(?<count>\\d+)(?:\\s+-t\\s+(?<plantType>.+?))?\\s*$"),;
 
     private final String pattern;
 
