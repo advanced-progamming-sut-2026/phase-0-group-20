@@ -3,6 +3,7 @@ package views;
 import models.App;
 import models.database.DataBaseManager;
 import models.enums.Menu;
+import models.game.adventure.Adventure;
 import models.users.User;
 
 import java.util.Scanner;
@@ -15,13 +16,15 @@ public class AppView {
         ConsoleNotifier.register();
 
         User stayedUser = DataBaseManager.getLoggedInUser();
-
+        if (stayedUser == null) {
+            App.setActiveAdventure(new Adventure());
+        }
 
         if (stayedUser != null) {
             App.setActiveUser(stayedUser);
             App.setActiveMenu(Menu.MAIN_MENU);
             System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
-
+            App.setActiveAdventure(new Adventure());
         }
 
         while (true) {

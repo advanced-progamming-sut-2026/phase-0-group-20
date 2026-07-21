@@ -1,5 +1,6 @@
 package models.entities.plants;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import models.Position;
 import models.entities.plants.PlantFoodStrategy.PlantFoodStrategy;
 import models.entities.plants.effect.PlantEffect;
@@ -23,6 +24,7 @@ import java.util.List;
 public class Plant implements IPlant, Ticker {
 
     protected PlantData data;
+    @JsonIgnore
     protected List<IPlantStrategy> strategies = new ArrayList<>();
     protected int currentHp;
     protected Position position;
