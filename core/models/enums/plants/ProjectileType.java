@@ -20,5 +20,7 @@ public enum ProjectileType {
     PLASMA_BALL,
     WALLNUT_BOWL,
     EXPLODE_NUT_BOWL,
-    GIANT_NUT_BOWL
+    GIANT_NUT_BOWL;
+
+    public static final int NORMAL_PEA_DAMAGE = 20;
 }
