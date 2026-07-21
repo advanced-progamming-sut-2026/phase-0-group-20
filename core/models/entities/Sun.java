@@ -51,7 +51,7 @@ public class Sun implements Ticker {
             this.type = SunType.NORMAL_SUN;
             this.amountProduced = this.type.getValue();
         }
-        notify(String.format("Sun reached the ground at position (%d, %d)\n", getCol(), getRow()));
+        notify(String.format("Sun reached the ground at position (%d, %d)\n", getCol()+1, getRow()+1));
     }
 
     public void collect() {
