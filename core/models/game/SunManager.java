@@ -1,8 +1,10 @@
 package models.game;
 
+import models.Settings;
 import models.entities.Sun;
 import models.entities.SunType;
 import models.timeManager.Ticker;
+import models.timeManager.TimeManager;
 
 import java.util.Random;
 
@@ -27,9 +29,12 @@ public class SunManager implements Ticker {
     }
 
     private void calculateTheNextSun(int currentTick) {
-        int timeInSeconds = currentTick / 10;
+        int timeInSeconds = currentTick / TimeManager.TICKS_PER_SECOND;
         double nextSunInSeconds = Math.max(6 + (0.05 * timeInSeconds), 12.0);
-        this.timeToNextSun = (int) (nextSunInSeconds * 10);
+
+        Settings settings = Settings.getInstance();
+
+        this.timeToNextSun = (int) (nextSunInSeconds * TimeManager.TICKS_PER_SECOND * settings.getSunSpawnIntervalMultiplier());
     }
 
     private void spawnSun(int currentTick) {
@@ -48,11 +53,6 @@ public class SunManager implements Ticker {
 
     private SunType randomSunType() {
         int chance = rand.nextInt(100);
-//        if (chance <= 80) {
-//            return SunType.NORMAL_SUN;
-//        } else if (chance <= 95) {
-//            return SunType.SPECIAL_SUN;
-//        } else return SunType.RADIOACTIVE_SUN;
         return SunType.RADIOACTIVE_SUN;
     }
 }

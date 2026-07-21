@@ -1,5 +1,6 @@
 package models.entities.zombies;
 
+import models.Settings;
 import models.entities.plants.Plant;
 import models.entities.plants.effect.CatEffect;
 import models.entities.plants.effect.PlantEffect;
@@ -33,7 +34,23 @@ public class ZombieFactory {
         applyInherentEffects(type, zombie);
         addStartingArmor(zombie, data);
 
+        applyDifficultyModifiers(zombie);
+
         return zombie;
+    }
+
+    private static void applyDifficultyModifiers(Zombie zombie) {
+        Settings settings = Settings.getInstance();
+
+        int newHealth = (int) (zombie.getHealth() * settings.getZombieHealthMultiplier());
+        zombie.setHealth(newHealth);
+        zombie.setBaseHp(newHealth);
+
+        int newCost = (int) (zombie.getWaveCost() * settings.getZombieCostMultiplier());
+        zombie.setWaveCost(newCost);
+
+        int newDamage = (int) (zombie.getEatDPS() * settings.getZombieDamageMultiplier());
+        zombie.setEatDPS(newDamage);
     }
 
     private static void addStartingArmor(Zombie zombie, ZombieData data) {
@@ -99,16 +116,18 @@ public class ZombieFactory {
     }
 
     private static AttackBehavior getAttackAI(ZombieType type, Zombie zombie, ZombieData data) {
+        Settings settings = Settings.getInstance();
+        float dmgMultiplier = settings.getZombieDamageMultiplier();
         return switch (type) {
 //            case ARCADE, BARREL_ROLLER, PIANIST -> new SquashHit(zombie);
             case ARCADE, PIANIST -> new SquashHit(zombie);
 
-            case GARGANTUAR -> new SmashAttack(zombie, data.getSmashDamage());
+            case GARGANTUAR -> new SmashAttack(zombie, (int)(data.getSmashDamage() * dmgMultiplier));
             case ALL_STAR -> new AllStarSmashAttack(zombie);
             case EXPLORER -> new TorchBurnAttack(zombie);
             case HUNTER -> new HunterFreezeAttack(zombie);
             case OCTOPUS -> new OctopusAttack(zombie);
-            case CRYSTAL_SKULL -> new LaserAttack(zombie, 4000);
+            case CRYSTAL_SKULL -> new LaserAttack(zombie, (int)(4000 * dmgMultiplier));
             case TOMB_RAISER -> new GraveSpawnAttack(zombie);
             case KING -> new KingAttack(zombie);
             case WIZARD -> new WizardTransformAttack(zombie);
