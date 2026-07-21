@@ -26,6 +26,7 @@ public class VaseBreakerLevel extends Level {
 
     @Override
     public void onStart(GameSession session) {
+        notify("VaseBreaker Level " + levelNumber + " Started!");
 
         int rows = session.getArena().getRows();
         int cols = session.getArena().getCols();
