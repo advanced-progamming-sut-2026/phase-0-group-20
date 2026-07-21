@@ -70,6 +70,8 @@ public class GameFlowMenu implements AppMenu {
         } else if ((matcher = GameFlowCommands.CHEAT_ADD_PLANT_FOOD.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.cheatAddPlantFood());
 
+        } else if ((matcher = GameFlowCommands.ZOMBIE_INFO.getMatcher(input)) != null) {
+            System.out.println(gameFlowcontroller.showZombieInfo());
         } else if ((matcher = GameFlowCommands.SHOW_MAP.getMatcher(input)) != null) {
 
             GameSession session = GameSession.getInstance();

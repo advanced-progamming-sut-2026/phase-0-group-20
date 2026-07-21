@@ -29,7 +29,9 @@ public enum GameFlowCommands implements Commands {
 
     SHOW_TILE_STATUS("^\\s*show\\s+tile\\s+status\\s+-l\\s+\\(\\s*(?<x>\\S+)\\s*,\\s*(?<y>\\S+)\\s*\\)\\s*$"),
 
-    PRINT_MAP("^\\s*print\\s+map\\s*$");
+    PRINT_MAP("^\\s*print\\s+map\\s*$"),
+
+    ZOMBIE_INFO("^\\s*zombies\\s+info\\s*$");
 
 
     private final String pattern;
