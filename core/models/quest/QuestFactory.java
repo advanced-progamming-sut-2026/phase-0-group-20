@@ -1,12 +1,10 @@
 package models.quest;
 
+import com.google.gson.JsonObject;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 import models.quest.conditions.*;
-import models.quest.reward.CurrencyReward;
-import models.quest.reward.Reward;
-import models.quest.reward.SeedPackReward;
-import models.quest.reward.UnlockableReward;
+import models.quest.reward.*;
 
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -16,143 +14,135 @@ public class QuestFactory {
 
     private static final Random random = new Random();
 
-    public static QuestCondition createCondition(int rowIndex, String title, String conditionStr, String variableStr) {
+    public static Quest buildQuest(JsonObject jsonObject) {
+        String title = extractString(jsonObject, "Title");
+        String categoryStr = extractString(jsonObject, "Category");
+        String conditionStr = extractString(jsonObject, "Condition");
+        String rewardStr = extractString(jsonObject, "Reward");
+        String priorityStr = extractString(jsonObject, "Priority");
+        String variableStr = extractString(jsonObject, "Variables");
+        boolean onMission = jsonObject.has("onMission") && !jsonObject.get("onMission").isJsonNull() && jsonObject.get("onMission").getAsBoolean();
 
-        switch (rowIndex) {
-            case 0 -> {
+        QuestCategory category = parseCategory(categoryStr);
+        QuestPriority priority = parsePriority(priorityStr);
+
+        QuestCondition condition = null;
+        Reward reward = null;
+
+        switch (title) {
+            case "Daily Sunblock" -> {
                 int targetSun = pickRandomFromDashSeparated(variableStr, 3000);
-                return new SunCollectCondition(targetSun);
+                conditionStr = conditionStr.replace("sun_amount", String.valueOf(targetSun));
+                rewardStr = rewardStr.replace("sun_amount / 100", String.valueOf(targetSun / 100));
+                condition = new SunCollectCondition(targetSun);
+                reward = new CurrencyReward(false, targetSun / 100);
             }
-            case 1 -> {
-                String chapter = "Random_Chapter";
-                return new KillZombieCondition(50, chapter);
+            case "Chapter Hunter" -> {
+                condition = new KillZombieCondition(50, "Random_Chapter");
+                reward = new SeedPackReward(null, 10);
             }
-            case 2 -> {
-                String plantCategory = "Shooter";
-                return new KillZombieCondition(10, plantCategory);
+            case "Pro Plant Player" -> {
+                condition = new KillZombieCondition(10, "Shooter");
+                reward = new UnlockableReward(null);
             }
-            case 3 -> {
-                return new KillZombieCondition(10, "Cactus");
+            case "Only Cactus" -> {
+                condition = new KillZombieCondition(10, "Cactus");
+                reward = new CurrencyReward(true, 20);
             }
-            case 4 -> {
+            case "Economical Herbivore" -> {
                 int n = pickRandomFromDashSeparated(variableStr, 2);
-                return new MaxPlantLossCondition(n);
+                conditionStr = conditionStr.replace("n", String.valueOf(n));
+                rewardStr = rewardStr.replace("20 - n", String.valueOf(20 - n));
+                condition = new MaxPlantLossCondition(n);
+                reward = new SeedPackReward(null, Math.max(1, 20 - n));
             }
-            case 5 -> {
-                return new CertainAmountOfSunCondition(0);
+            case "Defense Master" -> {
+                condition = new CertainAmountOfSunCondition(0);
+                reward = new CurrencyReward(true, 200);
             }
-            case 6 -> {
-                return new TimeLimitCondition(30, 10);
+            case "Quick Reaction" -> {
+                condition = new TimeLimitCondition(30, 10);
+                reward = new CurrencyReward(false, 500);
             }
-            case 7 -> {
-                String plantCategory = "explosive";
-                return new PlantCategoryUseCondition(plantCategory, 3);
+            case "Pro Demolition" -> {
+                condition = new PlantCategoryUseCondition("explosive", 3);
+                reward = new CurrencyReward(false, 100);
             }
-            case 8 -> {
-                return new SymmetryLogicCondition(true);
+            case "Symmetry" -> {
+                condition = new SymmetryLogicCondition(true);
+                reward = new CurrencyReward(false, 500);
             }
-            case 9 -> {
-                PlantCategory category = PlantCategory.getRandomPlantCategory();
-                return new WinWithThatCategoryCondition(category, true);
+            case "Family Massacre" -> {
+                PlantCategory plantCat = PlantCategory.getRandomPlantCategory();
+                conditionStr = conditionStr.replace("family_type", plantCat.name());
+                condition = new WinWithThatCategoryCondition(plantCat, true);
+                reward = new CurrencyReward(false, 1000);
             }
-            case 10 -> {
-                PlantCategory category = PlantCategory.getRandomPlantCategory();
-                return new WinWithThatCategoryCondition(category, false);
+            case "Flourish in Limits" -> {
+                PlantCategory plantCat = PlantCategory.getRandomPlantCategory();
+                conditionStr = conditionStr.replace("family_type", plantCat.name());
+                condition = new WinWithThatCategoryCondition(plantCat, false);
+                reward = new CurrencyReward(true, 100);
             }
-            case 11 -> {
-                PlantTag plantTag = PlantTag.SHROOM;
-                return new WinWithSpecificTagCondition(plantTag);
+            case "Night or Morning" -> {
+                condition = new WinWithSpecificTagCondition(PlantTag.SHROOM);
+                reward = new CurrencyReward(true, 20);
             }
-            case 12 -> {
-//                return new WinStreakMaxDifficultyCondition(5);
-                //after difficulties
+//            case "Win Streak" -> {
+//                reward = new CurrencyReward(false, 5000);
+//            }
+            case "Almost Won" -> {
+                condition = new KillWithNoLawnmowerCondition(10, 0);
+                reward = new CurrencyReward(false, 300);
             }
-            case 13 -> {
-                return new KillWithNoLawnmowerCondition(10, 0);
+            case "What OCD?" -> {
+                condition = new SymmetryLogicCondition(false);
+                reward = new CurrencyReward(false, 800);
             }
-            case 14 -> {
-                return new SymmetryLogicCondition(false);
+            case "Cloudy Day" -> {
+                condition = new MaxPlantUsedCondition(PlantCategory.SUN_PRODUCER, 3);
+                reward = new CurrencyReward(true, 10);
             }
-            case 15 -> {
-                PlantCategory category = PlantCategory.SUN_PRODUCER;
-                return new MaxPlantUsedCondition(category, 3);
-            }
-            case 16 -> {
+            case "One Column Less" -> {
                 int colIndex = random.nextInt(9);
-                return new EmptyLineCondition(-1, colIndex);
+                conditionStr = conditionStr.replace("nth", String.valueOf(colIndex + 1));
+                condition = new EmptyLineCondition(-1, colIndex);
+                reward = new CurrencyReward(true, 10);
             }
-            case 17 -> {
-                int rowIndexToEmpty = random.nextInt(5);
-                return new EmptyLineCondition(rowIndexToEmpty, -1);
+            case "Defenseless Row" -> {
+                int rowIndex = random.nextInt(5);
+                conditionStr = conditionStr.replace("nth", String.valueOf(rowIndex + 1));
+                condition = new EmptyLineCondition(rowIndex, -1);
+                reward = new CurrencyReward(true, 20);
             }
-            case 18 -> {
+            case "Defenseless Cross" -> {
                 int crossIndex = random.nextInt(5);
-                return new EmptyLineCondition(crossIndex, crossIndex);
+                conditionStr = conditionStr.replace("nth", String.valueOf(crossIndex + 1));
+                condition = new EmptyLineCondition(crossIndex, crossIndex);
+                reward = new CurrencyReward(true, 25);
             }
-            case 19 -> {
+            case "Lawnmower Time" -> {
                 int n = pickRandomFromDashSeparated(variableStr, 10);
-                return new LawnMoverKillsCondition(n);
+                conditionStr = conditionStr.replace("n", String.valueOf(n));
+                rewardStr = rewardStr.replace("n", String.valueOf(n));
+                condition = new LawnMoverKillsCondition(n);
+                reward = new CurrencyReward(true, n);
+            }
+            default -> {
+                condition = new SunCollectCondition(100);
+                reward = new CurrencyReward(false, 50);
             }
         }
-        return null;
+
+        Quest quest = new Quest(title, category, priority, onMission, conditionStr);
+        quest.setCondition(condition);
+        quest.setReward(reward);
+
+        return quest;
     }
 
-    public static Reward createReward(int rowIndex, String rewardStr, String variableStr) {
-
-        switch (rowIndex) {
-            case 0 -> {
-                int targetSun = pickRandomFromDashSeparated(variableStr, 3000);
-                return new CurrencyReward(false, targetSun / 100);
-            }
-            case 1 -> {
-                return new SeedPackReward(null, 10);
-            }
-            case 2 -> {
-                return new UnlockableReward(null);
-            }
-            case 3, 11, 17 -> {
-                return new CurrencyReward(true, 20);
-            }
-            case 4 -> {
-                int n = pickRandomFromDashSeparated(variableStr, 2);
-                return new SeedPackReward(null, Math.max(1, 20 - n));
-            }
-            case 5 -> {
-                return new CurrencyReward(true, 200);
-            }
-            case 6, 8 -> {
-                return new CurrencyReward(false, 500);
-            }
-            case 7 -> {
-                return new CurrencyReward(false, 100);
-            }
-            case 9 -> {
-                return new CurrencyReward(false, 1000);
-            }
-            case 10 -> {
-                return new CurrencyReward(true, 100);
-            }
-            case 12 -> {
-                return new CurrencyReward(false, 5000);
-            }
-            case 13 -> {
-                return new CurrencyReward(false, 300);
-            }
-            case 14 -> {
-                return new CurrencyReward(false, 800);
-            }
-            case 15, 16 -> {
-                return new CurrencyReward(true, 10);
-            }
-            case 18 -> {
-                return new CurrencyReward(true, 25);
-            }
-            case 19 -> {
-                int n = pickRandomFromDashSeparated(variableStr, 10);
-                return new CurrencyReward(true, n);
-            }
-        }
-        return new CurrencyReward(false, 50);
+    private static String extractString(JsonObject jsonObject, String key) {
+        return jsonObject.has(key) && !jsonObject.get(key).isJsonNull() ? jsonObject.get(key).getAsString() : "";
     }
 
     private static int pickRandomFromDashSeparated(String text, int defaultValue) {
@@ -174,5 +164,17 @@ public class QuestFactory {
         return defaultValue;
     }
 
+    private static QuestPriority parsePriority(String priorityStr) {
+        if (priorityStr.equalsIgnoreCase("Critical")) return QuestPriority.CRITICAL;
+        if (priorityStr.equalsIgnoreCase("High")) return QuestPriority.HIGH;
+        if (priorityStr.equalsIgnoreCase("Medium")) return QuestPriority.MEDIUM;
+        return QuestPriority.LOW;
+    }
 
+    private static QuestCategory parseCategory(String categoryStr) {
+        if (categoryStr.equalsIgnoreCase("Daily")) return QuestCategory.DAILY;
+        if (categoryStr.equalsIgnoreCase("Main")) return QuestCategory.MAIN;
+        if (categoryStr.equalsIgnoreCase("Epic")) return QuestCategory.EPIC;
+        return QuestCategory.MINIGAME;
+    }
 }

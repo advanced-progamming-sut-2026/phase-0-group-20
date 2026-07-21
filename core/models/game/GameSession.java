@@ -1,6 +1,7 @@
 package models.game;
 
 import models.App;
+import models.InGameEntityGenerator;
 import models.entities.PlantFood;
 import models.entities.Sun;
 import models.entities.SunType;
@@ -97,15 +98,15 @@ public class GameSession {
     }
 
     public static void startNewGame(List<Plant> inGamePlants) {
-        Adventure adventure = models.App.getActiveAdventure();
+        Adventure adventure = App.getActiveAdventure();
         Level currentLevel = adventure.getCurrentChapter().getCurrentLevel();
 
-        List<models.entities.zombies.Zombie> inGameZombies = models.InGameEntityGenerator.getZombiesForLevel(
+        List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(
                 adventure.getCurrentChapter().getSeasonType(),
                 currentLevel.getLevelNumber()
         );
 
-        Arena arena = new models.game.Arena();
+        Arena arena = new Arena();
         GameSession.destroyInstance();
         GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
         arena.registerLawnMowers();

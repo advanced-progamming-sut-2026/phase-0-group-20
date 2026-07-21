@@ -66,7 +66,7 @@ public class App {
 
     public static Plant findPlantByName(String name) {
         for (Plant plant : allPlants) {
-            if (plant.getName().equals(name)) {
+            if (plant.getName().equalsIgnoreCase(name)) {
                 return plant;
             }
         }
