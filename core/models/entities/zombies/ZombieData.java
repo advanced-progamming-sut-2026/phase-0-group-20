@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ZombieData {
     private final String alias;
-    private final int hitpoints;
+    private final int points;
     private final float speed;
     private final int eatDps;
     private final int waveCost;
@@ -20,7 +20,7 @@ public class ZombieData {
                       int waveCost, boolean canSpawnPlantFood,
                       int smashDamage, String impType, List<String> armorProps) {
         this.alias = alias;
-        this.hitpoints = hitpoints;
+        this.points = hitpoints;
         this.speed = speed;
         this.eatDps = eatDps;
         this.waveCost = waveCost;
@@ -35,7 +35,7 @@ public class ZombieData {
     }
 
     public int getHitpoints() {
-        return hitpoints;
+        return points;
     }
 
     public float getSpeed() {
@@ -68,6 +68,6 @@ public class ZombieData {
 
     @Override
     public String toString() {
-        return alias + " HP=" + hitpoints + " spd=" + speed + " dps=" + eatDps;
+        return alias + " HP=" + points + " spd=" + speed + " dps=" + eatDps;
     }
 }

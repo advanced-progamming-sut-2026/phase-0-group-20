@@ -10,7 +10,6 @@ public class SettingController {
             int desiredDifficulty = Integer.parseInt(amountStr);
             if (desiredDifficulty < 1 || desiredDifficulty > 5)
                 return new Result(false, "Invalid difficulty (Must be an integer [1-5])");
-            App.getSettings().setDifficulty(desiredDifficulty);
             App.changeDifficulty(desiredDifficulty);
             return new Result(true, "Difficulty changed successfully to " + desiredDifficulty);
         } catch (NumberFormatException e) {
