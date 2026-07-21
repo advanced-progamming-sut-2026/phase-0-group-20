@@ -27,14 +27,14 @@ public class IZombieLevel extends Level {
     private int redLineCol = 6;
 
     public IZombieLevel(String name, int levelNumber) {
-        super(name, SeasonType.DARK_AGES, 1, -1, levelNumber);
+        super(name, SeasonType.ANCIENT_EGYPT, 1, -1, levelNumber);
         this.addWinCondition(new IZombieWinCondition());
         this.addLoseCondition(new IZombieLoseCondition());
     }
 
     @Override
     public void onStart(GameSession session) {
-        System.out.println("iZombie Level " + levelNumber + " Started!");
+     notify("iZombie Level " + levelNumber + " Started!");
 
         session.getArena().removeLawnMowers();
 
