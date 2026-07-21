@@ -13,6 +13,7 @@ import models.enums.PhysicalConstants;
 import models.enums.plants.PlantCategory;
 import models.fields.Brain;
 import models.fields.LawnMower;
+import models.fields.modifiers.SeasonModifier;
 import models.fields.tiles.Tile;
 import models.game.adventure.Adventure;
 import models.game.adventure.Chapter;
@@ -109,6 +110,10 @@ public class GameSession {
         GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
         arena.registerLawnMowers();
         models.App.setActiveSession(session);
+        for (int r = 0; r < arena.getRows(); r++)
+            for (int c = 0; c < arena.getCols(); c++)
+                session.getTimeManager().registerNewTicker(arena.getTile(r, c));
+
     }
 
     public static void destroyInstance() {
@@ -132,6 +137,10 @@ public class GameSession {
             if (currentMode != null) {
                 currentMode.engineLoop(this, timeManager.getCurrentTick());
             }
+
+            SeasonModifier currentModifier = currentChapter.getModifier();
+            if (currentModifier != null)
+                currentModifier.updateEnvironment(timeManager.getCurrentTick(), arena);
 
             removeDeadEntities();
             checkGameConditions();
@@ -220,9 +229,11 @@ public class GameSession {
 
             if (proj.isFiredByZombie())
                 checkProjectileForPlantCollision(proj);
-            else
-                checkProjectileForZombieCollision(proj);
-
+            else {
+                boolean hitObstacle = checkProjectileForObstaclesCollision(proj);
+                if (!hitObstacle && !proj.isDestroyed())
+                    checkProjectileForZombieCollision(proj);
+            }
 
         }
         // for plants&zombies
@@ -482,6 +493,28 @@ public class GameSession {
                 }
             }
         }
+    }
+
+    private boolean checkProjectileForObstaclesCollision(Projectile proj) {
+        if (proj.canPassObstacles()) return false;
+
+        int projectileRow = proj.getPosition().getRow();
+        int projectileCol = (int) (proj.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
+        Tile currentTile = arena.getTile(projectileRow, projectileCol);
+
+        if (currentTile == null) return false;
+
+        if (currentTile instanceof models.fields.obstacle.GraveHolder graveHolder && graveHolder.getGraveStone() != null) {
+            graveHolder.takeDamage(proj.getDamage(), projectileRow, projectileCol);
+            proj.onHitObstacle(currentTile);
+            return true;
+        } else if (currentTile instanceof models.fields.obstacle.IceHolder iceHolder && iceHolder.hasIceBlock()) {
+            iceHolder.takeIceDamage(proj.getDamage());
+            proj.onHitObstacle(currentTile);
+            return true;
+        }
+
+        return false;
     }
 
 }
