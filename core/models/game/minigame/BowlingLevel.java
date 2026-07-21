@@ -16,10 +16,9 @@ import java.util.Random;
 public class BowlingLevel extends Level {
 
     private final List<Plant> belt = new ArrayList<>();
-    private List<Plant> unlockedPlants;
     private final Random random = new Random();
     private static final int TICKS_PER_SECOND = 10;
-    private static final int BELT_SPEED_SECONDS = 13;
+    private static final int BELT_SPEED_SECONDS = 8;
     private static final int BELT_CAPACITY = 10;
     private static final int RED_LINE_COL = 3;
 

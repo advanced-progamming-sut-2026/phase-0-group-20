@@ -21,7 +21,6 @@ public class GameInitializer {
     public static void loadAllResources() {
         initPlants();
         initZombies();
-        App.setActiveAdventure(new Adventure());
     }
 
     private static void initPlants() {

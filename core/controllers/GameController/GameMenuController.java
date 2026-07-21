@@ -7,6 +7,8 @@ import models.game.GameSession;
 import models.game.adventure.Adventure;
 import models.game.adventure.Chapter;
 import models.game.adventure.levels.Level;
+import models.game.adventure.levels.speciallevels.ConveyorBelt;
+import models.game.minigame.BowlingLevel;
 import models.users.User;
 
 public class GameMenuController {
@@ -28,7 +30,11 @@ public class GameMenuController {
         if (currentLevel != null && !currentLevel.skipsPlantSelection()) {
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
         } else if (currentLevel != null) {
-            GameSession.startNewGame(App.getActiveUser().getUnlockedPlants());
+            if(currentLevel instanceof ConveyorBelt conveyorBelt){
+                GameSession.startNewGame(conveyorBelt.getBelt());
+            }else if(currentLevel instanceof BowlingLevel bowlingLevel){
+                GameSession.startNewGame(bowlingLevel.getBelt());
+            }
             App.setActiveMenu(Menu.GAME_FLOW_MENU);
         }
 

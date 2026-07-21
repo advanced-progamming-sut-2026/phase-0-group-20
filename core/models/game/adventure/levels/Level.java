@@ -43,7 +43,7 @@ public abstract class Level implements GameMode {
         this.season = season;
         this.seasonModifier = Chapter.createModifier(season);
         this.waveCount = waveCount;
-        this.baseWaveDifficulty = baseWaveDifficulty;
+        this.baseWaveDifficulty = (int) (baseWaveDifficulty * getDifficultyCoefficient());
         this.levelNumber = levelNumber;
     }
 
@@ -82,8 +82,6 @@ public abstract class Level implements GameMode {
             int increment = Math.max(500, (int) (currentDifficulty * 0.25));
             currentDifficulty += increment;
         }
-
-        currentDifficulty *= getDifficultyCoefficient();
 
         Wave newWave = new Wave(currentWave, isLastWave, currentDifficulty);
         session.getArena().setCurrentActiveWave(newWave);
@@ -126,7 +124,7 @@ public abstract class Level implements GameMode {
             }
 
             notify("Zombie " + newZombie.getType().name() +
-                    " spawned in lane " + lane + " (Cost: " + newZombie.getWaveCost() + ").");
+                    " spawned in lane " + (lane + 1) + " (Cost: " + newZombie.getWaveCost() + ").");
         }
     }
 

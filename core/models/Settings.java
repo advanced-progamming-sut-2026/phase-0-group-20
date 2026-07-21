@@ -41,6 +41,26 @@ public class Settings {
         return difficulty;
     }
 
+    public float getZombieHealthMultiplier() {
+        return 1.0f + (difficulty - 3) * 0.2f;
+    }
+
+    public float getZombieDamageMultiplier() {
+        return 1.0f + (difficulty - 3) * 0.2f;
+    }
+
+    public float getZombieCostMultiplier() {
+        return 1.0f - (difficulty - 3) * 0.1f;
+    }
+
+    public float getSunSpawnIntervalMultiplier() {
+        return 1.0f + (difficulty - 3) * 0.25f;
+    }
+
+    public float getGameSpeedMultiplier() {
+        return 1.0f - (difficulty - 3) * 0.15f;
+    }
+
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
     }

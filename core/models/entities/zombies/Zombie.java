@@ -28,7 +28,7 @@ public class Zombie implements Ticker {
     private static final Random RAND = new Random();
     private final List<Armor> armorPieces;
     private final List<ZombieEffect> activeEffects;
-    private final int waveCost;
+    private int waveCost;
     private String name;
     private MoveBehavior moveBehavior;
     private DefenseBehavior defenseBehavior;
@@ -121,7 +121,7 @@ public class Zombie implements Ticker {
             if (!a.isDestroyed()) {
                 remaining = a.takeDamage(remaining);
                 if (remaining <= 0) return false;
-                break;
+
             }
         }
 
@@ -459,5 +459,9 @@ public class Zombie implements Ticker {
 
     public void setTargetZombie(Zombie targetZombie) {
         this.targetZombie = targetZombie;
+    }
+
+    public void setWaveCost(int waveCost) {
+        this.waveCost = waveCost;
     }
 }

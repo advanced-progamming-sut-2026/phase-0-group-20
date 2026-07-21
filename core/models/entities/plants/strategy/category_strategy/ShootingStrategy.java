@@ -32,7 +32,7 @@ public class ShootingStrategy implements IPlantStrategy {
             String plantName = context.getName();
 
             if (plantName.equals("Rotobaga")) {
-                for (Zombie z : GameSession.getInstance().getChosenZombies()) {
+                for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()){
                     if (z.isDead()) continue;
                     int rowDiff = Math.abs(z.getRow() - plantRow);
                     int colDiff = Math.abs(z.getCol() - plantCol);
@@ -43,7 +43,7 @@ public class ShootingStrategy implements IPlantStrategy {
                     }
                 }
             } else if (plantName.equals("Starfruit")) {
-                for (Zombie z : GameSession.getInstance().getChosenZombies()) {
+                for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
                     if (z.isDead()) continue;
                     int rowDiff = z.getRow() - plantRow;
                     int colDiff = z.getCol() - plantCol;

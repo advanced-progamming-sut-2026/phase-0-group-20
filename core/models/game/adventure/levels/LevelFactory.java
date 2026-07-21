@@ -12,7 +12,7 @@ public class LevelFactory {
 
     public static Level createLevel(SeasonType season, int chapterLevelIndex) { //the index of level in each chapter
         int waveCount = 2 + (chapterLevelIndex / 2);
-        int baseDifficulty = chapterLevelIndex * 5;
+        int baseDifficulty = 1000 + (int) (chapterLevelIndex * 0.2f);
 
         return switch (chapterLevelIndex) {
             case 0, 1 ->

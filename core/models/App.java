@@ -24,12 +24,8 @@ public class App {
     private static GameSession activeSession;
 
     public static void changeDifficulty(int difficulty) {
-        return; // We need to implement the Zombies and Plants Mechanism before make this
-    }
-
-    public static void setPlantForNewUsers() {
-        activeUser.getUnlockedPlants().add(PlantFactory.create(1));
-        activeUser.getUnlockedPlants().add(PlantFactory.create(6));
+        settings.setDifficulty(difficulty);
+        System.out.println("Game difficulty set to: " + difficulty);
     }
 
     public static User getActiveUser() {
@@ -70,7 +66,7 @@ public class App {
 
     public static Plant findPlantByName(String name) {
         for (Plant plant : allPlants) {
-            if (plant.getName().equals(name)) {
+            if (plant.getName().equalsIgnoreCase(name)) {
                 return plant;
             }
         }

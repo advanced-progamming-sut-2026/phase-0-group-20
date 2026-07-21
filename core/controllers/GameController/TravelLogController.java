@@ -5,8 +5,10 @@ import models.App;
 import models.Result;
 import models.game.GameSession;
 import models.game.adventure.levels.Level;
+import models.game.minigame.BowlingLevel;
 import models.game.minigame.MiniGameFactory;
 import models.game.minigame.MiniGameType;
+import models.game.minigame.VaseBreakerLevel;
 import models.quest.Quest;
 import models.quest.QuestCategory;
 import models.quest.QuestManager;
@@ -73,7 +75,7 @@ public class TravelLogController {
     public Result showCurrentPage() {
         if (currentPage != ValidPageNames.MINIGAME)
             return showCategoryQuests();
-        return new Result(true, "Coming soon...");
+        return new Result(true ,buildMinigamesView() );
     } // temporary
 
     private Result showCategoryQuests() {
@@ -130,7 +132,13 @@ public class TravelLogController {
     }
 
 
-    public Result startMiniGame(String miniGameName, int levelNumber) {
+    public Result startMiniGame(String miniGameName, String levelString) {
+        int levelNumber;
+        try{
+            levelNumber = Integer.parseInt(levelString);
+        }catch(NumberFormatException e){
+            return new Result(false, "Invalid level number");
+        }
         if (currentPage != ValidPageNames.MINIGAME)
             return new Result(false, "You must be in the MINIGAME page to start a minigame.");
 
@@ -138,24 +146,51 @@ public class TravelLogController {
             return new Result(false, "Invalid level number! Minigames only have levels 1, 2, and 3.");
 
         try {
-            MiniGameType type = MiniGameType.valueOf(miniGameName.toUpperCase());
+            levelNumber -- ;
+            MiniGameType type = MiniGameType.findByName(miniGameName);
             int maxUnlocked = activeUser.getUnlockedLevelInMinigame(type);
             if (levelNumber > maxUnlocked)
                 return new Result(false, "Level " + levelNumber + " is LOCKED! You must beat level " + (levelNumber - 1) + " first.");
 
             Level minigameLevel = MiniGameFactory.createLevel(type, levelNumber);
+            if(minigameLevel instanceof BowlingLevel bowling ){
+                GameSession.startNewGame(bowling.getBelt());
+            }else if (minigameLevel instanceof VaseBreakerLevel vaseBreaker ){
+                GameSession.startNewGame(null);
+            }
             GameSession session = GameSession.getInstance();
             session.setCurrentMode(minigameLevel);
             minigameLevel.onStart(session);
             NavigationController.enterMenu("game flow menu");
 
-            return new Result(true, "Started " + type.name() + " Level " + levelNumber + "! Good luck!");
+            return new Result(true, "Started " + type.name() + " Level " + (levelNumber+1) + "! Good luck!");
 
         } catch (IllegalArgumentException e) {
             return new Result(false, "Invalid minigame name! Available: VASE_BREAKER, BOWLING, I_ZOMBIE");
         } catch (Exception e) {
             return new Result(false, "Something bad happened. Please try again.");
         }
+    }
+
+    private String buildMinigamesView() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("--- Available Minigames ---\n");
+        MiniGameType[] minigames = MiniGameType.values();
+
+        if (minigames.length == 0) {
+            sb.append("No minigames unlocked yet.\n");
+            return sb.toString().trim();
+        }
+
+        for (int i = 0; i < minigames.length; i++) {
+            String rawName = minigames[i].name().replace("_", " ").toLowerCase();
+            String prettyName = rawName.substring(0, 1).toUpperCase() + rawName.substring(1);
+
+            sb.append(i + 1).append(". ").append(prettyName).append("\n");
+        }
+
+        return sb.toString().trim();
     }
 
 }

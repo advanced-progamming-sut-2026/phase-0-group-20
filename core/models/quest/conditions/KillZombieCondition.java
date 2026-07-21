@@ -1,5 +1,6 @@
 package models.quest.conditions;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
@@ -13,28 +14,41 @@ import java.util.List;
 import java.util.Random;
 
 public class KillZombieCondition extends QuestCondition {
-    private Plant questPlant = null;
+
+    @JsonProperty("questPlantName")
+    private String questPlantName = null;
+
+    @JsonProperty("seasonType")
     private SeasonType seasonType = null;
-    private Random random = new Random();
+
+    @JsonProperty("plantIncluded")
     private boolean plantIncluded = false;
+
+    @JsonProperty("chapterIncluded")
     private boolean chapterIncluded = false;
+
+    private Random random = new Random();
 
     public KillZombieCondition(int targetKills, String conditionStr) {
         this.targetProgress = targetKills;
         switch (conditionStr) {
-            case "random_chapter" -> {
+            case "Random_Chapter" -> {
                 seasonType = randomSeason();
                 chapterIncluded = true;
             }
             case "Shooter" -> {
-                questPlant = randomKillerPlant();
+                Plant randomPlant = randomKillerPlant();
+                if (randomPlant != null) {
+                    questPlantName = randomPlant.getName();
+                }
                 plantIncluded = true;
             }
             case "Cactus" -> {
-                questPlant = App.findPlantByName("Cactus");
-                if (questPlant == null) {
-                    throw new IllegalArgumentException("Kill Plant Condition:No such plant exists");
+                Plant cactus = App.findPlantByName("Cactus");
+                if (cactus == null) {
+                    throw new IllegalArgumentException("Kill Plant Condition: No such plant exists");
                 }
+                questPlantName = "Cactus";
                 plantIncluded = true;
             }
         }
@@ -48,13 +62,16 @@ public class KillZombieCondition extends QuestCondition {
         if (payload.getType() != GameEvent.ZOMBIE_KILLED) {
             return;
         }
+
         Zombie zombie = payload.getZombie();
         if (zombie == null) return;
+
         if (!(plantIncluded || chapterIncluded)) {
             currentProgress++;
-        } else if (plantIncluded) {
+        } else if (plantIncluded && payload.getPlant() != null) {
             Plant plant = payload.getPlant();
-            if (plant.equals(questPlant)) {
+
+            if (questPlantName != null && plant.getName().equalsIgnoreCase(questPlantName)) {
                 currentProgress++;
             }
         } else if (chapterIncluded) {
@@ -94,8 +111,10 @@ public class KillZombieCondition extends QuestCondition {
                 randomPlants.add(plant);
             }
         }
+
+        if (randomPlants.isEmpty()) return null;
+
         int rand = random.nextInt(randomPlants.size());
         return randomPlants.get(rand);
-
     }
 }

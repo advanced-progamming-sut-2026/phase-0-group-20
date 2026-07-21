@@ -22,9 +22,8 @@ public class KillWithNoLawnmowerCondition extends QuestCondition {
         GameEvent event = payload.getType();
         if (event == GameEvent.ZOMBIE_KILLED) {
             Zombie target = payload.getZombie();
-            Tile killedTile = target.getTile();
-            int x = killedTile.getCol();
-            int y = killedTile.getRow();
+            int x = target.getCol();
+            int y = target.getRow();
             LawnMower mawer = payload.getArena().getLawnMowers()[y];
             if (x == column) {
                 if (mawer != null && mawer.isActivate()) {

@@ -5,6 +5,7 @@ import models.Result;
 import models.database.DataBaseManager;
 import models.enums.LoginMenuStatus;
 import models.enums.Menu;
+import models.game.adventure.Adventure;
 import models.users.PasswordUtils;
 import models.users.User;
 import models.validation.UserValidator;
@@ -29,6 +30,7 @@ public class LoginMenuController {
         user.setStayLoggedIn(stayLoggedIn);
         DataBaseManager.saveOrUpdateUser(user);
         App.setActiveUser(user);
+        App.setActiveAdventure(new Adventure());
         App.setActiveMenu(Menu.MAIN_MENU);
 
         return new Result(true, "welcome " + user.getNickname());
