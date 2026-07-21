@@ -30,7 +30,7 @@ public class BowlingLevel extends Level {
 
     @Override
     public void onStart(GameSession session) {
-        System.out.println("Bowling started, Plant behind the red line");
+        notify("Bowling started, Plant behind the red line");
     }
 
     @Override
@@ -55,7 +55,7 @@ public class BowlingLevel extends Level {
 
         Plant newPlant = PlantFactory.create(template.getId());
         belt.add(newPlant);
-        System.out.println("A new " + newPlant.getName() + " arrived on the conveyor belt!");
+        notify("A new " + newPlant.getName() + " arrived on the conveyor belt!");
 
     }
 

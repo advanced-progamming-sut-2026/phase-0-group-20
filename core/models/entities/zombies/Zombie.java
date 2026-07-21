@@ -52,6 +52,7 @@ public class Zombie implements Ticker {
     private GameEventMessenger messenger = GameEventMessenger.getInstance();
     private boolean hypnotized = false;
     private Zombie targetZombie = null;
+    private boolean shiny = false;
 
     private Position position;
 
@@ -500,5 +501,13 @@ public class Zombie implements Ticker {
 
     public void setWaveCost(int waveCost) {
         this.waveCost = waveCost;
+    }
+
+    public boolean isShiny() {
+        return shiny;
+    }
+
+    public void setShiny(boolean shiny) {
+        this.shiny = shiny;
     }
 }

@@ -23,6 +23,7 @@ public class AppView {
         if (stayedUser != null) {
             App.setActiveUser(stayedUser);
             App.setActiveMenu(Menu.MAIN_MENU);
+            App.setActiveAdventure(new Adventure());
             System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
             App.setActiveAdventure(new Adventure());
         }

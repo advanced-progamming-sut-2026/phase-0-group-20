@@ -10,6 +10,7 @@ import models.game.adventure.SeasonType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class InGameEntityGenerator {
 
@@ -72,6 +73,33 @@ public class InGameEntityGenerator {
         }
 
         return levelZombies;
+    }
+
+    public static List<Zombie> getZombiesForDailyChallenge() {
+
+        long todaySeed = java.time.LocalDate.now().toEpochDay();
+        Random dailyRandom = new Random(todaySeed);
+
+        ZombieType[] allowedDailyTypes = ZombieType.values();
+
+        List<ZombieType> todaysEnums = new ArrayList<>();
+
+
+        int typesToPick = 2 + dailyRandom.nextInt(3);
+
+        while (todaysEnums.size() < typesToPick) {
+            ZombieType randomType = allowedDailyTypes[dailyRandom.nextInt(allowedDailyTypes.length)];
+            if (!todaysEnums.contains(randomType)) {
+                todaysEnums.add(randomType);
+            }
+        }
+
+        List<Zombie> dailyZombies = new ArrayList<>();
+        for (ZombieType type : todaysEnums) {
+            dailyZombies.add(getZombieForGame(type, 0));
+        }
+
+        return dailyZombies;
     }
 
     public static Zombie getZombieForGame(ZombieType type, int row) {

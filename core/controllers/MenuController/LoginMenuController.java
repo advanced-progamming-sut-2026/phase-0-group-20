@@ -30,6 +30,7 @@ public class LoginMenuController {
         user.setStayLoggedIn(stayLoggedIn);
         DataBaseManager.saveOrUpdateUser(user);
         App.setActiveUser(user);
+        App.getActiveUser().performDailyLoginCheck();
         App.setActiveAdventure(new Adventure());
         App.setActiveMenu(Menu.MAIN_MENU);
 
