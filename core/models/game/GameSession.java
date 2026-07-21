@@ -18,6 +18,7 @@ import models.fields.modifiers.SeasonModifier;
 import models.fields.tiles.Tile;
 import models.game.adventure.Adventure;
 import models.game.adventure.Chapter;
+import models.game.adventure.levels.BonusLevel;
 import models.game.adventure.levels.Level;
 import models.game.events.*;
 import models.timeManager.TimeManager;
@@ -45,6 +46,9 @@ public class GameSession {
     private boolean zombieBreached = false;
     private ZombieDropListener dropListener;
     private ProgressListener progressListener;
+
+    //for mew points
+    private static BonusLevel pendingBonusLevel = null;
 
     private GameSession(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         this.currentChapter = chapter;
@@ -116,7 +120,33 @@ public class GameSession {
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
 
     }
+    public static void startScoringGame(BonusLevel bonusLevel, java.util.List<Plant> inGamePlants) {
+        Arena arena = new Arena();
+        GameSession.destroyInstance();
 
+        Adventure adventure = App.getActiveAdventure();
+        Chapter currentChapter = adventure.getCurrentChapter();
+
+        java.util.List<Zombie> inGameZombies;
+        if (bonusLevel.isDailyChallenge()) {
+            inGameZombies = InGameEntityGenerator.getZombiesForDailyChallenge();
+        } else {
+            inGameZombies = InGameEntityGenerator.getZombiesForLevel(bonusLevel.getSeason(), bonusLevel.getLevelNumber());
+        }
+
+        GameSession session = GameSession.getInstance(currentChapter, arena, inGamePlants, inGameZombies);
+
+        session.setCurrentMode(bonusLevel);
+
+        arena.registerLawnMowers();
+        App.setActiveSession(session);
+
+        for (int r = 0; r < arena.getRows(); r++) {
+            for (int c = 0; c < arena.getCols(); c++) {
+                session.getTimeManager().registerNewTicker(arena.getTile(r, c));
+            }
+        }
+    }
     public static void destroyInstance() {
         if (instance != null) {
             if (instance.dropListener != null) {
@@ -310,6 +340,7 @@ public class GameSession {
                     boolean killed = z.takeDamage(150);
                     if (killed) {
                         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
+                                .zombie(z)
                                 .seasonType(getCurrentChapter().getSeasonType())
                                 .coordinate(z.getRow(), z.getCol())
                                 .build();
@@ -370,6 +401,13 @@ public class GameSession {
 
     public void setEvent(GameEvent event) {
         this.event = event;
+    }
+    public static BonusLevel getPendingBonusLevel() {
+        return pendingBonusLevel;
+    }
+
+    public static void setPendingBonusLevel(BonusLevel level) {
+        pendingBonusLevel = level;
     }
 
     public boolean isZombieBreached() {

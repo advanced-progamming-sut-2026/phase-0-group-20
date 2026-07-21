@@ -3,6 +3,7 @@ package models.quest.reward;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import models.App;
 import models.entities.plants.Plant;
 import models.users.User;
 
@@ -10,13 +11,19 @@ public class SeedPackReward implements Reward {
     @JsonProperty("packetCount")
     private final int packetCount;
 
-    @JsonProperty("plantType")
-    private Plant plantType;
+
+    @JsonProperty("plantTypeName")
+    private String plantTypeName;
 
     @JsonCreator
-    public SeedPackReward(@JsonProperty("plantType") Plant plantType,
+    public SeedPackReward(@JsonProperty("plantTypeName") String plantTypeName,
                           @JsonProperty("packetCount") int packetCount) {
-        this.plantType = plantType;
+        this.plantTypeName = plantTypeName;
+        this.packetCount = packetCount;
+    }
+
+    public SeedPackReward(Plant plantType, int packetCount) {
+        this.plantTypeName = (plantType != null) ? plantType.getName() : null;
         this.packetCount = packetCount;
     }
 
@@ -28,12 +35,18 @@ public class SeedPackReward implements Reward {
 
     @Override
     public void claimReward(User user) {
-        if (plantType == null) {
-            plantType = determineRandomPlant(user);
+        Plant targetPlant = null;
+
+        if (plantTypeName == null) {
+            targetPlant = determineRandomPlant(user);
+        } else {
+            targetPlant = App.findPlantByName(plantTypeName);
         }
 
-        for (int i = 0; i < packetCount; i++) {
-            user.getInventory().addSeedPacket(plantType);
+        if (targetPlant != null) {
+            for (int i = 0; i < packetCount; i++) {
+                user.getInventory().addSeedPacket(targetPlant);
+            }
         }
     }
 
@@ -47,6 +60,6 @@ public class SeedPackReward implements Reward {
 
     @Override
     public String toString() {
-        return packetCount + "seed packets";
+        return packetCount + " seed packets";
     }
 }

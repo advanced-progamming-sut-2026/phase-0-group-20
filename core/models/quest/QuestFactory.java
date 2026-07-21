@@ -1,6 +1,8 @@
 package models.quest;
 
 import com.google.gson.JsonObject;
+import models.entities.plants.Plant;
+import models.entities.plants.PlantFactory;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 import models.quest.conditions.*;
@@ -39,11 +41,11 @@ public class QuestFactory {
             }
             case "Chapter Hunter" -> {
                 condition = new KillZombieCondition(50, "Random_Chapter");
-                reward = new SeedPackReward(null, 10);
+                reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64)+1) , 10);
             }
             case "Pro Plant Player" -> {
                 condition = new KillZombieCondition(10, "Shooter");
-                reward = new UnlockableReward(null);
+                reward = new UnlockableReward(PlantFactory.create(new Random().nextInt(64)+1));
             }
             case "Only Cactus" -> {
                 condition = new KillZombieCondition(10, "Cactus");
@@ -54,7 +56,7 @@ public class QuestFactory {
                 conditionStr = conditionStr.replace("n", String.valueOf(n));
                 rewardStr = rewardStr.replace("20 - n", String.valueOf(20 - n));
                 condition = new MaxPlantLossCondition(n);
-                reward = new SeedPackReward(null, Math.max(1, 20 - n));
+                reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64)+1), Math.max(1, 20 - n));
             }
             case "Defense Master" -> {
                 condition = new CertainAmountOfSunCondition(0);
@@ -88,9 +90,10 @@ public class QuestFactory {
                 condition = new WinWithSpecificTagCondition(PlantTag.SHROOM);
                 reward = new CurrencyReward(true, 20);
             }
-//            case "Win Streak" -> {
-//                reward = new CurrencyReward(false, 5000);
-//            }
+            case "Win Streak" -> {
+                condition = new WinStreakCondition(5);
+                reward = new CurrencyReward(false, 5000);
+            }
             case "Almost Won" -> {
                 condition = new KillWithNoLawnmowerCondition(10, 0);
                 reward = new CurrencyReward(false, 300);

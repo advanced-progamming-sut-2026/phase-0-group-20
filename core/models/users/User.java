@@ -39,6 +39,7 @@ public class User {
     private QuestManager questManager;
     private int highestUnlockedChapterIndex;
     private int highestUnlockedLevelIndex;
+    private int highestBonusScore;
     private Map<MiniGameType, Integer> unlockedMinigames = new EnumMap<>(MiniGameType.class);
 
     public User(String username, String passwordHash,
@@ -57,6 +58,7 @@ public class User {
         this.diamond = 0;
         this.gamesPlayed = 0;
         this.levelsCompleted = 0;
+        this.highestBonusScore = 0;
         this.stayLoggedIn = false;
         this.inventory = new Inventory();
         this.greenHouse = new GreenHouse();
@@ -86,6 +88,7 @@ public class User {
                 @JsonProperty("diamond") int diamond,
                 @JsonProperty("gamesPlayed") int gamesPlayed,
                 @JsonProperty("levelsCompleted") int levelsCompleted,
+                @JsonProperty("highestBonusScore") int highestBonusScore,
                 @JsonProperty("stayLoggedIn") boolean stayLoggedIn,
                 @JsonProperty("greenHouse") GreenHouse greenHouse,
                 @JsonProperty("questManager") QuestManager questManager,
@@ -106,6 +109,7 @@ public class User {
         this.diamond = diamond;
         this.gamesPlayed = gamesPlayed;
         this.levelsCompleted = levelsCompleted;
+        this.highestBonusScore = highestBonusScore;
         this.stayLoggedIn = stayLoggedIn;
         this.greenHouse = (greenHouse != null) ? greenHouse : new GreenHouse();
         this.questManager = (questManager != null) ? questManager : new QuestManager();
@@ -224,6 +228,14 @@ public class User {
 
     public void setLevelsCompleted(int levelsCompleted) {
         this.levelsCompleted = levelsCompleted;
+    }
+
+    public int getHighestBonusScore() {
+        return highestBonusScore;
+    }
+
+    public void setHighestBonusScore(int highestBonusScore) {
+        this.highestBonusScore = highestBonusScore;
     }
 
     public boolean isStayLoggedIn() {

@@ -6,6 +6,8 @@ import models.enums.Menu;
 import models.game.GameSession;
 import models.game.adventure.Adventure;
 import models.game.adventure.Chapter;
+import models.game.adventure.SeasonType;
+import models.game.adventure.levels.BonusLevel;
 import models.game.adventure.levels.Level;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
 import models.game.minigame.BowlingLevel;
@@ -42,14 +44,19 @@ public class GameMenuController {
         return new Result(true, "Enter Chapter " + targetChapter.getDisplayName() + " - Level: " + currentLevel.getName());
     }
 
-    public Result enterGreenHouse() {
-        App.setActiveMenu(Menu.GREENHOUSE_MENU);
-        return new Result(true, "enter greenhouse");
-    }
+    public Result enterScoringLevel(boolean isDailyChallenge) {
+        Adventure activeAdventure = App.getActiveAdventure();
+        Chapter currentChapter = activeAdventure.getCurrentChapter();
 
-    public Result enterTravelLog() {
-        App.setActiveMenu(Menu.TRAVELLOG_MENU);
-        return new Result(true, "enter travel log");
+        SeasonType season = (currentChapter != null) ? currentChapter.getSeasonType() : SeasonType.ANCIENT_EGYPT;
+        int levelNumber = (currentChapter != null) ? currentChapter.getCurrentLevelIndex() + 1 : 1;
+
+        BonusLevel bonusLevel = new BonusLevel("Scoring Challenge", season, 3, 1200, levelNumber, isDailyChallenge);
+
+        GameSession.setPendingBonusLevel(bonusLevel);
+
+        App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
+        return new Result(true, "Entering Plant Selection for Scoring Mode...");
     }
 
     public Result enterLeaderboard() {

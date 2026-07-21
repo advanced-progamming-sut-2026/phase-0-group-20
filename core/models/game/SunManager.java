@@ -53,6 +53,10 @@ public class SunManager implements Ticker {
 
     private SunType randomSunType() {
         int chance = rand.nextInt(100);
-        return SunType.RADIOACTIVE_SUN;
+        if (chance <= 80) {
+            return SunType.NORMAL_SUN;
+        } else if (chance <= 95) {
+            return SunType.SPECIAL_SUN;
+        } else return SunType.RADIOACTIVE_SUN;
     }
 }

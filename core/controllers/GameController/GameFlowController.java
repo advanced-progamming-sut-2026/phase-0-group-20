@@ -204,6 +204,7 @@ public class GameFlowController {
         for (Plant p : desiredTile.getPlants()) {
             GameSession.getInstance().getTimeManager().unregisterTicker(p);
             arena.getActivePlants().remove(p);
+            desiredTile.setPlants(Collections.emptyList());
         }
 
         desiredTile.setPlants(Collections.emptyList()); // hal kardi parham?
