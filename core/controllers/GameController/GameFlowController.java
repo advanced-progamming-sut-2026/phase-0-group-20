@@ -590,28 +590,49 @@ public class GameFlowController {
 
             for (int c = 0; c < arena.getCols(); c++) {
                 Tile tile = arena.getTile(r, c);
+
                 char bg = ' ';
+                String prefix = "N ";
 
-                if (tile.getType().equals("WaterTile") || tile.getType().equals("LowShoreTile"))
-                    bg = '~';
-                else if (tile.getType().equals("SlipperyTile"))
-                    bg = '#';
+                if (tile != null) {
+                    switch (tile.getType()) {
+                        case "WaterTile" -> prefix = "W~";
+                        case "LowShoreTile" -> prefix = "L/";
+                        case "SlipperyTile" -> {
+                            String arrow = "";
+                            if (tile instanceof SlipperyTile slipperyTile)
+                                arrow += slipperyTile.getDirection() == SlipperyTile.SlideDirection.UP ? "^" : "v";
+                            prefix = "S" + arrow;
+                        }
+                        case "GraveStone" -> prefix = "G ";
+                        case "NecromancyTile" -> prefix = "NG";
+                        case "PlantVaseTile" -> prefix = "PV";
+                        case "ZombieVaseTile" -> prefix = "ZV";
+                        case "RandomVaseTile" -> prefix = "RV";
+                        case "VaseTile" -> prefix = "V ";
+                        case "NormalTile" -> prefix = "N ";
+                    }
 
 
-                for (int i = 0; i < 10; i++)
-                    rowContent[c * 10 + i] = bg;
+                    rowContent[c * 10] = prefix.charAt(0);
+                    rowContent[c * 10 + 1] = prefix.charAt(1);
+
+                    for (int i = 2; i < 10; i++)
+                        rowContent[c * 10 + i] = bg;
 
 
-                if (tile.getType().equals("GraveStone") || tile.getType().equals("NecromancyTile"))
-                    rowContent[c * 10] = 'G';
-                else if (tile.isCrater())
-                    rowContent[c * 10] = 'O';
+                    if (tile.isCrater())
+                        rowContent[c * 10 + 2] = 'O';
+
+                } else
+                    for (int i = 0; i < 10; i++) rowContent[c * 10 + i] = ' ';
 
             }
 
+
             for (Sun sun : arena.getActiveSuns()) {
                 if (!sun.isCollected() && sun.getRow() == r) {
-                    int pos = sun.getCol() * 10 + 1;
+                    int pos = sun.getCol() * 10 + 2;
                     if (pos >= 0 && pos < rowContent.length) rowContent[pos] = 's';
                 }
             }
@@ -650,9 +671,11 @@ public class GameFlowController {
         }
         sb.append(horizontalBorder);
 
-        sb.append("\nLegend: [+] Plant | [*] Zombie | [-] Projectile | [s] Sun | [~] Water | [G] Grave | [O] Crater | [#] Frozen Tile\n");
+        sb.append("\nLegend: [+] Plant | [*] Zombie | [-] Projectile | [s] Sun | [O] Crater\n");
+        sb.append("Tiles:  [N ] Normal | [W~] Water | [L/] LowShore | [S#] Slippery | [G / NG] Graves | [PV/ZV/RV] Vases\n");
+        return new
 
-        return new Result(true, sb.toString());
+                Result(true, sb.toString());
     }
 
 

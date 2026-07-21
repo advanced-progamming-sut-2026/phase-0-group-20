@@ -88,6 +88,9 @@ public abstract class Level implements GameMode {
         Wave newWave = new Wave(currentWave, isLastWave, currentDifficulty);
         session.getArena().setCurrentActiveWave(newWave);
 
+        if (seasonModifier != null)
+            seasonModifier.onWaveStart(newWave);
+
         notify(isLastWave ? "The final wave has come." : "Wave " + currentWave + " started.");
 
         spawnWave(newWave, session);
@@ -117,6 +120,10 @@ public abstract class Level implements GameMode {
 
             session.getArena().addZombie(newZombie);
             session.getTimeManager().registerNewTicker(newZombie);
+
+            if (seasonModifier != null) {
+                seasonModifier.onZombieSpawn(newZombie, session.getArena());
+            }
 
             notify("Zombie " + newZombie.getType().name() +
                     " spawned in lane " + lane + " (Cost: " + newZombie.getWaveCost() + ").");

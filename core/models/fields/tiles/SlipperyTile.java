@@ -4,6 +4,8 @@ import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.game.GameSession;
 
+import java.util.List;
+
 public class SlipperyTile extends Tile {
 
     private final SlideDirection direction;
@@ -16,6 +18,18 @@ public class SlipperyTile extends Tile {
     @Override
     public void onTick(int currentTick) {
         // nothing to do slide() is called when a zombie steps on this tile
+        System.out.println("asdfasdfsdf");
+
+        GameSession session = GameSession.getInstance();
+        if (session == null || session.getArena() == null) return;
+
+        List<Zombie> zombiesOnTile = session.getArena().getZombiesOnTile(this);
+
+
+        for (Zombie zombie : zombiesOnTile)
+            if (zombie != null && !zombie.isDead()) {
+                slide(zombie);
+            }
     }
 
     public void slide(Zombie zombie) {

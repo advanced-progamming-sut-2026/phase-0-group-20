@@ -73,7 +73,7 @@ public enum Menu {
                     GREENHOUSE_MENU, PLANTSELLECTION_MENU,
                     SHOP_MENU, TRAVELLOG_MENU, NEWS_MENU);
             case GREENHOUSE_MENU -> EnumSet.of(SHOP_MENU);
-            case GAME_FLOW_MENU -> null;
+            case GAME_FLOW_MENU -> EnumSet.of(GAME_FLOW_MENU);
             case TRAVELLOG_MENU -> EnumSet.of(GAME_FLOW_MENU);
         };
     }
