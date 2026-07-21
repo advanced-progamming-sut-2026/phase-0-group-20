@@ -37,6 +37,11 @@ public class Inventory {
         seedPackets.merge(key, 1, Integer::sum);
     }
 
+    public void addSeedPacket(Plant plant , int amount){
+        String key = plant.getClass().getSimpleName();
+        seedPackets.computeIfPresent(key, (k,v)->v+amount);
+    }
+
     public void costFoodPlant(Plant plant, int amount) {
         String key = plant.getClass().getSimpleName();
         foodPlants.computeIfPresent(key, (k, v) -> v - amount);
