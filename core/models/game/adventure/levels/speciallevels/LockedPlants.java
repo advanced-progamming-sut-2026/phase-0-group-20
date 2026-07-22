@@ -14,9 +14,9 @@ public class LockedPlants extends SpecialLevel {
     private final List<Plant> lockedPlants;
     private final List<Plant> forcedToUsePlants;
 
-    public LockedPlants(String name, SeasonType season, int waveCount, int baseWaveDifficulty
+    public LockedPlants(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber
             , List<Plant> lockedPlants, List<Plant> forcedToUsePlants) {
-        super(name, season, waveCount, baseWaveDifficulty);
+        super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
         this.forcedToUsePlants = forcedToUsePlants != null ? forcedToUsePlants : new ArrayList<>();
         this.lockedPlants = lockedPlants != null ? lockedPlants : new ArrayList<>();
         this.addWinCondition(new NormalWinCondition());

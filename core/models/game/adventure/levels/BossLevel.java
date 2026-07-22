@@ -5,8 +5,8 @@ import models.game.adventure.SeasonType;
 
 public class BossLevel extends Level {
 
-    protected BossLevel(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {
-        super(name, season, waveCount, baseWaveDifficulty, levelNumber);
+    protected BossLevel(String name, SeasonType season, int waveCount, int baseWaveBudget, int levelNumber) {
+        super(name, season, waveCount, baseWaveBudget, levelNumber);
     }
 
 

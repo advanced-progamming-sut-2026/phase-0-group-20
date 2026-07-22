@@ -21,13 +21,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class IZombieLevel extends Level {
+public class IZombieLevel extends Level implements IMinigame{
 
     private final Random rand = new Random();
     private int redLineCol = 6;
 
-    public IZombieLevel(String name, int levelNumber) {
-        super(name, SeasonType.ANCIENT_EGYPT, 1, -1, levelNumber);
+    public IZombieLevel(String name, SeasonType seasonType, int waveCount,int levelNumber) {
+        super(name, seasonType, waveCount, -1, levelNumber);
         this.addWinCondition(new IZombieWinCondition());
         this.addLoseCondition(new IZombieLoseCondition());
     }
@@ -118,5 +118,10 @@ public class IZombieLevel extends Level {
     @Override
     public boolean skySunFalls() {
         return false;
+    }
+
+    @Override
+    public MiniGameType getMiniGameType() {
+        return MiniGameType.I_ZOMBIE;
     }
 }

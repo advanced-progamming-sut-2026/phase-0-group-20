@@ -4,10 +4,8 @@ import models.App;
 import models.game.GameMode;
 import models.game.GameSession;
 import models.game.adventure.Adventure;
-import models.game.minigame.BowlingLevel;
-import models.game.minigame.IZombieLevel;
+import models.game.minigame.IMinigame;
 import models.game.minigame.MiniGameType;
-import models.game.minigame.VaseBreakerLevel;
 import models.users.User;
 
 public class ProgressListener implements GameEventListener {
@@ -53,24 +51,12 @@ public class ProgressListener implements GameEventListener {
 
         GameMode currentMode = GameSession.getInstance().getCurrentMode();
 
-        if (currentMode instanceof VaseBreakerLevel) {
-            int before = user.getUnlockedLevelInMinigame(MiniGameType.VASE_BREAKER);
-            user.unlockNextLevelInMinigame(MiniGameType.VASE_BREAKER);
-            if (user.getUnlockedLevelInMinigame(MiniGameType.VASE_BREAKER) > before)
+        if (currentMode instanceof IMinigame miniGame) {
+            MiniGameType type = miniGame.getMiniGameType();
+            int before = user.getUnlockedLevelInMinigame(type);
+            user.unlockNextLevelInMinigame(type);
+            if (user.getUnlockedLevelInMinigame(type) > before)
                 user.setLevelsCompleted(user.getLevelsCompleted() + 1);
-
-        } else if (currentMode instanceof IZombieLevel) {
-            int before = user.getUnlockedLevelInMinigame(MiniGameType.I_ZOMBIE);
-            user.unlockNextLevelInMinigame(MiniGameType.I_ZOMBIE);
-            if (user.getUnlockedLevelInMinigame(MiniGameType.I_ZOMBIE) > before)
-                user.setLevelsCompleted(user.getLevelsCompleted() + 1);
-
-        } else if (currentMode instanceof BowlingLevel) {
-            int before = user.getUnlockedLevelInMinigame(MiniGameType.BOWLING);
-            user.unlockNextLevelInMinigame(MiniGameType.BOWLING);
-            if (user.getUnlockedLevelInMinigame(MiniGameType.BOWLING) > before)
-                user.setLevelsCompleted(user.getLevelsCompleted() + 1);
-
         } else {
             Adventure adventure = App.getActiveAdventure();
             if (adventure != null) {

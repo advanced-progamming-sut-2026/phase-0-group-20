@@ -7,8 +7,8 @@ import models.game.adventure.levels.conditions.NormalWinCondition;
 
 public class NormalLevel extends Level {
 
-    protected NormalLevel(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {
-        super(name, season, waveCount, baseWaveDifficulty, levelNumber);
+    protected NormalLevel(String name, SeasonType season, int waveCount, int baseWaveBudget, int levelNumber) {
+        super(name, season, waveCount, baseWaveBudget, levelNumber);
         this.addWinCondition(new NormalWinCondition());
         this.addLoseCondition(new NormalLoseCondition());
     }

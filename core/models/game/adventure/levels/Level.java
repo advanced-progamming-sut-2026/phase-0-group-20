@@ -32,18 +32,18 @@ public abstract class Level implements GameMode {
     protected final List<LoseCondition> loseConditions = new ArrayList<>();
 
     protected final int waveCount;
-    protected final int baseWaveDifficulty;
+    protected final int baseWaveBudget;
     protected int currentWave = 0;
     private boolean allWavesSpawned = false;
     private Wave currentActiveWave = null;
     private float currentDifficulty;
 
-    protected Level(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {
+    protected Level(String name, SeasonType season, int waveCount, int baseWaveBudget, int levelNumber) {
         this.name = name;
         this.season = season;
         this.seasonModifier = Chapter.createModifier(season);
         this.waveCount = waveCount;
-        this.baseWaveDifficulty = (int) (baseWaveDifficulty * getDifficultyCoefficient());
+        this.baseWaveBudget = (int) (baseWaveBudget * getDifficultyCoefficient());
         this.levelNumber = levelNumber;
     }
 
@@ -77,7 +77,7 @@ public abstract class Level implements GameMode {
         boolean isLastWave = (currentWave == waveCount);
 
         if (currentWave == 1) {
-            currentDifficulty = Math.max(1000, baseWaveDifficulty);
+            currentDifficulty = Math.max(1000, baseWaveBudget);
         } else {
             int increment = Math.max(500, (int) (currentDifficulty * 0.25));
             currentDifficulty += increment;
