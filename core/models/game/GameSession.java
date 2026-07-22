@@ -119,8 +119,9 @@ public class GameSession {
         for (int r = 0; r < arena.getRows(); r++)
             for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
-
+        currentLevel.onStart(session);
     }
+
     public static void startScoringGame(BonusLevel bonusLevel, java.util.List<Plant> inGamePlants) {
         Arena arena = new Arena();
         GameSession.destroyInstance();
@@ -146,6 +147,7 @@ public class GameSession {
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
 
     }
+
     public static void destroyInstance() {
         if (instance != null) {
             if (instance.dropListener != null) {
@@ -264,11 +266,10 @@ public class GameSession {
 
         }
         // for plants&zombies
-        for (Zombie z : activeZombies)  {
+        for (Zombie z : activeZombies) {
             if (z.isHypnotized()) {
                 checkZombiesAndZombiesCollision(z);
-            }
-            else {
+            } else {
                 checkZombiesAndPlantCollision(z);
             }
         }
@@ -314,6 +315,7 @@ public class GameSession {
     public void setEvent(GameEvent event) {
         this.event = event;
     }
+
     public static BonusLevel getPendingBonusLevel() {
         return pendingBonusLevel;
     }
@@ -466,7 +468,7 @@ public class GameSession {
     }
 
     private void checkZombiesAndZombiesCollision(Zombie z) {
-        if (z.isDead()) return ;
+        if (z.isDead()) return;
 
         int row = z.getRow();
         int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - 0.2);
@@ -492,7 +494,7 @@ public class GameSession {
 
 
     private void checkZombiesAndPlantCollision(Zombie z) {
-        if (z.isDead()) return ;
+        if (z.isDead()) return;
 
         int row = z.getRow();
         int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - 0.2);//mostly for phase 2... If you want You can remove the front threshold
@@ -553,7 +555,7 @@ public class GameSession {
     }
 
 
-    private void checkSunCollision(Sun sun){
+    private void checkSunCollision(Sun sun) {
         if (sun.isCollected() && sun.isFalling() && sun.getType() == SunType.RADIOACTIVE_SUN) {
             Tile sunTile = arena.getTile(sun.getRow(), sun.getCol()); //damaging zombies
             int rightTile = Math.min(sunTile.getCol() + 2, arena.getCols() - 1);
