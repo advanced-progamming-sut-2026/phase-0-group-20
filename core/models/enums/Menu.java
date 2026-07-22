@@ -26,6 +26,7 @@ public enum Menu {
     GAME_MENU(new GameMenu(), "game menu"),
     NEWS_MENU(new NewsMenu(), "news menu"),
     GAME_FLOW_MENU(new GameFlowMenu(), "game flow menu"),
+    LEVEL_SELECTION_MENU(new LevelSelectionMenu(), "level selection menu"),
     ;
 
     private final AppMenu menu;
@@ -67,14 +68,13 @@ public enum Menu {
 
             case MAIN_MENU -> EnumSet.of(GAME_MENU, PROFILE_MENU, SETTINGS_MENU, NEWS_MENU);
 
-            case PLANTSELLECTION_MENU -> EnumSet.of(GAME_MENU);
             case PROFILE_MENU -> EnumSet.of(PLANTSELLECTION_MENU);
             case GAME_MENU -> EnumSet.of(COLLECTION_MENU, LEADERBOARD_MENU,
                     GREENHOUSE_MENU, PLANTSELLECTION_MENU,
-                    SHOP_MENU, TRAVELLOG_MENU, NEWS_MENU);
+                    SHOP_MENU, TRAVELLOG_MENU, LEVEL_SELECTION_MENU);
             case GREENHOUSE_MENU -> EnumSet.of(SHOP_MENU);
-            case GAME_FLOW_MENU -> EnumSet.of(GAME_FLOW_MENU);
-            case TRAVELLOG_MENU -> EnumSet.of(GAME_FLOW_MENU);
+            case GAME_FLOW_MENU, TRAVELLOG_MENU, LEVEL_SELECTION_MENU -> EnumSet.of(GAME_FLOW_MENU);
+            case PLANTSELLECTION_MENU -> EnumSet.of(GAME_MENU);
         };
     }
 
@@ -84,7 +84,7 @@ public enum Menu {
             case LOGIN_MENU -> SIGNUP_MENU;
             case SETTINGS_MENU, GAME_MENU, MAIN_MENU, PROFILE_MENU, NEWS_MENU -> MAIN_MENU;
             case COLLECTION_MENU, LEADERBOARD_MENU, GREENHOUSE_MENU, PLANTSELLECTION_MENU, SHOP_MENU,
-                 TRAVELLOG_MENU -> GAME_MENU;
+                 TRAVELLOG_MENU, LEVEL_SELECTION_MENU -> GAME_MENU;
             case GAME_FLOW_MENU -> { //maybe use stack in phase2
                 GameSession session = GameSession.getInstance();
                 if (session != null && session.getCurrentMode() != null) {
@@ -96,8 +96,9 @@ public enum Menu {
                         yield TRAVELLOG_MENU;
                     }
                 }
-                yield GAME_MENU;
+                yield LEVEL_SELECTION_MENU;
             }
+
         };
     }
 

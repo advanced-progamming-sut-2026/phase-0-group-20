@@ -17,13 +17,18 @@ public class Message {
 
     }
 
-    public static Message plantUnlockedMessage(Plant p) {
+    public static Message plantUnlockedMessage(Plant p) {  //As soon as Elyas finishes writing the code to unlock the plants in each level
         String text = "New Plant with the  name " + p.getName() + " Unlocked.Congrats!!!";
         return new Message(text);
     }
 
-    public static Message levelUnlockedMessage(int number) {
-        String text = "The main level Num #" + number + " Unlocked.Congrats!!!";
+    public static Message levelUnlockedMessage(String chapterName, int levelNumber) {
+        String text = "Level " + levelNumber + " of Chapter " + chapterName + " Unlocked. Congrats!!!";
+        return new Message(text);
+    }
+
+    public static Message chapterUnlockedMessage(String chapterName) {
+        String text = "New Chapter " + chapterName + " Unlocked. Congrats!!!";
         return new Message(text);
     }
 

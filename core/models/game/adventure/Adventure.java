@@ -20,8 +20,6 @@ public class Adventure {
     }
 
     private void initializeAdventure() {
-        // in this method we should initialize the levels
-
 
         SeasonType[] seasons = SeasonType.values();
 
@@ -94,24 +92,28 @@ public class Adventure {
     }
 
     public void onLevelWon() {
-
         Chapter currentChap = chapters.get(currentChapterIndex);
         User currentUser = App.getActiveUser();
+
         currentChap.advanceToNextLevel();
 
-        if (currentChap.getCurrentLevelIndex() > 3) {
-            unlockNextChapter();
-            if (currentUser != null) {
-                currentUser.setHighestUnlockedChapterIndex(currentChapterIndex);
-                currentUser.setHighestUnlockedLevelIndex(0);
-            }
-        } else {
-            if (currentUser != null) {
-                if (currentChapterIndex >= currentUser.getHighestUnlockedChapterIndex() &&
-                        currentChap.getCurrentLevelIndex() > currentUser.getHighestUnlockedLevelIndex())
-                    currentUser.setHighestUnlockedLevelIndex(currentChap.getCurrentLevelIndex());
+        int targetChapterIndex = currentChapterIndex;
+        int targetLevelIndex = currentChap.getCurrentLevelIndex();
 
+        if (targetLevelIndex > 3) {
+
+            if (currentChapterIndex + 1 < chapters.size()) {
+                unlockNextChapter();
+                targetChapterIndex = currentChapterIndex;
+                targetLevelIndex = 0;
+            } else {
+                targetLevelIndex = 3;
             }
+        }
+
+        if (currentUser != null) {
+            String chapterName = chapters.get(targetChapterIndex).getDisplayName();
+            currentUser.unlockAdventureLevel(targetChapterIndex, targetLevelIndex, chapterName);
         }
     }
 }

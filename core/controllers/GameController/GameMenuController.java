@@ -14,6 +14,7 @@ import models.game.minigame.BowlingLevel;
 import models.users.User;
 
 public class GameMenuController {
+    private static Chapter currentChapter = null;
 
     public Result enterChapter(String chapterStr) {
         Adventure activeAdventure = App.getActiveAdventure();
@@ -26,24 +27,52 @@ public class GameMenuController {
         if (!targetChapter.isUnlocked()) {
             return new Result(false, "This chapter is locked! Complete previous chapters first.");
         }
+        App.setActiveMenu(Menu.LEVEL_SELECTION_MENU);
+        currentChapter = targetChapter;
+        return new Result(true, "Enter Chapter " + targetChapter.getDisplayName());
+    }
 
-        Level currentLevel = targetChapter.getCurrentLevel(); // for now when we chose a chapter we enter a level that is last unlocked
 
-        if (currentLevel != null && !currentLevel.skipsPlantSelection()) {
+    public Result enterLevel(String levelStr) {
+        if (currentChapter == null)
+            return new Result(false, "Choose a Chapter first!");
+
+        int levelNumber;
+        try {
+            levelNumber = Integer.parseInt(levelStr);
+        } catch (Exception e) {
+            return new Result(false, "Invalid level number!");
+        }
+
+        if (levelNumber < 1 || levelNumber > currentChapter.getLevels().size()) {
+            return new Result(false, "Level " + levelNumber + " does not exist in this chapter.");
+        }
+
+        User activeUser = App.getActiveUser();
+        int userHighChap = activeUser.getHighestUnlockedChapterIndex();
+        int userHighLevel = activeUser.getHighestUnlockedLevelIndex();
+        int targetChapterIndex = App.getActiveAdventure().getChapters().indexOf(currentChapter);
+
+        if (targetChapterIndex == userHighChap && (levelNumber - 1) > userHighLevel)
+            return new Result(false, "This level is locked! You need to beat the previous levels first.");
+
+
+        Level selectedLevel = currentChapter.getLevels().get(levelNumber - 1);
+
+        if (selectedLevel != null && !selectedLevel.skipsPlantSelection()) {
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
-        } else if (currentLevel != null) {
-            if(currentLevel instanceof ConveyorBelt conveyorBelt){
+        } else if (selectedLevel != null) {
+            if(selectedLevel instanceof ConveyorBelt conveyorBelt) {
                 GameSession.startNewGame(conveyorBelt.getBelt());
-            }else if(currentLevel instanceof BowlingLevel bowlingLevel){
+            } else if(selectedLevel instanceof BowlingLevel bowlingLevel) {
                 GameSession.startNewGame(bowlingLevel.getBelt());
             }
             App.setActiveMenu(Menu.GAME_FLOW_MENU);
         }
 
-
-        return new Result(true, "Enter Chapter " + targetChapter.
-                getDisplayName() + " - Level: " + currentLevel.getName());
+        return new Result(true, "Entered Chapter " + currentChapter.getDisplayName() + " - Level: " + selectedLevel.getName() + "...");
     }
+
 
     public Result enterScoringLevel(boolean isDailyChallenge) {
         Adventure activeAdventure = App.getActiveAdventure();
@@ -97,4 +126,5 @@ public class GameMenuController {
 
         return new Result(false, "Invalid cheat type! Use 'coin' or 'diamond'.");
     }
+
 }
