@@ -76,12 +76,12 @@ Position {
 
     public void setRow(int row) {
         this.row = row;
-        this.y = row * TILE_UNIT_LENGTH - TILE_UNIT_LENGTH / 2f;
+        this.y = row * TILE_UNIT_LENGTH + TILE_UNIT_LENGTH / 2f;
     }
 
     public void setCol(int col) {
         this.col = col;
-        this.x = col * TILE_UNIT_LENGTH - TILE_UNIT_LENGTH / 2f;
+        this.x = col * TILE_UNIT_LENGTH + TILE_UNIT_LENGTH / 2f;
     }
 
 
