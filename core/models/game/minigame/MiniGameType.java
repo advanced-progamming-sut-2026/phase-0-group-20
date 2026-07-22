@@ -8,6 +8,7 @@ public enum MiniGameType {
     ZOMBOTANY("Zombotany");
 
     private final String name;
+
     MiniGameType(String name) {
         this.name = name;
     }

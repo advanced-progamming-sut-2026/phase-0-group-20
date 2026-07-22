@@ -19,7 +19,7 @@ public class RangedAttack implements AttackBehavior {
 
     public RangedAttack(Zombie zombie,
                         ProjectileType projectileType,
-                        int damage){
+                        int damage) {
         this.zombie = zombie;
         this.projectileType = projectileType;
         this.damage = damage;

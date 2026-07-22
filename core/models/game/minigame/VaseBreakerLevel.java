@@ -11,14 +11,14 @@ import models.game.minigame.minigameCondition.VaseBreakerCondition;
 
 import java.util.Random;
 
-public class VaseBreakerLevel extends Level implements IMinigame{
+public class VaseBreakerLevel extends Level implements IMinigame {
 
     private final Random random = new Random();
 
     private final int ZOMBIE_CHANCE = 30; // badan mitonim arzyabi konim taghir bedim
     private final int PLANT_CHANCE = 30;
 
-    public VaseBreakerLevel( String name, SeasonType seasonType , int waveCount,int levelNumber ) {
+    public VaseBreakerLevel(String name, SeasonType seasonType, int waveCount, int levelNumber) {
         super(name, seasonType, waveCount, -1, levelNumber);
         this.addWinCondition(new VaseBreakerCondition());
         this.addLoseCondition(new NormalLoseCondition());

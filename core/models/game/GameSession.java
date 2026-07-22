@@ -175,7 +175,7 @@ public class GameSession {
             collisionManager.checkAllCollisions();
 
             if (this.state == GameState.WON || this.state == GameState.LOST) {
-                isGameOver =  true;
+                isGameOver = true;
                 break;
             }
         }

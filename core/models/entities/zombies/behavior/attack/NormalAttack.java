@@ -5,7 +5,6 @@ import models.entities.plants.effect.CatEffect;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieState;
 import models.fields.tiles.Tile;
-import models.game.GameMode;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 

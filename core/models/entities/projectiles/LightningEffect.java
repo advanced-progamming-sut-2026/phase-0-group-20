@@ -7,7 +7,6 @@ public class LightningEffect implements ProjectileEffect {
     public void applyEffect(Zombie zombie, Projectile projectile) {
 
 
-
         notify("⚡ " + zombie.getName() + " HAS BEEN ZAPPED AND REDUCED TO ASHES! ⚡");
     }
 

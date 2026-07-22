@@ -28,9 +28,9 @@ public class LeaderBoardController {
 
     public Result showResults() {
         List<User> allUsers = App.getAllUsers();
-        for  (User user : allUsers) {
-            for (Quest quest : user.getQuestManager().getActiveQuests()){
-                if(quest.isCompleted()){
+        for (User user : allUsers) {
+            for (Quest quest : user.getQuestManager().getActiveQuests()) {
+                if (quest.isCompleted()) {
                     System.out.println(quest.getTitle());
                 }
             }

@@ -27,8 +27,8 @@ public class TravelLogMenu implements AppMenu {
         } else if ((matcher = TravelLogCommands.ENTER_MINIGAME.getMatcher(input)) != null) {
             String minigameName = matcher.group("name");
             String levelName = matcher.group("level");
-            System.out.println(controller.startMiniGame(minigameName , levelName));
-        }else if ((matcher = TravelLogCommands.SHOW_PAGE.getMatcher(input)) != null) {
+            System.out.println(controller.startMiniGame(minigameName, levelName));
+        } else if ((matcher = TravelLogCommands.SHOW_PAGE.getMatcher(input)) != null) {
             System.out.println(controller.showCurrentPage());
         } else {
             invalidCommands();

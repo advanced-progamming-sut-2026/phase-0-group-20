@@ -62,9 +62,9 @@ public class GameMenuController {
         if (selectedLevel != null && !selectedLevel.skipsPlantSelection()) {
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
         } else if (selectedLevel != null) {
-            if(selectedLevel instanceof ConveyorBelt conveyorBelt) {
+            if (selectedLevel instanceof ConveyorBelt conveyorBelt) {
                 GameSession.startNewGame(conveyorBelt.getBelt());
-            } else if(selectedLevel instanceof BowlingLevel bowlingLevel) {
+            } else if (selectedLevel instanceof BowlingLevel bowlingLevel) {
                 GameSession.startNewGame(bowlingLevel.getBelt());
             }
             App.setActiveMenu(Menu.GAME_FLOW_MENU);

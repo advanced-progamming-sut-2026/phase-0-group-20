@@ -1,7 +1,6 @@
 package models.game.events;
 
 import models.entities.plants.Plant;
-
 import models.game.GameSession;
 import models.timeManager.Ticker;
 
@@ -51,7 +50,7 @@ public class ScoreManager implements GameEventListener, Ticker {
             killsThisTick++;
             totalMewpoints += 10;
 
-            if (payload.getZombie() != null && payload.getZombie().getCol() >=5) {
+            if (payload.getZombie() != null && payload.getZombie().getCol() >= 5) {
                 totalMewpoints += 20;
             }
 
