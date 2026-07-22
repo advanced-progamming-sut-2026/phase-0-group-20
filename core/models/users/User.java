@@ -43,12 +43,14 @@ public class User {
     private int highestUnlockedChapterIndex;
     private int highestUnlockedLevelIndex;
     private int highestBonusScore;
+    private int desiredDifficulty;
 
     private long lastLoginEpochDay;
     private boolean hasPlayedDailyChallengeToday;
     private int plantFoodCount;
     private boolean purchasedDailyDealToday;
 
+    private ArrayList <Message> inbox;
     private Map<MiniGameType, Integer> unlockedMinigames = new EnumMap<>(MiniGameType.class);
 
     public User(String username, String passwordHash,
@@ -72,6 +74,8 @@ public class User {
         this.lastLoginEpochDay = 0;
         this.hasPlayedDailyChallengeToday = false;
         this.plantFoodCount = 0;
+        this.desiredDifficulty = 3 ;
+
         this.purchasedDailyDealToday = false;
         this.stayLoggedIn = false;
         this.inventory = new Inventory();
@@ -112,7 +116,8 @@ public class User {
                 @JsonProperty("questManager") QuestManager questManager,
                 @JsonProperty("highestUnlockedChapterIndex") int highestUnlockedChapterIndex,
                 @JsonProperty("highestUnlockedLevelIndex") int highestUnlockedLevelIndex,
-                @JsonProperty("unlockedMinigames") Map<MiniGameType, Integer> unlockedMinigames) {
+                @JsonProperty("unlockedMinigames") Map<MiniGameType, Integer> unlockedMinigames,
+                @JsonProperty ("inbox") ArrayList <Message> inbox)  {
 
 
         this.id = id;
@@ -142,6 +147,7 @@ public class User {
         if (this.unlockedMinigames.isEmpty())
             for (MiniGameType type : MiniGameType.values())
                 this.unlockedMinigames.put(type, 0);
+        this.inbox = (inbox != null) ? inbox : new ArrayList<>();
     }
 
     public void performDailyLoginCheck() {
@@ -321,6 +327,18 @@ public class User {
         this.greenHouse = greenHouse;
     }
 
+    public ArrayList<Message> getInbox() {
+        return inbox;
+    }
+
+    public void setInbox(ArrayList<Message> inbox) {
+        this.inbox = inbox;
+    }
+
+    public void addMessage(Message message) {
+        inbox.add(message);
+    }
+
     @JsonIgnore
     public ArrayList<Zombie> getUnlockedZombies() {
         return unlockedZombies;
@@ -459,7 +477,9 @@ public class User {
         int currentUnlocked = getUnlockedLevelInMinigame(type);
         if (currentUnlocked < 3) {
             unlockedMinigames.put(type, currentUnlocked + 1);
-            App.getNews().addMessages(Message.minigameUnlockedMessage(type.getName()));
+            if(App.getActiveUser() != null) {
+                App.getActiveUser().addMessage(Message.minigameUnlockedMessage(type.getName()));
+            }
         }
     }
 
@@ -467,7 +487,7 @@ public class User {
         for (Zombie zombie : inGameZombies)
             if (!this.unlockedZombies.contains(zombie)) {
                 this.unlockedZombies.add(zombie);
-                App.getNews().addMessages(Message.zombieUnlockedMessage(zombie));
+                this.addMessage(Message.zombieUnlockedMessage(zombie));
             }
 
     }
@@ -479,10 +499,16 @@ public class User {
             highestUnlockedChapterIndex = targetChapterIndex;
             highestUnlockedLevelIndex = targetLevelIndex;
 
-            if (targetLevelIndex == 0)
-                App.getNews().addMessages(models.news.Message.chapterUnlockedMessage(chapterName));
-            else
-                App.getNews().addMessages(models.news.Message.levelUnlockedMessage(chapterName, targetLevelIndex + 1));
+            if (targetLevelIndex == 0){
+                if(App.getActiveUser() != null){
+                    App.getActiveUser().addMessage(Message.chapterUnlockedMessage(chapterName));
+                }
+            }
+            else{
+                if(App.getActiveUser() != null){
+                    App.getActiveUser().addMessage(Message.levelUnlockedMessage(chapterName, targetLevelIndex + 1));
+                }
+            }
 
         }
     }

@@ -4,11 +4,15 @@ import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 
 public class Message {
-    private final String text;
+    private String text;
     private boolean unread = true;
 
     public Message(String text) {
         this.text = text;
+    }
+
+    public Message() {
+
     }
 
     public static Message zombieUnlockedMessage(Zombie z) {
@@ -17,7 +21,8 @@ public class Message {
 
     }
 
-    public static Message plantUnlockedMessage(Plant p) {  //As soon as Elyas finishes writing the code to unlock the plants in each level
+    public static Message plantUnlockedMessage(Plant p) {
+        //As soon as Elyas finishes writing the code to unlock the plants in each level
         String text = "New Plant with the  name " + p.getName() + " Unlocked.Congrats!!!";
         return new Message(text);
     }
