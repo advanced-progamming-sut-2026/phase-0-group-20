@@ -19,7 +19,7 @@ public class LovePlants extends SpecialLevel {
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
         notify("Love Plants Started: do not lose " + LIMIT + " or above number of plants or you lose.");
         GameEventMessenger.getInstance().addListener(GameEvent.PLANT_LOST, loseCondition);
     }

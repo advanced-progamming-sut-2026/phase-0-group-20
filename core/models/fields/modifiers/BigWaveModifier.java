@@ -26,14 +26,15 @@ public class BigWaveModifier implements SeasonModifier {
     private int currentWaterCols = PERMANENT_WATER_COLS;
 
     @Override
+    public void onCurrentLevelStart() {
+        Arena arena = GameSession.getInstance().getArena();
+        setupShore(arena);
+        isInitialized = true;
+    }
+
+    @Override
     public void onWaveStart(Wave wave) {
         Arena arena = GameSession.getInstance().getArena();
-
-        if (!isInitialized) {
-            setupShore(arena);
-            isInitialized = true;
-        }
-
         changeTide(arena); // an incoming zombie wave always shifts the water level
     }
 

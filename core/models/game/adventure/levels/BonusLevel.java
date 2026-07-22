@@ -31,7 +31,7 @@ public class BonusLevel extends Level implements GameEventListener {
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
         this.scoreManager = new ScoreManager();
         session.getTimeManager().registerNewTicker(this.scoreManager);
 

@@ -17,8 +17,6 @@ public class SlipperyTile extends Tile {
 
     @Override
     public void onTick(int currentTick) {
-        // nothing to do slide() is called when a zombie steps on this tile
-        System.out.println("asdfasdfsdf");
 
         GameSession session = GameSession.getInstance();
         if (session == null || session.getArena() == null) return;

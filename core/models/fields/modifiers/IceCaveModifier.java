@@ -29,17 +29,19 @@ public class IceCaveModifier implements SeasonModifier {
 
     private final Random rand = new Random();
     private final Map<Plant, Integer> frostbiteLevels = new HashMap<>();
-    private boolean isInitialized = false;
+
+    @Override
+    public void onCurrentLevelStart() {
+        Arena arena = GameSession.getInstance().getArena();
+
+        setupSlipperyTiles(arena);
+        setupInitialIceBlocks(arena);
+
+    }
 
     @Override
     public void onWaveStart(Wave wave) {
         Arena arena = GameSession.getInstance().getArena();
-
-        if (!isInitialized) {
-            setupSlipperyTiles(arena);
-            setupInitialIceBlocks(arena);
-            isInitialized = true;
-        }
 
         double currentWindChance = Math.min(0.8, FREEZING_WIND_CHANCE + 0.05 * getCurrentLevelNumber());
 

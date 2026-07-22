@@ -38,7 +38,7 @@ public class BeghouledLevel extends Level implements IMinigame{
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
         fillBoardRandomly(session);
         notify("Beghouled Level " + levelNumber + " Started! Make " + targetMatches + " matches!");
     }

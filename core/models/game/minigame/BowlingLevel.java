@@ -29,7 +29,7 @@ public class BowlingLevel extends Level implements IMinigame {
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
         notify("Bowling started, Plant behind the red line");
     }
 
