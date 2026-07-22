@@ -3,7 +3,6 @@ package controllers.GameController;
 import models.App;
 import models.Result;
 import models.news.Message;
-import models.news.News;
 import models.users.User;
 
 public class NewsController {

@@ -93,6 +93,7 @@ public class Zombie implements Ticker {
             moveBehavior.execute();
         }
         armorPieces.removeIf(Armor::isDropped);
+        updateTile();
     }
 
     public boolean takeDamage(int damage, Projectile projectile) {
@@ -261,6 +262,12 @@ public class Zombie implements Ticker {
         }
 
         return info.toString().trim();
+    }
+
+    private void updateTile (){
+        int column = this.getCol();
+        int row = this.getRow();
+        this.tile = GameSession.getInstance().getArena().getTile(row, column);
     }
 
     public void applySpeedMultiplier(float multiplier) {
