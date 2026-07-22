@@ -1,6 +1,7 @@
 package models.users;
 
 import com.fasterxml.jackson.annotation.*;
+import models.App;
 import models.entities.plants.Plant;
 import models.entities.plants.PlantFactory;
 import models.entities.plants.PlantSaveData;
@@ -10,12 +11,10 @@ import models.enums.Gender;
 import models.enums.SecurityQuestion;
 import models.game.minigame.MiniGameType;
 import models.greenhouse.GreenHouse;
+import models.news.Message;
 import models.quest.QuestManager;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
@@ -378,8 +377,35 @@ public class User {
 
     public void unlockNextLevelInMinigame(MiniGameType type) {
         int currentUnlocked = getUnlockedLevelInMinigame(type);
-        if (currentUnlocked < 2)
+        if (currentUnlocked < 3) {
             unlockedMinigames.put(type, currentUnlocked + 1);
+            App.getNews().addMessages(Message.minigameUnlockedMessage(type.getName()));
+        }
     }
+
+    public void addZombiesToUnlock(List<Zombie> inGameZombies) {
+        for (Zombie zombie : inGameZombies)
+            if (!this.unlockedZombies.contains(zombie)) {
+                this.unlockedZombies.add(zombie);
+                App.getNews().addMessages(Message.zombieUnlockedMessage(zombie));
+            }
+
+    }
+
+    public void unlockAdventureLevel(int targetChapterIndex, int targetLevelIndex, String chapterName) {
+        if (targetChapterIndex > highestUnlockedChapterIndex ||
+                (targetChapterIndex == highestUnlockedChapterIndex && targetLevelIndex > highestUnlockedLevelIndex)) {
+
+            highestUnlockedChapterIndex = targetChapterIndex;
+            highestUnlockedLevelIndex = targetLevelIndex;
+
+            if (targetLevelIndex == 0)
+                App.getNews().addMessages(models.news.Message.chapterUnlockedMessage(chapterName));
+            else
+                App.getNews().addMessages(models.news.Message.levelUnlockedMessage(chapterName, targetLevelIndex + 1));
+
+        }
+    }
+
 
 }
