@@ -31,17 +31,6 @@ public class MiniGameController {
         return null;
     }
 
-
-    public Result enterVaseBreaker(int levelNumber) {
-
-        GameSession session = GameSession.getInstance();
-        VaseBreakerLevel vaseLevel = new VaseBreakerLevel("Vasebreaker Level " + levelNumber, levelNumber);
-        session.setCurrentMode(vaseLevel);
-        vaseLevel.onStart(session);
-        return new Result(true, "Vasebreaker started! Good luck!");
-
-    }
-
     public Result breakVase(int row, int col) {
         Tile tile = GameSession.getInstance().getArena().getTile(row, col);
 

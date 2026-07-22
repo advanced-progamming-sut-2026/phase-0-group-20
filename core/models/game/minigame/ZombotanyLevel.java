@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class ZombotanyLevel extends Level {
+public class ZombotanyLevel extends Level implements IMinigame{
 
-    protected ZombotanyLevel(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {
-        super(name, season, waveCount, baseWaveDifficulty, levelNumber);
+    protected ZombotanyLevel(String name, SeasonType season, int waveCount, int baseWaveBudget, int levelNumber) {
+        super(name, season, waveCount, baseWaveBudget, levelNumber);
         this.addLoseCondition(new NormalLoseCondition());
         this.addWinCondition(new NormalWinCondition());
     }
@@ -57,5 +57,10 @@ public class ZombotanyLevel extends Level {
 
             notify("Zombotany: " + newZombie.getType().name() + " spawned in lane " + lane);
         }
+    }
+
+    @Override
+    public MiniGameType getMiniGameType() {
+        return MiniGameType.ZOMBOTANY;
     }
 }
