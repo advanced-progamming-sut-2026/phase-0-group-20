@@ -64,19 +64,22 @@ public class ChargeStrategy implements IPlantStrategy {
             if (chargedTicks >= requiredCharge) {
                 canFire = true;
 
-                if (name.equals("Citron")) {
-                    projType = ProjectileType.PEA;
-                    currentDamage = 800;
-                } else if (name.equals("Caulipower")) {
-                    projType = ProjectileType.MAGIC_BEAM;
-                    currentDamage = 0;
-                    effect = new HypnotizeEffect();
-                    isHoming = true;
-                } else if (name.equals("Electric Blueberry")) {
-                    projType = ProjectileType.LIGHTNING_CLOUD;
-                    currentDamage = 5000;
-                    effect = new LightningEffect();
-                    isHoming = true;
+                switch (name) {
+                    case "Citron" -> {
+                        projType = ProjectileType.PEA;
+                        currentDamage = 800;
+                    }
+                    case "Caulipower" -> {
+                        projType = ProjectileType.MAGIC_BEAM;
+                        effect = new HypnotizeEffect();
+                        isHoming = true;
+                    }
+                    case "Electric Blueberry" -> {
+                        projType = ProjectileType.LIGHTNING_CLOUD;
+                        currentDamage = 5000;
+                        effect = new LightningEffect();
+                        isHoming = true;
+                    }
                 }
             }
         }

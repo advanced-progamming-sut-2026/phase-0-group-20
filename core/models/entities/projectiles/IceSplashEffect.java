@@ -1,6 +1,7 @@
 package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
+import models.entities.zombies.behavior.effect.ChillEffect;
 import models.game.GameSession;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 public class IceSplashEffect implements ProjectileEffect {
     private static final double SPLASH_RADIUS = 1.5;
     private final int splashDamage;
+    private static final int CHILL_DURATION_TICKS = 30;
 
     public IceSplashEffect(int splashDamage) {
         this.splashDamage = splashDamage;
@@ -23,7 +25,7 @@ public class IceSplashEffect implements ProjectileEffect {
         for (Zombie z : nearbyZombies) {
             if (z.isDead()) continue;
 
-            // add effect for zombie
+            zombie.addEffect(new ChillEffect(zombie, CHILL_DURATION_TICKS)); //fully stop
 
             if (z != zombie) {
                 boolean killed = z.takeDamage(splashDamage);

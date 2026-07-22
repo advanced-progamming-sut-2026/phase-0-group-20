@@ -14,17 +14,23 @@ public class RageEffect extends Effect {
 
     @Override
     public void onApply() {
-        zombie.applySpeedMultiplier(speedMultiplier); // increase speed
-        //increase dps
+        zombie.applySpeedMultiplier(speedMultiplier);
+        zombie.applyEatSpeedMultiplier(extraEatDps);
+    }
+
+    @Override
+    public void execute() {
+        super.execute();
     }
 
     @Override
     public void onRemove() {
+        zombie.getActiveEffects().remove(this);
         zombie.resetSpeed();
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return zombie.isDead();
     }
 }

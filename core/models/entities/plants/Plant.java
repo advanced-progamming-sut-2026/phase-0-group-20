@@ -143,7 +143,22 @@ public class Plant implements IPlant, Ticker {
     }
 
     public void takeDamage(int amount) {
+        if (isDead()) {
+            return;
+        }
+
         this.currentHp -= amount;
+
+
+        if (isDead()) {
+            GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,
+                    new GameEventPayload.Builder(GameEvent.PLANT_LOST)
+                            .message(getName() + " has lost!")
+                                    .build()
+                );
+
+            GameSession.notify("Plant " + getName() + " has been Destroyed!");
+        }
     }
 
     public int getStackCount() {
@@ -156,10 +171,6 @@ public class Plant implements IPlant, Ticker {
             return true;
         }
         return false;
-    }
-
-    public void die() {
-
     }
 
     @Override

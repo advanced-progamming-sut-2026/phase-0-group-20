@@ -5,6 +5,7 @@ import models.entities.zombies.Zombie;
 public class HypnotizeEffect implements ProjectileEffect {
     @Override
     public void applyEffect(Zombie zombie, Projectile projectile) {
+        zombie.hypnotize();
         notify("🌀 " + zombie.getName() + " HAS BEEN HYPNOTIZED! 🌀");
     }
 

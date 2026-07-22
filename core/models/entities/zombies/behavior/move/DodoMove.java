@@ -3,6 +3,7 @@ package models.entities.zombies.behavior.move;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.fields.tiles.Tile;
+import models.game.GameSession;
 
 public class DodoMove implements MoveBehavior {
     private final Zombie zombie;
@@ -35,7 +36,7 @@ public class DodoMove implements MoveBehavior {
     }
 
     private boolean shouldFlyOverCurrentTile() {
-        Tile tile = zombie.getTile();
+        Tile tile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
         if (tile == null || tile.getPlants().isEmpty()) {
             return false;
         }

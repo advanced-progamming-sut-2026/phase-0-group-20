@@ -1,6 +1,7 @@
 package models.entities.zombies.behavior.effect;
 
 import models.entities.zombies.Zombie;
+import models.timeManager.TimeManager;
 
 public class PoisonEffect extends Effect {
     private final int dps; // damage per sec
@@ -18,14 +19,19 @@ public class PoisonEffect extends Effect {
     @Override
     public void execute() {
         super.execute();
-        if (currentTick % 10 == 0) { // each 1 sec
-            zombie.takeDamage(dps);
 
+        if (currentTick % TimeManager.TICKS_PER_SECOND == 0) { // each 1 sec
+            zombie.takeDamage(dps);
         }
     }
 
     @Override
     public void onRemove() {
-        // back to main state
+        zombie.getActiveEffects().remove(this);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return super.isFinished() || zombie.isDead();
     }
 }
