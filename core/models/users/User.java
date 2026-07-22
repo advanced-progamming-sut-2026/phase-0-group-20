@@ -9,11 +9,15 @@ import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieSaveData;
 import models.enums.Gender;
 import models.enums.SecurityQuestion;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 import models.game.minigame.MiniGameType;
 import models.greenhouse.GreenHouse;
 import models.news.Message;
 import models.quest.QuestManager;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -141,7 +145,7 @@ public class User {
     }
 
     public void performDailyLoginCheck() {
-        long currentEpochDay = java.time.LocalDate.now().toEpochDay();
+        long currentEpochDay = LocalDate.now().toEpochDay();
 
         if (this.lastLoginEpochDay == 0) {
             this.lastLoginEpochDay = currentEpochDay;
@@ -152,12 +156,12 @@ public class User {
             int daysPassed = (int) (currentEpochDay - this.lastLoginEpochDay);
             this.lastLoginEpochDay = currentEpochDay;
 
-            models.game.events.GameEventPayload payload =
-                new models.game.events.GameEventPayload.Builder(models.game.events.GameEvent.NEW_DAY_STARTED)
+            GameEventPayload payload =
+                new GameEventPayload.Builder(GameEvent.NEW_DAY_STARTED)
                     .amount(daysPassed)
                     .build();
 
-            models.game.events.GameEventMessenger.getInstance().dispatch(models.game.events.GameEvent.NEW_DAY_STARTED, payload);
+            GameEventMessenger.getInstance().dispatch(GameEvent.NEW_DAY_STARTED, payload);
         }
     }
 

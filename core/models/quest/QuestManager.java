@@ -1,8 +1,10 @@
 package models.quest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import models.App;
 import models.game.events.GameEvent;
 import models.game.events.GameEventListener;
 import models.game.events.GameEventMessenger;
@@ -69,6 +71,11 @@ public class QuestManager implements GameEventListener {
 
     @Override
     public void onEvent(GameEvent event, GameEventPayload payload) {
+
+        if (App.getActiveUser() != null && App.getActiveUser().getQuestManager() != this) {
+            this.unregisterFromAllEvents();
+            return;
+        }
         for (Quest quest : activeQuests) {
             if (!quest.isCompleted()) {
                 quest.onEvent(payload);
@@ -76,7 +83,7 @@ public class QuestManager implements GameEventListener {
         }
 
     }
-
+    @JsonIgnore
     public int getCompletedQuestsCount() {
         int count = 0;
         for (Quest quest : activeQuests) {

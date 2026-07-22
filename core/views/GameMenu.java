@@ -20,11 +20,11 @@ public class GameMenu implements AppMenu {
         if ((matcher = GameMenuCommands.ENTER_CHAPTER.getMatcher(input)) != null) {
             String chapterStr = matcher.group("chaptername");
             System.out.println(controller.enterChapter(chapterStr));
+        } else if ((matcher = GameMenuCommands.ENTER_DAILY_SCORE_LEVEL.getMatcher(input)) != null) {
+            System.out.println(controller.enterScoringLevel());
         } else if (checkGlobalCommand(input)) {
             return;
-        }
-
-        else if ((matcher = GameMenuCommands.ENTER_LEADERBOARD.getMatcher(input)) != null) {
+        } else if ((matcher = GameMenuCommands.ENTER_LEADERBOARD.getMatcher(input)) != null) {
             System.out.println(controller.enterLeaderboard());
         } else if ((matcher = GameMenuCommands.ENTER_COIN_WALLET.getMatcher(input)) != null) {
             System.out.println(controller.showCoin());

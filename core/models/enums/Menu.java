@@ -21,7 +21,7 @@ public enum Menu {
     GREENHOUSE_MENU(new GreenHouseMenu(), "greenhouse menu"),
     PLANTSELLECTION_MENU(new PlantSelectionMenu(), "plant selection menu"),
     PROFILE_MENU(new ProfileMenu(), "profile menu"),
-    SHOP_MENU(new ShopMenu(), "shop"),
+    SHOP_MENU(new ShopMenu(), "shop menu"),
     TRAVELLOG_MENU(new TravelLogMenu(), "travel log menu"),
     GAME_MENU(new GameMenu(), "game menu"),
     NEWS_MENU(new NewsMenu(), "news menu"),
@@ -83,8 +83,9 @@ public enum Menu {
             case SIGNUP_MENU -> null;
             case LOGIN_MENU -> SIGNUP_MENU;
             case SETTINGS_MENU, GAME_MENU, MAIN_MENU, PROFILE_MENU, NEWS_MENU -> MAIN_MENU;
-            case COLLECTION_MENU, LEADERBOARD_MENU, GREENHOUSE_MENU, PLANTSELLECTION_MENU, SHOP_MENU,
+            case COLLECTION_MENU, LEADERBOARD_MENU, GREENHOUSE_MENU, PLANTSELLECTION_MENU,
                  TRAVELLOG_MENU, LEVEL_SELECTION_MENU -> GAME_MENU;
+            case SHOP_MENU -> GREENHOUSE_MENU;
             case GAME_FLOW_MENU -> { //maybe use stack in phase2
                 GameSession session = GameSession.getInstance();
                 if (session != null && session.getCurrentMode() != null) {

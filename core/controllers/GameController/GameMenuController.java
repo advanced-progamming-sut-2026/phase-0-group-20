@@ -74,14 +74,14 @@ public class GameMenuController {
     }
 
 
-    public Result enterScoringLevel(boolean isDailyChallenge) {
+    public Result enterScoringLevel() {
         Adventure activeAdventure = App.getActiveAdventure();
         Chapter currentChapter = activeAdventure.getCurrentChapter();
 
         SeasonType season = (currentChapter != null) ? currentChapter.getSeasonType() : SeasonType.ANCIENT_EGYPT;
         int levelNumber = (currentChapter != null) ? currentChapter.getCurrentLevelIndex() + 1 : 1;
 
-        BonusLevel bonusLevel = new BonusLevel("Scoring Challenge", season, 3, 1200, levelNumber, isDailyChallenge);
+        BonusLevel bonusLevel = new BonusLevel("Scoring Challenge", season, 3, 1200, levelNumber, true);
 
         GameSession.setPendingBonusLevel(bonusLevel);
 

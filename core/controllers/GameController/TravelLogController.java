@@ -102,7 +102,10 @@ public class TravelLogController {
             String rewardText = (quest.getReward() != null) ? quest.getReward().toString() : "No Reward";
 
             String progressText = "0/0";
-            if (quest.getCondition() != null) {
+            if(quest.isCompleted()){
+                progressText = "Completed!";
+            }
+            else if (quest.getCondition() != null) {
                 int current = quest.getCondition().getCurrentProgress();
                 int target = quest.getCondition().getTargetProgress();
                 if (target == 0) target = 1;
