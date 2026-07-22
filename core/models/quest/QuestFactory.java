@@ -1,12 +1,14 @@
 package models.quest;
 
 import com.google.gson.JsonObject;
-import models.entities.plants.Plant;
 import models.entities.plants.PlantFactory;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
 import models.quest.conditions.*;
-import models.quest.reward.*;
+import models.quest.reward.CurrencyReward;
+import models.quest.reward.Reward;
+import models.quest.reward.SeedPackReward;
+import models.quest.reward.UnlockableReward;
 
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -41,11 +43,11 @@ public class QuestFactory {
             }
             case "Chapter Hunter" -> {
                 condition = new KillZombieCondition(50, "Random_Chapter");
-                reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64)+1) , 10);
+                reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64) + 1), 10);
             }
             case "Pro Plant Player" -> {
                 condition = new KillZombieCondition(10, "Shooter");
-                reward = new UnlockableReward(PlantFactory.create(new Random().nextInt(64)+1));
+                reward = new UnlockableReward(PlantFactory.create(new Random().nextInt(64) + 1));
             }
             case "Only Cactus" -> {
                 condition = new KillZombieCondition(10, "Cactus");
@@ -53,10 +55,10 @@ public class QuestFactory {
             }
             case "Economical Herbivore" -> {
                 int n = pickRandomFromDashSeparated(variableStr, 2);
-                conditionStr = conditionStr.replace(" n ", " "+String.valueOf(n)+" ");
+                conditionStr = conditionStr.replace(" n ", " " + String.valueOf(n) + " ");
                 rewardStr = rewardStr.replace("20 - n", String.valueOf(20 - n));
                 condition = new MaxPlantLossCondition(n);
-                reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64)+1), Math.max(1, 20 - n));
+                reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64) + 1), Math.max(1, 20 - n));
             }
             case "Defense Master" -> {
                 condition = new CertainAmountOfSunCondition(0);
@@ -126,8 +128,8 @@ public class QuestFactory {
             }
             case "Lawnmower Time" -> {
                 int n = pickRandomFromDashSeparated(variableStr, 10);
-                conditionStr = conditionStr.replace(" n ", " "+String.valueOf(n)+" ");
-                rewardStr = rewardStr.replace("n", String.valueOf(n)+" ");
+                conditionStr = conditionStr.replace(" n ", " " + String.valueOf(n) + " ");
+                rewardStr = rewardStr.replace("n", String.valueOf(n) + " ");
                 condition = new LawnMoverKillsCondition(n);
                 reward = new CurrencyReward(true, n);
             }

@@ -1,9 +1,9 @@
 package controllers.GameController;
 
+import controllers.NavigationController;
 import models.App;
 import models.InGameEntityGenerator;
 import models.Result;
-import models.entities.PlantFood;
 import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
@@ -38,6 +38,12 @@ public class GameFlowController {
             return new Result(false, "Even Dr.Strange couldn't travel to the past.\nwho the are you?");
         }
         GameSession.getInstance().update(timeAmount);
+
+        if (GameSession.getInstance().isGameOver()) {
+            NavigationController.exitMenu();
+            return new Result(true, "Returned to " + App.getActiveMenu().getName());
+        }
+
         return new Result(true, "Successfully advanced time for " + timeAmount + " ticks.");
     }
 
@@ -249,7 +255,7 @@ public class GameFlowController {
     }
 
     public Result cheatAddPlantFood() {
-        User user =  App.getActiveUser();
+        User user = App.getActiveUser();
         int plantFoodCount = user.getPlantFoodCount();
         if (plantFoodCount >= 3) {
             return new Result(false, "You already have the maximum amount of the food plants");
@@ -562,7 +568,7 @@ public class GameFlowController {
 
 
         if (tile instanceof NormalTile normalTile && normalTile.getIceBlock() != null)
-                statusDisplay.append("Ice Block HP: ").append(normalTile.getIceBlock()).append("\n");
+            statusDisplay.append("Ice Block HP: ").append(normalTile.getIceBlock()).append("\n");
 
         statusDisplay.append("- Type: ").append(tileShape).append("\n");
 

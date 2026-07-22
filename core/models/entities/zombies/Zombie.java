@@ -88,7 +88,6 @@ public class Zombie implements Ticker {
         }
 
 
-
         if (attacking) {
             attackBehavior.execute();
         } else {
@@ -189,7 +188,6 @@ public class Zombie implements Ticker {
     }
 
 
-
     public void applyEatSpeedMultiplier(float multiplier) {
         this.eatSpeedMultiplier = multiplier;
     }
@@ -260,7 +258,7 @@ public class Zombie implements Ticker {
         return info.toString().trim();
     }
 
-    private void updateTile (){
+    private void updateTile() {
         int column = this.getCol();
         int row = this.getRow();
         this.tile = GameSession.getInstance().getArena().getTile(row, column);

@@ -3,7 +3,6 @@ package models.fields.tiles;
 import models.Position;
 import models.entities.plants.Plant;
 import models.enums.plants.PlantTag;
-import models.game.GameSession;
 import models.game.adventure.SeasonType;
 import models.timeManager.Ticker;
 

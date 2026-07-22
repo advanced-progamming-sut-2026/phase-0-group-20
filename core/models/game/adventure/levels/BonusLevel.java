@@ -5,7 +5,6 @@ import models.InGameEntityGenerator;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.game.GameSession;
-
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.conditions.NormalLoseCondition;
 import models.game.adventure.levels.conditions.NormalWinCondition;
@@ -96,7 +95,7 @@ public class BonusLevel extends Level implements GameEventListener {
             int lane = waveRandom.nextInt(session.getArena().getRows());
 
             Zombie newZombie = InGameEntityGenerator.getZombieForGame(template.getType(), lane);
-            if(shinyZombie()){
+            if (shinyZombie()) {
                 newZombie.setShiny(true);
             }
             newZombie.setCol(session.getArena().getCols() - 1);

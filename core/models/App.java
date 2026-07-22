@@ -1,7 +1,6 @@
 package models;
 
 import models.entities.plants.Plant;
-import models.entities.plants.PlantFactory;
 import models.entities.zombies.Zombie;
 import models.enums.Menu;
 import models.game.GameSession;

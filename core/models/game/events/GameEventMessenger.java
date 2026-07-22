@@ -36,7 +36,7 @@ public class GameEventMessenger {
 
         if (eventListeners != null) {
 
-            List<GameEventListener> safeCopy =new ArrayList<>(eventListeners);
+            List<GameEventListener> safeCopy = new ArrayList<>(eventListeners);
 
             for (GameEventListener listener : safeCopy) {
                 listener.onEvent(event, payload);

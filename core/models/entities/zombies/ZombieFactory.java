@@ -1,11 +1,9 @@
 package models.entities.zombies;
 
-import models.Position;
 import models.Settings;
 import models.entities.plants.Plant;
 import models.entities.plants.effect.CatEffect;
 import models.entities.plants.effect.PlantEffect;
-import models.entities.projectiles.Projectile;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.armour.ArmorData;
 import models.entities.zombies.armour.ArmorLoader;
@@ -14,7 +12,6 @@ import models.entities.zombies.behavior.defense.*;
 import models.entities.zombies.behavior.effect.JalapenoTimerEffect;
 import models.entities.zombies.behavior.effect.SunAbsorber;
 import models.entities.zombies.behavior.move.*;
-import models.enums.PhysicalConstants;
 import models.enums.plants.ProjectileType;
 import models.game.GameSession;
 
@@ -129,12 +126,12 @@ public class ZombieFactory {
 //            case ARCADE, BARREL_ROLLER, PIANIST -> new SquashHit(zombie);
             case ARCADE, PIANIST -> new SquashHit(zombie);
 
-            case GARGANTUAR -> new SmashAttack(zombie, (int)(data.getSmashDamage() * dmgMultiplier));
+            case GARGANTUAR -> new SmashAttack(zombie, (int) (data.getSmashDamage() * dmgMultiplier));
             case ALL_STAR -> new AllStarSmashAttack(zombie);
             case EXPLORER -> new TorchBurnAttack(zombie);
             case HUNTER -> new HunterFreezeAttack(zombie);
             case OCTOPUS -> new OctopusAttack(zombie);
-            case CRYSTAL_SKULL -> new LaserAttack(zombie, (int)(4000 * dmgMultiplier));
+            case CRYSTAL_SKULL -> new LaserAttack(zombie, (int) (4000 * dmgMultiplier));
             case TOMB_RAISER -> new GraveSpawnAttack(zombie);
             case KING -> new KingAttack(zombie);
             case WIZARD -> new WizardTransformAttack(zombie);

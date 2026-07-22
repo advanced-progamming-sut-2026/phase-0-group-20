@@ -4,7 +4,7 @@ import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.game.Arena;
 
-public class MiniGameModifier implements SeasonModifier{
+public class MiniGameModifier implements SeasonModifier {
     @Override
     public void onCurrentLevelStart() {
 

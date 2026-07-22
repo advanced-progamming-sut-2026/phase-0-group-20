@@ -1,7 +1,5 @@
 package models.timeManager;
 
-import models.fields.tiles.Tile;
-
 import java.util.ArrayList;
 import java.util.List;
 

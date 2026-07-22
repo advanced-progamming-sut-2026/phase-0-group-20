@@ -83,6 +83,7 @@ public class QuestManager implements GameEventListener {
         }
 
     }
+
     @JsonIgnore
     public int getCompletedQuestsCount() {
         int count = 0;

@@ -6,7 +6,6 @@ import models.entities.PlantFood;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
-import models.enums.Menu;
 import models.enums.plants.PlantCategory;
 import models.fields.modifiers.SeasonModifier;
 import models.game.adventure.Adventure;
@@ -175,7 +174,10 @@ public class GameSession {
             checkGameConditions();
             collisionManager.checkAllCollisions();
 
-            if (this.state == GameState.WON || this.state == GameState.LOST) break;
+            if (this.state == GameState.WON || this.state == GameState.LOST) {
+                isGameOver = true;
+                break;
+            }
         }
     }
 
@@ -242,7 +244,6 @@ public class GameSession {
                     .build();
             GameEventMessenger.getInstance().dispatch(GameEvent.LEVEL_COMPLETED, payload);
             notify("You survived! LEVEL COMPLETED.");
-            App.setActiveMenu(Menu.GAME_MENU);
         }
     }
 

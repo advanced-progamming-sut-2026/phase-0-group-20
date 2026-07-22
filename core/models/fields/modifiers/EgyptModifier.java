@@ -14,7 +14,7 @@ public class EgyptModifier implements SeasonModifier {
 
     @Override
     public void onCurrentLevelStart() {
-        Arena arena =  GameSession.getInstance().getArena();
+        Arena arena = GameSession.getInstance().getArena();
         setupEgyptGraves(arena);
     }
 

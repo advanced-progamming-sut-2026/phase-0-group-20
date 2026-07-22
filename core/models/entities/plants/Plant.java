@@ -154,8 +154,8 @@ public class Plant implements IPlant, Ticker {
             GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,
                     new GameEventPayload.Builder(GameEvent.PLANT_LOST)
                             .message(getName() + " has lost!")
-                                    .build()
-                );
+                            .build()
+            );
 
             GameSession.notify("Plant " + getName() + " has been Destroyed!");
         }
