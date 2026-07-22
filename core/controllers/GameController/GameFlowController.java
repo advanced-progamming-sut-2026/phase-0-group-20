@@ -703,4 +703,19 @@ public class GameFlowController {
     }
 
 
+    public Result showZombieInfo() {
+        if (GameSession.getInstance().getArena().getActiveZombies().isEmpty()) {
+            return new Result(false, "There are no active zombies");
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
+            sb.append(z.getInGameDetails()).append("\n\n");
+        }
+
+        return new Result(true, sb.toString().trim());
+    }
+
+
 }

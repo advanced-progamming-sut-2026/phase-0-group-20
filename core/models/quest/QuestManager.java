@@ -77,6 +77,16 @@ public class QuestManager implements GameEventListener {
 
     }
 
+    public int getCompletedQuestsCount() {
+        int count = 0;
+        for (Quest quest : activeQuests) {
+            if (quest.isCompleted()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
 
     public List<Quest> getActiveQuests() {
         return activeQuests;

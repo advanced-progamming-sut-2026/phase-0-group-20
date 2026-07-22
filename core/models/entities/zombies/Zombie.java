@@ -7,6 +7,7 @@ import models.entities.zombies.behavior.attack.AttackBehavior;
 import models.entities.zombies.behavior.attack.LaserAttack;
 import models.entities.zombies.behavior.defense.DefenseBehavior;
 import models.entities.zombies.behavior.effect.ChillEffect;
+import models.entities.zombies.behavior.effect.Effect;
 import models.entities.zombies.behavior.effect.FreezeEffect;
 import models.entities.zombies.behavior.effect.ZombieEffect;
 import models.entities.zombies.behavior.move.MoveBehavior;
@@ -131,7 +132,7 @@ public class Zombie implements Ticker {
 
     public boolean takeDamage(int damage) {
         health -= damage;
-        notify(name + " take " + damage);
+        notify(type.toString() + " take " + damage + "damage" + " in " + position.getCol() + " " + position.getRow());
         if (health <= 0) {
             health = 0;
             dead = true;
@@ -146,7 +147,7 @@ public class Zombie implements Ticker {
 
     private boolean applyHealthDamage(int remaining) {
         health -= remaining;
-        notify(name + " take " + remaining);
+        notify(type.toString() + " take " + remaining + "in " + position.getCol() + " " + position.getRow());
         if (health <= 0) {
             health = 0;
             dead = true;
@@ -166,7 +167,7 @@ public class Zombie implements Ticker {
         if (dead) return false;
 
         health -= damage;
-        notify(name + " take " + damage);
+        notify(type.toString() + " take " + damage + "in " + position.getCol() + " " + position.getRow());
         if (health <= 0) {
             health = 0;
             dead = true;
@@ -224,6 +225,42 @@ public class Zombie implements Ticker {
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
                         .message(message)
                         .build());
+    }
+
+    public String getInGameDetails() {
+        StringBuilder info = new StringBuilder();
+
+        info.append("Name: ").append(type.toString()).append("\n");
+
+        info.append("position: ").append(position.getCol() + 1).append(", ").append(position.getRow() + 1).append("\n");
+
+        info.append("health: ").append(this.health).append("\n");
+
+        info.append("armor: ");
+        if (armorPieces != null && !armorPieces.isEmpty()) {
+            for (int i = 0; i < armorPieces.size(); i++) {
+                info.append(armorPieces.get(i).getData().getAlias());
+                if (i < armorPieces.size() - 1) info.append(", ");
+            }
+        }
+        info.append("\n");
+
+        info.append("effects:\n");
+        if (activeEffects != null && !activeEffects.isEmpty()) {
+            for (ZombieEffect e : activeEffects) {
+                if (e instanceof Effect effectImpl) {
+
+                    String effectName = effectImpl.getClass().getSimpleName().replace("Effect", "").toLowerCase();
+                    if (effectName.equals("chill")) effectName = "chilled";
+                    if (effectName.equals("freeze")) effectName = "frozen";
+
+                    float remainingTime = effectImpl.getRemainingSeconds();
+                    info.append(effectName).append(": ").append(String.format("%.1f", remainingTime)).append("s\n");
+                }
+            }
+        }
+
+        return info.toString().trim();
     }
 
     public void applySpeedMultiplier(float multiplier) {

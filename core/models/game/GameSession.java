@@ -114,7 +114,7 @@ public class GameSession {
         GameSession.destroyInstance();
         GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
         arena.registerLawnMowers();
-        models.App.setActiveSession(session);
+        App.setActiveSession(session);
         for (int r = 0; r < arena.getRows(); r++)
             for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
