@@ -11,6 +11,7 @@ import models.news.News;
 import models.users.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class App {
     private static final Settings settings = Settings.getInstance();
@@ -22,6 +23,7 @@ public class App {
     private static ArrayList<Chapter> allChapters;
     private static Adventure activeAdventure;
     private static GameSession activeSession;
+    private static List<User> allUsers;
 
     public static void changeDifficulty(int difficulty) {
         settings.setDifficulty(difficulty);
@@ -108,5 +110,13 @@ public class App {
 
     public static void setActiveSession(GameSession activeSession) {
         App.activeSession = activeSession;
+    }
+
+    public static List<User> getAllUsers() {
+        return allUsers;
+    }
+
+    public static void setAllUsers(List<User> allUsers) {
+        App.allUsers = allUsers;
     }
 }

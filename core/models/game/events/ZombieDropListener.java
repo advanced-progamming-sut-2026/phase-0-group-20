@@ -1,6 +1,7 @@
 package models.game.events;
 
 import models.App;
+import models.entities.zombies.Zombie;
 import models.game.GameSession;
 import models.greenhouse.GreenHouse;
 import models.greenhouse.Pot;
@@ -19,6 +20,20 @@ public class ZombieDropListener implements GameEventListener {
     @Override
     public void onEvent(GameEvent event, GameEventPayload payload) {
         if (!(event == GameEvent.ZOMBIE_KILLED_LAWN_MOWER || event == GameEvent.ZOMBIE_KILLED)) return;
+        Zombie target =payload.getZombie();
+        if(target != null && target.isShiny()){
+            User user = App.getActiveUser();
+            StringBuilder message = new StringBuilder();
+            message.append("The glowing zombie dropeed a plant food;");
+            if(user.getPlantFoodCount() >=3){
+                message.append("You already have 3 Plant Food.\n");
+            }else{
+                user.addPlantFoodCount(1);
+                message.append(" you have ").append(user.getPlantFoodCount()).append(" plant foods now.\n");
+            }
+            GameSession.notify(message.toString());
+        }
+
         ZombieDrop type = getDropType();
         if (type == null) return;
         User user = App.getActiveUser();

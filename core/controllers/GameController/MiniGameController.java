@@ -14,9 +14,7 @@ import models.fields.tiles.VaseTile;
 import models.game.Arena;
 import models.game.GameSession;
 import models.game.adventure.levels.Level;
-import models.game.minigame.BowlingLevel;
-import models.game.minigame.IZombieLevel;
-import models.game.minigame.VaseBreakerLevel;
+import models.game.minigame.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,7 +149,13 @@ public class MiniGameController {
 
         } else if (currentMode instanceof VaseBreakerLevel) {
             mapDisplay.append("Minigame: Vasebreaker\n");
+        } else if (currentMode instanceof models.game.minigame.BeghouledLevel level) {
+            mapDisplay.append("Minigame: Beghouled\n");
+            mapDisplay.append("Sun: ").append(session.getCurrentSun()).append("\n");
+            mapDisplay.append("Matches Progress: ").append(level.getSuccessfulMatches())
+                    .append(" / ").append(level.getTargetMatches()).append("\n");
         }
+
         mapDisplay.append("----------------------------\n");
 
         int rows = arena.getRows();
@@ -216,4 +220,40 @@ public class MiniGameController {
         return new Result(true, mapDisplay.toString().trim());
     }
 
+
+    public Result swapPlants(String x1Str, String y1Str, String x2Str, String y2Str) {
+        GameSession session = GameSession.getInstance();
+
+        if (!(session.getCurrentMode() instanceof BeghouledLevel)) {
+            return new Result(false, "You can only swap plants in the Beghouled minigame!");
+        }
+
+        int x1, y1, x2, y2;
+        try {
+            x1 = Integer.parseInt(x1Str);
+            y1 = Integer.parseInt(y1Str);
+            x2 = Integer.parseInt(x2Str);
+            y2 = Integer.parseInt(y2Str);
+        } catch (NumberFormatException e) {
+            return new Result(false, "Invalid coordinates! Please enter valid integer numbers.");
+        }
+
+        BeghouledManager manager = new BeghouledManager();
+        String response = manager.swapPlants(x1, y1, x2, y2);
+
+        boolean isSuccess = response.startsWith("Match found") || response.startsWith("Cascade");
+        return new Result(isSuccess, response);
+    }
+
+    public Result upgradeBeghouledPlants(String plantName) {
+        GameSession session = GameSession.getInstance();
+
+        if (!(session.getCurrentMode() instanceof models.game.minigame.BeghouledLevel level)) {
+            return new Result(false, "You can only upgrade plants like this in the Beghouled minigame!");
+        }
+
+        String response = level.upgradePlants(plantName);
+        boolean isSuccess = response.startsWith("Successfully");
+        return new Result(isSuccess, response);
+    }
 }

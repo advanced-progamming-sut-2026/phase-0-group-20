@@ -1,6 +1,7 @@
 package models.entities.zombies.behavior.effect;
 
 import models.entities.zombies.Zombie;
+import models.timeManager.TimeManager;
 
 public abstract class Effect implements ZombieEffect {
     protected final Zombie zombie;
@@ -32,5 +33,10 @@ public abstract class Effect implements ZombieEffect {
 
     public boolean isFinished() {
         return currentTick >= durationTicks;
+    }
+
+    public float getRemainingSeconds() {
+        int remainingTicks = Math.max(0, durationTicks - currentTick);
+        return (float) remainingTicks / TimeManager.TICKS_PER_SECOND;
     }
 }

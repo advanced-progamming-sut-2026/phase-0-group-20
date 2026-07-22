@@ -19,10 +19,18 @@ public class ShopMenu implements AppMenu {
 
         Matcher matcher;
 
-        if ((matcher = ShopMenuCommands.SHOW_SHOP.getMatcher(input)) != null) {
-            System.out.println(controller.showShop());
-        } else if ((matcher = ShopMenuCommands.BUY_ITEM.getMatcher(input)) != null) {
-            System.out.println(controller.buyItem(matcher.group("item")));
+        if ((matcher = ShopMenuCommands.SHOP_LIST.getMatcher(input)) != null) {
+            System.out.println(controller.showShopList());
+        } else if ((matcher = ShopMenuCommands.SHOP_BUY.getMatcher(input)) != null) {
+            String itemId = matcher.group("itemId");
+            int count = Integer.parseInt(matcher.group("count"));
+
+            String plantType = matcher.group("plantType");
+
+            System.out.println(controller.buyItem(itemId, count, plantType));
+
+        } else if ((matcher = ShopMenuCommands.SHOP_DAILY.getMatcher(input)) != null) {
+            System.out.println(controller.showDailyDeal());
         } else {
             invalidCommands();
         }

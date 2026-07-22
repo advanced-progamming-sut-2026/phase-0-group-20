@@ -53,7 +53,7 @@ public class QuestFactory {
             }
             case "Economical Herbivore" -> {
                 int n = pickRandomFromDashSeparated(variableStr, 2);
-                conditionStr = conditionStr.replace("n", String.valueOf(n));
+                conditionStr = conditionStr.replace(" n ", " "+String.valueOf(n)+" ");
                 rewardStr = rewardStr.replace("20 - n", String.valueOf(20 - n));
                 condition = new MaxPlantLossCondition(n);
                 reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64)+1), Math.max(1, 20 - n));
@@ -126,8 +126,8 @@ public class QuestFactory {
             }
             case "Lawnmower Time" -> {
                 int n = pickRandomFromDashSeparated(variableStr, 10);
-                conditionStr = conditionStr.replace("n", String.valueOf(n));
-                rewardStr = rewardStr.replace("n", String.valueOf(n));
+                conditionStr = conditionStr.replace(" n ", " "+String.valueOf(n)+" ");
+                rewardStr = rewardStr.replace("n", String.valueOf(n)+" ");
                 condition = new LawnMoverKillsCondition(n);
                 reward = new CurrencyReward(true, n);
             }

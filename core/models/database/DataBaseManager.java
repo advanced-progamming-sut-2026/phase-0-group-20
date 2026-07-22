@@ -3,6 +3,8 @@ package models.database;
 import models.users.PasswordUtils;
 import models.users.User;
 
+import java.util.List;
+
 
 public class DataBaseManager {
 
@@ -70,6 +72,10 @@ public class DataBaseManager {
 
     public static boolean usernameExists(String username) {
         return userRepository.findByUsername(username).isPresent();
+    }
+
+    public static List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public static void setRepositoryForTest(UserRepository repository) {

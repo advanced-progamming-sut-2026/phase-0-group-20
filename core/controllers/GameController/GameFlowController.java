@@ -1,5 +1,6 @@
 package controllers.GameController;
 
+import models.App;
 import models.InGameEntityGenerator;
 import models.Result;
 import models.entities.PlantFood;
@@ -17,6 +18,7 @@ import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
 import models.timeManager.TimeManager;
+import models.users.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -230,8 +232,16 @@ public class GameFlowController {
         if (desiredTile.getPlants().isEmpty()) {
             return new Result(false, "There is no plant in this tile");
         }
+        User user = App.getActiveUser();
+        if(user.getPlantFoodCount()<=0){
+            return new Result(false, "You don't have any Plant Food.");
+        }
+        user.addPlantFoodCount(-1);
         for (Plant plant : desiredTile.getPlants()) {
-            plant.useFood();
+            if(!plant.getPlantFoodStrategy().isEmpty()&&plant.getPlantFoodStrategy() != null){
+                plant.useFood();
+
+            }
         }
 
         return new Result(true, "You successfully feed all the plants in the tile");
@@ -690,6 +700,21 @@ public class GameFlowController {
         return new
 
                 Result(true, sb.toString());
+    }
+
+
+    public Result showZombieInfo() {
+        if (GameSession.getInstance().getArena().getActiveZombies().isEmpty()) {
+            return new Result(false, "There are no active zombies");
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
+            sb.append(z.getInGameDetails()).append("\n\n");
+        }
+
+        return new Result(true, sb.toString().trim());
     }
 
 

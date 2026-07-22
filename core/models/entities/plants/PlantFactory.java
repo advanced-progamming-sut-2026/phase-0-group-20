@@ -101,7 +101,7 @@ public class PlantFactory {
     }
 
     private static boolean ownsItsOwnDetonation(String nameKey) {
-        return nameKey.equals("grave buster") || nameKey.equals("ice-shroom") || nameKey.equals("hot potato");
+        return nameKey.equalsIgnoreCase("grave buster") || nameKey.equalsIgnoreCase("ice-shroom") || nameKey.equalsIgnoreCase("hot potato") || nameKey.equalsIgnoreCase("chomper");
     }
 
 

@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
 import models.entities.plants.Plant;
-import models.entities.plants.PlantFactory;
 import models.entities.plants.PlantSaveData;
 import models.timeManager.Ticker;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -68,7 +68,12 @@ public class Pot implements Ticker {
     }
 
     public PotCondition getPotCondition() {
-        return potCondition;
+        if (this.potCondition == PotCondition.PLANTED) {
+            if (System.currentTimeMillis() >= this.readyTime) {
+                this.potCondition = PotCondition.COLLECTABLE;
+            }
+        }
+        return this.potCondition;
     }
 
     public void setPotCondition(PotCondition potCondition) {
@@ -111,7 +116,7 @@ public class Pot implements Ticker {
 
     @JsonIgnore
     public String getFormattedRemainingTime() {
-        if (potCondition != PotCondition.PLANTED) return "Ready";
+        if (getPotCondition() != PotCondition.PLANTED) return "Ready";
 
         long remainingMilli = readyTime - System.currentTimeMillis();
 
@@ -159,8 +164,14 @@ public class Pot implements Ticker {
 
     private Plant getRandomUnlockedPlant() {
         List<Plant> plants = App.getActiveUser().getUnlockedPlants();
-        Random rand = new Random();
-        int index = rand.nextInt(plants.size());
-        return PlantFactory.create(plants.get(index).getId());
+        List<Plant> plantsWithPlantFood = new ArrayList<>();
+        for (Plant plant : plants) {
+            if (plant.getPlantFoodStrategy().isEmpty() || plant.getPlantFoodStrategy() == null) continue;
+            else {
+                plantsWithPlantFood.add(plant);
+            }
+        }
+        int index = new Random().nextInt(plantsWithPlantFood.size());
+        return plantsWithPlantFood.get(index);
     }
 }

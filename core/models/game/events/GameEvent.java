@@ -12,5 +12,6 @@ public enum GameEvent {
     WAVE_COMPLETED,
     LEVEL_COMPLETED,
     LAWNMOWER_TRIGGERED,
-    NOTIFY;
+    NOTIFY,
+    NEW_DAY_STARTED;
 }
