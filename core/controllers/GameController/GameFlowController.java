@@ -233,12 +233,12 @@ public class GameFlowController {
             return new Result(false, "There is no plant in this tile");
         }
         User user = App.getActiveUser();
-        if(user.getPlantFoodCount()<=0){
+        if (user.getPlantFoodCount() <= 0) {
             return new Result(false, "You don't have any Plant Food.");
         }
         user.addPlantFoodCount(-1);
         for (Plant plant : desiredTile.getPlants()) {
-            if(!plant.getPlantFoodStrategy().isEmpty()&&plant.getPlantFoodStrategy() != null){
+            if (!plant.getPlantFoodStrategy().isEmpty() && plant.getPlantFoodStrategy() != null) {
                 plant.useFood();
 
             }
@@ -555,11 +555,15 @@ public class GameFlowController {
         statusDisplay.append("Tile ").append(userRow).append(" / ").append(userCol).append(" Status:\n");
 
         String tileShape = "Normal";
-        if (tile instanceof WaterTile || tile instanceof LowShoreTile) {
+        if (tile instanceof WaterTile || tile instanceof LowShoreTile)
             tileShape = "Water";
-        } else if (tile instanceof GraveStoneTile || tile instanceof NecromanceTile) {
-            tileShape = "Grave";
-        }
+        else if (tile instanceof GraveStoneTile graveStoneTile)
+            tileShape = "Grave with HP: " + graveStoneTile.getGraveStone().getHp();
+
+
+        if (tile instanceof NormalTile normalTile && normalTile.getIceBlock() != null)
+                statusDisplay.append("Ice Block HP: ").append(normalTile.getIceBlock()).append("\n");
+
         statusDisplay.append("- Type: ").append(tileShape).append("\n");
 
         statusDisplay.append("- Plants:\n");

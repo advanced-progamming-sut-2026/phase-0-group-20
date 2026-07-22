@@ -10,16 +10,17 @@ import java.util.Random;
 
 public class EgyptModifier implements SeasonModifier {
 
-    private boolean isInitialized = false;
     Wave currentWave;
+
+    @Override
+    public void onCurrentLevelStart() {
+        Arena arena =  GameSession.getInstance().getArena();
+        setupEgyptGraves(arena);
+    }
 
     @Override
     public void onWaveStart(Wave wave) {
         currentWave = wave;
-        if (!isInitialized) {
-            setupEgyptGraves(GameSession.getInstance().getArena());
-            isInitialized = true;
-        }
     }
 
     @Override

@@ -117,6 +117,7 @@ public class GameSession {
         for (int r = 0; r < arena.getRows(); r++)
             for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
+        currentLevel.onStart(session);
     }
 
     public static void startScoringGame(BonusLevel bonusLevel, java.util.List<Plant> inGamePlants) {
@@ -142,6 +143,7 @@ public class GameSession {
         for (int r = 0; r < arena.getRows(); r++)
             for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
+
     }
 
     public static void destroyInstance() {
