@@ -32,8 +32,15 @@ public class GameEventMessenger {
     }
 
     public void dispatch(GameEvent event, GameEventPayload payload) {
-        for (GameEventListener listener : listeners.get(event)) {
-            listener.onEvent(event, payload);
+        List<GameEventListener> eventListeners = listeners.get(event);
+
+        if (eventListeners != null) {
+
+            List<GameEventListener> safeCopy =new ArrayList<>(eventListeners);
+
+            for (GameEventListener listener : safeCopy) {
+                listener.onEvent(event, payload);
+            }
         }
     }
 }

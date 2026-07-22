@@ -137,7 +137,7 @@ public class GameSession {
         GameSession session = GameSession.getInstance(currentChapter, arena, inGamePlants, inGameZombies);
 
         session.setCurrentMode(bonusLevel);
-
+        bonusLevel.onStart(session);
         arena.registerLawnMowers();
         App.setActiveSession(session);
 

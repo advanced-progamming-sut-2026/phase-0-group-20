@@ -37,6 +37,7 @@ public class BonusLevel extends Level implements GameEventListener {
 
         GameEventMessenger.getInstance().addListener(GameEvent.LEVEL_COMPLETED, this);
         GameEventMessenger.getInstance().addListener(GameEvent.GAME_OVER, this);
+        System.out.println("BonusLevel onStart");
 
         notify("Scoring Mode Started! Rack up as many Mewpoints as you can.");
         if (isDailyChallenge) {

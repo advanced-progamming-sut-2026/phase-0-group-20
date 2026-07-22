@@ -33,6 +33,7 @@ public class LoginMenuController {
         App.getActiveUser().performDailyLoginCheck();
         App.setActiveAdventure(new Adventure());
         App.setActiveMenu(Menu.MAIN_MENU);
+        App.setAllUsers(DataBaseManager.getAllUsers());
 
         return new Result(true, "welcome " + user.getNickname());
     }

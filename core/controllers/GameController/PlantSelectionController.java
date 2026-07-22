@@ -133,8 +133,12 @@ public class PlantSelectionController {
         for (Plant p : selectedPlants) {
             inGamePlants.add(InGameEntityGenerator.getPlantForGame(p, p.isBoosted()));
         }
+        if(GameSession.getPendingBonusLevel() != null) {
+            GameSession.startScoringGame(GameSession.getPendingBonusLevel(), inGamePlants);
+        }else{
 
-        GameSession.startNewGame(inGamePlants);
+            GameSession.startNewGame(inGamePlants);
+        }
 
         App.setActiveMenu(Menu.GAME_FLOW_MENU);
         selectedPlants.clear();

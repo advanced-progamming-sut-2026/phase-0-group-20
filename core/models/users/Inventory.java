@@ -28,27 +28,27 @@ public class Inventory {
     }
 
     public void addFoodPlant(Plant plant) {
-        String key = plant.getClass().getSimpleName();
+        String key = plant.getName();
         foodPlants.merge(key, 1, Integer::sum);
     }
 
     public void addSeedPacket(Plant plant) {
-        String key = plant.getClass().getSimpleName();
+        String key = plant.getName();
         seedPackets.merge(key, 1, Integer::sum);
     }
 
     public void addSeedPacket(Plant plant , int amount){
-        String key = plant.getClass().getSimpleName();
+        String key = plant.getName();
         seedPackets.computeIfPresent(key, (k,v)->v+amount);
     }
 
     public void costFoodPlant(Plant plant, int amount) {
-        String key = plant.getClass().getSimpleName();
+        String key = plant.getName();
         foodPlants.computeIfPresent(key, (k, v) -> v - amount);
     }
 
     public void costSeedPacket(Plant plant, int amount) {
-        String key = plant.getClass().getSimpleName();
+        String key = plant.getName();
         seedPackets.computeIfPresent(key, (k, v) -> v - amount);
     }
 }

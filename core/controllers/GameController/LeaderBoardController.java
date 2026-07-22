@@ -2,6 +2,7 @@ package controllers.GameController;
 
 import models.App;
 import models.Result;
+import models.quest.Quest;
 import models.users.User;
 
 import java.util.Comparator;
@@ -27,7 +28,13 @@ public class LeaderBoardController {
 
     public Result showResults() {
         List<User> allUsers = App.getAllUsers();
-
+        for  (User user : allUsers) {
+            for (Quest quest : user.getQuestManager().getActiveQuests()){
+                if(quest.isCompleted()){
+                    System.out.println(quest.getTitle());
+                }
+            }
+        }
         List<User> sortedUsers = switch (currentSortType) {
             case "minigame" -> sortedByMinigame(allUsers);
             case "season" -> sortedBySeason(allUsers);

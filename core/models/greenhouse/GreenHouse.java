@@ -51,7 +51,7 @@ public class GreenHouse {
                         if (currentPot.isItMari()) {
                             plantName = "Marigold";
                         } else if (currentPot.getPlantedPlant() != null) {
-                            plantName = currentPot.getPlantedPlant().getClass().getSimpleName();
+                            plantName = currentPot.getPlantedPlant().getName();
                         } else {
                             plantName = "Unknown";
                         }

@@ -8,6 +8,9 @@ import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieFactory;
 import models.entities.zombies.ZombieType;
 import models.game.adventure.Adventure;
+import models.game.events.DailyResetListener;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +25,9 @@ public class GameInitializer {
     public static void loadAllResources() {
         initPlants();
         initZombies();
-        App.setAllUsers(DataBaseManager.getAllUsers());
+//        App.setAllUsers(DataBaseManager.getAllUsers());
+        DailyResetListener dailyResetListener = new DailyResetListener();
+        GameEventMessenger.getInstance().addListener(GameEvent.NEW_DAY_STARTED, dailyResetListener);
     }
 
     private static void initPlants() {
