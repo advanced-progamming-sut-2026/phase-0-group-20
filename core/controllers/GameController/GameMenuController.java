@@ -41,7 +41,8 @@ public class GameMenuController {
         }
 
 
-        return new Result(true, "Enter Chapter " + targetChapter.getDisplayName() + " - Level: " + currentLevel.getName());
+        return new Result(true, "Enter Chapter " + targetChapter.
+                getDisplayName() + " - Level: " + currentLevel.getName());
     }
 
     public Result enterScoringLevel(boolean isDailyChallenge) {

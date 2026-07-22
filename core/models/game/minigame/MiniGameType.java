@@ -4,7 +4,8 @@ public enum MiniGameType {
     VASE_BREAKER("vase breaker"),
     BOWLING("bowling"),
     I_ZOMBIE("I zombie"),
-    BEGHOULED("Beghouled");
+    BEGHOULED("Beghouled"),
+    ZOMBOTANY("Zombotany");
 
     private final String name;
     MiniGameType(String name) {

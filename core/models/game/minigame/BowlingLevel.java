@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class BowlingLevel extends Level {
+public class BowlingLevel extends Level implements IMinigame {
 
     private final List<Plant> belt = new ArrayList<>();
     private final Random random = new Random();
@@ -22,8 +22,8 @@ public class BowlingLevel extends Level {
     private static final int BELT_CAPACITY = 10;
     private static final int RED_LINE_COL = 3;
 
-    public BowlingLevel(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {
-        super(name, season, waveCount, baseWaveDifficulty, levelNumber);
+    public BowlingLevel(String name, SeasonType season, int waveCount, int baseWaveBudget, int levelNumber) {
+        super(name, season, waveCount, baseWaveBudget, levelNumber);
         this.addWinCondition(new NormalWinCondition());
         this.addLoseCondition(new NormalLoseCondition());
     }
@@ -92,5 +92,10 @@ public class BowlingLevel extends Level {
     @Override
     public int getInitialSun() {
         return 0;
+    }
+
+    @Override
+    public MiniGameType getMiniGameType() {
+        return MiniGameType.BOWLING;
     }
 }

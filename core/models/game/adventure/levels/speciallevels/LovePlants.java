@@ -9,19 +9,18 @@ import models.game.events.GameEventMessenger;
 
 public class LovePlants extends SpecialLevel {
     private final LovePlantLoseCondition loseCondition;
-    private final int limit;
+    private final int LIMIT = 5;
 
-    public LovePlants(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int limit) {
-        super(name, season, waveCount, baseWaveDifficulty);
-        this.limit = limit;
-        this.loseCondition = new LovePlantLoseCondition(limit);
+    public LovePlants(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
+        super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
+        this.loseCondition = new LovePlantLoseCondition(LIMIT);
         this.addLoseCondition(loseCondition);
 
     }
 
     @Override
     public void onStart(GameSession session) {
-        notify("Love Plants Started: do not lose " + limit + " or above number of plants or you lose.");
+        notify("Love Plants Started: do not lose " + LIMIT + " or above number of plants or you lose.");
         GameEventMessenger.getInstance().addListener(GameEvent.PLANT_LOST, loseCondition);
     }
 }

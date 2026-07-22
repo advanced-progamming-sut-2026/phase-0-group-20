@@ -115,6 +115,7 @@ public class GameSession {
         GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
         arena.registerLawnMowers();
         App.setActiveSession(session);
+        App.getActiveUser().addZombiesToUnlock(inGameZombies);
         for (int r = 0; r < arena.getRows(); r++)
             for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
@@ -128,11 +129,10 @@ public class GameSession {
         Chapter currentChapter = adventure.getCurrentChapter();
 
         java.util.List<Zombie> inGameZombies;
-        if (bonusLevel.isDailyChallenge()) {
+        if (bonusLevel.isDailyChallenge())
             inGameZombies = InGameEntityGenerator.getZombiesForDailyChallenge();
-        } else {
+        else
             inGameZombies = InGameEntityGenerator.getZombiesForLevel(bonusLevel.getSeason(), bonusLevel.getLevelNumber());
-        }
 
         GameSession session = GameSession.getInstance(currentChapter, arena, inGamePlants, inGameZombies);
 
@@ -141,11 +141,10 @@ public class GameSession {
         arena.registerLawnMowers();
         App.setActiveSession(session);
 
-        for (int r = 0; r < arena.getRows(); r++) {
-            for (int c = 0; c < arena.getCols(); c++) {
+        for (int r = 0; r < arena.getRows(); r++)
+            for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
-            }
-        }
+
     }
     public static void destroyInstance() {
         if (instance != null) {
@@ -165,9 +164,8 @@ public class GameSession {
 
         for (int i = 0; i < timeAmount; i++) {
             timeManager.tick();
-            if (currentMode != null) {
+            if (currentMode != null)
                 currentMode.engineLoop(this, timeManager.getCurrentTick());
-            }
 
             SeasonModifier currentModifier = currentChapter.getModifier();
             if (currentModifier != null)
@@ -250,13 +248,11 @@ public class GameSession {
     }
 
     public void checkCollisions() {
-        List<Plant> activePlants = arena.getActivePlants();
         List<Zombie> activeZombies = arena.getActiveZombies();
 
         //for projectiles
         for (Projectile proj : getArena().getActiveProjectiles()) {
             if (proj.isDestroyed()) continue;
-
 
             if (proj.isFiredByZombie())
                 checkProjectileForPlantCollision(proj);
@@ -268,102 +264,11 @@ public class GameSession {
 
         }
         // for plants&zombies
-        for (Zombie z : activeZombies) {
-            if (z.isDead()) continue;
+        for (Zombie z : activeZombies)
+            checkZombiesAndPlantCollision(z);
 
-            int row = z.getRow();
-            int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - 0.2);//mostly for phase 2... If you want You can remove the front threshold
-
-            Tile targetTile = arena.getTile(row, targetCol);
-
-//            if (z.isHypnotized()) {
-//                Zombie z =
-//            }
-
-            if (targetTile != null) {
-                List<Plant> plantToEat = targetTile.getPlants();
-                Plant eatingPlant = null;
-                if (!plantToEat.isEmpty()) {
-                    eatingPlant = plantToEat.get(plantToEat.size() - 1);
-                }
-
-
-                if (eatingPlant != null) {
-                    if (!z.isAttacking()) {
-                        z.setAttacking(true);
-                        z.setTile(targetTile);
-                        eatingPlant.takeDamage(z.getEatDPS() / TimeManager.TICKS_PER_SECOND);
-                    }
-                } else if (z.isAttacking()) {
-                    z.setAttacking(false);
-                    z.setTile(null);//plant got plucked.
-                }
-            } else if (targetCol < 0) {
-
-                LawnMower lawnMower = arena.getLawnMowers()[row];
-
-                if (lawnMower != null && !lawnMower.isActivate()) continue; //lawn mower will handle by itself
-
-                else {
-                    Brain targetBrain = arena.getBrainInRow(row);
-
-                    if (targetBrain != null && !targetBrain.isEaten()) {
-                        if (!z.isAttacking()) {
-                            z.setAttacking(true);
-                            z.setTile(null);
-                        }
-                        targetBrain.takeDamage(z.getEatDPS() / 10);
-                    } else {
-                        if (z.isAttacking()) z.setAttacking(false);
-                        if (z.getX() < -PhysicalConstants.TILE_UNIT_LENGTH) this.zombieBreached = true;
-                    }
-                }
-            }
-
-        }
-
-        for (Sun sun : arena.getActiveSuns()) {
-            if (sun.isCollected() && sun.isFalling() && sun.getType() == SunType.RADIOACTIVE_SUN) {
-                Tile sunTile = arena.getTile(sun.getRow(), sun.getCol()); //damaging zombies
-                int rightTile = Math.min(sunTile.getCol() + 2, arena.getCols() - 1);
-                int leftTile = Math.max(sunTile.getCol() - 2, 0);
-                int upTile = Math.min(sunTile.getRow() + 2, arena.getRows() - 1);
-                int downTile = Math.max(sunTile.getRow() - 2, 0);
-                List<Tile> affectedTiles = new ArrayList<>();
-                for (int row = downTile; row <= upTile; row++) {
-                    for (int col = leftTile; col <= rightTile; col++) {
-                        affectedTiles.add(arena.getTile(row, col));
-                    }
-                }
-                for (Zombie z : arena.getActiveZombies()) {
-                    if (z.isDead() || !affectedTiles.contains(z.getTile())) continue;
-                    boolean killed = z.takeDamage(150);
-                    if (killed) {
-                        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
-                                .zombie(z)
-                                .seasonType(getCurrentChapter().getSeasonType())
-                                .coordinate(z.getRow(), z.getCol())
-                                .build();
-                        GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
-                    }
-                }
-                rightTile = Math.min(sunTile.getCol() + 1, arena.getCols() - 1);
-                leftTile = Math.max(sunTile.getCol() - 1, 0);
-                upTile = Math.min(sunTile.getRow() + 1, arena.getRows() - 1);
-                downTile = Math.max(sunTile.getRow() - 1, 0);
-                for (int row = downTile; row <= upTile; row++) {
-                    for (int col = leftTile; col <= rightTile; col++) {
-                        List<Plant> tilePlants = arena.getTile(row, col).getPlants();
-                        if (!tilePlants.isEmpty()) {
-                            Plant damagePlant = tilePlants.getLast();
-                            damagePlant.takeDamage(80);
-                        }
-                    }
-                }
-
-                sun.setExploded(true);
-            }
-        }
+        for (Sun sun : arena.getActiveSuns())
+            checkSunCollision(sun);
     }
 
     public void removeZombie(Zombie z) {
@@ -512,9 +417,8 @@ public class GameSession {
         topRow = Math.min(arena.getRows() - 1, topRow);
 
         List<Zombie> nearbyZombies = new ArrayList<>();
-        for (int row = bottomRow; row <= topRow; row++) {
+        for (int row = bottomRow; row <= topRow; row++)
             nearbyZombies.addAll(arena.zombieInRow(row));
-        }
 
         float combinedRadius = physProjectileRadius + physZombieRadius;
 
@@ -527,9 +431,7 @@ public class GameSession {
 
             if (distanceSquared <= (combinedRadius * combinedRadius)) {
                 projectile.onHit(z);
-                if (!projectile.isPiercing() || projectile.isDestroyed()) {
-                    break;
-                }
+                if (!projectile.isPiercing() || projectile.isDestroyed()) break;
             }
         }
     }
@@ -554,6 +456,105 @@ public class GameSession {
         }
 
         return false;
+    }
+
+
+    private void checkZombiesAndPlantCollision(Zombie z) {
+        if (z.isDead()) return ;
+
+        int row = z.getRow();
+        int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - 0.2);//mostly for phase 2... If you want You can remove the front threshold
+
+        Tile targetTile = arena.getTile(row, targetCol);
+
+//            if (z.isHypnotized()) {
+//                Zombie z =
+//            }
+
+        if (targetTile != null) {
+            List<Plant> plantToEat = targetTile.getPlants();
+            Plant eatingPlant = null;
+            if (!plantToEat.isEmpty()) {
+                eatingPlant = plantToEat.get(plantToEat.size() - 1);
+            }
+
+
+            if (eatingPlant != null) {
+                if (!z.isAttacking()) {
+                    z.setAttacking(true);
+                    z.setTile(targetTile);
+                    eatingPlant.takeDamage(z.getEatDPS() / TimeManager.TICKS_PER_SECOND);
+                }
+            } else if (z.isAttacking()) {
+                z.setAttacking(false);
+                z.setTile(null);//plant got plucked.
+            }
+        } else if (targetCol < 0) {
+
+            LawnMower lawnMower = arena.getLawnMowers()[row];
+
+            if (lawnMower != null && !lawnMower.isActivate()) return; //lawn mower will handle by itself
+
+            else {
+                Brain targetBrain = arena.getBrainInRow(row);
+
+                if (targetBrain != null && !targetBrain.isEaten()) {
+                    if (!z.isAttacking()) {
+                        z.setAttacking(true);
+                        z.setTile(null);
+                    }
+                    targetBrain.takeDamage(z.getEatDPS() / 10);
+                } else {
+                    if (z.isAttacking()) z.setAttacking(false);
+                    if (z.getX() < -PhysicalConstants.TILE_UNIT_LENGTH) this.zombieBreached = true;
+                }
+            }
+        }
+    }
+
+
+    private void checkSunCollision(Sun sun){
+        if (sun.isCollected() && sun.isFalling() && sun.getType() == SunType.RADIOACTIVE_SUN) {
+            Tile sunTile = arena.getTile(sun.getRow(), sun.getCol()); //damaging zombies
+            int rightTile = Math.min(sunTile.getCol() + 2, arena.getCols() - 1);
+            int leftTile = Math.max(sunTile.getCol() - 2, 0);
+            int upTile = Math.min(sunTile.getRow() + 2, arena.getRows() - 1);
+            int downTile = Math.max(sunTile.getRow() - 2, 0);
+
+            List<Tile> affectedTiles = new ArrayList<>();
+
+            for (int row = downTile; row <= upTile; row++)
+                for (int col = leftTile; col <= rightTile; col++)
+                    affectedTiles.add(arena.getTile(row, col));
+
+            for (Zombie z : arena.getActiveZombies()) {
+                if (z.isDead() || !affectedTiles.contains(z.getTile())) continue;
+                boolean killed = z.takeDamage(150);
+                if (killed) {
+                    GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
+                            .zombie(z)
+                            .seasonType(getCurrentChapter().getSeasonType())
+                            .coordinate(z.getRow(), z.getCol())
+                            .build();
+                    GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
+                }
+            }
+            rightTile = Math.min(sunTile.getCol() + 1, arena.getCols() - 1);
+            leftTile = Math.max(sunTile.getCol() - 1, 0);
+            upTile = Math.min(sunTile.getRow() + 1, arena.getRows() - 1);
+            downTile = Math.max(sunTile.getRow() - 1, 0);
+            for (int row = downTile; row <= upTile; row++) {
+                for (int col = leftTile; col <= rightTile; col++) {
+                    List<Plant> tilePlants = arena.getTile(row, col).getPlants();
+                    if (!tilePlants.isEmpty()) {
+                        Plant damagePlant = tilePlants.getLast();
+                        damagePlant.takeDamage(80);
+                    }
+                }
+            }
+
+            sun.setExploded(true);
+        }
     }
 
 }

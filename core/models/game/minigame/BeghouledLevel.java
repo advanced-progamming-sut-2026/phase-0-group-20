@@ -1,8 +1,11 @@
 package models.game.minigame;
 
 import models.App;
+import models.InGameEntityGenerator;
 import models.entities.plants.Plant;
 import models.entities.plants.PlantFactory;
+import models.entities.zombies.Zombie;
+import models.enums.GameConstants;
 import models.fields.tiles.Tile;
 import models.game.GameSession;
 import models.game.adventure.SeasonType;
@@ -10,9 +13,10 @@ import models.game.adventure.levels.Level;
 import models.game.adventure.levels.conditions.NormalLoseCondition;
 import models.game.minigame.minigameCondition.BeghouledWinCondition;
 
+import java.util.List;
 import java.util.Random;
 
-public class BeghouledLevel extends Level {
+public class BeghouledLevel extends Level implements IMinigame{
     private final Random random = new Random();
 
     private final String[] basePlants = {"peashooter", "sunflower", "wall-nut", "snow pea", "repeater", "puff-shroom", "cabbage-pult", "melon-pult"};
@@ -21,9 +25,13 @@ public class BeghouledLevel extends Level {
     private int successfulMatches = 0;
     private final int targetMatches;
 
-    protected BeghouledLevel(String name, SeasonType season, int waveCount, int baseWaveDifficulty, int levelNumber) {
-        super(name, season, waveCount, baseWaveDifficulty, levelNumber);
+    private int tickCounter = 0;
+    private int currentSpawnInterval = GameConstants.SPAWN_IN_WAVE_INTERVAL;
+
+    protected BeghouledLevel(String name, SeasonType season, int waveCount, int baseWaveBudget, int levelNumber) {
+        super(name, season, waveCount, baseWaveBudget, levelNumber);
         this.targetMatches = 20 + (levelNumber * 5);
+
 
         this.addWinCondition(new BeghouledWinCondition());
         this.addLoseCondition(new NormalLoseCondition());
@@ -32,6 +40,35 @@ public class BeghouledLevel extends Level {
     @Override
     public void onStart(GameSession session) {
         fillBoardRandomly(session);
+        notify("Beghouled Level " + levelNumber + " Started! Make " + targetMatches + " matches!");
+    }
+
+    @Override
+    public void engineLoop(GameSession session, int currentTick) {
+        tickCounter++;
+
+        if (tickCounter >= currentSpawnInterval) {
+            spawnSingleZombie(session);
+            tickCounter = 0;
+
+            if (currentSpawnInterval > 15) currentSpawnInterval--;
+
+        }
+    }
+
+    private void spawnSingleZombie(GameSession session) {
+        List<Zombie> allowedZombies = session.getChosenZombies();
+        if (allowedZombies == null || allowedZombies.isEmpty()) return;
+
+        Zombie template = allowedZombies.get(random.nextInt(allowedZombies.size()));
+        int lane = random.nextInt(session.getArena().getRows());
+
+        Zombie newZombie = InGameEntityGenerator.getZombieForGame(template.getType(), lane);
+        newZombie.setCol(session.getArena().getCols() - 1);
+
+        session.getArena().addZombie(newZombie);
+        session.getTimeManager().registerNewTicker(newZombie);
+
     }
 
     public void fillBoardRandomly(GameSession session) {
@@ -144,6 +181,11 @@ public class BeghouledLevel extends Level {
         }
 
         return "Successfully upgraded " + upgradedCount + " " + fromPlantName + "s to " + toPlantName + "!";
+    }
+
+    @Override
+    public MiniGameType getMiniGameType() {
+        return MiniGameType.BEGHOULED;
     }
 
 }

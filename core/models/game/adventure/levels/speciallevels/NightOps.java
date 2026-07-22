@@ -5,8 +5,8 @@ import models.game.adventure.SeasonType;
 import models.game.adventure.levels.SpecialLevel;
 
 public class NightOps extends SpecialLevel {
-    protected NightOps(String name, SeasonType season, int waveCount, int baseWaveDifficulty) {
-        super(name, season, waveCount, baseWaveDifficulty);
+    protected NightOps(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
+        super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
     }
 
     @Override
