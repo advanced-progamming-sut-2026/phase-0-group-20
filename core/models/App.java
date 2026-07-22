@@ -27,7 +27,6 @@ public class App {
 
     public static void changeDifficulty(int difficulty) {
         settings.setDifficulty(difficulty);
-        System.out.println("Game difficulty set to: " + difficulty);
     }
 
     public static User getActiveUser() {

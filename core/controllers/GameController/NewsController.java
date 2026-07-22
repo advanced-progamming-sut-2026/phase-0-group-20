@@ -4,15 +4,16 @@ import models.App;
 import models.Result;
 import models.news.Message;
 import models.news.News;
+import models.users.User;
 
 public class NewsController {
 
 
     public Result showUnreadNews() {
-        News news = App.getNews();
+        User activeUser = App.getActiveUser();
 
         StringBuilder stringBuilder = new StringBuilder();
-        for (Message message : news.getMessages()) {
+        for (Message message : activeUser.getInbox()) {
             if (message.isUnread()) {
                 stringBuilder.append(message.getText()).append("\n");
                 message.setUnread(false);
@@ -27,10 +28,10 @@ public class NewsController {
     }
 
     public Result showAllNews() {
-        News news = App.getNews();
+        User activeUser = App.getActiveUser();
 
         StringBuilder stringBuilder = new StringBuilder();
-        for (Message message : news.getMessages()) {
+        for (Message message : activeUser.getInbox()) {
             stringBuilder.append(message.getText()).append("\n");
             message.setUnread(false);
         }
