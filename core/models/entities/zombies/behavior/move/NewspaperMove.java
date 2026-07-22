@@ -2,10 +2,12 @@ package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
 import models.entities.zombies.armour.Armor;
+import models.entities.zombies.behavior.effect.RageEffect;
 
 public class NewspaperMove implements MoveBehavior {
     private final Zombie zombie;
-    private final float enragedSpeedMultiplier = 3.0f; // it can change
+    private final float enragedSpeedMultiplier = 3.0f;
+    private final int enragedEatDpsMultiplier = 2;// it can change
     private boolean isEnraged;
 
     public NewspaperMove(Zombie zombie) {
@@ -40,9 +42,6 @@ public class NewspaperMove implements MoveBehavior {
 
     private void enrage() {
         isEnraged = true;
-        zombie.applySpeedMultiplier(enragedSpeedMultiplier);
-        zombie.applyEatSpeedMultiplier(enragedSpeedMultiplier);
-
-        // TODO : add new func for increase the rate of DPS in Zombie Class and call it here
+        zombie.addEffect(new RageEffect(zombie, enragedSpeedMultiplier, enragedEatDpsMultiplier));
     }
 }

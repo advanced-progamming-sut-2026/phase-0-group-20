@@ -4,6 +4,7 @@ import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieState;
 import models.fields.tiles.Tile;
+import models.game.GameSession;
 
 public class TorchBurnAttack implements AttackBehavior {
     private final Zombie zombie;
@@ -16,7 +17,7 @@ public class TorchBurnAttack implements AttackBehavior {
 
     @Override
     public void execute() {
-        Tile currentTile = zombie.getTile();
+        Tile currentTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
 
         if (currentTile == null || currentTile.getPlants().isEmpty()) {
             resumeWalking();

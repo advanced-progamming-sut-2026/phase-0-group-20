@@ -6,7 +6,7 @@ public class ChillEffect extends Effect {
     private final float speedMultiplier;
 
     public ChillEffect(Zombie zombie, int durationTicks) {
-        this(zombie, durationTicks, 0.5f);
+        this(zombie, durationTicks, 0f); //fully stop
     }
 
     public ChillEffect(Zombie zombie, int durationTicks, float speedMultiplier) {
@@ -20,7 +20,18 @@ public class ChillEffect extends Effect {
     }
 
     @Override
+    public void execute() {
+        super.execute();
+    }
+
+    @Override
     public void onRemove() {
+        zombie.getActiveEffects().remove(this);
         zombie.resetSpeed();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return super.isFinished() || zombie.isDead();
     }
 }

@@ -6,6 +6,7 @@ import models.entities.zombies.ZombieState;
 import models.entities.zombies.behavior.move.AllStarMove;
 import models.entities.zombies.behavior.move.MoveBehavior;
 import models.fields.tiles.Tile;
+import models.game.GameSession;
 
 public class AllStarSmashAttack implements AttackBehavior {
     private final Zombie zombie;
@@ -16,7 +17,7 @@ public class AllStarSmashAttack implements AttackBehavior {
 
     @Override
     public void execute() {
-        Tile currentTile = zombie.getTile();
+        Tile currentTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
 
         if (currentTile == null || currentTile.getPlants().isEmpty()) {
             resumeWalking();

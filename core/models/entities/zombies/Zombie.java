@@ -4,6 +4,7 @@ import models.Position;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.behavior.attack.AttackBehavior;
+import models.entities.zombies.behavior.attack.HypnotizeAttack;
 import models.entities.zombies.behavior.attack.LaserAttack;
 import models.entities.zombies.behavior.defense.DefenseBehavior;
 import models.entities.zombies.behavior.effect.ChillEffect;
@@ -41,6 +42,7 @@ public class Zombie implements Ticker {
     private boolean dead;
     private float baseSpeed;
     private float currentSpeed;
+    private float eatSpeedMultiplier = 1f;
     private ZombieType type;
     private ZombieState state = ZombieState.WALKING;
     private boolean canSpawnPlantFood;
@@ -81,11 +83,11 @@ public class Zombie implements Ticker {
     public void onTick(int currentTick) {
         if (dead) return;
 
-        List<ZombieEffect> toRemove = new ArrayList<>();
         for (ZombieEffect effect : activeEffects) {
             effect.execute();
         }
-        activeEffects.removeAll(toRemove);
+
+
 
         if (attacking) {
             attackBehavior.execute();
@@ -123,7 +125,6 @@ public class Zombie implements Ticker {
             if (!a.isDestroyed()) {
                 remaining = a.takeDamage(remaining);
                 if (remaining <= 0) return false;
-
             }
         }
 
@@ -180,14 +181,13 @@ public class Zombie implements Ticker {
         if (this.isHypnotized || this.dead) return;
 
         this.isHypnotized = true;
-        this.currentSpeed = -Math.abs(this.baseSpeed);
 
-        //implement new behavior for hypnotizing
+        attackBehavior = new HypnotizeAttack(this);
 
         notify(this.getName() + " has switched sides!");
     }
 
-    private float eatSpeedMultiplier = 1f;
+
 
     public void applyEatSpeedMultiplier(float multiplier) {
         this.eatSpeedMultiplier = multiplier;
@@ -195,10 +195,6 @@ public class Zombie implements Ticker {
 
     public void resetEatSpeed() {
         this.eatSpeedMultiplier = 1f;
-    }
-
-    public int getEffectiveEatDps() {
-        return Math.round(eatDPS * eatSpeedMultiplier);
     }
 
 
@@ -324,7 +320,7 @@ public class Zombie implements Ticker {
     }
 
     public int getEatDps() {
-        return eatDPS;
+        return (int) (eatDPS * eatSpeedMultiplier);
     }
 
     public int getWaveCost() {

@@ -155,7 +155,7 @@ public class Projectile implements Ticker {
             case ICE_PEA -> new IceEffect();
             case FIRE_PEA -> new FireEffect();
             case GOO_PEA -> new PoisonProjectileEffect();
-            default -> null;
+            default -> new NormalEffect();
         };
     }
 

@@ -264,8 +264,15 @@ public class GameSession {
 
         }
         // for plants&zombies
-        for (Zombie z : activeZombies)
-            checkZombiesAndPlantCollision(z);
+        for (Zombie z : activeZombies)  {
+            if (z.isHypnotized()) {
+                checkZombiesAndZombiesCollision(z);
+            }
+            else {
+                checkZombiesAndPlantCollision(z);
+            }
+        }
+
 
         for (Sun sun : arena.getActiveSuns())
             checkSunCollision(sun);
@@ -458,6 +465,31 @@ public class GameSession {
         return false;
     }
 
+    private void checkZombiesAndZombiesCollision(Zombie z) {
+        if (z.isDead()) return ;
+
+        int row = z.getRow();
+        int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - 0.2);
+
+        Tile targetTile = arena.getTile(row, targetCol);
+
+        if (targetTile != null) {
+            List<Zombie> zombiesToEat = arena.getZombiesOnTile(targetTile);
+            Zombie targetZombie = null;
+            if (!zombiesToEat.isEmpty()) {
+                targetZombie = zombiesToEat.get(0);
+            }
+
+            if (targetZombie != null) {
+                if (!z.isAttacking()) {
+                    z.setAttacking(true);
+                }
+            } else if (z.isAttacking()) {
+                z.setAttacking(false);
+            }
+        }
+    }
+
 
     private void checkZombiesAndPlantCollision(Zombie z) {
         if (z.isDead()) return ;
@@ -467,9 +499,6 @@ public class GameSession {
 
         Tile targetTile = arena.getTile(row, targetCol);
 
-//            if (z.isHypnotized()) {
-//                Zombie z =
-//            }
 
         if (targetTile != null) {
             List<Plant> plantToEat = targetTile.getPlants();
@@ -478,16 +507,27 @@ public class GameSession {
                 eatingPlant = plantToEat.get(plantToEat.size() - 1);
             }
 
+            List<Zombie> zombiesToEat = arena.getZombiesOnTile(targetTile);
+            Zombie targetZombie = null;
 
-            if (eatingPlant != null) {
+            for (Zombie zombie : zombiesToEat) {
+                if (zombie.isHypnotized()) {
+                    targetZombie = zombie;
+                    break;
+                }
+            }
+
+
+            if (eatingPlant != null) { // it will handle in zombie attack
                 if (!z.isAttacking()) {
                     z.setAttacking(true);
-                    z.setTile(targetTile);
-                    eatingPlant.takeDamage(z.getEatDPS() / TimeManager.TICKS_PER_SECOND);
+                }
+            } else if (targetZombie != null) {
+                if (!z.isAttacking()) {
+                    z.setAttacking(true);
                 }
             } else if (z.isAttacking()) {
                 z.setAttacking(false);
-                z.setTile(null);//plant got plucked.
             }
         } else if (targetCol < 0) {
 
@@ -528,7 +568,8 @@ public class GameSession {
                     affectedTiles.add(arena.getTile(row, col));
 
             for (Zombie z : arena.getActiveZombies()) {
-                if (z.isDead() || !affectedTiles.contains(z.getTile())) continue;
+                Tile currentTile = GameSession.getInstance().getArena().getTile(z.getRow(), z.getCol());
+                if (z.isDead() || !affectedTiles.contains(currentTile)) continue;
                 boolean killed = z.takeDamage(150);
                 if (killed) {
                     GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)

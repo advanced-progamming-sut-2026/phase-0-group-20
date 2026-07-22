@@ -1,6 +1,8 @@
 package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
+import models.fields.tiles.Tile;
+import models.game.GameSession;
 
 public class SnorkelMove implements MoveBehavior {
 
@@ -14,7 +16,8 @@ public class SnorkelMove implements MoveBehavior {
 
     @Override
     public void execute() {
-        boolean hasPlantToEat = zombie.getTile() != null && !zombie.getTile().getPlants().isEmpty();
+        Tile currentTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
+        boolean hasPlantToEat = currentTile != null && !currentTile.getPlants().isEmpty();
         isSubmerged = !hasPlantToEat;
 
         zombie.moveForward();  // under water

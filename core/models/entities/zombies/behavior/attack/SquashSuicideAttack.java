@@ -3,6 +3,7 @@ package models.entities.zombies.behavior.attack;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.fields.tiles.Tile;
+import models.game.GameSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class SquashSuicideAttack implements AttackBehavior {
     public void execute() {
         if (zombie.isDead()) return;
 
-        Tile targetTile = zombie.getTile();
+        Tile targetTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
 
         if (targetTile != null) {
             List<Plant> plantsHere = targetTile.getPlants();
