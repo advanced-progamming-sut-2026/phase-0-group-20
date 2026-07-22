@@ -111,6 +111,9 @@ public abstract class Level implements GameMode {
             int lane = random.nextInt(session.getArena().getRows());
 
             Zombie newZombie = InGameEntityGenerator.getZombieForGame(template.getType(), lane);
+            if(shinyZombie()){
+                newZombie.setShiny(true);
+            }
             newZombie.setCol(session.getArena().getCols() - 1); // better for the later arrangements
 
             wave.addZombie(newZombie);
@@ -126,6 +129,12 @@ public abstract class Level implements GameMode {
             notify("Zombie " + newZombie.getType().name() +
                     " spawned in lane " + (lane + 1) + " (Cost: " + newZombie.getWaveCost() + ").");
         }
+    }
+
+    protected boolean shinyZombie(){
+        int chance = new Random().nextInt(100);
+        if (chance < 5) return true;
+        return false;
     }
 
     public void notify(String message) {

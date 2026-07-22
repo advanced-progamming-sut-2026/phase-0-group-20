@@ -11,6 +11,10 @@ public enum MiniGameCommands implements Commands {
     //bowl -i 0 -l (2, 6) **note: i means the index of the plant in belt**
     BOWL("^\\s*bowl\\s+-i\\s+(?<index>\\d+)\\s+-l\\s+\\(\\s*(?<x>\\d+)\\s*,\\s*(?<y>\\d+)\\s*\\)\\s*$"),
 
+    SHOW_ZOMBIES("^\\s*show\\s+zombies\\s*$"),
+
+    SWAP_PLANTS("^\\s*swap\\s+-l1\\s+\\(\\s*(?<x1>\\d+)\\s*,\\s*(?<y1>\\d+)\\s*\\)\\s+-l2\\s+\\(\\s*(?<x2>\\d+)\\s*,\\s*(?<y2>\\d+)\\s*\\)\\s*$"),
+    UPGRADE_PLANTS("^\\s*upgrade\\s+-p\\s+(?<plantName>.+)\\s*$");
     //show zombies
     SHOW_ZOMBIES("^\\s*show\\s+zombies\\s*$");
 

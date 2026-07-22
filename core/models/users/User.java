@@ -39,6 +39,12 @@ public class User {
     private int highestUnlockedChapterIndex;
     private int highestUnlockedLevelIndex;
     private int highestBonusScore;
+
+    private long lastLoginEpochDay;
+    private boolean hasPlayedDailyChallengeToday;
+    private int plantFoodCount;
+    private boolean purchasedDailyDealToday;
+
     private Map<MiniGameType, Integer> unlockedMinigames = new EnumMap<>(MiniGameType.class);
 
     public User(String username, String passwordHash,
@@ -58,6 +64,11 @@ public class User {
         this.gamesPlayed = 0;
         this.levelsCompleted = 0;
         this.highestBonusScore = 0;
+
+        this.lastLoginEpochDay = 0;
+        this.hasPlayedDailyChallengeToday = false;
+        this.plantFoodCount = 0;
+        this.purchasedDailyDealToday = false;
         this.stayLoggedIn = false;
         this.inventory = new Inventory();
         this.greenHouse = new GreenHouse();
@@ -88,6 +99,10 @@ public class User {
                 @JsonProperty("gamesPlayed") int gamesPlayed,
                 @JsonProperty("levelsCompleted") int levelsCompleted,
                 @JsonProperty("highestBonusScore") int highestBonusScore,
+                @JsonProperty("lastLoginEpochDay") long lastLoginEpochDay,
+                @JsonProperty("hasPlayedDailyChallengeToday") boolean hasPlayedDailyChallengeToday,
+                @JsonProperty("plantFoodCount")  int plantFoodCount,
+                @JsonProperty("purchasedDailyDealToday")  boolean purchasedDailyDealToday,
                 @JsonProperty("stayLoggedIn") boolean stayLoggedIn,
                 @JsonProperty("greenHouse") GreenHouse greenHouse,
                 @JsonProperty("questManager") QuestManager questManager,
@@ -109,6 +124,10 @@ public class User {
         this.gamesPlayed = gamesPlayed;
         this.levelsCompleted = levelsCompleted;
         this.highestBonusScore = highestBonusScore;
+        this.lastLoginEpochDay = lastLoginEpochDay;
+        this.hasPlayedDailyChallengeToday = hasPlayedDailyChallengeToday;
+        this.plantFoodCount = plantFoodCount;
+        this.purchasedDailyDealToday = purchasedDailyDealToday;
         this.stayLoggedIn = stayLoggedIn;
         this.greenHouse = (greenHouse != null) ? greenHouse : new GreenHouse();
         this.questManager = (questManager != null) ? questManager : new QuestManager();
@@ -119,6 +138,43 @@ public class User {
         if (this.unlockedMinigames.isEmpty())
             for (MiniGameType type : MiniGameType.values())
                 this.unlockedMinigames.put(type, 0);
+    }
+
+    public void performDailyLoginCheck() {
+        long currentEpochDay = java.time.LocalDate.now().toEpochDay();
+
+        if (this.lastLoginEpochDay == 0) {
+            this.lastLoginEpochDay = currentEpochDay;
+            return;
+        }
+
+        if (currentEpochDay > this.lastLoginEpochDay) {
+            int daysPassed = (int) (currentEpochDay - this.lastLoginEpochDay);
+            this.lastLoginEpochDay = currentEpochDay;
+
+            models.game.events.GameEventPayload payload =
+                new models.game.events.GameEventPayload.Builder(models.game.events.GameEvent.NEW_DAY_STARTED)
+                    .amount(daysPassed)
+                    .build();
+
+            models.game.events.GameEventMessenger.getInstance().dispatch(models.game.events.GameEvent.NEW_DAY_STARTED, payload);
+        }
+    }
+
+    public long getLastLoginEpochDay() {
+        return lastLoginEpochDay;
+    }
+
+    public void setLastLoginEpochDay(long lastLoginEpochDay) {
+        this.lastLoginEpochDay = lastLoginEpochDay;
+    }
+
+    public boolean isHasPlayedDailyChallengeToday() {
+        return hasPlayedDailyChallengeToday;
+    }
+
+    public void setHasPlayedDailyChallengeToday(boolean hasPlayedDailyChallengeToday) {
+        this.hasPlayedDailyChallengeToday = hasPlayedDailyChallengeToday;
     }
 
     public String getId() {
@@ -334,6 +390,26 @@ public class User {
                 }
             }
         }
+    }
+
+    public int getPlantFoodCount() {
+        return plantFoodCount;
+    }
+
+    public void setPlantFoodCount(int plantFoodCount) {
+        this.plantFoodCount = plantFoodCount;
+    }
+
+    public void addPlantFoodCount(int plantFoodCount) {
+        this.plantFoodCount += plantFoodCount;
+    }
+
+    public boolean isPurchasedDailyDealToday() {
+        return purchasedDailyDealToday;
+    }
+
+    public void setPurchasedDailyDealToday(boolean purchasedDailyDealToday) {
+        this.purchasedDailyDealToday = purchasedDailyDealToday;
     }
 
     public QuestManager getQuestManager() {

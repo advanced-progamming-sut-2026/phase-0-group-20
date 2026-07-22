@@ -1,4 +1,5 @@
 import models.App;
+import models.database.DataBaseManager;
 import models.entities.plants.Plant;
 import models.entities.plants.PlantData;
 import models.entities.plants.PlantFactory;
@@ -21,6 +22,7 @@ public class GameInitializer {
     public static void loadAllResources() {
         initPlants();
         initZombies();
+        App.setAllUsers(DataBaseManager.getAllUsers());
     }
 
     private static void initPlants() {

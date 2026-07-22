@@ -70,6 +70,8 @@ public class GameFlowMenu implements AppMenu {
         } else if ((matcher = GameFlowCommands.CHEAT_ADD_PLANT_FOOD.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.cheatAddPlantFood());
 
+        } else if ((matcher = GameFlowCommands.ZOMBIE_INFO.getMatcher(input)) != null) {
+            System.out.println(gameFlowcontroller.showZombieInfo());
         } else if ((matcher = GameFlowCommands.SHOW_MAP.getMatcher(input)) != null) {
 
             GameSession session = GameSession.getInstance();
@@ -110,9 +112,20 @@ public class GameFlowMenu implements AppMenu {
                     Integer.parseInt(matcher.group("y"))
             ));
 
+        } else if ((matcher = MiniGameCommands.SWAP_PLANTS.getMatcher(input)) != null) {
+            System.out.println(miniGameController.swapPlants(
+                    matcher.group("x1"),
+                    matcher.group("y1"),
+                    matcher.group("x2"),
+                    matcher.group("y2")
+            ));
+
+        } else if ((matcher = MiniGameCommands.UPGRADE_PLANTS.getMatcher(input)) != null) {
+            System.out.println(miniGameController.upgradeBeghouledPlants(
+                    matcher.group("plantName").trim()
+            ));
         } else {
             invalidCommands();
         }
     }
-
 }

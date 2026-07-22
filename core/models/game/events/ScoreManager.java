@@ -51,7 +51,7 @@ public class ScoreManager implements GameEventListener, Ticker {
             killsThisTick++;
             totalMewpoints += 10;
 
-            if (payload.getZombie() != null && payload.getZombie().getCol() >= 7) {
+            if (payload.getZombie() != null && payload.getZombie().getCol() >=5) {
                 totalMewpoints += 20;
             }
 
