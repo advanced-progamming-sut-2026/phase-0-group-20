@@ -249,17 +249,14 @@ public class GameFlowController {
     }
 
     public Result cheatAddPlantFood() {
-        GameSession session = GameSession.getInstance();
-        List<PlantFood> plantFoods = session.getPlantFoods();
-        if (plantFoods.size() >= 3) {
+        User user =  App.getActiveUser();
+        int plantFoodCount = user.getPlantFoodCount();
+        if (plantFoodCount >= 3) {
             return new Result(false, "You already have the maximum amount of the food plants");
         } else {
-            PlantFood pf = new PlantFood(0, 0);
-            pf.collect();
-            plantFoods.add(pf);
-            return new Result(true, "You successfully added the food plant");
+            user.addPlantFoodCount(1);
         }
-
+        return new Result(true, "You successfully gained a food plant");
     }
 
     public Result showMap() {
