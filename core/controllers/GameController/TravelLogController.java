@@ -150,11 +150,11 @@ public class TravelLogController {
                 return new Result(false, "Level " + levelNumber + " is LOCKED! You must beat level " + (levelNumber - 1) + " first.");
 
             Level minigameLevel = MiniGameFactory.createLevel(type, levelNumber);
-
             GameSession.setMinigameLevel(minigameLevel);
 
             if (!minigameLevel.skipsPlantSelection()) {
                 App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
+
             } else {
                 List<Plant> inGamePlants = null;
                 if (minigameLevel instanceof BowlingLevel bowling)
@@ -162,15 +162,13 @@ public class TravelLogController {
 
                 App.setActiveMenu(Menu.GAME_FLOW_MENU);
                 GameSession.startMiniGame(minigameLevel, inGamePlants);
-
             }
 
             NavigationController.enterMenu("game flow menu");
-
             return new Result(true, "Started " + type.getName() + " Level " + (levelNumber) + "! Good luck!");
 
         } catch (IllegalArgumentException e) {
-            return new Result(false, "Invalid minigame name! Available: VASE_BREAKER, BOWLING, I_ZOMBIE");
+            return new Result(false, "Invalid minigame name! Available: vasebreaker, bowling, izombie, beghouled, zombotany");
         } catch (NullPointerException e) {
             return new Result(false, "Invalid minigame name!");
         } catch (Exception e) {

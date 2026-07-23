@@ -53,7 +53,7 @@ public class GameSession {
         this.timeManager = new TimeManager();
         this.chosenPlants = chosenPlants;
         plantsCooldown = new HashMap<>();
-        instantiateCooldowns(chosenPlants);
+        if (chosenPlants != null) instantiateCooldowns(chosenPlants);
         this.chosenZombies = chosenZombies;
         this.currentSun = 50;
 
