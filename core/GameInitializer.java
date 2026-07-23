@@ -63,7 +63,7 @@ public class GameInitializer {
 
             for (ZombieType type : ZombieType.values()) {
 
-                Zombie testZombie = ZombieFactory.create(type, -1);
+                Zombie testZombie = ZombieFactory.createTemplate(type);
                 loadedTestZombies.add(testZombie);
 
                 System.out.println("Successfully created: " + type.name());

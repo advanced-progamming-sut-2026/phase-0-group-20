@@ -1,33 +1,39 @@
 package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
+import models.entities.zombies.behavior.context.SnorkelContext;
 import models.fields.tiles.Tile;
+import models.fields.tiles.WaterTile;
 import models.game.GameSession;
 
 public class SnorkelMove implements MoveBehavior {
-
     private final Zombie zombie;
-    private boolean isSubmerged;
+    private final SnorkelContext context;
 
-    public SnorkelMove(Zombie zombie) {
+    public SnorkelMove(Zombie zombie, SnorkelContext context) {
         this.zombie = zombie;
-        this.isSubmerged = true;
+        this.context = context;
     }
 
     @Override
     public void execute() {
-        Tile currentTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
-        boolean hasPlantToEat = currentTile != null && !currentTile.getPlants().isEmpty();
-        isSubmerged = !hasPlantToEat;
+        Tile currentTile = zombie.getTile();
 
-        zombie.moveForward();  // under water
+        if (isWaterTile(currentTile)) {
+            if (!context.isSubmerged()) {
+                context.setSubmerged(true);
+                 GameSession.notify("Snorkel Zombie dove underwater!");
+            }
+        } else {
+            if (context.isSubmerged()) {
+                context.setSubmerged(false);
+                 GameSession.notify("Snorkel Zombie is walking on land.");
+            }
+        }
+        zombie.moveForward();
     }
 
-    public boolean isSubmerged() {
-        return isSubmerged;
-    }
-
-    public void setSubmerged(boolean submerged) {
-        this.isSubmerged = submerged;
+    private boolean isWaterTile(Tile tile) {
+        return tile instanceof WaterTile;
     }
 }

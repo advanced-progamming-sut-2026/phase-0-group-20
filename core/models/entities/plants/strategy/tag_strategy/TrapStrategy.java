@@ -75,26 +75,27 @@ public class TrapStrategy implements IPlantStrategy {
 
             switch (name) {
                 case "Potato Mine":
-                    Zombie pmTarget = targets.get(0);
-                    killed = pmTarget.takeDirectDamage(1800);
-                    if (killed) context.onZombieDeath(pmTarget);
+                    Zombie pmTarget = targets.getFirst();
+                    pmTarget.takeDamage(1800);
+                    if (pmTarget.isDead()) context.onZombieDeath(pmTarget);
                     break;
 
                 case "Primal Potato Mine":
+                    Zombie ppmTarget = targets.getFirst();
                     List<Zombie> aoeTargets = GameSession.getInstance().getArena().getZombiesInRadius((int) plantCol, plantRow, 1.5);
                     for (Zombie z : aoeTargets) {
                         if (!z.isDead()) {
-                            killed = z.takeDirectDamage(2400);
-                            if (killed) context.onZombieDeath(z);
+                            z.takeDamage(2400);
+                            if (z.isDead()) context.onZombieDeath(z);
                         }
                     }
                     notify("💥 Primal Potato Mine dealt massive AoE damage!");
                     break;
 
                 case "Squash":
-                    Zombie squashTarget = targets.get(0);
-                    killed = squashTarget.takeDirectDamage(1800);
-                    if (killed) context.onZombieDeath(squashTarget);
+                    Zombie squashTarget = targets.getFirst();
+                    squashTarget.takeDamage(1800);
+                    if (squashTarget.isDead()) context.onZombieDeath(squashTarget);
                     notify("🪨 Squash crushed " + squashTarget.getName() + "!");
 
                     smashCount++;
@@ -106,14 +107,14 @@ public class TrapStrategy implements IPlantStrategy {
 
                 case "Tangle Kelp":
                     for (Zombie z : targets) {
-                        killed = z.takeDirectDamage(9999);
-                        if (killed) context.onZombieDeath(z);
+                        z.takeDamage(9999);
+                        if (z.isDead()) context.onZombieDeath(z);
                         notify("🌊 Tangle Kelp pulled " + z.getName() + " underwater!");
                     }
                     break;
 
                 case "Iceberg Lettuce":
-                    Zombie iceTarget = targets.get(0);
+                    Zombie iceTarget = targets.getFirst();
                     notify("❄️ Iceberg Lettuce completely froze " + iceTarget.getName() + "!");
                     break;
             }
@@ -125,12 +126,13 @@ public class TrapStrategy implements IPlantStrategy {
 
     }
 
-    public int getArmingTimeTicks() {
-        return armingTimeTicks;
-    }
 
     public void setArmingTimeTicks(int armingTime) {
         this.armingTimeTicks = armingTime;
+    }
+
+    public int getArmingTimeTicks() {
+        return armingTimeTicks;
     }
 
     public void setArmed(boolean armed) {

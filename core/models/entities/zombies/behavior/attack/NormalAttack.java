@@ -19,7 +19,8 @@ public class NormalAttack implements AttackBehavior {
 
     @Override
     public void execute() {
-        Tile currentTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
+        Tile currentTile = zombie.getTile();
+
         if (currentTile == null || currentTile.getPlants().isEmpty()) {
             resumeWalking();
             return;
@@ -42,9 +43,9 @@ public class NormalAttack implements AttackBehavior {
         }
 
         if (targetZombie != null) {
-            boolean isKilled = targetZombie.takeDamage(damagePerTick);
+            targetZombie.takeDamage(damagePerTick);
 
-            if (isKilled) {
+            if (targetZombie.isDead()) {
                 isZombieToEat = false;
             }
         }

@@ -18,7 +18,7 @@ public class SquashHit implements AttackBehavior {
 
     @Override
     public void execute() {
-        Tile currentTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
+        Tile currentTile = zombie.getTile();
 
         if (currentTile == null || currentTile.getPlants().isEmpty()) {
             resumeWalking();

@@ -4,10 +4,14 @@ import models.entities.Sun;
 import models.entities.SunType;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
+import models.entities.obstacle.PushableObstacle;
 import models.entities.zombies.Zombie;
 import models.enums.PhysicalConstants;
+import models.enums.plants.ProjectileType;
 import models.fields.Brain;
 import models.fields.LawnMower;
+import models.fields.obstacle.GraveHolder;
+import models.fields.obstacle.IceHolder;
 import models.fields.tiles.Tile;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
@@ -31,6 +35,24 @@ public class CollisionManager {
         // for projectiles
         for (Projectile proj : arena.getActiveProjectiles()) {
             if (proj.isDestroyed()) continue;
+
+            Tile currentTile = arena.getTile(proj.getPosition().getRow(), proj.getPosition().getCol());
+
+            Plant frozenPlantInTile = null;
+            for (Plant p : currentTile.getPlants()) {
+                if (p.isFrozen()) {
+                    frozenPlantInTile = p;
+                    break;
+                }
+            }
+
+            if (frozenPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {
+
+                frozenPlantInTile.damageIceBlock(proj.getDamage());
+
+                proj.setDestroyed(true);
+                continue;
+            }
 
             if (proj.isFiredByZombie())
                 checkProjectileForPlantCollision(proj);
@@ -70,6 +92,24 @@ public class CollisionManager {
     }
 
     private void checkProjectileForZombieCollision(Projectile projectile) {
+        boolean hitObstacle = false;
+
+        for (PushableObstacle obstacle : arena.getActiveObstacles()) {
+            if (!obstacle.isDestroyed() && obstacle.getRow() == projectile.getPosition().getRow()) {
+
+                if (Math.abs(projectile.getPosition().getX() - obstacle.getX()) < 20) {
+
+                    obstacle.takeDamage(projectile.getDamage());
+                    projectile.setDestroyed(true);
+                    hitObstacle = true;
+                    break;
+                }
+            }
+        }
+
+        if (hitObstacle) return;
+
+
         int tileLength = PhysicalConstants.TILE_UNIT_LENGTH;
         float projectileHitRadius = 0.25f;
         float zombieHitRadius = 0.25f;
@@ -112,11 +152,11 @@ public class CollisionManager {
 
         if (currentTile == null) return false;
 
-        if (currentTile instanceof models.fields.obstacle.GraveHolder graveHolder && graveHolder.getGraveStone() != null) {
+        if (currentTile instanceof GraveHolder graveHolder && graveHolder.getGraveStone() != null) {
             graveHolder.takeDamage(proj.getDamage(), projectileRow, projectileCol);
             proj.onHitObstacle(currentTile);
             return true;
-        } else if (currentTile instanceof models.fields.obstacle.IceHolder iceHolder && iceHolder.hasIceBlock()) {
+        } else if (currentTile instanceof IceHolder iceHolder && iceHolder.hasIceBlock()) {
             iceHolder.takeIceDamage(proj.getDamage());
             proj.onHitObstacle(currentTile);
             return true;
@@ -224,8 +264,8 @@ public class CollisionManager {
             for (Zombie z : arena.getActiveZombies()) {
                 Tile currentTile = arena.getTile(z.getRow(), z.getCol());
                 if (z.isDead() || !affectedTiles.contains(currentTile)) continue;
-                boolean killed = z.takeDamage(150);
-                if (killed) {
+                z.takeDamage(150);
+                if (z.isDead()) {
                     GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
                             .zombie(z)
                             .seasonType(session.getCurrentChapter().getSeasonType())
