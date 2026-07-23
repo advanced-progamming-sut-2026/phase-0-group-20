@@ -3,40 +3,56 @@ package models.entities.zombies.behavior.attack;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieState;
-import models.entities.zombies.behavior.move.AllStarMove;
-import models.entities.zombies.behavior.move.MoveBehavior;
-import models.fields.tiles.Tile;
+import models.entities.zombies.behavior.context.AllStarContext;
 import models.game.GameSession;
+
+import java.util.List;
 
 public class AllStarSmashAttack implements AttackBehavior {
     private final Zombie zombie;
+    private final AllStarContext context;
+    private final AttackBehavior normalAttack;
 
-    public AllStarSmashAttack(Zombie zombie) {
+    public AllStarSmashAttack(Zombie zombie, AllStarContext context) {
         this.zombie = zombie;
+        this.context = context;
+        this.normalAttack = new NormalAttack(zombie);
     }
 
     @Override
     public void execute() {
-        Tile currentTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
-
-        if (currentTile == null || currentTile.getPlants().isEmpty()) {
-            resumeWalking();
+        if (context.hasTackled()) {
+            normalAttack.execute();
             return;
         }
 
-        Plant targetPlant = currentTile.getPlants().get(0);
-        int lethalDamage = Math.max(targetPlant.getCurrentHp(), 1);
-        targetPlant.takeDamage(lethalDamage);
-        currentTile.getPlants().remove(targetPlant);
+        GameSession session = GameSession.getInstance();
+        boolean hitSomething = false;
 
-        notify(zombie.getName() + " trampled " + targetPlant.getName() + " instantly!");
+        List<Plant> targets = session.getArena().getTile(zombie.getRow(), zombie.getCol()).getPlants();
 
-        MoveBehavior move = zombie.getMoveBehavior();
-        if (move instanceof AllStarMove allStarMove) {
-            allStarMove.stopRunning();
+        for (Plant plant : targets) {
+            plant.takeDamage(99999);
+            notify("All-Star Zombie tackled and destroyed " + plant.getName() + "!");
+            hitSomething = true;
         }
 
-        resumeWalking();
+        for (Zombie z : session.getArena().getActiveZombies()) {
+            if (z.isHypnotized() && z.getRow() == zombie.getRow() && Math.abs(z.getX() - zombie.getX()) < 30) {
+                z.takeDamage(99999);
+                notify("All-Star Zombie tackled a hypnotized zombie!");
+                hitSomething = true;
+                break;
+            }
+        }
+
+        if (hitSomething) {
+            context.setTackled();
+            resumeWalking();
+        } else {
+            resumeWalking();
+        }
+
     }
 
     private void resumeWalking() {

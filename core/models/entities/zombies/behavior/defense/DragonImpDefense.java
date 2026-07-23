@@ -5,7 +5,7 @@ import models.enums.plants.ProjectileType;
 public class DragonImpDefense implements DefenseBehavior {
     @Override
     public int mitigateDamage(int damage, ProjectileType damageType) {
-        if (damageType == ProjectileType.FIRE_PEA) {
+        if (ProjectileType.isFireProjectile(damageType)) {
             return 0;
         }
         return damage;

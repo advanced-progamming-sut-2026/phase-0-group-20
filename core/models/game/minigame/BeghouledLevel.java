@@ -21,10 +21,8 @@ public class BeghouledLevel extends Level implements IMinigame {
 
     private final String[] basePlants = {"peashooter", "sunflower", "wall-nut", "snow pea", "repeater", "puff-shroom", "cabbage-pult", "melon-pult"};
     // we can add or remove plants from this list
-
-    private int successfulMatches = 0;
     private final int targetMatches;
-
+    private int successfulMatches = 0;
     private int tickCounter = 0;
     private int currentSpawnInterval = GameConstants.SPAWN_IN_WAVE_INTERVAL;
 

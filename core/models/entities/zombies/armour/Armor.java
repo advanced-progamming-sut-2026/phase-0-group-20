@@ -1,5 +1,7 @@
 package models.entities.zombies.armour;
 
+import models.game.GameSession;
+
 public class Armor {
     private final ArmorData data;
     private int currentHealth;
@@ -36,6 +38,7 @@ public class Armor {
         if (currentHealth <= 0) {
             int overflow = Math.abs(currentHealth);
             currentHealth = 0;
+            GameSession.notify("armor " +  data.getAlias() + " dropped");
             dropped = true;
             return overflow;
         }

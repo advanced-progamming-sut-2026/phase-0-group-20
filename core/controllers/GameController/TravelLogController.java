@@ -21,16 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TravelLogController {
-    enum ValidPageNames {
-        DAILY,
-        MAIN,
-        EPIC,
-        MINIGAME;
-    }
-
     private User activeUser;
     private ValidPageNames currentPage = ValidPageNames.DAILY;
-
     public TravelLogController() {
 
     }
@@ -136,7 +128,6 @@ public class TravelLogController {
         };
     }
 
-
     public Result startMiniGame(String miniGameName, String levelString) {
         int levelNumber;
         try {
@@ -206,6 +197,13 @@ public class TravelLogController {
         }
 
         return sb.toString().trim();
+    }
+
+    enum ValidPageNames {
+        DAILY,
+        MAIN,
+        EPIC,
+        MINIGAME;
     }
 
 }

@@ -32,10 +32,6 @@ public class ArmorLoader {
         return instance;
     }
 
-    public static void init(String jsonPath) {
-        instance = new ArmorLoader(jsonPath);
-    }
-
     private void parseJson(String raw) {
         JSONArray array = new JSONArray(raw);
         for (int i = 0; i < array.length(); i++) {

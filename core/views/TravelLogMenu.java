@@ -1,6 +1,5 @@
 package views;
 
-import controllers.GameController.MiniGameController;
 import controllers.GameController.TravelLogController;
 import models.enums.commands.TravelLogCommands;
 
@@ -9,7 +8,6 @@ import java.util.regex.Matcher;
 
 public class TravelLogMenu implements AppMenu {
     private final TravelLogController controller = new TravelLogController();
-    private final MiniGameController miniGameController = new MiniGameController();
 
     @Override
     public void check(Scanner scanner) {

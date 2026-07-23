@@ -1,52 +1,29 @@
 package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
+import models.entities.zombies.behavior.context.JugglerContext;
+import models.game.GameSession;
 
 public class JugglerMove implements MoveBehavior {
-    private static final int SPIN_COOLDOWN_TICKS = 20;
     private final Zombie zombie;
-    private final float spinSpeedMultiplier = 2.5f;
-    private boolean isSpinning;
-    private int ticksSinceLastProjectile;
+    private final JugglerContext context;
 
-    public JugglerMove(Zombie zombie) {
+    public JugglerMove(Zombie zombie, JugglerContext context) {
         this.zombie = zombie;
-        this.isSpinning = false;
-        this.ticksSinceLastProjectile = 0;
+        this.context = context;
     }
 
     @Override
     public void execute() {
-        zombie.moveForward();
+        context.tickTimer();
 
-        if (isSpinning) {
-            ticksSinceLastProjectile++;
-            if (ticksSinceLastProjectile >= SPIN_COOLDOWN_TICKS) {
-                stopSpinning();
+        if (context.isSpinning()) {
+            zombie.moveForward();
+            zombie.moveForward();
+        } else {
+            if (GameSession.getInstance().getTimeManager().getCurrentTick() % 2 == 0) {
+                zombie.moveForward();
             }
         }
-    }
-
-    public void onProjectileIncoming() {
-        ticksSinceLastProjectile = 0;
-        startSpinning();
-    }
-
-    public void startSpinning() {
-        if (!isSpinning) {
-            isSpinning = true;
-            zombie.applySpeedMultiplier(spinSpeedMultiplier);
-        }
-    }
-
-    public void stopSpinning() {
-        if (isSpinning) {
-            isSpinning = false;
-            zombie.resetSpeed();
-        }
-    }
-
-    public boolean isSpinning() {
-        return isSpinning;
     }
 }

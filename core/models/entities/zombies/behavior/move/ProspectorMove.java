@@ -1,55 +1,36 @@
 package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
-import models.game.GameSession;
+import models.entities.zombies.behavior.context.ProspectorContext;
+import models.enums.PhysicalConstants;
 
 public class ProspectorMove implements MoveBehavior {
     private final Zombie zombie;
-    private final int EXPLOSION_TICK_THRESHOLD = 10 * 60;
-    private boolean dynamiteActive;
-    private boolean isBlownToBack;
-    private int ticksAlive;
+    private final ProspectorContext context;
 
-    public ProspectorMove(Zombie zombie) {
+    public ProspectorMove(Zombie zombie, ProspectorContext context) {
         this.zombie = zombie;
-        this.dynamiteActive = true;
-        this.isBlownToBack = false;
-        this.ticksAlive = 0;
+        this.context = context;
     }
-
 
     @Override
     public void execute() {
-        if (dynamiteActive && !isBlownToBack) {
-            ticksAlive++;
-            if (ticksAlive >= EXPLOSION_TICK_THRESHOLD) {
-                explodeDynamite();
-            }
+        context.tickTimer();
+
+        if (context.shouldExplode()) {
+            notify("Prospector Dynamite Exploded! Jumping to the back!");
+            context.triggerJump();
+
+            zombie.setCol(0);
+
+            zombie.setX(PhysicalConstants.TILE_UNIT_LENGTH / 2f);
+            return;
         }
 
-        if (isBlownToBack) {
-            float directionMultiplier = zombie.isHypnotized() ? -1.0f : 1.0f;
-            zombie.getPosition().moveX(zombie.getCurrentSpeed() * directionMultiplier);
+        if (context.isMovingReverse()) {
+            zombie.moveBackward();
         } else {
             zombie.moveForward();
         }
-    }
-
-    private void explodeDynamite() {
-        isBlownToBack = true;
-        dynamiteActive = false;
-
-        int lastCol = GameSession.getInstance().getArena().getCols() - 1;
-        zombie.setCol(lastCol);
-
-        notify(zombie.getName() + "'s dynamite exploded! Now heading back the other way.");
-    }
-
-    public void defuseDynamite() { // if ice shoot -> it will call in defense logic
-        dynamiteActive = false;
-    }
-
-    public boolean isBlownToBack() {
-        return isBlownToBack;
     }
 }

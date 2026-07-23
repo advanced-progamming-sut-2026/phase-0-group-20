@@ -18,16 +18,15 @@ public class GargantuarMove implements MoveBehavior {
 
     @Override
     public void execute() {
-        zombie.moveForward();
-
-        if (!impThrown && zombie.getHealth() <= (zombie.getBaseHp() / 2)) {
+        if (!impThrown && zombie.getHealth() <= zombie.getBaseHp() / 2) {
             throwImp();
+            impThrown = true;
         }
+
+        zombie.moveForward();
     }
 
     private void throwImp() {
-        impThrown = true;
-
         Zombie imp = ZombieFactory.create(ZombieType.IMP, zombie.getRow());
         imp.setCol(IMP_LANDING_COLUMN);
 
@@ -36,10 +35,6 @@ public class GargantuarMove implements MoveBehavior {
         session.getArena().addZombie(imp);
 
         notify(zombie.getName() + " threw its Imp onto column "
-                + IMP_LANDING_COLUMN + " of row " + zombie.getRow() + "!");
-    }
-
-    public boolean isImpThrown() {
-        return impThrown;
+                + (IMP_LANDING_COLUMN + 1) + " of row " + zombie.getRow() + "!");
     }
 }

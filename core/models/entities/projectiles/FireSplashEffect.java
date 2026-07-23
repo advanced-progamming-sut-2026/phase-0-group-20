@@ -28,8 +28,8 @@ public class FireSplashEffect implements ProjectileEffect {
             z.removeFreezeEffect();
 
             if (z != zombie) {
-                boolean killed = z.takeDamage(splashDamage);
-                if (killed) {
+                z.takeDamage(splashDamage);
+                if (z.isDead()) {
                     projectile.getPlant().onZombieDeath(z);
                 }
             }

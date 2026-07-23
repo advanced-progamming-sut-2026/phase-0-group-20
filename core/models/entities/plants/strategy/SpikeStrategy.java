@@ -15,9 +15,9 @@ import java.util.List;
 
 public class SpikeStrategy implements IPlantStrategy {
     private final int DAMAGE_INTERVAL = TimeManager.TICKS_PER_SECOND;
-    private int lastDamageTick = 0;
     boolean hasArmor = false;
     int damage;
+    private int lastDamageTick = 0;
     private int reflectDamageBonus = 0;
 
 
@@ -46,8 +46,8 @@ public class SpikeStrategy implements IPlantStrategy {
                     if (hasArmor) //more hp = having armor
                         damage *= 2;
 
-                    boolean killed = z.takeDamage(damage);
-                    if (killed) {
+                    z.takeDamage(damage);
+                    if (z.isDead()) {
                         context.onZombieDeath(z);
                     }
                     dealtDamage = true;

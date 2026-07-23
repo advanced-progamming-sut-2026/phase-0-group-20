@@ -30,7 +30,7 @@ public class SmashAttack implements AttackBehavior {
         targetPlant.takeDamage(lethalDamage);
         currentTile.getPlants().remove(targetPlant);
 
-        notify(zombie.getName() + " smashed " + targetPlant.getName() + " to bits!");
+        notify("Gargantuar Smashed " + targetPlant.getName() + " with his weapon!");
 
         resumeWalking();
     }

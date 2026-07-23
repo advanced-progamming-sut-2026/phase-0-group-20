@@ -3,6 +3,7 @@ package models.entities.zombies.behavior.attack;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieState;
+import models.entities.zombies.behavior.context.TurquoiseContext;
 import models.game.GameSession;
 
 import java.util.ArrayList;
@@ -10,60 +11,59 @@ import java.util.List;
 
 public class LaserAttack implements AttackBehavior {
     private final Zombie zombie;
-    private final int laserDamage;
-    private int channelTicks = 0;
-    private int stolenSuns = 0;
+    private final TurquoiseContext context;
 
-    public LaserAttack(Zombie zombie, int laserDamage) {
+    public LaserAttack(Zombie zombie, TurquoiseContext context) {
         this.zombie = zombie;
-        this.laserDamage = laserDamage;
+        this.context = context;
     }
 
     @Override
     public void execute() {
-        GameSession session = GameSession.getInstance();
-        channelTicks++;
-
-        if (channelTicks % 10 == 0 && channelTicks <= 50) {
-            int currentSun = session.getCurrentSun();
-            int sunToSteal = Math.min(currentSun, 25);
-
-            session.setCurrentSun(currentSun - sunToSteal);
-            stolenSuns += sunToSteal;
-            notify(zombie.getName() + " stole " + sunToSteal + " suns! Total stolen: " + stolenSuns);
+        if (!context.isCharging()) {
+            context.startCharging();
+            notify("Turquoise Skull is warming up its laser!");
         }
 
-        if (channelTicks >= 50) {
-            shootLaser(session);
+        context.incrementCharge();
 
-            channelTicks = 0;
-            zombie.setAttacking(false);
-            zombie.setState(ZombieState.WALKING);
+        if (context.getChargeTicks() % 10 == 0) {
+            stealSun(25);
+        }
+
+        if (context.getChargeTicks() >= 50) {
+            fireLaser();
         }
     }
 
-    private void shootLaser(GameSession session) {
-        int row = zombie.getRow();
-        List<Plant> toDestroy = new ArrayList<>();
+    private void stealSun(int amount) {
+        GameSession.getInstance().useSun(amount);
+        context.addStolenSun(amount);
 
-        for (Plant plant : session.getArena().getActivePlants()) {
-            if (plant.getPlacedTile() != null && plant.getPlacedTile().getRow() == row) {
-                int pCol = plant.getPlacedTile().getCol();
-                int distance = zombie.getCol() - pCol;
+         notify("Turquoise Skull stole " + amount + " suns!");
+    }
 
-                if (distance >= 0 && distance <= 4) {
-                    toDestroy.add(plant);
-                }
+    private void fireLaser() {
+        GameSession session = GameSession.getInstance();
+        int zRow = zombie.getRow();
+        int zCol = zombie.getCol();
+
+        List<Plant> targets = new ArrayList<>();
+        for (Plant p : session.getArena().getActivePlants()) {
+            int pRow = p.getPlacedTile().getRow();
+            int pCol = p.getPlacedTile().getCol();
+            if (pRow == zRow && pCol <= zCol && pCol >= zCol - 4) {
+                targets.add(p);
             }
         }
 
-        for (Plant plant : toDestroy) {
-            plant.takeDamage(laserDamage);
-            notify(zombie.getName() + " blasted " + plant.getName() + " with a laser!");
+        for (Plant p : targets) {
+            p.takeDamage(99999);
         }
-    }
+        notify("Turquoise Skull fired a deadly laser!");
 
-    public int getStolenSuns() {
-        return stolenSuns;
+        context.reset();
+        zombie.setAttacking(false);
+        zombie.setState(ZombieState.WALKING);
     }
 }

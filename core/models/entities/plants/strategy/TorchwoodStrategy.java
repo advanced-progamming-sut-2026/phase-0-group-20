@@ -35,8 +35,8 @@ public class TorchwoodStrategy implements IPlantStrategy {
             List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5f);
             for (Zombie z : targets) {
                 if (!z.isDead()) {
-                    boolean killed = z.takeDirectDamage(explosionDamage);
-                    if (killed) {
+                    z.takeDamage(explosionDamage);
+                    if (z.isDead()) {
                         context.onZombieDeath(z);
                     }
                 }

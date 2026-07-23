@@ -35,8 +35,8 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
         if (name.equalsIgnoreCase("fume-shroom")) {
             for (Zombie zombie : gameSession.getArena().zombieInRow(row)) {
                 if (!zombie.isDead() && zombie.getCol() >= col) {
-                    boolean killed = zombie.takeDirectDamage(damage);
-                    if (killed) {
+                    zombie.takeDamage(damage);
+                    if (zombie.isDead()) {
                         plant.onZombieDeath(zombie);
                     }
 
@@ -51,8 +51,8 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
             List<Zombie> nearZombies = gameSession.getArena().getZombiesInRadius(col, row, 1.5);
             for (Zombie zombie : nearZombies) {
                 if (zombie.isDead()) continue;
-                boolean killed = zombie.takeDirectDamage(damage);
-                if (killed) {
+                zombie.takeDamage(damage);
+                if (zombie.isDead()) {
                     plant.onZombieDeath(zombie);
                 }
             }

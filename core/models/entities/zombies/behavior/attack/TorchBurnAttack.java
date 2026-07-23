@@ -3,69 +3,51 @@ package models.entities.zombies.behavior.attack;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieState;
-import models.fields.tiles.Tile;
+import models.entities.zombies.behavior.context.ExplorerContext;
+import models.enums.plants.PlantTag;
 import models.game.GameSession;
+
+import java.util.List;
 
 public class TorchBurnAttack implements AttackBehavior {
     private final Zombie zombie;
-    private boolean isTorchLit;
+    private final ExplorerContext context;
+    private final AttackBehavior normalAttack;
 
-    public TorchBurnAttack(Zombie zombie) {
+    public TorchBurnAttack(Zombie zombie, ExplorerContext context) {
         this.zombie = zombie;
-        this.isTorchLit = true;
+        this.context = context;
+        this.normalAttack = new NormalAttack(zombie);
     }
 
     @Override
     public void execute() {
-        Tile currentTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
+        GameSession session = GameSession.getInstance();
+        List<Plant> targetsPlant = session.getArena().getTile(zombie.getRow(), zombie.getCol()).getPlants();
 
-        if (currentTile == null || currentTile.getPlants().isEmpty()) {
-            resumeWalking();
-            return;
-        }
-
-        Plant targetPlant = currentTile.getPlants().get(0);
-
-        if (!isTorchLit) {
-            int damagePerTick = zombie.getEatDps() / 10;
-            targetPlant.takeDamage(damagePerTick);
-
-            if (targetPlant.getCurrentHp() <= 0) {
-                currentTile.getPlants().remove(targetPlant);
-                if (currentTile.getPlants().isEmpty()) {
-                    resumeWalking();
-                }
+        for (Plant plant : targetsPlant) {
+            if (plant.getTags().contains(PlantTag.ICE)) {
+                context.setTorchLit(false);
+                notify("Explorer's torch was extinguished by an ICE plant!");
+            } else if (plant.getTags().contains(PlantTag.FIRE)) {
+                context.setTorchLit(true);
+                notify("Explorer's torch was ignited by a FIRE plant!");
             }
-            return;
+
+            if (context.isTorchLit()) {
+                plant.takeDamage(99999);
+                notify("Explorer burnt " + plant.getName() + " to ashes!");
+
+                resumeWalking();
+            } else {
+                normalAttack.execute();
+            }
         }
-
-        targetPlant.takeDamage(99999);
-        currentTile.getPlants().remove(targetPlant);
-        notify(zombie.getName() + " instantly burned " + targetPlant.getName() + " to ashes!");
-
         resumeWalking();
     }
 
     private void resumeWalking() {
         zombie.setAttacking(false);
         zombie.setState(ZombieState.WALKING);
-    }
-
-    public void extinguishTorch() {
-        if (this.isTorchLit) {
-            this.isTorchLit = false;
-            notify(zombie.getName() + "'s torch was extinguished by ice!");
-        }
-    }
-
-    public void igniteTorch() {
-        if (!this.isTorchLit) {
-            this.isTorchLit = true;
-            notify(zombie.getName() + "'s torch was reignited by fire!");
-        }
-    }
-
-    public boolean isTorchLit() {
-        return isTorchLit;
     }
 }

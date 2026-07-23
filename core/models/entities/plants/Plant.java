@@ -43,6 +43,13 @@ public class Plant implements IPlant, Ticker {
     protected boolean frozen = false;
     protected boolean stunned = false;
 
+    private int iceStacks = 0;
+    private int iceBlockHp = 0;
+    private final int MAX_ICE_HP = 600;
+
+    private int octopusHp = 0;
+    private final int MAX_OCTOPUS_HP = 800;
+
     protected int size = 1;
     protected boolean boosted = false;
     protected int boostTimer = 0;
@@ -114,6 +121,10 @@ public class Plant implements IPlant, Ticker {
 
     @Override
     public void onTick(int currentTick) {
+        if (stunned || isFrozen() || hasOctopus()) {
+            return;
+        }
+
         activeEffects.removeIf(effect -> {
             if (effect.isExpired()) {
                 effect.remove(this);
@@ -123,9 +134,6 @@ public class Plant implements IPlant, Ticker {
             return false;
         });
 
-        if (stunned || frozen) {
-            return;
-        }
 
         if (boostTimer > 0) {
             for (PlantFoodStrategy strategy : plantFoodStrategy)
@@ -148,6 +156,7 @@ public class Plant implements IPlant, Ticker {
         }
 
         this.currentHp -= amount;
+        GameSession.notify(getName() + " Taking " + amount + " damage in " + (placedTile.getCol() + 1) + "," + (placedTile.getRow() + 1));
 
 
         if (isDead()) {
@@ -156,7 +165,7 @@ public class Plant implements IPlant, Ticker {
                             .message(getName() + " has lost!")
                             .build()
             );
-
+            GameSession.getInstance().getTimeManager().unregisterTicker(this);
             GameSession.notify("Plant " + getName() + " has been Destroyed!");
         }
     }
@@ -253,10 +262,6 @@ public class Plant implements IPlant, Ticker {
     public void setPlacedTile(Tile placedTile) {
         this.placedTile = placedTile;
         position = new Position(placedTile.getCol(), placedTile.getRow());
-    }
-
-    public boolean isFrozen() {
-        return frozen;
     }
 
     public void setFrozen(boolean frozen) {
@@ -591,6 +596,54 @@ public class Plant implements IPlant, Ticker {
 
     public boolean isDead() {
         return currentHp <= 0;
+    }
+
+    public void damageIceBlock(int damage) {
+        if (!isFrozen()) return;
+
+        iceBlockHp -= damage;
+        if (iceBlockHp <= 0) {
+            iceBlockHp = 0;
+            System.out.println("Ice block broken! " + this.getName() + " is free!");
+        }
+    }
+
+    public void receiveIceHit() {
+        if (isFrozen()) return;
+
+        iceStacks++;
+        GameSession.notify(this.getName() + " got hit by ice! Stacks: " + iceStacks);
+
+        if (iceStacks >= 3) {
+            iceBlockHp = MAX_ICE_HP;
+            iceStacks = 0;
+            GameSession.notify(this.getName() + " is FROZEN!");
+        }
+    }
+
+    public boolean isFrozen() {
+        return iceBlockHp > 0;
+    }
+
+    public boolean hasOctopus() {
+        return octopusHp > 0;
+    }
+
+    public void receiveOctopus() {
+        if (hasOctopus() || isFrozen()) return;
+
+        octopusHp = MAX_OCTOPUS_HP;
+        GameSession.notify(this.getName() + " is covered by an OCTOPUS!");
+    }
+
+    public void damageOctopus(int damage) {
+        if (!hasOctopus()) return;
+
+        octopusHp -= damage;
+        if (octopusHp <= 0) {
+            octopusHp = 0;
+            GameSession.notify("Octopus destroyed! " + this.getName() + " is free!");
+        }
     }
 
 }

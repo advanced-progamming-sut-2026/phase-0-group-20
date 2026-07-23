@@ -18,15 +18,14 @@ import java.util.List;
 import java.util.Map;
 
 public class UserProgress {
+    private final ArrayList<Zombie> unlockedZombies = new ArrayList<>();
+    private final ArrayList<Plant> unlockedPlants = new ArrayList<>();
     private int gamesPlayed;
     private int levelsCompleted;
     private int highestBonusScore;
     private int desiredDifficulty;
     private int highestUnlockedChapterIndex;
     private int highestUnlockedLevelIndex;
-
-    private final ArrayList<Zombie> unlockedZombies = new ArrayList<>();
-    private final ArrayList<Plant> unlockedPlants = new ArrayList<>();
     private Map<MiniGameType, Integer> unlockedMinigames = new EnumMap<>(MiniGameType.class);
 
     public UserProgress() {

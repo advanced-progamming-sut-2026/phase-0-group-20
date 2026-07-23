@@ -52,21 +52,13 @@ Position {
         return x;
     }
 
-    public float getY() {
-        return y;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public int getCol() {
-        return col;
-    }
-
     public void setX(float x) {
         this.x = x;
         this.col = (int) (x / TILE_UNIT_LENGTH);
+    }
+
+    public float getY() {
+        return y;
     }
 
     public void setY(float y) {
@@ -74,9 +66,17 @@ Position {
         this.row = (int) (y / TILE_UNIT_LENGTH);
     }
 
+    public int getRow() {
+        return row;
+    }
+
     public void setRow(int row) {
         this.row = row;
         this.y = row * TILE_UNIT_LENGTH + TILE_UNIT_LENGTH / 2f;
+    }
+
+    public int getCol() {
+        return col;
     }
 
     public void setCol(int col) {

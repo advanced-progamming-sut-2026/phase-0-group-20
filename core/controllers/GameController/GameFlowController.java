@@ -95,7 +95,7 @@ public class GameFlowController {
         List<Zombie> activeZombies = arena.getActiveZombies();
 
         for (Zombie zombie : activeZombies) {
-            zombie.takeDirectDamage(10000);
+            zombie.takeDamage(10000);
             GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
                     .zombie(zombie)
                     .coordinate(zombie.getRow(), zombie.getCol())

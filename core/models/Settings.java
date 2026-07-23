@@ -41,6 +41,10 @@ public class Settings {
         return difficulty;
     }
 
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+    }
+
     public float getZombieHealthMultiplier() {
         return 1.0f + (difficulty - 3) * 0.2f;
     }
@@ -59,9 +63,5 @@ public class Settings {
 
     public float getGameSpeedMultiplier() {
         return 1.0f - (difficulty - 3) * 0.15f;
-    }
-
-    public void setDifficulty(int difficulty) {
-        this.difficulty = difficulty;
     }
 }

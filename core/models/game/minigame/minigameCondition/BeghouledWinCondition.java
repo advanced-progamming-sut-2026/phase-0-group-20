@@ -16,7 +16,7 @@ public class BeghouledWinCondition implements WinCondition {
 
                 if (!session.getArena().getActiveZombies().isEmpty()) {
                     for (Zombie zombie : session.getArena().getActiveZombies()) {
-                        zombie.takeDirectDamage(100000);
+                        zombie.takeDamage(100000);
                         session.getTimeManager().unregisterTicker(zombie);
                     }
                     session.getArena().getActiveZombies().clear();

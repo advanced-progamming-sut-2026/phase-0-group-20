@@ -1,21 +1,25 @@
 package models.entities.zombies.behavior.defense;
 
 import models.entities.zombies.Zombie;
-import models.entities.zombies.behavior.move.SnorkelMove;
+import models.entities.zombies.behavior.context.SnorkelContext;
 import models.enums.plants.ProjectileType;
 
 public class SnorkelDefense implements DefenseBehavior {
     private final Zombie zombie;
+    private final SnorkelContext context;
 
-    public SnorkelDefense(Zombie zombie) {
+    public SnorkelDefense(Zombie zombie, SnorkelContext context) {
         this.zombie = zombie;
+        this.context = context;
     }
 
 
     @Override
     public int mitigateDamage(int damage, ProjectileType damageType) {
-        if (isSubmerged() && !isLobbedShot(damageType)) {
-            return 0;
+        if (context.isSubmerged()) {
+            if (!ProjectileType.isLobbed(damageType)) {
+                return 0;
+            }
         }
         return damage;
     }
@@ -25,15 +29,4 @@ public class SnorkelDefense implements DefenseBehavior {
         return false;
     }
 
-    private boolean isSubmerged() {
-        return zombie.getMoveBehavior() instanceof SnorkelMove snorkelMove && snorkelMove.isSubmerged();
-    }
-
-    private boolean isLobbedShot(ProjectileType projectileType) {
-        if (projectileType == null) return false;
-        return switch (projectileType) {
-            case CABBAGE, CORN, BUTTER, MELON, WINTER_MELON, PEPPER -> true;
-            default -> false;
-        };
-    }
 }

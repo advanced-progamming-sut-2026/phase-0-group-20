@@ -13,10 +13,6 @@ public enum MiniGameType {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public static MiniGameType findByName(String name) {
         for (MiniGameType type : MiniGameType.values()) {
             if (type.getName().equalsIgnoreCase(name)) {
@@ -24,5 +20,9 @@ public enum MiniGameType {
             }
         }
         return null;
+    }
+
+    public String getName() {
+        return name;
     }
 }
