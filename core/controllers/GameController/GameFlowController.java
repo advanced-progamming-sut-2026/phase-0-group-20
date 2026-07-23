@@ -1,5 +1,6 @@
 package controllers.GameController;
 
+import controllers.NavigationController;
 import models.App;
 import models.InGameEntityGenerator;
 import models.Result;
@@ -7,6 +8,7 @@ import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
+import models.entities.zombies.ZombieType;
 import models.fields.LawnMower;
 import models.fields.tiles.*;
 import models.game.Arena;
@@ -20,7 +22,6 @@ import models.timeManager.TimeManager;
 import models.users.User;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,6 +42,12 @@ public class GameFlowController {
             return new Result(false, "Invalid amount given. (Integer above ZERO)");
         }
         GameSession.getInstance().update(timeAmount);
+
+        if (GameSession.getInstance().isGameOver()) {
+            NavigationController.exitMenu();
+            return new Result(true, "Returned to " + App.getActiveMenu().getName());
+        }
+
         return new Result(true, "Successfully advanced time for " + timeAmount + " ticks.");
     }
 

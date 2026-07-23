@@ -13,12 +13,15 @@ public enum MiniGameCommands implements Commands {
     BOWL("^\\s*bowl\\s+-i\\s+(?<index>\\d+)\\s+" +
             "-l\\s+\\(\\s*(?<x>\\d+)\\s*,\\s*(?<y>\\d+)\\s*\\)\\s*$"),
 
+    //show zombies
     SHOW_ZOMBIES("^\\s*show\\s+zombies\\s*$"),
 
+    //swap -l1 (1,2) -l2 (3,5)
     SWAP_PLANTS("^\\s*swap\\s+-l1\\s+\\(\\s*(?<x1>\\d+)\\s*,\\s*(?<y1>\\d+)\\s*\\)\\s+" +
             "-l2\\s+\\(\\s*(?<x2>\\d+)\\s*,\\s*(?<y2>\\d+)\\s*\\)\\s*$"),
+
+    //upgrade -p peashooter
     UPGRADE_PLANTS("^\\s*upgrade\\s+-p\\s+(?<plantName>.+)\\s*$");
-    //show zombies
 
     private final String pattern;
 

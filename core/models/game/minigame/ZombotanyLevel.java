@@ -27,8 +27,6 @@ public class ZombotanyLevel extends Level implements IMinigame {
 
     @Override
     public void onLevelStart(GameSession session) {
-        notify("Zombotany Level " + levelNumber + " Started!");
-
 
     }
 

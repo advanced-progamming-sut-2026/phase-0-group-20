@@ -34,8 +34,10 @@ public enum GameFlowCommands implements Commands {
 
     PRINT_MAP("^\\s*print\\s+map\\s*$"),
 
-    ZOMBIE_INFO("^\\s*zombies\\s+info\\s*$");
+    ZOMBIE_INFO("^\\s*zombies\\s+info\\s*$"),
 
+    CHEAT_SPAWN_ZOMBIE("^\\s*cheat\\s+spawn-zombie\\s+-t\\s+(?<zombieType>.+?)\\s+" +
+            "-l\\s+\\(\\s*(?<x>\\S+)\\s*,\\s*(?<y>\\S+)\\s*\\)\\s*$");
 
     private final String pattern;
 

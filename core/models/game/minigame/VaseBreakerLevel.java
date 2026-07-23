@@ -26,7 +26,6 @@ public class VaseBreakerLevel extends Level implements IMinigame {
 
     @Override
     public void onLevelStart(GameSession session) {
-        notify("VaseBreaker Level " + levelNumber + " Started!");
 
         int rows = session.getArena().getRows();
         int cols = session.getArena().getCols();

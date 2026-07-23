@@ -3,8 +3,11 @@ package controllers.GameController;
 import controllers.NavigationController;
 import models.App;
 import models.Result;
+import models.entities.plants.Plant;
+import models.enums.Menu;
 import models.game.GameSession;
 import models.game.adventure.levels.Level;
+import models.game.adventure.levels.speciallevels.ConveyorBelt;
 import models.game.minigame.BowlingLevel;
 import models.game.minigame.MiniGameFactory;
 import models.game.minigame.MiniGameType;
@@ -136,28 +139,36 @@ public class TravelLogController {
             return new Result(false, "Invalid level number! Minigames only have levels 1, 2, and 3.");
 
         try {
-            levelNumber--;
+
             MiniGameType type = MiniGameType.findByName(miniGameName);
+
             int maxUnlocked = activeUser.getUnlockedLevelInMinigame(type);
-            if (levelNumber > maxUnlocked)
+            if (levelNumber - 1 > maxUnlocked)
                 return new Result(false, "Level " + levelNumber + " is LOCKED!" +
                         " You must beat level " + (levelNumber - 1) + " first.");
 
             Level minigameLevel = MiniGameFactory.createLevel(type, levelNumber);
-            if (minigameLevel instanceof BowlingLevel bowling) {
-                GameSession.startNewGame(bowling.getBelt());
-            } else if (minigameLevel instanceof VaseBreakerLevel vaseBreaker) {
-                GameSession.startNewGame(null);
-            }
-            GameSession session = GameSession.getInstance();
-            session.setCurrentMode(minigameLevel);
-            minigameLevel.onStart(session);
-            NavigationController.enterMenu("game flow menu");
+            GameSession.setMinigameLevel(minigameLevel);
 
-            return new Result(true, "Started " + type.name() + " Level " + (levelNumber + 1) + "! Good luck!");
+            if (!minigameLevel.skipsPlantSelection()) {
+                App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
+
+            } else {
+                List<Plant> inGamePlants = null;
+                if (minigameLevel instanceof BowlingLevel bowling)
+                    inGamePlants = bowling.getBelt();
+
+                App.setActiveMenu(Menu.GAME_FLOW_MENU);
+                GameSession.startMiniGame(minigameLevel, inGamePlants);
+            }
+
+            NavigationController.enterMenu("game flow menu");
+            return new Result(true, "Started " + type.getName() + " Level " + (levelNumber) + "! Good luck!");
 
         } catch (IllegalArgumentException e) {
-            return new Result(false, "Invalid minigame name! Available: VASE_BREAKER, BOWLING, I_ZOMBIE");
+            return new Result(false, "Invalid minigame name! Available: vasebreaker, bowling, izombie, beghouled, zombotany");
+        } catch (NullPointerException e) {
+            return new Result(false, "Invalid minigame name!");
         } catch (Exception e) {
             return new Result(false, "Something bad happened. Please try again.");
         }

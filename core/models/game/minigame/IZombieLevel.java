@@ -34,7 +34,6 @@ public class IZombieLevel extends Level implements IMinigame {
 
     @Override
     public void onLevelStart(GameSession session) {
-        notify("iZombie Level " + levelNumber + " Started!");
 
         session.getArena().removeLawnMowers();
 
