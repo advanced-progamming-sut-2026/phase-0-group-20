@@ -1,5 +1,6 @@
 package models.quest.conditions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
 import models.entities.plants.Plant;
@@ -116,5 +117,10 @@ public class KillZombieCondition extends QuestCondition {
 
         int rand = random.nextInt(randomPlants.size());
         return randomPlants.get(rand);
+    }
+
+    @JsonIgnore
+    public SeasonType getSeasonType() {
+        return seasonType;
     }
 }

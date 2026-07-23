@@ -106,7 +106,9 @@ public class QuestFactory {
         Reward reward = null;
         switch (title) {
             case "Chapter Hunter" -> {
-                condition = new KillZombieCondition(50, "Random_Chapter");
+                KillZombieCondition hunterCondition = new KillZombieCondition(50, "Random_Chapter");
+                condition = hunterCondition;
+                conditionStr = conditionStr.replace("a chapter", hunterCondition.getSeasonType().getName());
                 reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64) + 1), 10);
             }
             case "Pro Plant Player" -> {
@@ -123,13 +125,13 @@ public class QuestFactory {
             }
             case "Family Massacre" -> {
                 PlantCategory plantCat = PlantCategory.getRandomPlantCategory();
-                conditionStr = conditionStr.replace("family_type", plantCat.name());
+                conditionStr = conditionStr.replace("family_type", plantCat.getName());
                 condition = new WinWithThatCategoryCondition(plantCat, true);
                 reward = new CurrencyReward(false, 1000);
             }
             case "Flourish in Limits" -> {
                 PlantCategory plantCat = PlantCategory.getRandomPlantCategory();
-                conditionStr = conditionStr.replace("family_type", plantCat.name());
+                conditionStr = conditionStr.replace("family_type", plantCat.getName());
                 condition = new WinWithThatCategoryCondition(plantCat, false);
                 reward = new CurrencyReward(true, 100);
             }

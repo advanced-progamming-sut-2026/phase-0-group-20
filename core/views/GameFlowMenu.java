@@ -1,6 +1,7 @@
 package views;
 
 import controllers.GameController.GameFlowController;
+import controllers.GameController.GameMapController;
 import controllers.GameController.MiniGameController;
 import models.enums.commands.GameFlowCommands;
 import models.enums.commands.MiniGameCommands;
@@ -13,7 +14,7 @@ import java.util.regex.Matcher;
 public class GameFlowMenu implements AppMenu {
     private final GameFlowController gameFlowcontroller = new GameFlowController();
     private final MiniGameController miniGameController = new MiniGameController();
-
+    private final GameMapController  gameMapController = new GameMapController();
 
     @Override
     public void check(Scanner scanner) {
@@ -42,7 +43,7 @@ public class GameFlowMenu implements AppMenu {
         } else if ((matcher = GameFlowCommands.COLLECT_SUN.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.collectSun(matcher.group("x"), matcher.group("y")));
         } else if (GameFlowCommands.SHOW_STATE.getMatcher(input) != null) {
-            System.out.println(gameFlowcontroller.showCurrentState());
+            System.out.println(gameMapController.showCurrentState());
         } else if ((matcher = GameFlowCommands.SHOW_SUN_AMOUNT.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.showSunAmount());
         } else if ((matcher = GameFlowCommands.CHEAT_ADD_SUN.getMatcher(input)) != null) {
@@ -61,21 +62,23 @@ public class GameFlowMenu implements AppMenu {
         } else if ((matcher = GameFlowCommands.CHEAT_ADD_PLANT_FOOD.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.cheatAddPlantFood());
         } else if ((matcher = GameFlowCommands.ZOMBIE_INFO.getMatcher(input)) != null) {
-            System.out.println(gameFlowcontroller.showZombieInfo());
+            System.out.println(gameMapController.showZombieInfo());
         } else if ((matcher = GameFlowCommands.SHOW_MAP.getMatcher(input)) != null) {
             GameSession session = GameSession.getInstance();
             if (session.getCurrentMode() instanceof IZombieLevel) {
                 System.out.println(miniGameController.showMap());
             } else {
-                System.out.println(gameFlowcontroller.showMap());
+                System.out.println(gameMapController.showMap());
             }
         } else if ((matcher = GameFlowCommands.SHOW_PLANTS_STATUS.getMatcher(input)) != null) {
-            System.out.println(gameFlowcontroller.showPlantsStatus());
+            System.out.println(gameMapController.showPlantsStatus());
         } else if ((matcher = GameFlowCommands.SHOW_TILE_STATUS.getMatcher(input)) != null) {
-            System.out.println(gameFlowcontroller.showTileStatus(matcher.group("x"), matcher.group("y")));
+            System.out.println(gameMapController.showTileStatus(matcher.group("x"), matcher.group("y")));
         } else if (GameFlowCommands.PRINT_MAP.getMatcher(input) != null) {
-            System.out.println(gameFlowcontroller.printMap());
-        } else {
+            System.out.println(gameMapController.printMap());
+        }else if(GameFlowCommands.SHOW_PLANT_FOOD_AMOUNT.getMatcher(input) != null){
+            System.out.println(gameFlowcontroller.showPlantFoodAmount());
+        }else {
             return false;
         }
 
