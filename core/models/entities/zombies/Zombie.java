@@ -58,7 +58,9 @@ public class Zombie implements Ticker {
 
     private final Position position;
 
-    public Zombie(ZombieType type, ZombieData data, int row, MoveBehavior moveBehavior, AttackBehavior attackBehavior, DefenseBehavior defenseBehavior) {
+    public Zombie(
+            ZombieType type, ZombieData data, int row,
+            MoveBehavior moveBehavior, AttackBehavior attackBehavior, DefenseBehavior defenseBehavior) {
         this.type = type;
         this.name = type.getJsonAlias();
         this.baseHp = data.getHitpoints();
@@ -126,7 +128,8 @@ public class Zombie implements Ticker {
 
         for (Armor a : armorPieces) {
             if (!a.isDestroyed()) {
-                notify(type.toString() + "'s armor(" + a.getData().getAlias() + ") take " + remaining + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
+                notify(type.toString() + "'s armor(" + a.getData().getAlias() + ") take " + remaining +
+                        " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
                 remaining = a.takeDamage(remaining);
                 if (remaining <= 0) {
                     return;
@@ -153,7 +156,8 @@ public class Zombie implements Ticker {
 
     private void applyHealthDamage(int remaining) {
         this.health -= remaining;
-        notify(type.toString() + " take " + remaining + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
+        notify(type.toString() + " take " + remaining + " in "
+                + (position.getCol() + 1) + " " + (position.getRow() + 1));
         if (health <= 0) {
             health = 0;
             dead = true;

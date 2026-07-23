@@ -15,8 +15,8 @@ public class VaseBreakerLevel extends Level implements IMinigame {
 
     private final Random random = new Random();
 
-    private final int ZOMBIE_CHANCE = 30; // badan mitonim arzyabi konim taghir bedim
-    private final int PLANT_CHANCE = 30;
+    private static final int ZOMBIE_CHANCE = 30; // badan mitonim arzyabi konim taghir bedim
+    private static final int PLANT_CHANCE = 30;
 
     public VaseBreakerLevel(String name, SeasonType seasonType, int waveCount, int levelNumber) {
         super(name, seasonType, waveCount, -1, levelNumber);

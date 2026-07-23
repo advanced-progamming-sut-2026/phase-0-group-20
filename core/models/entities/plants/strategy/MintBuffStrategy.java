@@ -32,7 +32,8 @@ public class MintBuffStrategy implements IPlantStrategy {
 
             if (resetCooldowns && familyCategory != null) {
                 GameSession.getInstance().resetCooldownsForCategory(familyCategory);
-                notify("⏳ " + context.getName() + " instantly refreshed all " + familyCategory.name() + " seed packets!");
+                notify("⏳ " + context.getName() +
+                        " instantly refreshed all " + familyCategory.name() + " seed packets!");
             }
             isActivated = true;
             notify("🌿 " + context.getName() + " activated its family buff and reset cooldowns!");

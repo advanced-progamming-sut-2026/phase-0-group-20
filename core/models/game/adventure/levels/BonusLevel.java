@@ -20,7 +20,8 @@ public class BonusLevel extends Level implements GameEventListener {
     private boolean isDailyChallenge;
     private ScoreManager scoreManager;
 
-    public BonusLevel(String name, SeasonType season, int waveCount, int baseWaveBudget, int levelNumber, boolean isDailyChallenge) {
+    public BonusLevel(String name, SeasonType season,
+                      int waveCount, int baseWaveBudget, int levelNumber, boolean isDailyChallenge) {
 
         super(name, season, waveCount, baseWaveBudget, levelNumber);
         this.isDailyChallenge = isDailyChallenge;

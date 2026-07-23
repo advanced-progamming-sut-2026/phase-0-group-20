@@ -5,7 +5,7 @@ import models.timeManager.TimeManager;
 
 public class FreezeEffect extends Effect {
 
-    private final static int damageIce = 2;
+    private final static int DAMAGE_ICE = 2;
 
     public FreezeEffect(Zombie zombie, int durationTicks) {
         super(zombie, durationTicks);
@@ -21,7 +21,7 @@ public class FreezeEffect extends Effect {
         super.execute();
 
         if (currentTick % TimeManager.TICKS_PER_SECOND == 0) {
-            zombie.takeDamage(damageIce);
+            zombie.takeDamage(DAMAGE_ICE);
         }
     }
 

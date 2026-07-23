@@ -22,7 +22,8 @@ public class DailyResetListener implements GameEventListener {
 
                 user.setHasPlayedDailyChallengeToday(false);
                 user.setPurchasedDailyDealToday(false);
-                System.out.println("Global Listener: " + daysPassed + " days passed. All daily systems have been reset!");
+                System.out.println("Global Listener: " + daysPassed + " days passed." +
+                        " All daily systems have been reset!");
             }
         }
     }

@@ -9,6 +9,7 @@ import models.quest.reward.CurrencyReward;
 import models.quest.reward.Reward;
 import models.quest.reward.SeedPackReward;
 import models.quest.reward.UnlockableReward;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class QuestFactory {
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     public static Quest buildQuest(JsonObject jsonObject) {
         String title = extractString(jsonObject, "Title");
@@ -25,11 +26,35 @@ public class QuestFactory {
         String rewardStr = extractString(jsonObject, "Reward");
         String priorityStr = extractString(jsonObject, "Priority");
         String variableStr = extractString(jsonObject, "Variables");
-        boolean onMission = jsonObject.has("onMission") && !jsonObject.get("onMission").isJsonNull() && jsonObject.get("onMission").getAsBoolean();
+        boolean onMission = jsonObject.has("onMission") &&
+                !jsonObject.get("onMission").isJsonNull() &&
+                jsonObject.get("onMission").getAsBoolean();
 
         QuestCategory category = parseCategory(categoryStr);
         QuestPriority priority = parsePriority(priorityStr);
 
+        Quest quest;
+
+        if ((quest = buildEconomyQuest(title, category, priority, onMission, conditionStr, rewardStr, variableStr))
+                != null) {
+            return quest;
+        } else if ((quest = buildCombatQuest(title, category, priority, onMission, conditionStr, rewardStr))
+                != null) {
+            return quest;
+        } else if ((quest = buildPositioningQuest(title, category, priority, onMission, conditionStr, rewardStr))
+                != null) {
+            return quest;
+        }
+
+        quest = new Quest(title, category, priority, onMission, conditionStr);
+        quest.setCondition(new SunCollectCondition(100));
+        quest.setReward(new CurrencyReward(false, 50));
+        return quest;
+    }
+
+    private static Quest buildEconomyQuest(String title, QuestCategory category,
+                                           QuestPriority priority, boolean onMission,
+                                           String conditionStr, String rewardStr, String variableStr) {
         QuestCondition condition = null;
         Reward reward = null;
 
@@ -40,18 +65,6 @@ public class QuestFactory {
                 rewardStr = rewardStr.replace("sun_amount / 100", String.valueOf(targetSun / 100));
                 condition = new SunCollectCondition(targetSun);
                 reward = new CurrencyReward(false, targetSun / 100);
-            }
-            case "Chapter Hunter" -> {
-                condition = new KillZombieCondition(50, "Random_Chapter");
-                reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64) + 1), 10);
-            }
-            case "Pro Plant Player" -> {
-                condition = new KillZombieCondition(10, "Shooter");
-                reward = new UnlockableReward(PlantFactory.create(new Random().nextInt(64) + 1));
-            }
-            case "Only Cactus" -> {
-                condition = new KillZombieCondition(10, "Cactus");
-                reward = new CurrencyReward(true, 20);
             }
             case "Economical Herbivore" -> {
                 int n = pickRandomFromDashSeparated(variableStr, 2);
@@ -68,13 +81,45 @@ public class QuestFactory {
                 condition = new TimeLimitCondition(30, 10);
                 reward = new CurrencyReward(false, 500);
             }
+            case "Cloudy Day" -> {
+                condition = new MaxPlantUsedCondition(PlantCategory.SUN_PRODUCER, 3);
+                reward = new CurrencyReward(true, 10);
+            }
+            case "Lawnmower Time" -> {
+                int n = pickRandomFromDashSeparated(variableStr, 10);
+                conditionStr = conditionStr.replace(" n ", " " + String.valueOf(n) + " ");
+                rewardStr = rewardStr.replace("n", String.valueOf(n) + " ");
+                condition = new LawnMoverKillsCondition(n);
+                reward = new CurrencyReward(true, n);
+            }
+            default -> {
+                return null;
+            }
+        }
+
+        return getQuest(title, category, priority, onMission, conditionStr, condition, reward);
+    }
+
+    private static Quest buildCombatQuest(String title, QuestCategory category, QuestPriority priority,
+                                          boolean onMission, String conditionStr, String rewardStr) {
+        QuestCondition condition = null;
+        Reward reward = null;
+        switch (title) {
+            case "Chapter Hunter" -> {
+                condition = new KillZombieCondition(50, "Random_Chapter");
+                reward = new SeedPackReward(PlantFactory.create(new Random().nextInt(64) + 1), 10);
+            }
+            case "Pro Plant Player" -> {
+                condition = new KillZombieCondition(10, "Shooter");
+                reward = new UnlockableReward(PlantFactory.create(new Random().nextInt(64) + 1));
+            }
+            case "Only Cactus" -> {
+                condition = new KillZombieCondition(10, "Cactus");
+                reward = new CurrencyReward(true, 20);
+            }
             case "Pro Demolition" -> {
                 condition = new PlantCategoryUseCondition("explosive", 3);
                 reward = new CurrencyReward(false, 100);
-            }
-            case "Symmetry" -> {
-                condition = new SymmetryLogicCondition(true);
-                reward = new CurrencyReward(false, 500);
             }
             case "Family Massacre" -> {
                 PlantCategory plantCat = PlantCategory.getRandomPlantCategory();
@@ -100,49 +145,61 @@ public class QuestFactory {
                 condition = new KillWithNoLawnmowerCondition(10, 0);
                 reward = new CurrencyReward(false, 300);
             }
+            default -> {
+                return null;
+            }
+        }
+        return getQuest(title, category, priority, onMission, conditionStr, condition, reward);
+    }
+
+    private static Quest buildPositioningQuest(String title, QuestCategory category,
+                                               QuestPriority priority, boolean onMission,
+                                               String conditionStr, String rewardStr) {
+        QuestCondition condition = null;
+        Reward reward = null;
+
+        switch (title) {
+            case "Symmetry" -> {
+                condition = new SymmetryLogicCondition(true);
+                reward = new CurrencyReward(false, 500);
+            }
             case "What OCD?" -> {
                 condition = new SymmetryLogicCondition(false);
                 reward = new CurrencyReward(false, 800);
             }
-            case "Cloudy Day" -> {
-                condition = new MaxPlantUsedCondition(PlantCategory.SUN_PRODUCER, 3);
-                reward = new CurrencyReward(true, 10);
-            }
             case "One Column Less" -> {
-                int colIndex = random.nextInt(9);
+                int colIndex = RANDOM.nextInt(9);
                 conditionStr = conditionStr.replace("nth", String.valueOf(colIndex + 1));
                 condition = new EmptyLineCondition(-1, colIndex);
                 reward = new CurrencyReward(true, 10);
             }
             case "Defenseless Row" -> {
-                int rowIndex = random.nextInt(5);
+                int rowIndex = RANDOM.nextInt(5);
                 conditionStr = conditionStr.replace("nth", String.valueOf(rowIndex + 1));
                 condition = new EmptyLineCondition(rowIndex, -1);
                 reward = new CurrencyReward(true, 20);
             }
             case "Defenseless Cross" -> {
-                int crossIndex = random.nextInt(5);
+                int crossIndex = RANDOM.nextInt(5);
                 conditionStr = conditionStr.replace("nth", String.valueOf(crossIndex + 1));
                 condition = new EmptyLineCondition(crossIndex, crossIndex);
                 reward = new CurrencyReward(true, 25);
             }
-            case "Lawnmower Time" -> {
-                int n = pickRandomFromDashSeparated(variableStr, 10);
-                conditionStr = conditionStr.replace(" n ", " " + String.valueOf(n) + " ");
-                rewardStr = rewardStr.replace("n", String.valueOf(n) + " ");
-                condition = new LawnMoverKillsCondition(n);
-                reward = new CurrencyReward(true, n);
-            }
             default -> {
-                condition = new SunCollectCondition(100);
-                reward = new CurrencyReward(false, 50);
+                return null;
             }
         }
 
+        return getQuest(title, category, priority, onMission, conditionStr, condition, reward);
+    }
+
+    private static @NonNull Quest getQuest(String title, QuestCategory category,
+                                           QuestPriority priority, boolean onMission,
+                                           String conditionStr, QuestCondition condition,
+                                           Reward reward) {
         Quest quest = new Quest(title, category, priority, onMission, conditionStr);
         quest.setCondition(condition);
         quest.setReward(reward);
-
         return quest;
     }
 
@@ -157,7 +214,7 @@ public class QuestFactory {
 
         try {
             String[] parts = text.split("-");
-            int randomIndex = random.nextInt(parts.length);
+            int randomIndex = RANDOM.nextInt(parts.length);
 
             Matcher matcher = Pattern.compile("\\d+").matcher(parts[randomIndex]);
             if (matcher.find()) {

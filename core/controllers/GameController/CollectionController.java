@@ -123,7 +123,8 @@ public class CollectionController {
         activeUser.costCoin(cost);
         seeds.computeIfPresent("Sunflower", (k, v) -> Math.max(0, v - seedPacketCost));
 
-        return new Result(true, "You successfully upgraded " + foundPlant.getName() + " to level " + foundPlant.getLevel() + ".");
+        return new Result(true, "You successfully upgraded " + foundPlant.getName() +
+                " to level " + foundPlant.getLevel() + ".");
     }
 
     public Result purchasePlant(String name) {

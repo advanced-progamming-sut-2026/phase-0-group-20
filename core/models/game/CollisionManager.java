@@ -93,7 +93,6 @@ public class CollisionManager {
 
     private void checkProjectileForZombieCollision(Projectile projectile) {
         boolean hitObstacle = false;
-
         for (PushableObstacle obstacle : arena.getActiveObstacles()) {
             if (!obstacle.isDestroyed() && obstacle.getRow() == projectile.getPosition().getRow()) {
 
@@ -199,33 +198,7 @@ public class CollisionManager {
         Tile targetTile = arena.getTile(row, targetCol);
 
         if (targetTile != null) {
-            List<Plant> plantToEat = targetTile.getPlants();
-            Plant eatingPlant = null;
-            if (!plantToEat.isEmpty()) {
-                eatingPlant = plantToEat.get(plantToEat.size() - 1);
-            }
-
-            List<Zombie> zombiesToEat = arena.getZombiesOnTile(targetTile);
-            Zombie targetZombie = null;
-
-            for (Zombie zombie : zombiesToEat) {
-                if (zombie.isHypnotized()) {
-                    targetZombie = zombie;
-                    break;
-                }
-            }
-
-            if (eatingPlant != null) {
-                if (!z.isAttacking()) {
-                    z.setAttacking(true);
-                }
-            } else if (targetZombie != null) {
-                if (!z.isAttacking()) {
-                    z.setAttacking(true);
-                }
-            } else if (z.isAttacking()) {
-                z.setAttacking(false);
-            }
+            handleZombieEat(z, targetTile);
         } else if (targetCol < 0) {
             LawnMower lawnMower = arena.getLawnMowers()[row];
 
@@ -244,6 +217,36 @@ public class CollisionManager {
                     if (z.getX() < -PhysicalConstants.TILE_UNIT_LENGTH) session.setZombieBreached(true);
                 }
             }
+        }
+    }
+
+    private void handleZombieEat(Zombie z, Tile targetTile) {
+        List<Plant> plantToEat = targetTile.getPlants();
+        Plant eatingPlant = null;
+        if (!plantToEat.isEmpty()) {
+            eatingPlant = plantToEat.get(plantToEat.size() - 1);
+        }
+
+        List<Zombie> zombiesToEat = arena.getZombiesOnTile(targetTile);
+        Zombie targetZombie = null;
+
+        for (Zombie zombie : zombiesToEat) {
+            if (zombie.isHypnotized()) {
+                targetZombie = zombie;
+                break;
+            }
+        }
+
+        if (eatingPlant != null) {
+            if (!z.isAttacking()) {
+                z.setAttacking(true);
+            }
+        } else if (targetZombie != null) {
+            if (!z.isAttacking()) {
+                z.setAttacking(true);
+            }
+        } else if (z.isAttacking()) {
+            z.setAttacking(false);
         }
     }
 

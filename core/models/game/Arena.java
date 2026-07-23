@@ -19,8 +19,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class Arena {
-    private final int ROWS = 5;
-    private final int COLS = 9;
+    private static final int ROWS = 5;
+    private static final int COLS = 9;
     private final List<Plant> activePlants;// these are the plants that are already in the arena.(placed and not dead)
     private final List<Zombie> activeZombies;//these are the zombies that are already in the arena and moving/attacking.
     private final List<Projectile> activeProjectiles = new ArrayList<>();

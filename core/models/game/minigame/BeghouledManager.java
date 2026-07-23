@@ -1,7 +1,9 @@
 package models.game.minigame;
 
+import models.App;
 import models.Position;
 import models.entities.plants.Plant;
+import models.entities.plants.PlantFactory;
 import models.fields.tiles.Tile;
 import models.game.GameSession;
 import models.game.events.GameEvent;
@@ -57,73 +59,84 @@ public class BeghouledManager {
     }
 
     private void applyGravity(GameSession session) {
+        boolean movedAny = dropPlantsAndFill(session);
+
+        if (movedAny) {
+            handleCascades(session);
+        }
+    }
+
+    private boolean dropPlantsAndFill(GameSession session) {
         int rows = session.getArena().getRows();
         int cols = session.getArena().getCols();
-        Random random = new Random();
-
-        String[] basePlants = {"peashooter", "sunflower", "wall-nut", "snow pea", "cabbage-pult"};
         boolean movedAny = false;
 
         for (int c = 0; c < cols; c++) {
             for (int r = rows - 1; r >= 0; r--) {
                 Tile targetTile = session.getArena().getTile(r, c);
-
                 if (targetTile.isCrater()) continue;
 
                 if (targetTile.getPlants().isEmpty()) {
-                    boolean foundAbove = false;
-
-                    for (int k = r - 1; k >= 0; k--) {
-                        Tile upperTile = session.getArena().getTile(k, c);
-                        if (!upperTile.isCrater() && !upperTile.getPlants().isEmpty()) {
-                            Plant fallingPlant = upperTile.getPlants().get(0);
-
-                            upperTile.getPlants().clear();
-                            targetTile.addPlant(fallingPlant);
-
-                            fallingPlant.setPosition(new Position(targetTile.getCol(), targetTile.getRow()));
-
-                            foundAbove = true;
-                            movedAny = true;
-                            break;
-                        }
-                    }
-
-                    if (!foundAbove) {
-                        String randomPlantName = basePlants[random.nextInt(basePlants.length)];
-                        Plant template = models.App.findPlantByName(randomPlantName);
-                        if (template != null) {
-                            Plant newPlant = models.entities.plants.PlantFactory.create(template.getId());
-                            targetTile.addPlant(newPlant);
-                            session.getArena().addPlant(newPlant);
-                            session.getTimeManager().registerNewTicker(newPlant);
-
-                            movedAny = true;
-                        }
+                    if (pullPlantFromAbove(session, r, c, targetTile)) {
+                        movedAny = true;
+                    } else if (spawnRandomPlant(session, targetTile)) {
+                        movedAny = true;
                     }
                 }
             }
         }
+        return movedAny;
+    }
 
+    private boolean pullPlantFromAbove(GameSession session, int r, int c, Tile targetTile) {
+        for (int k = r - 1; k >= 0; k--) {
+            Tile upperTile = session.getArena().getTile(k, c);
 
-        if (movedAny) {
-            int cascadeScore = checkForMatchesAndRemove(session, true);
+            if (!upperTile.isCrater() && !upperTile.getPlants().isEmpty()) {
+                Plant fallingPlant = upperTile.getPlants().get(0);
 
-            if (cascadeScore > 0) {
+                upperTile.getPlants().clear();
+                targetTile.addPlant(fallingPlant);
+                fallingPlant.setPosition(new Position(targetTile.getCol(), targetTile.getRow()));
 
-                ((BeghouledLevel) session.getCurrentMode()).addSuccessfulMatch();
-
-                int sunGained = 50 + (cascadeScore > 3 ? (cascadeScore - 3) * 50 : 0);
-
-                sunGained += 50;
-
-                session.addSun(sunGained);
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                        new GameEventPayload.Builder(GameEvent.NOTIFY)
-                                .message("Cascade Match! You gained bonus " + sunGained + " suns.")
-                                .build());
-                applyGravity(session);
+                return true;
             }
+        }
+        return false;
+    }
+
+    private boolean spawnRandomPlant(GameSession session, Tile targetTile) {
+        String[] basePlants = {"peashooter", "sunflower", "wall-nut", "snow pea", "cabbage-pult"};
+        Random random = new Random();
+        String randomPlantName = basePlants[random.nextInt(basePlants.length)];
+        Plant template = App.findPlantByName(randomPlantName);
+
+        if (template != null) {
+            Plant newPlant = PlantFactory.create(template.getId());
+            targetTile.addPlant(newPlant);
+            session.getArena().addPlant(newPlant);
+            session.getTimeManager().registerNewTicker(newPlant);
+            return true;
+        }
+        return false;
+    }
+
+    private void handleCascades(GameSession session) {
+        int cascadeScore = checkForMatchesAndRemove(session, true);
+
+        if (cascadeScore > 0) {
+            ((BeghouledLevel) session.getCurrentMode()).addSuccessfulMatch();
+
+            int sunGained = 50 + (cascadeScore > 3 ? (cascadeScore - 3) * 50 : 0);
+            sunGained += 50;
+            session.addSun(sunGained);
+
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                            .message("Cascade Match! You gained bonus " + sunGained + " suns.")
+                            .build());
+
+            applyGravity(session);
         }
     }
 
@@ -131,9 +144,15 @@ public class BeghouledManager {
         int rows = session.getArena().getRows();
         int cols = session.getArena().getCols();
         boolean[][] matched = new boolean[rows][cols];
-        int matchCount = 0;
 
-        for (int r = 0; r < rows; r++) { // Horizontal
+        flagHorizontalMatches(session, matched, rows, cols);
+        flagVerticalMatches(session, matched, rows, cols);
+
+        return removeMatchedPlants(session, matched, rows, cols);
+    }
+
+    private void flagHorizontalMatches(GameSession session, boolean[][] matched, int rows, int cols) {
+        for (int r = 0; r < rows; r++) {
             for (int c = 0; c <= cols - 3; c++) {
                 Plant p1 = getPlantAt(session, r, c);
                 Plant p2 = getPlantAt(session, r, c + 1);
@@ -148,8 +167,10 @@ public class BeghouledManager {
                 }
             }
         }
+    }
 
-        for (int c = 0; c < cols; c++) { // Vertical
+    private void flagVerticalMatches(GameSession session, boolean[][] matched, int rows, int cols) {
+        for (int c = 0; c < cols; c++) {
             for (int r = 0; r <= rows - 3; r++) {
                 Plant p1 = getPlantAt(session, r, c);
                 Plant p2 = getPlantAt(session, r + 1, c);
@@ -164,7 +185,10 @@ public class BeghouledManager {
                 }
             }
         }
+    }
 
+    private int removeMatchedPlants(GameSession session, boolean[][] matched, int rows, int cols) {
+        int matchCount = 0;
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
@@ -172,12 +196,12 @@ public class BeghouledManager {
                     matchCount++;
                     Tile tile = session.getArena().getTile(r, c);
                     Plant p = tile.getPlants().get(0);
+
                     session.getTimeManager().unregisterTicker(p);
                     tile.getPlants().clear();
                 }
             }
         }
-
         return matchCount;
     }
 

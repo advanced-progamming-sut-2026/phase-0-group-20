@@ -7,7 +7,9 @@ import models.enums.Menu;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class NavigationControllerUnitTest {
 
@@ -16,9 +18,8 @@ public class NavigationControllerUnitTest {
         App.setActiveMenu(Menu.MAIN_MENU);
     }
 
-
     @Test
-    public void testEnterMenu_validTarget_caseInsensitive_returnsSuccess() {
+    public void testEnterMenuValidTargetCaseInsensitiveReturnsSuccess() {
         Result result = NavigationController.enterMenu("GAME");
         assertTrue(result.isSuccessful());
         assertEquals("entered game menu", result.message());
@@ -26,7 +27,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testEnterMenu_nonExistentMenu_returnsFailure() {
+    public void testEnterMenuNonExistentMenuReturnsFailure() {
         Result result = NavigationController.enterMenu("nonexistent menu");
         assertFalse(result.isSuccessful());
         assertEquals("no such menu exists", result.message());
@@ -34,7 +35,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testEnterMenu_notAllowedFromCurrentMenu_returnsFailure() {
+    public void testEnterMenuNotAllowedFromCurrentMenuReturnsFailure() {
         Result result = NavigationController.enterMenu("collection menu");
         assertFalse(result.isSuccessful());
         assertEquals("you cannot enter this menu from here", result.message());
@@ -42,7 +43,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testExitMenu_fromLoginMenu_goesToSignupMenu() {
+    public void testExitMenuFromLoginMenuGoesToSignupMenu() {
         App.setActiveMenu(Menu.LOGIN_MENU);
         Result result = NavigationController.exitMenu();
         assertTrue(result.isSuccessful());
@@ -51,7 +52,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testEnterMenu_fromSignupMenu_toLoginMenu_returnsSuccess() {
+    public void testEnterMenuFromSignupMenuToLoginMenuReturnsSuccess() {
         App.setActiveMenu(Menu.SIGNUP_MENU);
         Result result = NavigationController.enterMenu("login menu");
         assertTrue(result.isSuccessful());
@@ -59,7 +60,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testEnterMenu_fromGameMenu_toCollectionMenu_returnsSuccess() {
+    public void testEnterMenuFromGameMenuToCollectionMenuReturnsSuccess() {
         App.setActiveMenu(Menu.GAME_MENU);
         Result result = NavigationController.enterMenu("collection menu");
         assertTrue(result.isSuccessful());
@@ -67,7 +68,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testEnterMenu_fromProfileMenu_toPlantSelectionMenu_returnsSuccess() {
+    public void testEnterMenuFromProfileMenuToPlantSelectionMenuReturnsSuccess() {
         App.setActiveMenu(Menu.PROFILE_MENU);
         Result result = NavigationController.enterMenu("plant selection menu");
         assertTrue(result.isSuccessful());
@@ -75,7 +76,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testExitMenu_fromMainMenu_returnsFailure() {
+    public void testExitMenuFromMainMenuReturnsFailure() {
         Result result = NavigationController.exitMenu();
         assertFalse(result.isSuccessful());
         assertEquals("use the logout command to exit the main menu", result.message());
@@ -83,7 +84,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testExitMenu_fromSettingsMenu_goesToMainMenu() {
+    public void testExitMenuFromSettingsMenuGoesToMainMenu() {
         App.setActiveMenu(Menu.SETTINGS_MENU);
         Result result = NavigationController.exitMenu();
         assertTrue(result.isSuccessful());
@@ -92,7 +93,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testExitMenu_fromPlantSelectionMenu_goesToGameMenu() {
+    public void testExitMenuFromPlantSelectionMenuGoesToGameMenu() {
         App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
         Result result = NavigationController.exitMenu();
         assertTrue(result.isSuccessful());
@@ -101,7 +102,7 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testShowCurrentMenu_afterNavigation_returnsUpdatedMenu() {
+    public void testShowCurrentMenuAfterNavigationReturnsUpdatedMenu() {
         NavigationController.enterMenu("game menu");
         Result result = NavigationController.showCurrentMenu();
         assertTrue(result.isSuccessful());
@@ -109,10 +110,9 @@ public class NavigationControllerUnitTest {
     }
 
     @Test
-    public void testChainedNavigation_chainChangingMenu_caseInsensitive() { // two times changing
+    public void testChainedNavigationChainChangingMenuCaseInsensitive() {
         NavigationController.enterMenu("  game ");
         NavigationController.enterMenu(" collectiOn    ");
         assertEquals(Menu.COLLECTION_MENU, App.getActiveMenu());
     }
-
 }

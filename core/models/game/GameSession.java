@@ -72,7 +72,8 @@ public class GameSession {
         return instance;
     }
 
-    public static GameSession getInstance(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
+    public static GameSession getInstance(Chapter chapter, Arena arena,
+                                          List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         if (instance == null) {
             instance = new GameSession(chapter, arena, chosenPlants, chosenZombies);
         }
@@ -90,7 +91,8 @@ public class GameSession {
 
         Arena arena = new Arena();
         GameSession.destroyInstance();
-        GameSession session = GameSession.getInstance(adventure.getCurrentChapter(), arena, inGamePlants, inGameZombies);
+        GameSession session = GameSession.getInstance(adventure.getCurrentChapter(),
+                arena, inGamePlants, inGameZombies);
         arena.registerLawnMowers();
         App.setActiveSession(session);
         App.getActiveUser().addZombiesToUnlock(inGameZombies);
@@ -111,7 +113,8 @@ public class GameSession {
         if (bonusLevel.isDailyChallenge())
             inGameZombies = InGameEntityGenerator.getZombiesForDailyChallenge();
         else
-            inGameZombies = InGameEntityGenerator.getZombiesForLevel(bonusLevel.getSeason(), bonusLevel.getLevelNumber());
+            inGameZombies = InGameEntityGenerator
+                    .getZombiesForLevel(bonusLevel.getSeason(), bonusLevel.getLevelNumber());
 
         GameSession session = GameSession.getInstance(currentChapter, arena, inGamePlants, inGameZombies);
 
@@ -130,7 +133,9 @@ public class GameSession {
         if (instance != null) {
             if (instance.dropListener != null) {
                 GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED, instance.dropListener);
-                GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, instance.dropListener);
+                GameEventMessenger.getInstance().removeListener(
+                        GameEvent.ZOMBIE_KILLED_LAWN_MOWER,
+                        instance.dropListener);
             }
             if (instance.progressListener != null)
                 instance.progressListener.unregisterFromAllEvents();

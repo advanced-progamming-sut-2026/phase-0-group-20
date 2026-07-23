@@ -15,7 +15,7 @@ import java.io.File;
 
 public class CollectionControllerUnitTest {
 
-    private final String TEST_FILE_PATH = "core/test/resources/test_users_collection.json";
+    private static final String TEST_FILE_PATH = "core/test/resources/test_users_collection.json";
     private CollectionController controller;
     private User testUser;
 

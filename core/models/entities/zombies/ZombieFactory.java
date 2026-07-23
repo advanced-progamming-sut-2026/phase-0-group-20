@@ -124,7 +124,8 @@ public class ZombieFactory {
                 Plant nearestPlant = null;
                 int closestCol = -1;
                 for (Plant p : session.getArena().getActivePlants()) {
-                    if (p.getPlacedTile().getRow() == zombie.getRow() && p.getPlacedTile().getCol() <= zombie.getCol()) {
+                    if (p.getPlacedTile().getRow()
+                            == zombie.getRow() && p.getPlacedTile().getCol() <= zombie.getCol()) {
                         if (p.getPlacedTile().getCol() > closestCol) {
                             closestCol = p.getPlacedTile().getCol();
                             nearestPlant = p;
@@ -141,7 +142,8 @@ public class ZombieFactory {
                 Plant nearestPlant = null;
                 int closestCol = -1;
                 for (Plant p : session.getArena().getActivePlants()) {
-                    if (p.getPlacedTile().getRow() == zombie.getRow() && p.getPlacedTile().getCol() <= zombie.getCol()) {
+                    if (p.getPlacedTile().getRow()
+                            == zombie.getRow() && p.getPlacedTile().getCol() <= zombie.getCol()) {
                         if (p.getPlacedTile().getCol() > closestCol) {
                             closestCol = p.getPlacedTile().getCol();
                             nearestPlant = p;
@@ -253,11 +255,13 @@ public class ZombieFactory {
                     arcadeMachine.getPosition().setX(zombie.getX() - 40);
 
                     GameSession session = GameSession.getInstance();
-                    for (Plant p : session.getArena().getTile(arcadeMachine.getRow(), arcadeMachine.getCol()).getPlants()) {
+                    for (Plant p : session.getArena()
+                            .getTile(arcadeMachine.getRow(), arcadeMachine.getCol()).getPlants()) {
                         p.takeDamage(99999);
                     }
                     for (Zombie z : session.getArena().getActiveZombies()) {
-                        if (z.isHypnotized() && z.getRow() == arcadeMachine.getRow() && Math.abs(z.getX() - arcadeMachine.getX()) < 30) {
+                        if (z.isHypnotized() && z.getRow()
+                                == arcadeMachine.getRow() && Math.abs(z.getX() - arcadeMachine.getX()) < 30) {
                             z.takeDamage(99999);
                         }
                     }
@@ -282,7 +286,9 @@ public class ZombieFactory {
                         p.takeDamage(99999);
                     }
                     for (Zombie z : session.getArena().getActiveZombies()) {
-                        if (z.isHypnotized() && z.getRow() == iceBlock.getRow() && Math.abs(z.getX() - iceBlock.getX()) < 30) {
+                        if (z.isHypnotized() &&
+                                z.getRow() == iceBlock.getRow() &&
+                                Math.abs(z.getX() - iceBlock.getX()) < 30) {
                             z.takeDamage(99999);
                         }
                     }

@@ -17,8 +17,8 @@ public class LevelFactory {
         int baseWaveBudget = 1000 + (chapterLevelIndex * 200);
 
         return switch (chapterLevelIndex) {
-            case 0, 1 ->
-                    new NormalLevel("Level " + (chapterLevelIndex + 1), season, waveCount, baseWaveBudget, chapterLevelIndex + 1);
+            case 0, 1 -> new NormalLevel("Level " + (chapterLevelIndex + 1),
+                    season, waveCount, baseWaveBudget, chapterLevelIndex + 1);
             case 2 -> createSpecialLevel(season, (chapterLevelIndex + 1), waveCount, baseWaveBudget);
             case 3 -> new BossLevel("Boss Level" + season.toString().toLowerCase(), season,
                     waveCount + BOSS_WAVE_ADDITION, baseWaveBudget * BOSS_WAVE_ADDITION, (chapterLevelIndex + 1));
@@ -26,7 +26,8 @@ public class LevelFactory {
         };
     }
 
-    private static SpecialLevel createSpecialLevel(SeasonType season, int globalLevelNumber, int waveCount, int baseWaveBudget) {
+    private static SpecialLevel createSpecialLevel
+            (SeasonType season, int globalLevelNumber, int waveCount, int baseWaveBudget) {
         return switch (season) {
             case ANCIENT_EGYPT ->
                     new ConveyorBelt("Egypt Conveyor", season, waveCount, baseWaveBudget, globalLevelNumber);
@@ -37,8 +38,8 @@ public class LevelFactory {
             case BIG_WAVE_BEACH ->
                     new LovePlants("Beach Don't Lose Plants", season, waveCount, baseWaveBudget, globalLevelNumber);
 
-            default ->
-                    new LockedPlants("Dark Ages Locked", season, waveCount, baseWaveBudget, globalLevelNumber, new ArrayList<>(), new ArrayList<>());
+            default -> new LockedPlants("Dark Ages Locked", season, waveCount, baseWaveBudget, globalLevelNumber,
+                    new ArrayList<>(), new ArrayList<>());
         };
     }
 }
