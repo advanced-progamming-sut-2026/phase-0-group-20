@@ -33,17 +33,7 @@ public class ZombieDropListener implements GameEventListener {
         User user = App.getActiveUser();
         switch (type) {
             case POT -> {
-                GreenHouse userGreenHouse = user.getGreenHouse();
-                int cnt = 0;
-                for (Pot[] pots : userGreenHouse.getPots()) {
-                    for (Pot pot : pots) {
-                        cnt++;
-                        if (pot.getPotCondition() == PotCondition.LOCKED) {
-                            pot.setPotCondition(PotCondition.EMPTY);
-                            GameSession.notify("A zombie dropped a pot; you have " + cnt + " pots now.");
-                        }
-                    }
-                }
+                handlePotUnlock(user);
             }
             case DIAMOND -> {
                 user.earnDiamond(1);
@@ -54,7 +44,29 @@ public class ZombieDropListener implements GameEventListener {
                 GameSession.notify("A zombie dropped 50 coins; you have " + user.getCoin() + " coins now.");
             }
         }
+    }
 
+    private static void handlePotUnlock(User user) {
+        GreenHouse userGreenHouse = user.getGreenHouse();
+        boolean unlockedOne = false;
+        int totalUnlockedPots = 0;
+        int cnt = 0;
+        searchLoop:
+        for (Pot[] pots : userGreenHouse.getPots()) {
+            for (Pot pot : pots) {
+                if (pot != null) {
+                    if (pot.getPotCondition() != PotCondition.LOCKED) {
+                        totalUnlockedPots++;
+                    }
+                    if (!unlockedOne && pot.getPotCondition() == PotCondition.LOCKED) {
+                        pot.setPotCondition(PotCondition.EMPTY);
+                        totalUnlockedPots++;
+                        unlockedOne = true;
+                        break searchLoop;
+                    }
+                }
+            }
+        }
     }
 
     private ZombieDrop getDropType() {
