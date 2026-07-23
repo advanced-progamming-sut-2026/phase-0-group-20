@@ -97,7 +97,7 @@ public enum Menu {
                         yield TRAVELLOG_MENU;
                     }
                 }
-                yield LEVEL_SELECTION_MENU;
+                yield GAME_MENU;
             }
 
         };

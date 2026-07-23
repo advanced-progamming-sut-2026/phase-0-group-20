@@ -54,6 +54,8 @@ public class PlantSelectionController {
         Level currentLevel;
         if (GameSession.getPendingBonusLevel() != null) {
             currentLevel = GameSession.getPendingBonusLevel();
+        } else if (GameSession.getMinigameLevel() != null) {
+            currentLevel = GameSession.getMinigameLevel();
         } else {
             currentLevel = App.getActiveAdventure().getCurrentChapter().getCurrentLevel();
         }
@@ -135,6 +137,8 @@ public class PlantSelectionController {
         }
         if (GameSession.getPendingBonusLevel() != null) {
             GameSession.startScoringGame(GameSession.getPendingBonusLevel(), inGamePlants);
+        } else if (GameSession.getMinigameLevel() != null) {
+            GameSession.startMiniGame(GameSession.getMinigameLevel(), inGamePlants);
         } else {
 
             GameSession.startNewGame(inGamePlants);

@@ -11,7 +11,6 @@ import java.util.Random;
 public class EgyptModifier implements SeasonModifier {
 
     Wave currentWave;
-    private boolean isInitialized = false;
 
     @Override
     public void onCurrentLevelStart() {

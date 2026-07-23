@@ -39,7 +39,7 @@ public class Chapter {
             case FROZEN_CAVES -> "Frozen Caves";
             case BIG_WAVE_BEACH -> "Big Wave Beach";
             case DARK_AGES -> "Dark Ages";
-            case MINI_GAME -> "mini game";
+            case MINI_GAME -> "Mini Game";
         };
     }
 

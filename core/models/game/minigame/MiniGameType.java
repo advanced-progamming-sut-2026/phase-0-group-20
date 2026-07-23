@@ -1,9 +1,9 @@
 package models.game.minigame;
 
 public enum MiniGameType {
-    VASE_BREAKER("vase breaker"),
-    BOWLING("bowling"),
-    I_ZOMBIE("I zombie"),
+    VASE_BREAKER("VaseBreaker"),
+    BOWLING("Bowling"),
+    I_ZOMBIE("IZombie"),
     BEGHOULED("Beghouled"),
     ZOMBOTANY("Zombotany");
 

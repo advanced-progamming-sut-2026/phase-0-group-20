@@ -14,7 +14,6 @@ import models.game.minigame.BowlingLevel;
 import models.users.User;
 
 public class GameMenuController {
-    private static Chapter currentChapter = null;
 
     public Result enterChapter(String chapterStr) {
         Adventure activeAdventure = App.getActiveAdventure();
@@ -28,13 +27,13 @@ public class GameMenuController {
             return new Result(false, "This chapter is locked! Complete previous chapters first.");
         }
         App.setActiveMenu(Menu.LEVEL_SELECTION_MENU);
-        currentChapter = targetChapter;
+        GameSession.setPendingChapter(targetChapter);
         return new Result(true, "Enter Chapter " + targetChapter.getDisplayName());
     }
 
 
     public Result enterLevel(String levelStr) {
-        if (currentChapter == null)
+        if (GameSession.getPendingChapter() == null)
             return new Result(false, "Choose a Chapter first!");
 
         int levelNumber;
@@ -44,20 +43,20 @@ public class GameMenuController {
             return new Result(false, "Invalid level number!");
         }
 
-        if (levelNumber < 1 || levelNumber > currentChapter.getLevels().size()) {
+        if (levelNumber < 1 || levelNumber > GameSession.getPendingChapter().getLevels().size()) {
             return new Result(false, "Level " + levelNumber + " does not exist in this chapter.");
         }
 
         User activeUser = App.getActiveUser();
         int userHighChap = activeUser.getHighestUnlockedChapterIndex();
         int userHighLevel = activeUser.getHighestUnlockedLevelIndex();
-        int targetChapterIndex = App.getActiveAdventure().getChapters().indexOf(currentChapter);
+        int targetChapterIndex = App.getActiveAdventure().getChapters().indexOf(GameSession.getPendingChapter());
 
         if (targetChapterIndex == userHighChap && (levelNumber - 1) > userHighLevel)
             return new Result(false, "This level is locked! You need to beat the previous levels first.");
 
 
-        Level selectedLevel = currentChapter.getLevels().get(levelNumber - 1);
+        Level selectedLevel = GameSession.getPendingChapter().getLevels().get(levelNumber - 1);
 
         if (selectedLevel != null && !selectedLevel.skipsPlantSelection()) {
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
@@ -69,8 +68,9 @@ public class GameMenuController {
             }
             App.setActiveMenu(Menu.GAME_FLOW_MENU);
         }
+        GameSession.setPendingLevel(selectedLevel);
 
-        return new Result(true, "Entered Chapter " + currentChapter.getDisplayName() +
+        return new Result(true, "Entered Chapter " + GameSession.getPendingChapter().getDisplayName() +
                 " - Level: " + selectedLevel.getName() + "...");
     }
 
