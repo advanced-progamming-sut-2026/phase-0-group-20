@@ -5,6 +5,8 @@ import models.entities.plants.Plant;
 import models.game.GameMode;
 import models.game.GameSession;
 import models.game.adventure.Adventure;
+import models.game.adventure.Chapter;
+import models.game.adventure.levels.Level;
 import models.game.minigame.IMinigame;
 import models.game.minigame.MiniGameType;
 import models.users.User;
@@ -58,15 +60,18 @@ public class ProgressListener implements GameEventListener {
         if (currentMode instanceof IMinigame miniGame) {
             MiniGameType type = miniGame.getMiniGameType();
             int before = user.getUnlockedLevelInMinigame(type);
-            user.unlockNextLevelInMinigame(type);
+            int playedLevel = ((Level) currentMode).getLevelNumber();
+            user.unlockNextLevelInMinigame(type, playedLevel);
             if (user.getUnlockedLevelInMinigame(type) > before)
                 user.setLevelsCompleted(user.getLevelsCompleted() + 1);
 
         } else {
             Adventure adventure = App.getActiveAdventure();
-            if (adventure != null) {
-                int chapterIndex = adventure.getCurrentChapterIndex();
-                int levelIndex = adventure.getCurrentChapter().getCurrentLevelIndex();
+            if (adventure != null && currentMode instanceof Level playedLevel) {
+                Chapter playedChapter = GameSession.getInstance().getCurrentChapter();
+
+                int chapterIndex = adventure.getChapters().indexOf(playedChapter);
+                int levelIndex = playedLevel.getLevelNumber() - 1;
 
                 if (chapterIndex == user.getHighestUnlockedChapterIndex() &&
                         levelIndex == user.getHighestUnlockedLevelIndex()) {

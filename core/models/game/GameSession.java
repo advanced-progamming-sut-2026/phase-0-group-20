@@ -50,7 +50,7 @@ public class GameSession {
     private ProgressListener progressListener;
 
 
-    private GameSession(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
+    private GameSession(Chapter chapter, Level currentLevel, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         this.currentChapter = chapter;
         this.arena = arena;
         this.timeManager = new TimeManager();
@@ -70,7 +70,7 @@ public class GameSession {
         GameEventMessenger.getInstance().addListener(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, this.dropListener);
 
         this.progressListener = new ProgressListener();
-        currentMode = chapter.getCurrentLevel();
+        this.currentMode = currentLevel;
     }
 
     public static GameSession getInstance() {
@@ -80,10 +80,10 @@ public class GameSession {
         return instance;
     }
 
-    public static GameSession getInstance(Chapter chapter, Arena arena,
+    public static GameSession getInstance(Chapter chapter, Level currentLevel, Arena arena,
                                           List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         if (instance == null) {
-            instance = new GameSession(chapter, arena, chosenPlants, chosenZombies);
+            instance = new GameSession(chapter, currentLevel, arena, chosenPlants, chosenZombies);
         }
         return instance;
     }
@@ -99,7 +99,7 @@ public class GameSession {
 
         Arena arena = new Arena();
         GameSession.destroyInstance();
-        GameSession session = GameSession.getInstance(pendingChapter,
+        GameSession session = GameSession.getInstance(pendingChapter, currentLevel,
                 arena, inGamePlants, inGameZombies);
         arena.registerLawnMowers();
         App.setActiveSession(session);
@@ -118,9 +118,10 @@ public class GameSession {
 
         Chapter fakeChapter = new Chapter(SeasonType.MINI_GAME);
 
-        List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(SeasonType.MINI_GAME, minigameLevel.getLevelNumber());
+        List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(SeasonType.ANCIENT_EGYPT, minigameLevel.getLevelNumber());
 
-        GameSession session = GameSession.getInstance(fakeChapter, arena, inGamePlants, inGameZombies);
+        GameSession session = GameSession.getInstance(fakeChapter, minigameLevel,
+                arena, inGamePlants, inGameZombies);
 
         session.setCurrentMode(minigameLevel);
 
@@ -148,7 +149,8 @@ public class GameSession {
             inGameZombies = InGameEntityGenerator
                     .getZombiesForLevel(bonusLevel.getSeason(), bonusLevel.getLevelNumber());
 
-        GameSession session = GameSession.getInstance(currentChapter, arena, inGamePlants, inGameZombies);
+        GameSession session = GameSession.getInstance(currentChapter, bonusLevel,
+                arena, inGamePlants, inGameZombies);
 
         session.setCurrentMode(bonusLevel);
         bonusLevel.onStart(session);

@@ -48,6 +48,10 @@ public abstract class Level implements GameMode {
     }
 
     public void onStart(GameSession session) {
+        this.currentWave = 0;
+        this.allWavesSpawned = false;
+        this.currentActiveWave = null;
+        this.currentDifficulty = 0;
 
         if (seasonModifier != null)
             seasonModifier.onCurrentLevelStart();

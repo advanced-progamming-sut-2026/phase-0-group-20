@@ -14,6 +14,8 @@ import models.fields.tiles.*;
 import models.game.Arena;
 import models.game.GameMode;
 import models.game.GameSession;
+import models.game.adventure.Adventure;
+import models.game.adventure.Chapter;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
