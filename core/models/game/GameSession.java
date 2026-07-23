@@ -10,6 +10,7 @@ import models.enums.plants.PlantCategory;
 import models.fields.modifiers.SeasonModifier;
 import models.game.adventure.Adventure;
 import models.game.adventure.Chapter;
+import models.game.adventure.SeasonType;
 import models.game.adventure.levels.BonusLevel;
 import models.game.adventure.levels.Level;
 import models.game.events.*;
@@ -42,6 +43,10 @@ public class GameSession {
 
     // for mew points
     private static BonusLevel pendingBonusLevel = null;
+
+    // for minigame
+    private static Level minigameLevel = null;
+
 
     private GameSession(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         this.currentChapter = chapter;
@@ -81,6 +86,7 @@ public class GameSession {
     }
 
     public void instantiateCooldowns(List<Plant> chosenPlants) {
+        if (chosenPlants == null || chosenPlants.isEmpty()) return;
         for (Plant plant : chosenPlants) {
             plantsCooldown.put(plant, 0);
         }
@@ -119,14 +125,37 @@ public class GameSession {
         currentLevel.onStart(session);
     }
 
-    public static void startScoringGame(BonusLevel bonusLevel, java.util.List<Plant> inGamePlants) {
+    public static void startMiniGame(Level minigameLevel, List<Plant> inGamePlants) {
+        Arena arena = new Arena();
+        GameSession.destroyInstance();
+
+        Chapter fakeChapter = new Chapter(SeasonType.MINI_GAME);
+
+        List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(SeasonType.MINI_GAME, minigameLevel.getLevelNumber());
+        if (inGameZombies == null) inGameZombies = new ArrayList<>();
+
+        GameSession session = GameSession.getInstance(fakeChapter, arena, inGamePlants, inGameZombies);
+
+        session.setCurrentMode(minigameLevel);
+
+        arena.registerLawnMowers();
+        App.setActiveSession(session);
+
+        for (int r = 0; r < arena.getRows(); r++)
+            for (int c = 0; c < arena.getCols(); c++)
+                session.getTimeManager().registerNewTicker(arena.getTile(r, c));
+
+        minigameLevel.onStart(session);
+    }
+
+    public static void startScoringGame(BonusLevel bonusLevel, List<Plant> inGamePlants) {
         Arena arena = new Arena();
         GameSession.destroyInstance();
 
         Adventure adventure = App.getActiveAdventure();
         Chapter currentChapter = adventure.getCurrentChapter();
 
-        java.util.List<Zombie> inGameZombies;
+        List<Zombie> inGameZombies;
         if (bonusLevel.isDailyChallenge())
             inGameZombies = InGameEntityGenerator.getZombiesForDailyChallenge();
         else
@@ -358,5 +387,13 @@ public class GameSession {
 
     public void setCurrentMode(GameMode currentMode) {
         this.currentMode = currentMode;
+    }
+
+    public static Level getMinigameLevel() {
+        return minigameLevel;
+    }
+
+    public static void setMinigameLevel(Level minigameLevel) {
+        GameSession.minigameLevel = minigameLevel;
     }
 }
