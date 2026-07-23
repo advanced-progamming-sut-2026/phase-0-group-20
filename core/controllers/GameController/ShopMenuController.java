@@ -18,6 +18,19 @@ public class ShopMenuController {
         return new Result(true, shop.getDailyDeal(activeUser));
     }
 
+    public Result showPurchasablePlants() {
+        User activeUser = App.getActiveUser();
+        if (activeUser == null) return new Result(false, "No active user found!");
+        return new Result(true, shop.getPurchasablePlantsCatalog(activeUser));
+    }
+
+    public Result buyPlant(String plantName) {
+        User activeUser = App.getActiveUser();
+        if (activeUser == null) return new Result(false, "No active user found!");
+
+        return shop.buyPremiumPlant(activeUser, plantName);
+    }
+
     public Result buyItem(String itemName, int count, String targetPlant) {
         User activeUser = App.getActiveUser();
         if (activeUser == null) {

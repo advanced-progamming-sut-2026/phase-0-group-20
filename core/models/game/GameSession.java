@@ -6,7 +6,6 @@ import models.entities.PlantFood;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.enums.GameState;
-import models.enums.Menu;
 import models.enums.plants.PlantCategory;
 import models.fields.modifiers.SeasonModifier;
 import models.game.adventure.Adventure;
@@ -98,6 +97,7 @@ public class GameSession {
         for (int r = 0; r < arena.getRows(); r++)
             for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
+        currentLevel.onStart(session);
     }
 
     public static void startScoringGame(BonusLevel bonusLevel, java.util.List<Plant> inGamePlants) {
@@ -123,6 +123,7 @@ public class GameSession {
         for (int r = 0; r < arena.getRows(); r++)
             for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
+
     }
 
     public static void destroyInstance() {
@@ -187,7 +188,10 @@ public class GameSession {
             checkGameConditions();
             collisionManager.checkAllCollisions();
 
-            if (this.state == GameState.WON || this.state == GameState.LOST) break;
+            if (this.state == GameState.WON || this.state == GameState.LOST) {
+                isGameOver = true;
+                break;
+            }
         }
     }
 
@@ -247,7 +251,6 @@ public class GameSession {
                     .build();
             GameEventMessenger.getInstance().dispatch(GameEvent.LEVEL_COMPLETED, payload);
             notify("You survived! LEVEL COMPLETED.");
-            App.setActiveMenu(Menu.GAME_MENU);
         }
     }
 

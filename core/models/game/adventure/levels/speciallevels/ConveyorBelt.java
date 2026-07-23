@@ -37,7 +37,7 @@ public class ConveyorBelt extends SpecialLevel {
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
         unlockedPlants = new ArrayList<>(App.getActiveUser().getUnlockedPlants());
     }
 

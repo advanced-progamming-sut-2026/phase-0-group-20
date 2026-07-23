@@ -40,9 +40,12 @@ public class UserProgress {
             this.unlockedMinigames.put(type, 0);
         }
 
-        for (int i = 1; i < 70; i++) {
-            unlockedPlants.add(PlantFactory.create(i));
-        }
+        unlockedPlants.clear();
+        unlockedPlants.add(PlantFactory.create(1)); // Sunflower
+        unlockedPlants.add(PlantFactory.create(6)); // Peashooter
+        unlockedPlants.add(PlantFactory.create(44)); // Wall-nut
+        unlockedPlants.add(PlantFactory.create(30)); // Potato Mine
+        unlockedPlants.add(PlantFactory.create(25)); // Cabbage-pult
     }
 
     @JsonCreator

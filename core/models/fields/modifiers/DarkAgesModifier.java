@@ -24,16 +24,16 @@ public class DarkAgesModifier implements SeasonModifier {
     private static final double PLANT_FOOD_GRAVE_CHANCE = 0.15;
 
     private final Random rand = new Random();
-    private boolean isInitialized = false;
+
+    @Override
+    public void onCurrentLevelStart() {
+        Arena arena = GameSession.getInstance().getArena();
+        setupNecromanceTiles(arena);
+    }
 
     @Override
     public void onWaveStart(Wave wave) {
         Arena arena = GameSession.getInstance().getArena();
-
-        if (!isInitialized) {
-            setupNecromanceTiles(arena);
-            isInitialized = true;
-        }
 
         spawnRandomGraves(arena);
         raiseZombiesFromGraves(arena);

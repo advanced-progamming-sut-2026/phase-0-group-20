@@ -16,7 +16,7 @@ public class DeadLine extends SpecialLevel {
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
         notify("The dead line has been set to the" + (LOSE_COL + 1) + ".");
     }
 }

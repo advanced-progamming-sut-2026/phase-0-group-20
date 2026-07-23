@@ -14,7 +14,7 @@ public class NormalLevel extends Level {
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
         // Empty for now
     }
 

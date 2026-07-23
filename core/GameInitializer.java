@@ -23,7 +23,6 @@ public class GameInitializer {
     public static void loadAllResources() {
         initPlants();
         initZombies();
-//        App.setAllUsers(DataBaseManager.getAllUsers());
         DailyResetListener dailyResetListener = new DailyResetListener();
         GameEventMessenger.getInstance().addListener(GameEvent.NEW_DAY_STARTED, dailyResetListener);
     }

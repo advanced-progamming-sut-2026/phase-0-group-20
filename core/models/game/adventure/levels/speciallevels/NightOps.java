@@ -10,7 +10,7 @@ public class NightOps extends SpecialLevel {
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
 
     }
 }

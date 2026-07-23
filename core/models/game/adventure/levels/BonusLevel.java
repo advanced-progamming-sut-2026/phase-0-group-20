@@ -5,7 +5,6 @@ import models.InGameEntityGenerator;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.game.GameSession;
-
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.conditions.NormalLoseCondition;
 import models.game.adventure.levels.conditions.NormalWinCondition;
@@ -31,7 +30,7 @@ public class BonusLevel extends Level implements GameEventListener {
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
         this.scoreManager = new ScoreManager();
         session.getTimeManager().registerNewTicker(this.scoreManager);
 

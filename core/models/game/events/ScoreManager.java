@@ -1,7 +1,6 @@
 package models.game.events;
 
 import models.entities.plants.Plant;
-
 import models.game.GameSession;
 import models.timeManager.Ticker;
 

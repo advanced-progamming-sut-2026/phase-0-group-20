@@ -6,6 +6,11 @@ import models.game.Arena;
 
 public class MiniGameModifier implements SeasonModifier {
     @Override
+    public void onCurrentLevelStart() {
+
+    }
+
+    @Override
     public void onWaveStart(Wave wave) {
 
     }

@@ -47,7 +47,15 @@ public abstract class Level implements GameMode {
         this.levelNumber = levelNumber;
     }
 
-    public abstract void onStart(GameSession session);
+    public void onStart(GameSession session) {
+
+        if (seasonModifier != null)
+            seasonModifier.onCurrentLevelStart();
+
+        onLevelStart(session);
+    }
+
+    public abstract void onLevelStart(GameSession session);
 
     public GameState checkResult(GameSession session) {
         for (LoseCondition lose : loseConditions)

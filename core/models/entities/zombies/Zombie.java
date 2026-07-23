@@ -119,6 +119,7 @@ public class Zombie implements Ticker {
         for (int i = 0; i < armorPieces.size(); i++) {
             Armor a = armorPieces.get(i);
             if (!a.isDestroyed()) {
+                notify(type.toString() + "'s armor take " + remaining + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
                 remaining = a.takeDamage(remaining);
                 if (remaining <= 0) return false;
             }
@@ -128,10 +129,10 @@ public class Zombie implements Ticker {
     }
 
     public boolean takeDamage(int damage) {
-        health -= damage;
-        notify(type.toString() + " take " + damage + "damage" + " in " + position.getCol() + " " + position.getRow());
-        if (health <= 0) {
-            health = 0;
+        this.health -= damage;
+        notify(type.toString() + " take " + damage + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
+        if (this.health <= 0) {
+            this.health = 0;
             dead = true;
         }
         return dead;
@@ -142,8 +143,8 @@ public class Zombie implements Ticker {
     }
 
     private boolean applyHealthDamage(int remaining) {
-        health -= remaining;
-        notify(type.toString() + " take " + remaining + "in " + position.getCol() + " " + position.getRow());
+        this.health -= remaining;
+        notify(type.toString() + " take " + remaining + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
         if (health <= 0) {
             health = 0;
             dead = true;
@@ -161,8 +162,8 @@ public class Zombie implements Ticker {
     public boolean takeDirectDamage(int damage) {
         if (dead) return false;
 
-        health -= damage;
-        notify(type.toString() + " take " + damage + "in " + position.getCol() + " " + position.getRow());
+        this.health -= damage;
+        notify(type.toString() + " take " + damage + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
         if (health <= 0) {
             health = 0;
             dead = true;

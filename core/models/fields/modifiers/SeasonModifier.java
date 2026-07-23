@@ -10,6 +10,9 @@ import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
 
 public interface SeasonModifier {
+
+    void onCurrentLevelStart();
+
     void onWaveStart(Wave wave);
 
     void onZombieSpawn(Zombie zombie, Arena arena);

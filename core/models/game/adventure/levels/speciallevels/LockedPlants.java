@@ -24,7 +24,7 @@ public class LockedPlants extends SpecialLevel {
     }
 
     @Override
-    public void onStart(GameSession session) {
+    public void onLevelStart(GameSession session) {
         // nothing to add
     }
 

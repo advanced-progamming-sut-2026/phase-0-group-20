@@ -4,9 +4,129 @@ import models.entities.plants.Plant;
 import models.users.User;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class Shop {
+    public enum CurrencyType { COIN, DIAMOND }
+
+    public static class PlantPrice {
+        public int amount;
+        public CurrencyType currency;
+
+        public PlantPrice(int amount, CurrencyType currency) {
+            this.amount = amount;
+            this.currency = currency;
+        }
+    }
+
+    private static final Map<String, PlantPrice> PREMIUM_PLANTS = new HashMap<>();
+
+    static {
+        PREMIUM_PLANTS.put("Garlic", new PlantPrice(4000, CurrencyType.COIN));
+        PREMIUM_PLANTS.put("Kernel-pult", new PlantPrice(5000, CurrencyType.COIN));
+        PREMIUM_PLANTS.put("Phat Beet", new PlantPrice(5000, CurrencyType.COIN));
+        PREMIUM_PLANTS.put("Pea Pod", new PlantPrice(6000, CurrencyType.COIN));
+        PREMIUM_PLANTS.put("Primal Potato Mine", new PlantPrice(7000, CurrencyType.COIN));
+        PREMIUM_PLANTS.put("Primal Sunflower", new PlantPrice(8000, CurrencyType.COIN));
+        PREMIUM_PLANTS.put("Pumpkin", new PlantPrice(8000, CurrencyType.COIN));
+        PREMIUM_PLANTS.put("Starfruit", new PlantPrice(9000, CurrencyType.COIN));
+        PREMIUM_PLANTS.put("Citron", new PlantPrice(10000, CurrencyType.COIN));
+        PREMIUM_PLANTS.put("Winter Melon", new PlantPrice(15000, CurrencyType.COIN));
+
+        PREMIUM_PLANTS.put("Kiwibeast", new PlantPrice(80, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Wasabi Whip", new PlantPrice(80, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Goo Peashooter", new PlantPrice(80, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Cactus", new PlantPrice(80, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Gold Bloom", new PlantPrice(100, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Electric Blueberry", new PlantPrice(100, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Explode-o-nut", new PlantPrice(100, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Ice-shroom", new PlantPrice(100, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Cat-tail", new PlantPrice(120, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Grapeshot", new PlantPrice(120, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Mega Gatling Pea", new PlantPrice(150, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Caulipower", new PlantPrice(150, CurrencyType.DIAMOND));
+        PREMIUM_PLANTS.put("Imitater", new PlantPrice(150, CurrencyType.DIAMOND));
+
+
+        String[] mints = {"Enlighten-mint", "Appease-mint", "Arma-mint", "Bombard-mint",
+                "Enforce-mint", "Reinforce-mint", "Enchant-mint", "Pierce-mint", "catTail-mint"};
+        for (String mint : mints) {
+            PREMIUM_PLANTS.put(mint, new PlantPrice(100, CurrencyType.DIAMOND));
+        }
+    }
+
+    public String getPurchasablePlantsCatalog(User user) {
+        StringBuilder sb = new StringBuilder("=== Premium Plants Shop ===\n");
+        boolean hasAvailable = false;
+
+        for (Map.Entry<String, PlantPrice> entry : PREMIUM_PLANTS.entrySet()) {
+            String plantName = entry.getKey();
+            PlantPrice price = entry.getValue();
+
+            if (!userHasPlant(user, plantName)) {
+                sb.append(String.format("- %-20s : %d %s\n", plantName, price.amount, price.currency));
+                hasAvailable = true;
+            }
+        }
+
+        if (!hasAvailable) {
+            return "You have unlocked all available premium plants! Awesome!";
+        }
+        return sb.toString();
+    }
+
+    public Result buyPremiumPlant(User user, String plantName) {
+        String matchedKey = null;
+        PlantPrice price = null;
+
+        for (Map.Entry<String, PlantPrice> entry : PREMIUM_PLANTS.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(plantName)) {
+                matchedKey = entry.getKey();
+                price = entry.getValue();
+                break;
+            }
+        }
+
+        if (matchedKey == null) {
+            return new Result(false, "Plant '" + plantName + "' is not available in the shop!");
+        }
+
+        if (userHasPlant(user, matchedKey)) {
+            return new Result(false, "You already own " + matchedKey + "!");
+        }
+
+        if (price.currency == CurrencyType.COIN) {
+            if (user.getCoin() < price.amount) {
+                return new Result(false, "Not enough coins! (Needs " + price.amount + ")");
+            }
+            user.costCoin(price.amount);
+        } else {
+            if (user.getDiamond() < price.amount) {
+                return new Result(false, "Not enough diamonds! (Needs " + price.amount + ")");
+            }
+            user.costDiamond(price.amount);
+        }
+
+        Plant newPlant = App.findPlantByName(matchedKey);
+        if (newPlant != null) {
+            user.getUnlockedPlants().add(newPlant);
+            return new Result(true, "Congratulations! You successfully bought " + matchedKey + " for " + price.amount + " " + price.currency + "!");
+        }
+
+        return new Result(false, "System error: Plant object not found.");
+    }
+
+    private boolean userHasPlant(User user, String plantName) {
+        for (Plant p : user.getUnlockedPlants()) {
+            if (p.getName().equalsIgnoreCase(plantName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public String getCatalog() {
         return "=== Crazy Dave's Shop ===\n" +

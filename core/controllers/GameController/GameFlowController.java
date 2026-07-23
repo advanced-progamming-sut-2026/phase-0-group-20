@@ -1,5 +1,6 @@
 package controllers.GameController;
 
+import controllers.NavigationController;
 import models.App;
 import models.InGameEntityGenerator;
 import models.Result;
@@ -37,6 +38,12 @@ public class GameFlowController {
             return new Result(false, "Even Dr.Strange couldn't travel to the past.\nwho the are you?");
         }
         GameSession.getInstance().update(timeAmount);
+
+        if (GameSession.getInstance().isGameOver()) {
+            NavigationController.exitMenu();
+            return new Result(true, "Returned to " + App.getActiveMenu().getName());
+        }
+
         return new Result(true, "Successfully advanced time for " + timeAmount + " ticks.");
     }
 
@@ -205,10 +212,10 @@ public class GameFlowController {
         for (Plant p : desiredTile.getPlants()) {
             GameSession.getInstance().getTimeManager().unregisterTicker(p);
             arena.getActivePlants().remove(p);
-            desiredTile.setPlants(Collections.emptyList());
+            desiredTile.setPlants(new ArrayList<>());
         }
 
-        desiredTile.setPlants(Collections.emptyList()); // hal kardi parham?
+        desiredTile.setPlants(new ArrayList<>()); // hal kardi parham?
         return new Result(true, "You successfully plucked all the plants in the tile");
     }
 
@@ -554,11 +561,15 @@ public class GameFlowController {
         statusDisplay.append("Tile ").append(userRow).append(" / ").append(userCol).append(" Status:\n");
 
         String tileShape = "Normal";
-        if (tile instanceof WaterTile || tile instanceof LowShoreTile) {
+        if (tile instanceof WaterTile || tile instanceof LowShoreTile)
             tileShape = "Water";
-        } else if (tile instanceof GraveStoneTile || tile instanceof NecromanceTile) {
-            tileShape = "Grave";
-        }
+        else if (tile instanceof GraveStoneTile graveStoneTile)
+            tileShape = "Grave with HP: " + graveStoneTile.getGraveStone().getHp();
+
+
+        if (tile instanceof NormalTile normalTile && normalTile.getIceBlock() != null)
+            statusDisplay.append("Ice Block HP: ").append(normalTile.getIceBlock()).append("\n");
+
         statusDisplay.append("- Type: ").append(tileShape).append("\n");
 
         statusDisplay.append("- Plants:\n");
