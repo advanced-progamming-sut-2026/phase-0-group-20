@@ -7,11 +7,9 @@ import java.util.Random;
 
 public class RandomVaseTile extends Tile implements VaseTile {
 
-    private boolean isBroken = false;
-
     private static final Random RAND = new Random();
-
     private final VaseInside contents; // null = empty vase
+    private boolean isBroken = false;
 
     public RandomVaseTile(int row, int col) {
         super(row, col);

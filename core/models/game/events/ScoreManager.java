@@ -9,10 +9,9 @@ import java.util.Map;
 
 public class ScoreManager implements GameEventListener, Ticker {
 
-    private int totalMewpoints = 0;
-
-    private int killsThisTick = 0;
     private final Map<Plant, Integer> plantKillsThisTick = new HashMap<>();
+    private int totalMewpoints = 0;
+    private int killsThisTick = 0;
 
     public ScoreManager() {
         GameEventMessenger messenger = GameEventMessenger.getInstance();

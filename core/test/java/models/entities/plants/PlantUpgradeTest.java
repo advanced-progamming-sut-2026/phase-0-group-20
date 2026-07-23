@@ -52,7 +52,6 @@ public class PlantUpgradeTest {
             // Save old stats to calculate relative differences for additions (like HP or Cost)
             int oldMaxHp = actualPlant.getMaxHp();
             int oldCost = actualPlant.getCost();
-            int oldDamage = actualPlant.getDamage();
             float oldActionInterval = actualPlant.getActionInterval();
             float oldRecharge = actualPlant.getRecharge();
 

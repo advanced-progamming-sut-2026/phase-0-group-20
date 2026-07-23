@@ -13,21 +13,17 @@ import java.util.Random;
 
 public class Pot implements Ticker {
 
-    @JsonProperty("potCondition")
-    private PotCondition potCondition = PotCondition.EMPTY;
-
-    @JsonIgnore
-    private Plant plantedPlant = null;
-
-    @JsonProperty("readyTime")
-    private long readyTime = 0;
-    ;
-
-    @JsonProperty("isItMari")
-    private boolean isItMari = false;
-
     private static final long TIME_TO_HATCH_MARIGOLD = 7200000L;
     private static final long TIME_TO_HATCH_PLANT = 28800000L;
+    @JsonProperty("potCondition")
+    private PotCondition potCondition = PotCondition.EMPTY;
+    ;
+    @JsonIgnore
+    private Plant plantedPlant = null;
+    @JsonProperty("readyTime")
+    private long readyTime = 0;
+    @JsonProperty("isItMari")
+    private boolean isItMari = false;
 
     public Pot() {
     }

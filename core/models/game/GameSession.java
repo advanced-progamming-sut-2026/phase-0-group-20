@@ -22,12 +22,15 @@ import java.util.List;
 public class GameSession {
     private static final int PLANT_COOLDOWN = 50;
     private static GameSession instance;
+    // for mew points
+    private static BonusLevel pendingBonusLevel = null;
     private final List<Plant> chosenPlants;
     private final List<Zombie> chosenZombies;
     private final List<PlantFood> plantFoods = new ArrayList<>();
     private final TimeManager timeManager;
     private final Arena arena;
     private final Chapter currentChapter;
+    private final CollisionManager collisionManager;
     private boolean isGameOver = false;
     private int currentSun;
     private GameEvent event = GameEvent.GAME_STARTED;
@@ -38,10 +41,6 @@ public class GameSession {
     private boolean zombieBreached = false;
     private ZombieDropListener dropListener;
     private ProgressListener progressListener;
-    private final CollisionManager collisionManager;
-
-    // for mew points
-    private static BonusLevel pendingBonusLevel = null;
 
     private GameSession(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         this.currentChapter = chapter;
@@ -78,24 +77,6 @@ public class GameSession {
             instance = new GameSession(chapter, arena, chosenPlants, chosenZombies);
         }
         return instance;
-    }
-
-    public void instantiateCooldowns(List<Plant> chosenPlants) {
-        for (Plant plant : chosenPlants) {
-            plantsCooldown.put(plant, 0);
-        }
-    }
-
-    public void resetCooldownsForCategory(PlantCategory category) {
-        if (plantsCooldown != null) {
-            plantsCooldown.replaceAll((plant, cooldown) ->
-                    (plant.getCategory() == category) ? 0 : cooldown
-            );
-        }
-    }
-
-    public void setCooldownForPlant(Plant plant) {
-        plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
     }
 
     public static void startNewGame(List<Plant> inGamePlants) {
@@ -158,6 +139,39 @@ public class GameSession {
         instance = null;
     }
 
+    public static void notify(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(message)
+                        .build());
+    }
+
+    public static BonusLevel getPendingBonusLevel() {
+        return pendingBonusLevel;
+    }
+
+    public static void setPendingBonusLevel(BonusLevel level) {
+        pendingBonusLevel = level;
+    }
+
+    public void instantiateCooldowns(List<Plant> chosenPlants) {
+        for (Plant plant : chosenPlants) {
+            plantsCooldown.put(plant, 0);
+        }
+    }
+
+    public void resetCooldownsForCategory(PlantCategory category) {
+        if (plantsCooldown != null) {
+            plantsCooldown.replaceAll((plant, cooldown) ->
+                    (plant.getCategory() == category) ? 0 : cooldown
+            );
+        }
+    }
+
+    public void setCooldownForPlant(Plant plant) {
+        plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
+    }
+
     public void update(int timeAmount) {
         if (this.state != GameState.RUNNING) return;
 
@@ -211,13 +225,6 @@ public class GameSession {
             }
             return false;
         });
-    }
-
-    public static void notify(String message) {
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
     }
 
     public void addSun(int amount) {
@@ -283,14 +290,6 @@ public class GameSession {
         this.event = event;
     }
 
-    public static BonusLevel getPendingBonusLevel() {
-        return pendingBonusLevel;
-    }
-
-    public static void setPendingBonusLevel(BonusLevel level) {
-        pendingBonusLevel = level;
-    }
-
     public boolean isZombieBreached() {
         return zombieBreached;
     }
@@ -303,12 +302,12 @@ public class GameSession {
         return currentSun;
     }
 
-    public void useSun(int amount) {
-        this.currentSun -= amount;
-    }
-
     public void setCurrentSun(int currentSun) {
         this.currentSun = currentSun;
+    }
+
+    public void useSun(int amount) {
+        this.currentSun -= amount;
     }
 
     public void spawnPlantFood(int row, int col) {
