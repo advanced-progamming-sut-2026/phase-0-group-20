@@ -1,34 +1,29 @@
 package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
+import models.entities.zombies.behavior.context.AllStarContext;
+import models.game.GameSession;
 
 public class AllStarMove implements MoveBehavior {
     private final Zombie zombie;
-    private final float runSpeedMultiplier = 3.0f; // it can be different
-    private boolean isRunning;
+    private final AllStarContext context;
 
-
-    public AllStarMove(Zombie zombie) {
+    public AllStarMove(Zombie zombie, AllStarContext context) {
         this.zombie = zombie;
-        this.isRunning = true;
-
-        zombie.applySpeedMultiplier(runSpeedMultiplier);
+        this.context = context;
     }
 
 
     @Override
     public void execute() {
-        zombie.moveForward();
-    }
-
-    public void stopRunning() { // call in attack behavior for AllStar zombie
-        if (isRunning) {
-            isRunning = false;
-            zombie.resetSpeed(); // normal speed
+        if (!context.hasTackled()) {
+            zombie.moveForward();
+            zombie.moveForward();
+            zombie.moveForward();
+        } else {
+            if (GameSession.getInstance().getTimeManager().getCurrentTick() % 2 == 0) {
+                zombie.moveForward();
+            }
         }
-    }
-
-    public boolean isRunning() {
-        return isRunning;
     }
 }

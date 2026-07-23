@@ -16,31 +16,43 @@ public class FishermanHookAttack implements AttackBehavior {
     @Override
     public void execute() {
         GameSession session = GameSession.getInstance();
-        int row = zombie.getRow();
+        zombie.setCol(8);
+        int zRow = zombie.getRow();
+        int zCol = zombie.getCol();
 
-        Plant target = session.getArena().nearestPlantInRow(zombie, row);
+        Plant targetPlant = null;
+        int rightmostCol = -1;
 
-        if (target == null) {
-            return;
+        for (Plant p : session.getArena().getActivePlants()) {
+            if (p.getPlacedTile().getRow() == zRow && p.getPlacedTile().getCol() < zCol) {
+                if (p.getPlacedTile().getCol() > rightmostCol) {
+                    rightmostCol = p.getPlacedTile().getCol();
+                    targetPlant = p;
+                }
+            }
         }
 
+        if (targetPlant != null) {
+            int pCol = targetPlant.getPlacedTile().getCol();
 
-        int currentCol = target.getPlacedTile().getCol();
+            if (pCol == zCol - 1) {
 
-        if (currentCol == zombie.getCol() - 1) {
-            target.getPlacedTile().getPlants().remove(target);
-            notify(zombie.getName() + " yanked " + target.getName() + " into the water!");
-            return;
-        }
+                targetPlant.takeDamage(99999);
+                notify("Fisherman hooked and destroyed " + targetPlant.getName() + "!");
+            }
+            else {
+                Tile oldTile = session.getArena().getTile(zRow, pCol);
+                Tile newTile = session.getArena().getTile(zRow, pCol + 1);
 
-        int newCol = currentCol + 1;
+                if (newTile.getPlants().isEmpty()) {
+                    oldTile.getPlants().remove(targetPlant);
 
-        if (newCol < session.getArena().getCols()) {
-            Tile newTile = session.getArena().getTile(row, newCol);
+                    newTile.getPlants().add(targetPlant);
 
-            if (newTile.isPlantable(target)) {
-                target.getPlacedTile().getPlants().remove(target);
-                newTile.addPlant(target);
+                    targetPlant.setPlacedTile(newTile);
+
+                    notify("Fisherman pulled " + targetPlant.getName() + " to column " + (pCol + 1));
+                }
             }
         }
     }

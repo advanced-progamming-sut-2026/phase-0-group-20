@@ -29,8 +29,8 @@ public class DeathExplosionStrategy implements IPlantStrategy {
             List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5f);
             for (Zombie z : targets) {
                 if (!z.isDead()) {
-                    boolean killed = z.takeDirectDamage(finalDamage);
-                    if (killed) {
+                    z.takeDamage(finalDamage);
+                    if (z.isDead()) {
                         context.onZombieDeath(z);
                     }
                 }

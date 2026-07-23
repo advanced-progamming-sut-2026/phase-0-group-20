@@ -215,13 +215,13 @@ public class Projectile implements Ticker {
 
 
         if (effect.ignoresArmor()) {
-            boolean killed = z.takeDirectDamage(finalDamage);
-            if (killed) {
+            z.takeDamage(finalDamage);
+            if (z.isDead()) {
                 this.getPlant().onZombieDeath(z);
             }
         } else {
-            boolean killed = z.takeDamage(finalDamage, this);
-            if (killed) {
+            z.takeDamage(finalDamage, this);
+            if (z.isDead()) {
                 this.getPlant().onZombieDeath(z);
             }
         }
@@ -268,8 +268,9 @@ public class Projectile implements Ticker {
             List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(position.getCol(), position.getRow(), 1.5);
             for (Zombie target : targets)
                 if (!target.isDead()) {
-                    boolean killed = target.takeDirectDamage(1800);
-                    if (killed) {
+                    target.takeDamage(1800);
+                    if (target.isDead()) {
+                        assert plant != null;
                         plant.onZombieDeath(target);
                     }
 
@@ -279,8 +280,9 @@ public class Projectile implements Ticker {
             return true;
 
         } else if (type == ProjectileType.GIANT_NUT_BOWL) {
-            boolean killed = zombie.takeDirectDamage(zombie.getHealth());
-            if (killed) {
+            zombie.takeDamage(zombie.getHealth());
+            if (zombie.isDead()) {
+                assert plant != null;
                 plant.onZombieDeath(zombie);
             }
             System.out.println("Giant nut crushed " + zombie.getName());
@@ -394,6 +396,10 @@ public class Projectile implements Ticker {
 
     public boolean isDestroyed() {
         return isDestroyed;
+    }
+
+    public void setDestroyed(boolean destroyed) {
+        isDestroyed = destroyed;
     }
 
     public void setBouncesLeft(int bounces) {

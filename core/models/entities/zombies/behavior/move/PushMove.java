@@ -2,18 +2,36 @@ package models.entities.zombies.behavior.move;
 
 import models.entities.zombies.Zombie;
 
-public class PushMove implements MoveBehavior {
+import java.util.function.BooleanSupplier;
 
+public class PushMove implements MoveBehavior {
     private final Zombie zombie;
 
-    public PushMove(Zombie zombie) {
+
+    private final BooleanSupplier isObjectAlive;
+
+    private final Runnable pushAction;
+
+    private final MoveBehavior fallbackMove;
+
+    public PushMove(Zombie zombie, BooleanSupplier isObjectAlive, Runnable pushAction, MoveBehavior fallbackMove) {
         this.zombie = zombie;
+        this.isObjectAlive = isObjectAlive;
+        this.pushAction = pushAction;
+        this.fallbackMove = fallbackMove;
     }
 
     @Override
     public void execute() {
-        zombie.moveForward();
+        if (isObjectAlive.getAsBoolean()) {
+            pushAction.run();
 
-        // TODO : we will add arcade as a new entity and move arcade here
+        } else {
+            if (fallbackMove != null) {
+                fallbackMove.execute();
+            } else {
+                zombie.moveForward();
+            }
+        }
     }
 }

@@ -24,48 +24,12 @@ public class InGameEntityGenerator {
 
     public static List<Zombie> getZombiesForLevel(SeasonType season, int level) {
         List<ZombieType> allowedTypes = new ArrayList<>();
-
         switch (season) {
-            case ANCIENT_EGYPT -> allowedTypes = switch (level) {
-                case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.RA);
-                case 2 ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.RA, ZombieType.EXPLORER);
-                case 3 ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.BUCKET, ZombieType.BRICK, ZombieType.EXPLORER, ZombieType.TOMB_RAISER);
-                default ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.RA, ZombieType.EXPLORER, ZombieType.TOMB_RAISER, ZombieType.GARGANTUAR);
-            };
-
-            case FROZEN_CAVES -> allowedTypes = switch (level) {
-                case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DODO);
-                case 2 ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.DODO, ZombieType.HUNTER);
-                case 3 ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.BUCKET, ZombieType.NEWSPAPER, ZombieType.HUNTER, ZombieType.TROGLOBITE);
-                default ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.DODO, ZombieType.HUNTER, ZombieType.TROGLOBITE, ZombieType.GARGANTUAR);
-            };
-
-            case BIG_WAVE_BEACH -> allowedTypes = switch (level) {
-                case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.SNORKEL);
-                case 2 ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.SNORKEL, ZombieType.FISHERMAN);
-                case 3 ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.BUCKET, ZombieType.BRICK, ZombieType.FISHERMAN, ZombieType.OCTOPUS);
-                default ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.SNORKEL, ZombieType.FISHERMAN, ZombieType.OCTOPUS, ZombieType.GARGANTUAR);
-            };
-
-            case DARK_AGES -> allowedTypes = switch (level) {
-                case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.IMP_DRAGON);
-                case 2 ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DARK_ARMOR, ZombieType.IMP_DRAGON, ZombieType.JUGGLER);
-                case 3 ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.DARK_ARMOR, ZombieType.BRICK, ZombieType.JUGGLER, ZombieType.WIZARD);
-                default ->
-                        Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DARK_ARMOR, ZombieType.JUGGLER, ZombieType.WIZARD, ZombieType.KING, ZombieType.GARGANTUAR);
-            };
-        }
+            case ANCIENT_EGYPT -> allowedTypes = getEgyptZombies(level - 1);
+            case FROZEN_CAVES -> allowedTypes = getFrozenCavesZombies(level - 1);
+            case DARK_AGES ->  allowedTypes = getDarkAgesZombies(level - 1);
+            case BIG_WAVE_BEACH -> allowedTypes = getBeachZombies(level - 1);
+        };
 
         List<Zombie> levelZombies = new ArrayList<>();
         for (ZombieType type : allowedTypes) {
@@ -73,6 +37,54 @@ public class InGameEntityGenerator {
         }
 
         return levelZombies;
+    }
+
+    private static List<ZombieType> getEgyptZombies(int levelIndex) {
+        return switch (levelIndex) {
+            case 0 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.RA);
+            case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.RA, ZombieType.EXPLORER);
+            // Special Level (ConveyorBelt)
+            case 2 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.EXPLORER, ZombieType.TOMB_RAISER, ZombieType.CRYSTAL_SKULL);
+            // Boss Level
+            case 3 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.RA, ZombieType.EXPLORER, ZombieType.TOMB_RAISER, ZombieType.CRYSTAL_SKULL, ZombieType.GARGANTUAR, ZombieType.IMP);
+            default -> Arrays.asList(ZombieType.NORMAL);
+        };
+    }
+
+    private static List<ZombieType> getFrozenCavesZombies(int levelIndex) {
+        return switch (levelIndex) {
+            case 0 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DODO);
+            case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.DODO, ZombieType.HUNTER);
+            // Special Level (DeadLine)
+            case 2 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.HUNTER, ZombieType.TROGLOBITE, ZombieType.PROSPECTOR);
+            // Boss Level
+            case 3 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.DODO, ZombieType.HUNTER, ZombieType.TROGLOBITE, ZombieType.PROSPECTOR, ZombieType.BARREL_ROLLER, ZombieType.GARGANTUAR, ZombieType.IMP);
+            default -> Arrays.asList(ZombieType.NORMAL);
+        };
+    }
+
+    private static List<ZombieType> getDarkAgesZombies(int levelIndex) {
+        return switch (levelIndex) {
+            case 0 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.JUGGLER);
+            case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DARK_ARMOR, ZombieType.JUGGLER, ZombieType.WIZARD);
+            // Special Level (LockedPlants)
+            case 2 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DARK_ARMOR, ZombieType.WIZARD, ZombieType.KING, ZombieType.PIANIST);
+            // Boss Level
+            case 3 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.DARK_ARMOR, ZombieType.JUGGLER, ZombieType.WIZARD, ZombieType.KING, ZombieType.PIANIST, ZombieType.ARCADE, ZombieType.GARGANTUAR, ZombieType.IMP_DRAGON);
+            default -> Arrays.asList(ZombieType.NORMAL);
+        };
+    }
+
+    private static List<ZombieType> getBeachZombies(int levelIndex) {
+        return switch (levelIndex) {
+            case 0 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.SNORKEL);
+            case 1 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.SNORKEL, ZombieType.NEWSPAPER, ZombieType.JANE);
+            // Special Level (LovePlants)
+            case 2 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.BRICK, ZombieType.OCTOPUS, ZombieType.FISHERMAN, ZombieType.ALL_STAR);
+            // Boss Level
+            case 3 -> Arrays.asList(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BRICK, ZombieType.SNORKEL, ZombieType.OCTOPUS, ZombieType.FISHERMAN, ZombieType.NEWSPAPER, ZombieType.JANE, ZombieType.ALL_STAR, ZombieType.GARGANTUAR, ZombieType.IMP);
+            default -> Arrays.asList(ZombieType.NORMAL);
+        };
     }
 
     public static List<Zombie> getZombiesForDailyChallenge() {

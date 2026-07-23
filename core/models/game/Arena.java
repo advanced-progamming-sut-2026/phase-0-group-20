@@ -3,6 +3,7 @@ package models.game;
 import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
+import models.entities.obstacle.PushableObstacle;
 import models.entities.zombies.Wave;
 import models.entities.zombies.Zombie;
 import models.enums.PhysicalConstants;
@@ -29,6 +30,7 @@ public class Arena {
     private List<Sun> activeSuns = new ArrayList<>();
     private Wave currentActiveWave;
     private final List<Wave> spawnedWaves = new ArrayList<>();
+    private List<PushableObstacle> activeObstacles = new ArrayList<>();
 
     public Arena() {
         this.tiles = new Tile[ROWS][COLS];
@@ -242,5 +244,9 @@ public class Arena {
         for (LawnMower lawnMower : lawnMowers)
             if (lawnMower != null) timeManager.unregisterTicker(lawnMower);
         Arrays.fill(lawnMowers, null);
+    }
+
+    public List<PushableObstacle> getActiveObstacles() {
+        return this.activeObstacles;
     }
 }

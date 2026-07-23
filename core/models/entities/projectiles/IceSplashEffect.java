@@ -28,8 +28,8 @@ public class IceSplashEffect implements ProjectileEffect {
             zombie.addEffect(new ChillEffect(zombie, CHILL_DURATION_TICKS)); //fully stop
 
             if (z != zombie) {
-                boolean killed = z.takeDamage(splashDamage);
-                if (killed) {
+                z.takeDamage(splashDamage);
+                if (z.isDead()) {
                     projectile.getPlant().onZombieDeath(z);
                 }
             }

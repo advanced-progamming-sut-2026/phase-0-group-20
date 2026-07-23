@@ -35,7 +35,7 @@ public class SquashSuicideAttack implements AttackBehavior {
                     }
                 }
 
-                zombie.takeDirectDamage(Integer.MAX_VALUE);
+                zombie.takeDamage(Integer.MAX_VALUE);
                 notify("Zombotany: " + zombie.getName() + " destroyed itself!");
             }
         }

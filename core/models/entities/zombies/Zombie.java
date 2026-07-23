@@ -56,7 +56,7 @@ public class Zombie implements Ticker {
     private Zombie targetZombie = null;
     private boolean shiny = false;
 
-    private Position position;
+    private final Position position;
 
     public Zombie(ZombieType type, ZombieData data, int row, MoveBehavior moveBehavior, AttackBehavior attackBehavior, DefenseBehavior defenseBehavior) {
         this.type = type;
@@ -87,7 +87,6 @@ public class Zombie implements Ticker {
             effect.execute();
         }
 
-
         if (attacking) {
             attackBehavior.execute();
         } else {
@@ -97,85 +96,69 @@ public class Zombie implements Ticker {
         updateTile();
     }
 
-    public boolean takeDamage(int damage, Projectile projectile) {
-        if (dead) return false;
+    public void takeDamage(int damage, Projectile projectile) {
+        if (dead) return;
 
         if (projectile == null) { // for lawn
-            return applyHealthDamage(health);
+            applyHealthDamage(health);
+            return;
         }
 
         ProjectileType projectileType = projectile.getType();
 
         if (defenseBehavior != null && defenseBehavior.deflectProjectile(projectileType)) {
-            return false;
+            return;
         }
 
         int remaining = damage;
         if (defenseBehavior != null) {
             remaining = defenseBehavior.mitigateDamage(remaining, projectileType);
         }
-        if (remaining <= 0) return false;
 
-        if (isArmorBypassingProjectile(projectileType)) {
-            return applyHealthDamage(remaining);
+        if (remaining <= 0) {
+            return;
         }
 
-        for (int i = 0; i < armorPieces.size(); i++) {
-            Armor a = armorPieces.get(i);
+        if (isArmorBypassingProjectile(projectileType)) {
+            applyHealthDamage(remaining);
+            return;
+        }
+
+        for (Armor a : armorPieces) {
             if (!a.isDestroyed()) {
-                notify(type.toString() + "'s armor take " + remaining + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
+                notify(type.toString() + "'s armor(" + a.getData().getAlias() + ") take " + remaining + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
                 remaining = a.takeDamage(remaining);
-                if (remaining <= 0) return false;
+                if (remaining <= 0) {
+                    return;
+                }
             }
         }
 
-        return applyHealthDamage(remaining);
+        applyHealthDamage(remaining);
     }
 
-    public boolean takeDamage(int damage) {
+    public void takeDamage(int damage) {
         this.health -= damage;
         notify(type.toString() + " take " + damage + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
         if (this.health <= 0) {
             this.health = 0;
             dead = true;
+            notify(type.toString() + " is dead");
         }
-        return dead;
     }
-
 
     private boolean isArmorBypassingProjectile(ProjectileType projectileType) {
         return projectileType == ProjectileType.GOO_PEA;
     }
 
-    private boolean applyHealthDamage(int remaining) {
+    private void applyHealthDamage(int remaining) {
         this.health -= remaining;
         notify(type.toString() + " take " + remaining + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
         if (health <= 0) {
             health = 0;
             dead = true;
-            if (this.attackBehavior instanceof LaserAttack laserAttack) {
-                int sunsToDrop = laserAttack.getStolenSuns() / 2;
-                if (sunsToDrop > 0) {
-                    notify(this.getName() + " died and dropped " + sunsToDrop + " stolen suns!");
-                }
-            }
-            return true;
+            notify(type.toString() + " is dead by projectile");
         }
-        return false;
-    }
-
-
-    public boolean takeDirectDamage(int damage) {
-        if (dead) return false;
-
-        this.health -= damage;
-        notify(type.toString() + " take " + damage + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
-        if (health <= 0) {
-            health = 0;
-            dead = true;
-            return true;
-        }
-        return false;
     }
 
     public void hypnotize() {
@@ -399,6 +382,10 @@ public class Zombie implements Ticker {
         } else {
             this.position.moveX(-this.currentSpeed);
         }
+    }
+
+    public void moveBackward() {
+        this.position.moveX(this.currentSpeed);
     }
 
     public Tile getTile() {

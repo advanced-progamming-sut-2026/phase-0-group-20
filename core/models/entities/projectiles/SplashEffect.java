@@ -22,8 +22,8 @@ public class SplashEffect implements ProjectileEffect {
 
         for (Zombie z : nearbyZombies) {
             if (z != zombie && !z.isDead()) {
-                boolean killed = z.takeDamage(splashDamage, projectile);
-                if (killed) {
+                z.takeDamage(splashDamage, projectile);
+                if (z.isDead()) {
                     projectile.getPlant().onZombieDeath(z);
                 }
             }
