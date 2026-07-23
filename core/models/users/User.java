@@ -335,15 +335,17 @@ public class User {
     public Map<MiniGameType, Integer> getUnlockedMinigames() {
         return progress.getUnlockedMinigames();
     }
+
     public void unlockedPlants(Plant p) {
         getUnlockedPlants().add(p);
     }
+
     public int getUnlockedLevelInMinigame(MiniGameType type) {
         return progress.getUnlockedLevelInMinigame(type);
     }
 
-    public void unlockNextLevelInMinigame(MiniGameType type) {
-        progress.unlockNextLevelInMinigame(type, this);
+    public void unlockNextLevelInMinigame(MiniGameType type, int playedLevelNumber) {
+        progress.unlockNextLevelInMinigame(type, playedLevelNumber, this);
     }
 
     public void addZombiesToUnlock(List<Zombie> inGameZombies) {

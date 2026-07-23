@@ -30,6 +30,7 @@ public class InGameEntityGenerator {
             case FROZEN_CAVES -> allowedTypes = getFrozenCavesZombies(level - 1);
             case DARK_AGES ->  allowedTypes = getDarkAgesZombies(level - 1);
             case BIG_WAVE_BEACH -> allowedTypes = getBeachZombies(level - 1);
+            case MINI_GAME -> allowedTypes = getMiniGameZombies(level - 1);
         };
 
         List<Zombie> levelZombies = new ArrayList<>();
@@ -227,6 +228,32 @@ public class InGameEntityGenerator {
         }
 
         return dailyZombies;
+    }
+
+    private static List<ZombieType> getMiniGameZombies(int levelIndex) {
+        return switch (levelIndex) {
+            case 0 -> Arrays.asList(
+                    ZombieType.NORMAL,
+                    ZombieType.CONE,
+                    ZombieType.BUCKET
+            );
+            case 1 -> Arrays.asList(
+                    ZombieType.NORMAL,
+                    ZombieType.CONE,
+                    ZombieType.BUCKET,
+                    ZombieType.BRICK,
+                    ZombieType.NEWSPAPER
+            );
+            case 2 -> Arrays.asList(
+                    ZombieType.NORMAL,
+                    ZombieType.CONE,
+                    ZombieType.BUCKET,
+                    ZombieType.DARK_ARMOR,
+                    ZombieType.NEWSPAPER,
+                    ZombieType.ALL_STAR
+            );
+            default -> Arrays.asList(ZombieType.NORMAL);
+        };
     }
 
     public static Zombie getZombieForGame(ZombieType type, int row) {

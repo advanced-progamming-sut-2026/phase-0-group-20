@@ -71,13 +71,12 @@ public class UserProgress {
         }
     }
 
-    public void unlockNextLevelInMinigame(MiniGameType type, User user) {
+    public void unlockNextLevelInMinigame(MiniGameType type, int playedLevelNumber, User user) {
         int currentUnlocked = getUnlockedLevelInMinigame(type);
-        if (currentUnlocked < 3) {
+        if (currentUnlocked == playedLevelNumber && playedLevelNumber < 3) {
             unlockedMinigames.put(type, currentUnlocked + 1);
-            if (user != null) {
+            if (user != null)
                 user.addMessage(Message.minigameUnlockedMessage(type.getName()));
-            }
         }
     }
 

@@ -12,6 +12,7 @@ import models.game.adventure.levels.Level;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
 import models.game.minigame.BowlingLevel;
 import models.users.User;
+import java.util.List;
 
 public class GameMenuController {
 
@@ -127,6 +128,70 @@ public class GameMenuController {
         }
 
         return new Result(false, "Invalid cheat type! Use 'coin' or 'diamond'.");
+    }
+
+
+    public Result printAdventure() {
+        User activeUser = App.getActiveUser();
+        if (activeUser == null) {
+            return new Result(false, "No active user found!");
+        }
+
+        Adventure adventure = App.getActiveAdventure();
+        if (adventure == null)
+            return new Result(false, "No active adventure found!");
+
+        int userHighChap = activeUser.getHighestUnlockedChapterIndex();
+        int userHighLevel = activeUser.getHighestUnlockedLevelIndex();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n--- Adventure Map ---\n\n");
+
+        List<Chapter> chapters = adventure.getChapters();
+        int displayIndex = 1;
+
+        for (int i = 0; i < chapters.size(); i++) {
+            Chapter chapter = chapters.get(i);
+
+            if (chapter.getSeasonType() != null && chapter.getSeasonType().name().equals("MINI_GAME"))
+                continue;
+
+            String chapterName = chapter.getDisplayName();
+            if (chapterName == null) chapterName = "Unknown";
+
+            String prefix = String.format("Chapter %d: %-15s -> ", displayIndex++, chapterName);
+
+            StringBuilder boxRow = new StringBuilder(prefix);
+            StringBuilder labelRow = new StringBuilder(" ".repeat(prefix.length()));
+
+            int totalLevels = 4;
+            if (chapter.getLevels() != null && !chapter.getLevels().isEmpty())
+                totalLevels = chapter.getLevels().size();
+
+            for (int j = 0; j < totalLevels; j++) {
+                boolean isUnlocked = false;
+                if (i < userHighChap)
+                    isUnlocked = true;
+                else if (i == userHighChap && j <= userHighLevel)
+                    isUnlocked = true;
+
+                String box = isUnlocked ? "[Unlocked]" : "[ Locked ]";
+                String lbl = String.format("  Lvl %-4d", j + 1);
+
+                boxRow.append(box);
+                labelRow.append(lbl);
+
+                if (j < totalLevels - 1) {
+                    boxRow.append("--");
+                    labelRow.append("  ");
+                }
+            }
+
+            sb.append(boxRow.toString()).append("\n");
+            sb.append(labelRow.toString()).append("\n\n");
+        }
+
+        return new Result(true, sb.toString().trim());
     }
 
 }
