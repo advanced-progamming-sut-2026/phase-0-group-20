@@ -6,8 +6,8 @@ import models.game.events.GameEvent;
 import models.game.events.GameEventPayload;
 
 public class WinWithSpecificTagCondition extends QuestCondition {
-    private PlantTag plantTag;
     boolean isHappened = false;
+    private PlantTag plantTag;
 
     public WinWithSpecificTagCondition(PlantTag plantTag) {
         this.plantTag = plantTag;

@@ -1,7 +1,6 @@
 package models.entities.zombies.behavior.effect;
 
 import models.entities.zombies.Zombie;
-import models.entities.zombies.behavior.defense.DragonImpDefense;
 
 public class FireEffect extends Effect {
 

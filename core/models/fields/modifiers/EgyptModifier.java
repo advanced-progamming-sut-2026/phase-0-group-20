@@ -10,8 +10,8 @@ import java.util.Random;
 
 public class EgyptModifier implements SeasonModifier {
 
-    private boolean isInitialized = false;
     Wave currentWave;
+    private boolean isInitialized = false;
 
     @Override
     public void onWaveStart(Wave wave) {

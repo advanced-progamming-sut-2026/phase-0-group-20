@@ -8,12 +8,9 @@ public enum MiniGameType {
     ZOMBOTANY("Zombotany");
 
     private final String name;
+
     MiniGameType(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public static MiniGameType findByName(String name) {
@@ -23,5 +20,9 @@ public enum MiniGameType {
             }
         }
         return null;
+    }
+
+    public String getName() {
+        return name;
     }
 }

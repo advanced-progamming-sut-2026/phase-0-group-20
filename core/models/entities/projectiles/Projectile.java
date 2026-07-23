@@ -79,26 +79,6 @@ public class Projectile implements Ticker {
         this.isDestroyed = false;
     }
 
-    @Override
-    public void onTick(int currentTick) {
-        if (isDestroyed) return;
-
-        if (lifespanTicks > 0) {
-            lifespanTicks--;
-            if (lifespanTicks == 0) {
-                isDestroyed = true;
-                return;
-            }
-        }
-
-        move();
-
-        if (isOutOfBounds()) {
-            isDestroyed = true;
-        }
-    }
-
-
     public static Projectile spawnNewProjectile(Plant plant,
                                                 ProjectileType type,
                                                 int damage,
@@ -122,7 +102,6 @@ public class Projectile implements Ticker {
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
     }
-
 
     public static Projectile spawnZombieProjectile(Zombie zombie,
                                                    ProjectileType type,
@@ -148,7 +127,6 @@ public class Projectile implements Ticker {
         return projectile;
     }
 
-
     private static ProjectileEffect projectileEffect(ProjectileType projectileType) {
         return switch (projectileType) {
             case PEA, ROTOBAGA_SEED -> new NormalEffect();
@@ -157,6 +135,25 @@ public class Projectile implements Ticker {
             case GOO_PEA -> new PoisonProjectileEffect();
             default -> new NormalEffect();
         };
+    }
+
+    @Override
+    public void onTick(int currentTick) {
+        if (isDestroyed) return;
+
+        if (lifespanTicks > 0) {
+            lifespanTicks--;
+            if (lifespanTicks == 0) {
+                isDestroyed = true;
+                return;
+            }
+        }
+
+        move();
+
+        if (isOutOfBounds()) {
+            isDestroyed = true;
+        }
     }
 
     public void move() {

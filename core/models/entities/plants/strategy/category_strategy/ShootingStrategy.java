@@ -19,6 +19,16 @@ public class ShootingStrategy implements IPlantStrategy {
 
     private float autoPlantFoodChance = 0.0f;
 
+    private static List<Integer> projectileInLine(String name, int placedRow) {
+        List<Integer> lines = new ArrayList<>();
+        lines.add(placedRow);
+        if (name.equals("Threepeater")) {
+            lines.add(placedRow - 1);
+            lines.add(placedRow + 1);
+        }
+        return lines;
+    }
+
     @Override
     public void execute(Plant context, int currentTick) {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
@@ -32,7 +42,7 @@ public class ShootingStrategy implements IPlantStrategy {
             String plantName = context.getName();
 
             if (plantName.equals("Rotobaga")) {
-                for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()){
+                for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
                     if (z.isDead()) continue;
                     int rowDiff = Math.abs(z.getRow() - plantRow);
                     int colDiff = Math.abs(z.getCol() - plantCol);
@@ -83,29 +93,6 @@ public class ShootingStrategy implements IPlantStrategy {
                 }
                 lastShotTick = currentTick;
             }
-        }
-    }
-
-    private static List<Integer> projectileInLine(String name, int placedRow) {
-        List<Integer> lines = new ArrayList<>();
-        lines.add(placedRow);
-        if (name.equals("Threepeater")) {
-            lines.add(placedRow - 1);
-            lines.add(placedRow + 1);
-        }
-        return lines;
-    }
-
-    private int getBurstCount(Plant context) {
-        switch (context.getName()) {
-            case "Rotobaga":
-                return 3;
-            case "Repeater":
-                return 2;
-            case "Pea Pod":
-                return context.getStackCount();
-            default:
-                return 1;
         }
     }
 

@@ -2,6 +2,7 @@ package models;
 
 import models.entities.plants.Plant;
 import models.users.User;
+
 import java.time.LocalDate;
 import java.util.Random;
 
@@ -85,7 +86,7 @@ public class Shop {
 
         user.costCoin(totalCost);
         Random rand = new Random();
-        for(int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             Plant randomPlant = user.getUnlockedPlants().get(rand.nextInt(user.getUnlockedPlants().size()));
             user.getInventory().addSeedPacket(randomPlant, 5);
         }
@@ -122,7 +123,8 @@ public class Shop {
     }
 
     public Result buyDailyItem(User user) {
-        if (user.isPurchasedDailyDealToday()) return new Result(false, "You have already purchased today's daily deal!");
+        if (user.isPurchasedDailyDealToday())
+            return new Result(false, "You have already purchased today's daily deal!");
         if (user.getCoin() < 1600) return new Result(false, "Not enough coins! (Needs 1600)");
 
         Plant dailyPlant = getDailyRandomPlant(user);

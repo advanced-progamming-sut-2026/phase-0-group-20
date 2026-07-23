@@ -3,7 +3,6 @@ package controllers.GameController;
 import models.App;
 import models.InGameEntityGenerator;
 import models.Result;
-import models.entities.PlantFood;
 import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
@@ -233,12 +232,12 @@ public class GameFlowController {
             return new Result(false, "There is no plant in this tile");
         }
         User user = App.getActiveUser();
-        if(user.getPlantFoodCount()<=0){
+        if (user.getPlantFoodCount() <= 0) {
             return new Result(false, "You don't have any Plant Food.");
         }
         user.addPlantFoodCount(-1);
         for (Plant plant : desiredTile.getPlants()) {
-            if(!plant.getPlantFoodStrategy().isEmpty()&&plant.getPlantFoodStrategy() != null){
+            if (!plant.getPlantFoodStrategy().isEmpty() && plant.getPlantFoodStrategy() != null) {
                 plant.useFood();
 
             }
@@ -249,7 +248,7 @@ public class GameFlowController {
     }
 
     public Result cheatAddPlantFood() {
-        User user =  App.getActiveUser();
+        User user = App.getActiveUser();
         int plantFoodCount = user.getPlantFoodCount();
         if (plantFoodCount >= 3) {
             return new Result(false, "You already have the maximum amount of the food plants");

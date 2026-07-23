@@ -1,5 +1,4 @@
 import models.App;
-import models.database.DataBaseManager;
 import models.entities.plants.Plant;
 import models.entities.plants.PlantData;
 import models.entities.plants.PlantFactory;
@@ -7,7 +6,6 @@ import models.entities.plants.PlantLoader;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieFactory;
 import models.entities.zombies.ZombieType;
-import models.game.adventure.Adventure;
 import models.game.events.DailyResetListener;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;

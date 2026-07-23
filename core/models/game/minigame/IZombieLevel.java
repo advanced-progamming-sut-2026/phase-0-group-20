@@ -21,12 +21,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class IZombieLevel extends Level implements IMinigame{
+public class IZombieLevel extends Level implements IMinigame {
 
     private final Random rand = new Random();
     private int redLineCol = 6;
 
-    public IZombieLevel(String name, SeasonType seasonType, int waveCount,int levelNumber) {
+    public IZombieLevel(String name, SeasonType seasonType, int waveCount, int levelNumber) {
         super(name, seasonType, waveCount, -1, levelNumber);
         this.addWinCondition(new IZombieWinCondition());
         this.addLoseCondition(new IZombieLoseCondition());
@@ -34,7 +34,7 @@ public class IZombieLevel extends Level implements IMinigame{
 
     @Override
     public void onStart(GameSession session) {
-     notify("iZombie Level " + levelNumber + " Started!");
+        notify("iZombie Level " + levelNumber + " Started!");
 
         session.getArena().removeLawnMowers();
 

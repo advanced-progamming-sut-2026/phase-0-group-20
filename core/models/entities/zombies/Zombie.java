@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Random;
 
 public class Zombie implements Ticker {
-    public enum SpawnEffect {NORMAL, SANDSTORM, WATER_SPLASH}
-
     private static final Random RAND = new Random();
     private final List<Armor> armorPieces;
     private final List<ZombieEffect> activeEffects;
@@ -51,11 +49,9 @@ public class Zombie implements Ticker {
     private Tile tile;
     private SpawnEffect spawnEffect = SpawnEffect.NORMAL;
     private boolean isHypnotized = false;
-    private GameEventMessenger messenger = GameEventMessenger.getInstance();
     private boolean hypnotized = false;
     private Zombie targetZombie = null;
     private boolean shiny = false;
-
     private Position position;
 
     public Zombie(ZombieType type, ZombieData data, int row, MoveBehavior moveBehavior, AttackBehavior attackBehavior, DefenseBehavior defenseBehavior) {
@@ -86,7 +82,6 @@ public class Zombie implements Ticker {
         for (ZombieEffect effect : activeEffects) {
             effect.execute();
         }
-
 
 
         if (attacking) {
@@ -142,7 +137,6 @@ public class Zombie implements Ticker {
         return dead;
     }
 
-
     private boolean isArmorBypassingProjectile(ProjectileType projectileType) {
         return projectileType == ProjectileType.GOO_PEA;
     }
@@ -163,7 +157,6 @@ public class Zombie implements Ticker {
         }
         return false;
     }
-
 
     public boolean takeDirectDamage(int damage) {
         if (dead) return false;
@@ -188,8 +181,6 @@ public class Zombie implements Ticker {
         notify(this.getName() + " has switched sides!");
     }
 
-
-
     public void applyEatSpeedMultiplier(float multiplier) {
         this.eatSpeedMultiplier = multiplier;
     }
@@ -197,7 +188,6 @@ public class Zombie implements Ticker {
     public void resetEatSpeed() {
         this.eatSpeedMultiplier = 1f;
     }
-
 
     public void addArmor(Armor armor) {
         armorPieces.add(armor);
@@ -260,7 +250,7 @@ public class Zombie implements Ticker {
         return info.toString().trim();
     }
 
-    private void updateTile (){
+    private void updateTile() {
         int column = this.getCol();
         int row = this.getRow();
         this.tile = GameSession.getInstance().getArena().getTile(row, column);
@@ -284,6 +274,10 @@ public class Zombie implements Ticker {
 
     public ZombieType getType() {
         return type;
+    }
+
+    public void setType(ZombieType type) {
+        this.type = type;
     }
 
     public float getX() {
@@ -314,16 +308,32 @@ public class Zombie implements Ticker {
         return health;
     }
 
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
     public int getBaseHp() {
         return baseHp;
+    }
+
+    public void setBaseHp(int baseHp) {
+        this.baseHp = baseHp;
     }
 
     public float getBaseSpeed() {
         return baseSpeed;
     }
 
+    public void setBaseSpeed(float baseSpeed) {
+        this.baseSpeed = baseSpeed;
+    }
+
     public float getCurrentSpeed() {
         return currentSpeed;
+    }
+
+    public void setCurrentSpeed(float currentSpeed) {
+        this.currentSpeed = currentSpeed;
     }
 
     public int getEatDps() {
@@ -332,6 +342,10 @@ public class Zombie implements Ticker {
 
     public int getWaveCost() {
         return waveCost;
+    }
+
+    public void setWaveCost(int waveCost) {
+        this.waveCost = waveCost;
     }
 
     public boolean canSpawnPlantFood() {
@@ -348,6 +362,10 @@ public class Zombie implements Ticker {
 
     public boolean isDead() {
         return dead;
+    }
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
     }
 
     public boolean isAttacking() {
@@ -382,12 +400,12 @@ public class Zombie implements Ticker {
         this.attackBehavior = a;
     }
 
-    public void setSpawnEffect(SpawnEffect effect) {
-        this.spawnEffect = effect;
-    }
-
     public SpawnEffect getSpawnEffect() {
         return spawnEffect;
+    }
+
+    public void setSpawnEffect(SpawnEffect effect) {
+        this.spawnEffect = effect;
     }
 
     public void moveForward() {
@@ -442,36 +460,12 @@ public class Zombie implements Ticker {
         this.state = state;
     }
 
-    public void setType(ZombieType type) {
-        this.type = type;
-    }
-
-    public void setCurrentSpeed(float currentSpeed) {
-        this.currentSpeed = currentSpeed;
-    }
-
-    public void setBaseSpeed(float baseSpeed) {
-        this.baseSpeed = baseSpeed;
-    }
-
-    public void setDead(boolean dead) {
-        this.dead = dead;
-    }
-
     public int getEatDPS() {
         return eatDPS;
     }
 
     public void setEatDPS(int eatDPS) {
         this.eatDPS = eatDPS;
-    }
-
-    public void setBaseHp(int baseHp) {
-        this.baseHp = baseHp;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
     }
 
     public ZombieEffect getEffect() {
@@ -486,12 +480,12 @@ public class Zombie implements Ticker {
         return isHypnotized;
     }
 
-    public Position getPosition() {
-        return position;
-    }
-
     public void setHypnotized(boolean hypnotized) {
         this.hypnotized = hypnotized;
+    }
+
+    public Position getPosition() {
+        return position;
     }
 
     public Zombie getTargetZombie() {
@@ -502,10 +496,6 @@ public class Zombie implements Ticker {
         this.targetZombie = targetZombie;
     }
 
-    public void setWaveCost(int waveCost) {
-        this.waveCost = waveCost;
-    }
-
     public boolean isShiny() {
         return shiny;
     }
@@ -513,4 +503,6 @@ public class Zombie implements Ticker {
     public void setShiny(boolean shiny) {
         this.shiny = shiny;
     }
+
+    public enum SpawnEffect {NORMAL, SANDSTORM, WATER_SPLASH}
 }

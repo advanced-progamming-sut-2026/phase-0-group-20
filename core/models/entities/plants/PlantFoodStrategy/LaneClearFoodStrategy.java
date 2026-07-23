@@ -5,7 +5,6 @@ import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.projectiles.ProjectileMechanism;
 import models.enums.plants.ProjectileType;
-import models.game.GameSession;
 
 /**
  * Unleashes one powerful, lane-clearing attack that pierces/damages every
@@ -24,7 +23,6 @@ public class LaneClearFoodStrategy implements PlantFoodStrategy {
 
     @Override
     public void executeStrategy(Plant plant) {
-        GameSession gameSession = GameSession.getInstance();
         int row = plant.getPlacedTile().getRow();
         int col = plant.getPlacedTile().getCol();
 

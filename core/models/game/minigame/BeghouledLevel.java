@@ -16,15 +16,13 @@ import models.game.minigame.minigameCondition.BeghouledWinCondition;
 import java.util.List;
 import java.util.Random;
 
-public class BeghouledLevel extends Level implements IMinigame{
+public class BeghouledLevel extends Level implements IMinigame {
     private final Random random = new Random();
 
     private final String[] basePlants = {"peashooter", "sunflower", "wall-nut", "snow pea", "repeater", "puff-shroom", "cabbage-pult", "melon-pult"};
     // we can add or remove plants from this list
-
-    private int successfulMatches = 0;
     private final int targetMatches;
-
+    private int successfulMatches = 0;
     private int tickCounter = 0;
     private int currentSpawnInterval = GameConstants.SPAWN_IN_WAVE_INTERVAL;
 

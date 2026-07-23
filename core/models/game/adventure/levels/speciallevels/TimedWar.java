@@ -6,7 +6,7 @@ import models.game.adventure.levels.SpecialLevel;
 
 public class TimedWar extends SpecialLevel {
     protected TimedWar(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
-        super(name, season, waveCount, baseWaveBudget,  globalLevelNumber);
+        super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
     }
 
     @Override

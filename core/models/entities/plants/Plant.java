@@ -37,15 +37,13 @@ public class Plant implements IPlant, Ticker {
     protected int bonusDamage = 0;
 
     protected List<PlantFoodStrategy> plantFoodStrategy = new ArrayList<>();
-    private int stackCount = 1;
-
     protected List<PlantEffect> activeEffects = new ArrayList<>();
     protected boolean frozen = false;
     protected boolean stunned = false;
-
     protected int size = 1;
     protected boolean boosted = false;
     protected int boostTimer = 0;
+    private int stackCount = 1;
 
 
     public Plant(PlantData data) {
@@ -154,8 +152,8 @@ public class Plant implements IPlant, Ticker {
             GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,
                     new GameEventPayload.Builder(GameEvent.PLANT_LOST)
                             .message(getName() + " has lost!")
-                                    .build()
-                );
+                            .build()
+            );
 
             GameSession.notify("Plant " + getName() + " has been Destroyed!");
         }
@@ -244,6 +242,10 @@ public class Plant implements IPlant, Ticker {
 
     public int getCurrentHp() {
         return currentHp;
+    }
+
+    public void setCurrentHp(int currentHp) {
+        this.currentHp = currentHp;
     }
 
     public Tile getPlacedTile() {
@@ -538,10 +540,6 @@ public class Plant implements IPlant, Ticker {
                 .coordinate(z.getRow(), z.getCol())
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
-    }
-
-    public void setCurrentHp(int currentHp) {
-        this.currentHp = currentHp;
     }
 
     public int getSize() {

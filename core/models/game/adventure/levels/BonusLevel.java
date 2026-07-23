@@ -96,7 +96,7 @@ public class BonusLevel extends Level implements GameEventListener {
             int lane = waveRandom.nextInt(session.getArena().getRows());
 
             Zombie newZombie = InGameEntityGenerator.getZombieForGame(template.getType(), lane);
-            if(shinyZombie()){
+            if (shinyZombie()) {
                 newZombie.setShiny(true);
             }
             newZombie.setCol(session.getArena().getCols() - 1);

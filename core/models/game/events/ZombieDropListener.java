@@ -11,23 +11,17 @@ import models.users.User;
 import java.util.Random;
 
 public class ZombieDropListener implements GameEventListener {
-    enum ZombieDrop {
-        POT,
-        DIAMOND,
-        COIN
-    }
-
     @Override
     public void onEvent(GameEvent event, GameEventPayload payload) {
         if (!(event == GameEvent.ZOMBIE_KILLED_LAWN_MOWER || event == GameEvent.ZOMBIE_KILLED)) return;
-        Zombie target =payload.getZombie();
-        if(target != null && target.isShiny()){
+        Zombie target = payload.getZombie();
+        if (target != null && target.isShiny()) {
             User user = App.getActiveUser();
             StringBuilder message = new StringBuilder();
             message.append("The glowing zombie dropeed a plant food;");
-            if(user.getPlantFoodCount() >=3){
+            if (user.getPlantFoodCount() >= 3) {
                 message.append("You already have 3 Plant Food.\n");
-            }else{
+            } else {
                 user.addPlantFoodCount(1);
                 message.append(" you have ").append(user.getPlantFoodCount()).append(" plant foods now.\n");
             }
@@ -63,7 +57,6 @@ public class ZombieDropListener implements GameEventListener {
 
     }
 
-
     private ZombieDrop getDropType() {
         Random rand = new Random();
         int chance = rand.nextInt(10);
@@ -75,6 +68,13 @@ public class ZombieDropListener implements GameEventListener {
                 default -> ZombieDrop.COIN;
             };
         } else return null;
+    }
+
+
+    enum ZombieDrop {
+        POT,
+        DIAMOND,
+        COIN
     }
 
 }

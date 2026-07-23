@@ -6,7 +6,7 @@ import models.game.adventure.levels.SpecialLevel;
 
 public class PlantWhatYouGet extends SpecialLevel {
 
-    protected PlantWhatYouGet(String name, SeasonType season, int waveCount, int baseWaveBudget, int  globalLevelNumber) {
+    protected PlantWhatYouGet(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
     }
 

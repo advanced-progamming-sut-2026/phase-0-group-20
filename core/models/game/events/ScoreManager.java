@@ -10,10 +10,9 @@ import java.util.Map;
 
 public class ScoreManager implements GameEventListener, Ticker {
 
-    private int totalMewpoints = 0;
-
-    private int killsThisTick = 0;
     private final Map<Plant, Integer> plantKillsThisTick = new HashMap<>();
+    private int totalMewpoints = 0;
+    private int killsThisTick = 0;
 
     public ScoreManager() {
         GameEventMessenger messenger = GameEventMessenger.getInstance();
@@ -51,7 +50,7 @@ public class ScoreManager implements GameEventListener, Ticker {
             killsThisTick++;
             totalMewpoints += 10;
 
-            if (payload.getZombie() != null && payload.getZombie().getCol() >=5) {
+            if (payload.getZombie() != null && payload.getZombie().getCol() >= 5) {
                 totalMewpoints += 20;
             }
 

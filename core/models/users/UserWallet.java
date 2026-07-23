@@ -23,17 +23,47 @@ public class UserWallet {
         this.plantFoodCount = plantFoodCount;
     }
 
-    public int getCoin() { return coin; }
-    public void setCoin(int coin) { this.coin = coin; }
-    public void costCoin(int amount) { this.coin = Math.max(0, this.coin - amount); }
-    public void earnCoin(int amount) { this.coin += amount; }
+    public int getCoin() {
+        return coin;
+    }
 
-    public int getDiamond() { return diamond; }
-    public void setDiamond(int diamond) { this.diamond = diamond; }
-    public void costDiamond(int amount) { this.diamond = Math.max(0, this.diamond - amount); }
-    public void earnDiamond(int amount) { this.diamond += amount; }
+    public void setCoin(int coin) {
+        this.coin = coin;
+    }
 
-    public int getPlantFoodCount() { return plantFoodCount; }
-    public void setPlantFoodCount(int plantFoodCount) { this.plantFoodCount = plantFoodCount; }
-    public void addPlantFoodCount(int amount) { this.plantFoodCount += amount; }
+    public void costCoin(int amount) {
+        this.coin = Math.max(0, this.coin - amount);
+    }
+
+    public void earnCoin(int amount) {
+        this.coin += amount;
+    }
+
+    public int getDiamond() {
+        return diamond;
+    }
+
+    public void setDiamond(int diamond) {
+        this.diamond = diamond;
+    }
+
+    public void costDiamond(int amount) {
+        this.diamond = Math.max(0, this.diamond - amount);
+    }
+
+    public void earnDiamond(int amount) {
+        this.diamond += amount;
+    }
+
+    public int getPlantFoodCount() {
+        return plantFoodCount;
+    }
+
+    public void setPlantFoodCount(int plantFoodCount) {
+        this.plantFoodCount = plantFoodCount;
+    }
+
+    public void addPlantFoodCount(int amount) {
+        this.plantFoodCount += amount;
+    }
 }

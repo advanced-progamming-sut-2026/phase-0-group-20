@@ -23,13 +23,6 @@ public class Chapter {
         createLevels();
     }
 
-    private void createLevels() {
-        for (int i = 0; i < 4; i++) {
-            Level newLevel = LevelFactory.createLevel(this.type, i);
-            this.levels.add(newLevel);
-        }
-    }
-
     public static SeasonModifier createModifier(SeasonType type) {
         return switch (type) {
             case ANCIENT_EGYPT -> new EgyptModifier();
@@ -48,6 +41,13 @@ public class Chapter {
             case DARK_AGES -> "Dark Ages";
             case MINI_GAME -> "mini game";
         };
+    }
+
+    private void createLevels() {
+        for (int i = 0; i < 4; i++) {
+            Level newLevel = LevelFactory.createLevel(this.type, i);
+            this.levels.add(newLevel);
+        }
     }
 
     public Level getCurrentLevel() {

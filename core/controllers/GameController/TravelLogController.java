@@ -18,16 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TravelLogController {
-    enum ValidPageNames {
-        DAILY,
-        MAIN,
-        EPIC,
-        MINIGAME;
-    }
-
     private User activeUser;
     private ValidPageNames currentPage = ValidPageNames.DAILY;
-
     public TravelLogController() {
 
     }
@@ -75,7 +67,7 @@ public class TravelLogController {
     public Result showCurrentPage() {
         if (currentPage != ValidPageNames.MINIGAME)
             return showCategoryQuests();
-        return new Result(true ,buildMinigamesView() );
+        return new Result(true, buildMinigamesView());
     } // temporary
 
     private Result showCategoryQuests() {
@@ -102,10 +94,9 @@ public class TravelLogController {
             String rewardText = (quest.getReward() != null) ? quest.getReward().toString() : "No Reward";
 
             String progressText = "0/0";
-            if(quest.isCompleted()){
+            if (quest.isCompleted()) {
                 progressText = "Completed!";
-            }
-            else if (quest.getCondition() != null) {
+            } else if (quest.getCondition() != null) {
                 int current = quest.getCondition().getCurrentProgress();
                 int target = quest.getCondition().getTargetProgress();
                 if (target == 0) target = 1;
@@ -134,12 +125,11 @@ public class TravelLogController {
         };
     }
 
-
     public Result startMiniGame(String miniGameName, String levelString) {
         int levelNumber;
-        try{
+        try {
             levelNumber = Integer.parseInt(levelString);
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             return new Result(false, "Invalid level number");
         }
         if (currentPage != ValidPageNames.MINIGAME)
@@ -149,16 +139,16 @@ public class TravelLogController {
             return new Result(false, "Invalid level number! Minigames only have levels 1, 2, and 3.");
 
         try {
-            levelNumber -- ;
+            levelNumber--;
             MiniGameType type = MiniGameType.findByName(miniGameName);
             int maxUnlocked = activeUser.getUnlockedLevelInMinigame(type);
             if (levelNumber > maxUnlocked)
                 return new Result(false, "Level " + levelNumber + " is LOCKED! You must beat level " + (levelNumber - 1) + " first.");
 
             Level minigameLevel = MiniGameFactory.createLevel(type, levelNumber);
-            if(minigameLevel instanceof BowlingLevel bowling ){
+            if (minigameLevel instanceof BowlingLevel bowling) {
                 GameSession.startNewGame(bowling.getBelt());
-            }else if (minigameLevel instanceof VaseBreakerLevel vaseBreaker ){
+            } else if (minigameLevel instanceof VaseBreakerLevel vaseBreaker) {
                 GameSession.startNewGame(null);
             }
             GameSession session = GameSession.getInstance();
@@ -166,7 +156,7 @@ public class TravelLogController {
             minigameLevel.onStart(session);
             NavigationController.enterMenu("game flow menu");
 
-            return new Result(true, "Started " + type.name() + " Level " + (levelNumber+1) + "! Good luck!");
+            return new Result(true, "Started " + type.name() + " Level " + (levelNumber + 1) + "! Good luck!");
 
         } catch (IllegalArgumentException e) {
             return new Result(false, "Invalid minigame name! Available: VASE_BREAKER, BOWLING, I_ZOMBIE");
@@ -194,6 +184,13 @@ public class TravelLogController {
         }
 
         return sb.toString().trim();
+    }
+
+    enum ValidPageNames {
+        DAILY,
+        MAIN,
+        EPIC,
+        MINIGAME;
     }
 
 }

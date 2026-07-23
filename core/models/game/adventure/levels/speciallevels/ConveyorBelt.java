@@ -13,12 +13,12 @@ import java.util.Random;
 
 
 public class ConveyorBelt extends SpecialLevel {
-    private final List<Plant> belt = new ArrayList<>();
-    private List<Plant> unlockedPlants;
-    private final Random random = new Random();
     private static final int TICKS_PER_SECOND = 10;
     private static final int BELT_SPEED_SECONDS = 13;
     private static final int BELT_CAPACITY = 10;
+    private final List<Plant> belt = new ArrayList<>();
+    private final Random random = new Random();
+    private List<Plant> unlockedPlants;
 
     public ConveyorBelt(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);

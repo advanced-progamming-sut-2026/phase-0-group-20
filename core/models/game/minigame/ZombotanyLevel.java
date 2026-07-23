@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class ZombotanyLevel extends Level implements IMinigame{
+public class ZombotanyLevel extends Level implements IMinigame {
 
     protected ZombotanyLevel(String name, SeasonType season, int waveCount, int baseWaveBudget, int levelNumber) {
         super(name, season, waveCount, baseWaveBudget, levelNumber);
