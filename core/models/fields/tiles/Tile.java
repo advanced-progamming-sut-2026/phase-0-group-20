@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class Tile implements Ticker {
     protected SeasonType currentSeason;
-    protected List<Plant> plants = new ArrayList<>();
+    protected ArrayList<Plant> plants = new ArrayList<>();
     protected Position position;
     protected boolean isCrater;
 
@@ -33,7 +33,7 @@ public abstract class Tile implements Ticker {
         return plants;
     }
 
-    public void setPlants(List<Plant> plants) {
+    public void setPlants(ArrayList<Plant> plants) {
         this.plants = plants;
     }
 

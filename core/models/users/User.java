@@ -350,6 +350,10 @@ public class User {
         progress.unlockAdventureLevel(targetChapterIndex, targetLevelIndex, chapterName, this);
     }
 
+    public void unlockedPlants(Plant p) {
+        getUnlockedPlants().add(p);
+    }
+
     public Inventory getInventory() {
         return inventory;
     }

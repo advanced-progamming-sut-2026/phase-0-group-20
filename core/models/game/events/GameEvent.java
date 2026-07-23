@@ -13,5 +13,6 @@ public enum GameEvent {
     LEVEL_COMPLETED,
     LAWNMOWER_TRIGGERED,
     NOTIFY,
-    NEW_DAY_STARTED;
+    NEW_DAY_STARTED,
+    PLANT_UNLOCKED;
 }
