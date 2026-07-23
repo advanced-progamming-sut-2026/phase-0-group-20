@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class Shop {
-    public enum CurrencyType { COIN, DIAMOND }
+    public enum CurrencyType {COIN, DIAMOND}
 
     public static class PlantPrice {
         public int amount;
@@ -112,7 +112,8 @@ public class Shop {
         Plant newPlant = App.findPlantByName(matchedKey);
         if (newPlant != null) {
             user.getUnlockedPlants().add(newPlant);
-            return new Result(true, "Congratulations! You successfully bought " + matchedKey + " for " + price.amount + " " + price.currency + "!");
+            return new Result(true, "Congratulations! You successfully bought " + matchedKey +
+                    " for " + price.amount + " " + price.currency + "!");
         }
 
         return new Result(false, "System error: Plant object not found.");
@@ -230,7 +231,8 @@ public class Shop {
 
         user.costDiamond(totalCost);
         user.getInventory().addSeedPacket(selectedPlant, 10 * count);
-        return new Result(true, "Successfully purchased " + count + " Selective Seed Packet(s) for " + selectedPlant.getName() + "!");
+        return new Result(true, "Successfully purchased "
+                + count + " Selective Seed Packet(s) for " + selectedPlant.getName() + "!");
     }
 
     public Result exchangeCurrency(User user, int count) {
@@ -245,7 +247,8 @@ public class Shop {
     public Result buyDailyItem(User user) {
         if (user.isPurchasedDailyDealToday())
             return new Result(false, "You have already purchased today's daily deal!");
-        if (user.getCoin() < 1600) return new Result(false, "Not enough coins! (Needs 1600)");
+        if (user.getCoin() < 1600)
+            return new Result(false, "Not enough coins! (Needs 1600)");
 
         Plant dailyPlant = getDailyRandomPlant(user);
         if (dailyPlant == null) return new Result(false, "No daily deal available.");

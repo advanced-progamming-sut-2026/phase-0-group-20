@@ -1,6 +1,5 @@
 package controllers.GameController;
 
-import controllers.NavigationController;
 import models.App;
 import models.InGameEntityGenerator;
 import models.Result;
@@ -27,41 +26,34 @@ import java.util.List;
 
 public class GameFlowController {
 
-    public Result advanceTime(String amount) {
-        int timeAmount = 0;
+    private Integer parsePositiveInt(String str) {
         try {
-            timeAmount = Integer.parseInt(amount);
-        } catch (NumberFormatException e) {
+            int val = Integer.parseInt(str);
+            if (val > 0) return val;
+        } catch (NumberFormatException ignored) {
+        }
+        return null;
+    }
+
+    public Result advanceTime(String amount) {
+        Integer timeAmount = parsePositiveInt(amount);
+        if (timeAmount == null) {
             return new Result(false, "Invalid amount given. (Integer above ZERO)");
         }
-        if (timeAmount <= 0) {
-            return new Result(false, "Even Dr.Strange couldn't travel to the past.\nwho the are you?");
-        }
         GameSession.getInstance().update(timeAmount);
-
-        if (GameSession.getInstance().isGameOver()) {
-            NavigationController.exitMenu();
-            return new Result(true, "Returned to " + App.getActiveMenu().getName());
-        }
-
         return new Result(true, "Successfully advanced time for " + timeAmount + " ticks.");
     }
 
     public Result collectSun(String colStr, String rowStr) {
+        Integer userCol = parsePositiveInt(colStr);
+        Integer userRow = parsePositiveInt(rowStr);
+
+        if (userCol == null || userRow == null) {
+            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
+        }
+
         Arena arena = GameSession.getInstance().getArena();
-        int col, row;
-        try {
-            col = Integer.parseInt(colStr);
-            row = Integer.parseInt(rowStr);
-        } catch (NumberFormatException e) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
-
-        if (col < 1 || row < 1) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
-
-        Sun sun = arena.getSunInCoordinate(col - 1, row - 1);
+        Sun sun = arena.getSunInCoordinate(userCol - 1, userRow - 1);
         if (sun == null) {
             return new Result(false, "There is no sun in this coordinate.");
         }
@@ -76,17 +68,11 @@ public class GameFlowController {
     }
 
     public Result cheatAddSun(String amount) {
-        int sunAmount;
-        try {
-            sunAmount = Integer.parseInt(amount);
-        } catch (NumberFormatException e) {
-            return new Result(false, "Invalid amount given. (Integer above ZERO)");
-        }
-        if (sunAmount <= 0) {
+        Integer sunAmount = parsePositiveInt(amount);
+        if (sunAmount == null) {
             return new Result(false, "Invalid amount given. (Integer above ZERO)");
         }
         GameSession.getInstance().addSun(sunAmount);
-
         return new Result(true, "Cheat Activated. added " + sunAmount + " suns to you cheater!!!");
     }
 
@@ -110,54 +96,30 @@ public class GameFlowController {
 
     public Result showSunAmount() {
         int sunAmount = GameSession.getInstance().getCurrentSun();
-
         return new Result(true, "You currently have " + sunAmount + " suns in your pocket.");
     }
 
     public Result plantPlant(String plantName, String x, String y) {
+        Integer spawnX = parsePositiveInt(x);
+        Integer spawnY = parsePositiveInt(y);
+
+        if (spawnX == null || spawnY == null) {
+            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
+        }
+
         GameSession session = GameSession.getInstance();
         Arena arena = session.getArena();
-        int spawnX, spawnY;
-        try {
-            spawnX = Integer.parseInt(x);
-            spawnY = Integer.parseInt(y);
-        } catch (NumberFormatException e) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
-        if (spawnX < 1 || spawnY < 1) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
-        Plant plant = null;
-        if (session.getCurrentMode() instanceof ConveyorBelt currentLevel) {
-            List<Plant> belt = currentLevel.getBelt();
-            if (belt.isEmpty()) {
-                return new Result(false, "There is no plant in the belt rightNow.");
-            }
-            plant = belt.stream()
-                    .filter(p -> p.getName().equalsIgnoreCase(plantName))
-                    .findFirst()
-                    .orElse(null);
 
-        } else {
-            plant = session.getChosenPlants().stream()
-                    .filter(p -> p.getName().equalsIgnoreCase(plantName))
-                    .findFirst()
-                    .orElse(null);
-            if (plant != null) {
-                if (session.getCurrentSun() < plant.getCost()) {
-                    return new Result(false, "Not enough sun to plant " + plant.getName() + "!");
-                }
-                Integer cd = session.getPlantsCooldown().get(plant);
-                if (cd != null && cd > 0) {
-                    return new Result(false, plant.getName() + " is still recharging!");
-                }
-            }
-        }
+        Plant plant = findPlantForPlacement(session, plantName);
         if (plant == null) {
             return new Result(false, (session.getCurrentMode() instanceof ConveyorBelt)
                     ? "There is no such plant named " + plantName + "in the belt"
                     : "There no such plant named " + plantName);
         }
+
+        Result validationResult = validatePlantPlacement(session, plant);
+        if (validationResult != null) return validationResult;
+
         Tile desiredTile = arena.getTile(spawnY - 1, spawnX - 1);
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
@@ -169,10 +131,11 @@ public class GameFlowController {
 
         Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
         desiredTile.addPlant(newPlant);
-        GameSession.getInstance().setPlantCooldown(newPlant);
-        GameSession.getInstance().getArena().addPlant(newPlant);
-        GameSession.getInstance().useSun(newPlant.getCost());
-        GameSession.getInstance().getTimeManager().registerNewTicker(newPlant);
+        session.setPlantCooldown(newPlant);
+        arena.addPlant(newPlant);
+        session.useSun(newPlant.getCost());
+        session.getTimeManager().registerNewTicker(newPlant);
+
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
                 .plant(newPlant)
                 .arena(arena)
@@ -180,28 +143,51 @@ public class GameFlowController {
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
         session.getTimeManager().registerNewTicker(newPlant);
-//        session.setCooldownForPlant(plant);
-        return new Result(true, "You plant a plant in " + spawnX + "," + spawnY + " with the name of " + newPlant.getName() + ".");
+
+        return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +
+                " with the name of " + newPlant.getName() + ".");
+    }
+
+    private Plant findPlantForPlacement(GameSession session, String plantName) {
+        if (session.getCurrentMode() instanceof ConveyorBelt currentLevel) {
+            List<Plant> belt = currentLevel.getBelt();
+            if (belt.isEmpty()) return null;
+            return belt.stream().filter(p -> p.getName().equalsIgnoreCase(plantName)).findFirst().orElse(null);
+        } else {
+            return session.getChosenPlants().stream()
+                    .filter(p -> p.getName().equalsIgnoreCase(plantName))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
+    private Result validatePlantPlacement(GameSession session, Plant plant) {
+        if (!(session.getCurrentMode() instanceof ConveyorBelt)) {
+            if (session.getCurrentSun() < plant.getCost()) {
+                return new Result(false, "Not enough sun to plant " + plant.getName() + "!");
+            }
+            Integer cd = session.getPlantsCooldown().get(plant);
+            if (cd != null && cd > 0) {
+                return new Result(false, plant.getName() + " is still recharging!");
+            }
+        }
+        return null;
     }
 
     public Result cheatRemoveCooldown() {
         GameSession.getInstance().instantiateCooldowns(GameSession.getInstance().getChosenPlants());
-
         return new Result(true, "Cheat Activated. All cooldowns have been removed.");
     }
 
     public Result pluckPlant(String x, String y) {
-        int posX, posY;
+        Integer posX = parsePositiveInt(x);
+        Integer posY = parsePositiveInt(y);
+
+        if (posX == null || posY == null) {
+            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
+        }
+
         Arena arena = GameSession.getInstance().getArena();
-        try {
-            posX = Integer.parseInt(x);
-            posY = Integer.parseInt(y);
-        } catch (NumberFormatException e) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
-        if (posX < 1 || posY < 1) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
         Tile desiredTile = arena.getTile(posY - 1, posX - 1);
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
@@ -209,28 +195,25 @@ public class GameFlowController {
         if (desiredTile.getPlants().isEmpty()) {
             return new Result(false, "There is nothing to pluck my friend");
         }
+
         for (Plant p : desiredTile.getPlants()) {
             GameSession.getInstance().getTimeManager().unregisterTicker(p);
             arena.getActivePlants().remove(p);
-            desiredTile.setPlants(new ArrayList<>());
         }
 
-        desiredTile.setPlants(new ArrayList<>()); // hal kardi parham?
+        desiredTile.setPlants(new ArrayList<>());
         return new Result(true, "You successfully plucked all the plants in the tile");
     }
 
     public Result feedPlant(String x, String y) {
-        int posX, posY;
+        Integer posX = parsePositiveInt(x);
+        Integer posY = parsePositiveInt(y);
+
+        if (posX == null || posY == null) {
+            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
+        }
+
         Arena arena = GameSession.getInstance().getArena();
-        try {
-            posX = Integer.parseInt(x);
-            posY = Integer.parseInt(y);
-        } catch (NumberFormatException e) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
-        if (posX < 1 || posY < 1) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
         Tile desiredTile = arena.getTile(posY - 1, posX - 1);
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
@@ -238,20 +221,20 @@ public class GameFlowController {
         if (desiredTile.getPlants().isEmpty()) {
             return new Result(false, "There is no plant in this tile");
         }
+
         User user = App.getActiveUser();
         if (user.getPlantFoodCount() <= 0) {
             return new Result(false, "You don't have any Plant Food.");
         }
         user.addPlantFoodCount(-1);
-        for (Plant plant : desiredTile.getPlants()) {
-            if (!plant.getPlantFoodStrategy().isEmpty() && plant.getPlantFoodStrategy() != null) {
-                plant.useFood();
 
+        for (Plant plant : desiredTile.getPlants()) {
+            if (plant.getPlantFoodStrategy() != null && !plant.getPlantFoodStrategy().isEmpty()) {
+                plant.useFood();
             }
         }
 
         return new Result(true, "You successfully feed all the plants in the tile");
-
     }
 
     public Result cheatAddPlantFood() {
@@ -456,13 +439,11 @@ public class GameFlowController {
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 String cell = " ";
-
                 mapDisplay.append("[").append(cell).append("]");
             }
             mapDisplay.append("\n");
         }
         mapDisplay.append("\n");
-
 
         mapDisplay.append("--- PROJECTILES ---\n");
         for (int r = 0; r < rows; r++) {
@@ -533,182 +514,174 @@ public class GameFlowController {
     }
 
     public Result showTileStatus(String x, String y) {
-        int userCol, userRow;
-        try {
-            userCol = Integer.parseInt(x);
-            userRow = Integer.parseInt(y);
-        } catch (NumberFormatException e) {
+        Integer userCol = parsePositiveInt(x);
+        Integer userRow = parsePositiveInt(y);
+
+        if (userCol == null || userRow == null) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
-
-        if (userCol < 1 || userRow < 1) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
-
-        int internalCol = userCol - 1;
-        int internalRow = userRow - 1;
 
         GameSession session = GameSession.getInstance();
         Arena arena = session.getArena();
+        int internalCol = userCol - 1;
+        int internalRow = userRow - 1;
 
         if (internalRow >= arena.getRows() || internalCol >= arena.getCols()) {
             return new Result(false, "Invalid coordinates");
         }
 
-        StringBuilder statusDisplay = new StringBuilder();
         Tile tile = arena.getTile(internalRow, internalCol);
-
+        StringBuilder statusDisplay = new StringBuilder();
         statusDisplay.append("Tile ").append(userRow).append(" / ").append(userCol).append(" Status:\n");
+        statusDisplay.append("- Type: ").append(determineTileShape(tile)).append("\n");
 
-        String tileShape = "Normal";
-        if (tile instanceof WaterTile || tile instanceof LowShoreTile)
-            tileShape = "Water";
-        else if (tile instanceof GraveStoneTile graveStoneTile)
-            tileShape = "Grave with HP: " + graveStoneTile.getGraveStone().getHp();
+        appendTilePlantsStatus(statusDisplay, tile);
+        appendTileZombiesStatus(statusDisplay, session, internalRow, internalCol);
 
+        return new Result(true, statusDisplay.toString().trim());
+    }
 
-        if (tile instanceof NormalTile normalTile && normalTile.getIceBlock() != null)
-            statusDisplay.append("Ice Block HP: ").append(normalTile.getIceBlock()).append("\n");
+    private String determineTileShape(Tile tile) {
+        if (tile instanceof WaterTile || tile instanceof LowShoreTile) {
+            return "Water";
+        } else if (tile instanceof GraveStoneTile || tile instanceof NecromanceTile) {
+            return "Grave";
+        }
+        return "Normal";
+    }
 
-        statusDisplay.append("- Type: ").append(tileShape).append("\n");
-
-        statusDisplay.append("- Plants:\n");
+    private void appendTilePlantsStatus(StringBuilder sb, Tile tile) {
+        sb.append("- Plants:\n");
         if (tile == null || tile.getPlants() == null || tile.getPlants().isEmpty()) {
-            statusDisplay.append("    - None\n");
+            sb.append("    - None\n");
         } else {
             for (Plant plant : tile.getPlants()) {
-                statusDisplay.append("    - Name: ").append(plant.getName()).append("\n");
-                statusDisplay.append("      Health: ").append(plant.getCurrentHp()).append("\n");
+                sb.append("    - Name: ").append(plant.getName()).append("\n");
+                sb.append("      Health: ").append(plant.getCurrentHp()).append("\n");
             }
         }
+    }
 
-        statusDisplay.append("- Zombies:\n");
+    private void appendTileZombiesStatus(StringBuilder sb, GameSession session, int row, int col) {
+        sb.append("- Zombies:\n");
         boolean zombieFound = false;
 
-        if (session.getArena().zombieInRow(internalRow) != null) {
-            for (Zombie z : session.getArena().zombieInRow(internalRow)) {
-                if (!z.isDead() && (int) z.getCol() == internalCol) {
+        if (session.getArena().zombieInRow(row) != null) {
+            for (Zombie z : session.getArena().zombieInRow(row)) {
+                if (!z.isDead() && (int) z.getCol() == col) {
                     zombieFound = true;
-                    statusDisplay.append("    - Name: ").append(z.getName()).append("\n");
-                    statusDisplay.append("      Health: ").append(z.getHealth()).append("\n");
-                    statusDisplay.append("      Speed: ").append(String.format("%.2f", z.getCurrentSpeed())).append("\n");
-                    statusDisplay.append("      Damage: ").append(z.getEatDps()).append("\n");
+                    sb.append("    - Name: ").append(z.getName()).append("\n");
+                    sb.append("      Health: ").append(z.getHealth()).append("\n");
+                    sb.append("      Speed: ").append(String.format("%.2f", z.getCurrentSpeed())).append("\n");
+                    sb.append("      Damage: ").append(z.getEatDps()).append("\n");
                 }
             }
         }
 
         if (!zombieFound) {
-            statusDisplay.append("    - None\n");
+            sb.append("    - None\n");
         }
-
-        return new Result(true, statusDisplay.toString().trim());
     }
-
 
     public Result printMap() {
         GameSession session = GameSession.getInstance();
         Arena arena = session.getArena();
         StringBuilder sb = new StringBuilder();
-
         String horizontalBorder = "+----------".repeat(arena.getCols()) + "+\n";
 
         sb.append("\n=== PIXEL-PERFECT ARENA MAP ===\n");
 
         for (int r = 0; r < arena.getRows(); r++) {
             sb.append(horizontalBorder);
-
-            char[] rowContent = new char[arena.getCols() * 10];
-
-            for (int c = 0; c < arena.getCols(); c++) {
-                Tile tile = arena.getTile(r, c);
-
-                char bg = ' ';
-                String prefix = "N ";
-
-                if (tile != null) {
-                    switch (tile.getType()) {
-                        case "WaterTile" -> prefix = "W~";
-                        case "LowShoreTile" -> prefix = "L/";
-                        case "SlipperyTile" -> {
-                            String arrow = "";
-                            if (tile instanceof SlipperyTile slipperyTile)
-                                arrow += slipperyTile.getDirection() == SlipperyTile.SlideDirection.UP ? "^" : "v";
-                            prefix = "S" + arrow;
-                        }
-                        case "GraveStone" -> prefix = "G ";
-                        case "NecromancyTile" -> prefix = "NG";
-                        case "PlantVaseTile" -> prefix = "PV";
-                        case "ZombieVaseTile" -> prefix = "ZV";
-                        case "RandomVaseTile" -> prefix = "RV";
-                        case "VaseTile" -> prefix = "V ";
-                        case "NormalTile" -> prefix = "N ";
-                    }
-
-
-                    rowContent[c * 10] = prefix.charAt(0);
-                    rowContent[c * 10 + 1] = prefix.charAt(1);
-
-                    for (int i = 2; i < 10; i++)
-                        rowContent[c * 10 + i] = bg;
-
-
-                    if (tile.isCrater())
-                        rowContent[c * 10 + 2] = 'O';
-
-                } else
-                    for (int i = 0; i < 10; i++) rowContent[c * 10 + i] = ' ';
-
-            }
-
-
-            for (Sun sun : arena.getActiveSuns()) {
-                if (!sun.isCollected() && sun.getRow() == r) {
-                    int pos = sun.getCol() * 10 + 2;
-                    if (pos >= 0 && pos < rowContent.length) rowContent[pos] = 's';
-                }
-            }
-
-            for (Plant p : arena.getActivePlants()) {
-                if (p.getPlacedTile() != null && p.getPlacedTile().getRow() == r) {
-                    int pos = p.getPlacedTile().getCol() * 10 + 4;
-                    if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '+';
-                }
-            }
-
-            for (Zombie z : arena.getActiveZombies()) {
-                if (!z.isDead() && z.getRow() == r) {
-                    int pos = (int) z.getX();
-                    if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '*';
-                }
-            }
-
-            for (Projectile p : arena.getActiveProjectiles()) {
-                if (!p.isDestroyed() && p.getPosition().getRow() == r) {
-                    int pos = (int) p.getX();
-                    if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '-';
-                }
-            }
-
-            sb.append("|");
-            for (int c = 0; c < arena.getCols(); c++)
-                sb.append(new String(rowContent, c * 10, 10)).append("|");
-
+            sb.append(renderPixelRow(arena, r));
 
             LawnMower lm = arena.getLawnMowers()[r];
-            if (lm != null && !lm.isActivate())
+            if (lm != null && !lm.isActivate()) {
                 sb.append(" [LM]");
-
+            }
             sb.append("\n");
         }
         sb.append(horizontalBorder);
-
         sb.append("\nLegend: [+] Plant | [*] Zombie | [-] Projectile | [s] Sun | [O] Crater\n");
-        sb.append("Tiles:  [N ] Normal | [W~] Water | [L/] LowShore | [S#] Slippery | [G / NG] Graves | [PV/ZV/RV] Vases\n");
-        return new
+        sb.append("Tiles:  [N ] Normal | [W~] Water | [L/] LowShore |" +
+                " [S#] Slippery | [G / NG] Graves | [PV/ZV/RV] Vases\n");
 
-                Result(true, sb.toString());
+        return new Result(true, sb.toString());
     }
 
+    private String renderPixelRow(Arena arena, int row) {
+        char[] rowContent = new char[arena.getCols() * 10];
+
+        fillBaseTileSymbols(arena, row, rowContent);
+        overlayEntitiesOnRow(arena, row, rowContent);
+
+        StringBuilder sb = new StringBuilder("|");
+        for (int c = 0; c < arena.getCols(); c++) {
+            sb.append(new String(rowContent, c * 10, 10)).append("|");
+        }
+        return sb.toString();
+    }
+
+    private void fillBaseTileSymbols(Arena arena, int row, char[] rowContent) {
+        for (int c = 0; c < arena.getCols(); c++) {
+            Tile tile = arena.getTile(row, c);
+            if (tile != null) {
+                String prefix = getTilePrefix(tile.getType(), tile);
+                rowContent[c * 10] = prefix.charAt(0);
+                rowContent[c * 10 + 1] = prefix.charAt(1);
+                for (int i = 2; i < 10; i++) rowContent[c * 10 + i] = ' ';
+                if (tile.isCrater()) rowContent[c * 10 + 2] = 'O';
+            } else {
+                for (int i = 0; i < 10; i++) rowContent[c * 10 + i] = ' ';
+            }
+        }
+    }
+
+    private String getTilePrefix(String tileType, Tile tile) {
+        return switch (tileType) {
+            case "WaterTile" -> "W~";
+            case "LowShoreTile" -> "L/";
+            case "SlipperyTile" -> {
+                String arrow = (tile instanceof SlipperyTile s && s.getDirection()
+                        == SlipperyTile.SlideDirection.UP) ? "^" : "v";
+                yield "S" + arrow;
+            }
+            case "GraveStone" -> "G ";
+            case "NecromancyTile" -> "NG";
+            case "PlantVaseTile" -> "PV";
+            case "ZombieVaseTile" -> "ZV";
+            case "RandomVaseTile" -> "RV";
+            case "VaseTile" -> "V ";
+            default -> "N ";
+        };
+    }
+
+    private void overlayEntitiesOnRow(Arena arena, int row, char[] rowContent) {
+        for (Sun sun : arena.getActiveSuns()) {
+            if (!sun.isCollected() && sun.getRow() == row) {
+                int pos = sun.getCol() * 10 + 2;
+                if (pos >= 0 && pos < rowContent.length) rowContent[pos] = 's';
+            }
+        }
+        for (Plant p : arena.getActivePlants()) {
+            if (p.getPlacedTile() != null && p.getPlacedTile().getRow() == row) {
+                int pos = p.getPlacedTile().getCol() * 10 + 4;
+                if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '+';
+            }
+        }
+        for (Zombie z : arena.getActiveZombies()) {
+            if (!z.isDead() && z.getRow() == row) {
+                int pos = (int) z.getX();
+                if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '*';
+            }
+        }
+        for (Projectile p : arena.getActiveProjectiles()) {
+            if (!p.isDestroyed() && p.getPosition().getRow() == row) {
+                int pos = (int) p.getX();
+                if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '-';
+            }
+        }
+    }
 
     public Result showZombieInfo() {
         if (GameSession.getInstance().getArena().getActiveZombies().isEmpty()) {
@@ -723,6 +696,4 @@ public class GameFlowController {
 
         return new Result(true, sb.toString().trim());
     }
-
-
 }

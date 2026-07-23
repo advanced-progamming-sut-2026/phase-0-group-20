@@ -7,7 +7,7 @@ import models.game.adventure.levels.conditions.DeadLineLoseCondition;
 import models.game.adventure.levels.conditions.NormalWinCondition;
 
 public class DeadLine extends SpecialLevel {
-    private final int LOSE_COL = 3;// zero_based
+    private static final int LOSE_COL = 3;// zero_based
 
     public DeadLine(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);

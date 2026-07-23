@@ -14,11 +14,15 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class LoginMenuControllerUnitTest {
 
-    private final String TEST_FILE_PATH = "core/test/resources/test_users_login.json";
+    private static final String TEST_FILE_PATH = "core/test/resources/test_users_login.json";
     private LoginMenuController controller;
     private User testUser;
 
@@ -46,72 +50,69 @@ public class LoginMenuControllerUnitTest {
         DataBaseManager.resetRepositoryToDefault();
     }
 
-
     @Test
-    public void testLogin_validCredentials_returnsSuccess() {
+    public void testLoginValidCredentialsReturnsSuccess() {
         Result result = controller.login("ali123", "Secure1!", false);
         assertTrue(result.isSuccessful());
         assertEquals("welcome Ali", result.message());
     }
 
     @Test
-    public void testLogin_wrongPassword_returnsFailure() {
+    public void testLoginWrongPasswordReturnsFailure() {
         Result result = controller.login("ali123", "wrongPass", false);
         assertFalse(result.isSuccessful());
         assertEquals("incorrect password", result.message());
     }
 
     @Test
-    public void testLogin_nonExistentUsername_returnsFailure() {
+    public void testLoginNonExistentUsernameReturnsFailure() {
         Result result = controller.login("ghost", "Secure1!", false);
         assertFalse(result.isSuccessful());
         assertEquals("username does not exist", result.message());
     }
 
     @Test
-    public void testLogin_stayLoggedIn_userPersistedAsLoggedIn() {
+    public void testLoginStayLoggedInUserPersistedAsLoggedIn() {
         controller.login("ali123", "Secure1!", true);
         assertNotNull(DataBaseManager.getLoggedInUser());
     }
 
     @Test
-    public void testLogin_notStayLoggedIn_userNotPersistedAsLoggedIn() {
+    public void testLoginNotStayLoggedInUserNotPersistedAsLoggedIn() {
         controller.login("ali123", "Secure1!", false);
         assertNull(DataBaseManager.getLoggedInUser());
     }
 
     @Test
-    public void testLogin_trimsUsernameWhitespace_returnsSuccess() {
+    public void testLoginTrimsUsernameWhitespaceReturnsSuccess() {
         Result result = controller.login("  ali123  ", "Secure1!", false);
         assertTrue(result.isSuccessful());
         assertEquals("welcome Ali", result.message());
     }
 
-
     @Test
-    public void testForgetPassword_validUsernameAndEmail_returnsSecurityQuestion() {
+    public void testForgetPasswordValidUsernameAndEmailReturnsSecurityQuestion() {
         Result result = controller.forgetPassword("ali123", "ali@example.com");
         assertTrue(result.isSuccessful());
         assertEquals(testUser.getSecurityQuestion().getQuestion(), result.message());
     }
 
     @Test
-    public void testForgetPassword_wrongEmail_returnsFailure() {
+    public void testForgetPasswordWrongEmailReturnsFailure() {
         Result result = controller.forgetPassword("ali123", "wrong@example.com");
         assertFalse(result.isSuccessful());
         assertEquals("user doesn't exist", result.message());
     }
 
     @Test
-    public void testForgetPassword_nonExistentUser_returnsFailure() {
+    public void testForgetPasswordNonExistentUserReturnsFailure() {
         Result result = controller.forgetPassword("ghost", "ghost@example.com");
         assertFalse(result.isSuccessful());
         assertEquals("user doesn't exist", result.message());
     }
 
-
     @Test
-    public void testCheckSecurityQuestion_correctAnswer_returnsSuccess() {
+    public void testCheckSecurityQuestionCorrectAnswerReturnsSuccess() {
         controller.forgetPassword("ali123", "ali@example.com");
         Result result = controller.checkSecurityQuestion("fluffy");
         assertTrue(result.isSuccessful());
@@ -119,7 +120,7 @@ public class LoginMenuControllerUnitTest {
     }
 
     @Test
-    public void testCheckSecurityQuestion_wrongAnswer_returnsFailure() {
+    public void testCheckSecurityQuestionWrongAnswerReturnsFailure() {
         controller.forgetPassword("ali123", "ali@example.com");
         Result result = controller.checkSecurityQuestion("wrongAnswer");
         assertFalse(result.isSuccessful());
@@ -127,14 +128,14 @@ public class LoginMenuControllerUnitTest {
     }
 
     @Test
-    public void testCheckSecurityQuestion_withoutForgetPasswordFirst_returnsFailure() {
+    public void testCheckSecurityQuestionWithoutForgetPasswordFirstReturnsFailure() {
         Result result = controller.checkSecurityQuestion("fluffy");
         assertFalse(result.isSuccessful());
         assertEquals("invalid command", result.message());
     }
 
     @Test
-    public void testCheckSecurityQuestion_wrongAnswerClearsPending_blocksFurtherAttempt() {
+    public void testCheckSecurityQuestionWrongAnswerClearsPendingBlocksFurtherAttempt() {
         controller.forgetPassword("ali123", "ali@example.com");
         controller.checkSecurityQuestion("wrongAnswer");
 
@@ -143,9 +144,8 @@ public class LoginMenuControllerUnitTest {
         assertEquals("invalid command", result.message());
     }
 
-
     @Test
-    public void testResetPassword_validNewPassword_returnsSuccess() {
+    public void testResetPasswordValidNewPasswordReturnsSuccess() {
         controller.forgetPassword("ali123", "ali@example.com");
         controller.checkSecurityQuestion("fluffy");
         Result result = controller.resetPassword("NewPass1!", "NewPass1!");
@@ -154,7 +154,7 @@ public class LoginMenuControllerUnitTest {
     }
 
     @Test
-    public void testResetPassword_validNewPassword_loginWithNewPasswordWorks() {
+    public void testResetPasswordValidNewPasswordLoginWithNewPasswordWorks() {
         controller.forgetPassword("ali123", "ali@example.com");
         controller.checkSecurityQuestion("fluffy");
         controller.resetPassword("NewPass1!", "NewPass1!");
@@ -164,7 +164,7 @@ public class LoginMenuControllerUnitTest {
     }
 
     @Test
-    public void testResetPassword_validNewPassword_oldPasswordNoLongerWorks() {
+    public void testResetPasswordValidNewPasswordOldPasswordNoLongerWorks() {
         controller.forgetPassword("ali123", "ali@example.com");
         controller.checkSecurityQuestion("fluffy");
         controller.resetPassword("NewPass1!", "NewPass1!");
@@ -174,7 +174,7 @@ public class LoginMenuControllerUnitTest {
     }
 
     @Test
-    public void testResetPassword_passwordMismatch_returnsFailure() {
+    public void testResetPasswordPasswordMismatchReturnsFailure() {
         controller.forgetPassword("ali123", "ali@example.com");
         controller.checkSecurityQuestion("fluffy");
         Result result = controller.resetPassword("NewPass1!", "Different1!");
@@ -183,7 +183,7 @@ public class LoginMenuControllerUnitTest {
     }
 
     @Test
-    public void testResetPassword_weakPassword_returnsFailure() {
+    public void testResetPasswordWeakPasswordReturnsFailure() {
         controller.forgetPassword("ali123", "ali@example.com");
         controller.checkSecurityQuestion("fluffy");
         Result result = controller.resetPassword("weak", "weak");
@@ -191,14 +191,14 @@ public class LoginMenuControllerUnitTest {
     }
 
     @Test
-    public void testResetPassword_withoutSecurityCheckFirst_returnsFailure() {
+    public void testResetPasswordWithoutSecurityCheckFirstReturnsFailure() {
         Result result = controller.resetPassword("NewPass1!", "NewPass1!");
         assertFalse(result.isSuccessful());
         assertEquals("invalid command", result.message());
     }
 
     @Test
-    public void testResetPassword_calledTwice_secondCallFails() {
+    public void testResetPasswordCalledTwiceSecondCallFails() {
         controller.forgetPassword("ali123", "ali@example.com");
         controller.checkSecurityQuestion("fluffy");
         controller.resetPassword("NewPass1!", "NewPass1!");

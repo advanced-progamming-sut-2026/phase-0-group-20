@@ -37,19 +37,15 @@ public class PlantUpgradeTest {
 
         Plant actualPlant = PlantFactory.create(expectedData.id());
 
-        // Ensure the plant starts at Level 1
         assertEquals(1, actualPlant.getLevel(), "Newly created plant should be Level 1");
 
-        // Act & Assert - Loop through potential upgrades (Levels 2, 3, and 4)
         for (int targetLevel = 2; targetLevel <= 4; targetLevel++) {
 
-            // Check if this plant has an upgrade defined for this specific level in JSON
             PlantUpgrade upgrade = expectedData.upgrades().get(targetLevel);
             if (upgrade == null) {
                 continue;
             }
 
-            // Save old stats to calculate relative differences for additions (like HP or Cost)
             int oldMaxHp = actualPlant.getMaxHp();
             int oldCost = actualPlant.getCost();
             float oldActionInterval = actualPlant.getActionInterval();
@@ -71,14 +67,14 @@ public class PlantUpgradeTest {
 
                 case BUFF_ACTION_INTERVAL ->
                         assertEquals(oldActionInterval + upgrade.value(), actualPlant.getActionInterval(), 0.001f,
-                                "Action interval should decrease/increase by the upgrade value " + actualPlant.getName());
+                                "Action interval should decrease/increase by the upgrade value "
+                                        + actualPlant.getName());
 
                 case BUFF_RECHARGE -> assertEquals(oldRecharge + upgrade.value(), actualPlant.getRecharge(), 0.001f,
                         "Recharge time should be modified by the upgrade value ");
 
                 case SPECIAL_MECHANIC -> {
-                    // For special mechanics, we verify that the plant method processed it without throwing exceptions.
-                    // If you have specific flags (like isExplodeOnFinish), you can cast the plant and assert them here later.
+
                 }
             }
         }

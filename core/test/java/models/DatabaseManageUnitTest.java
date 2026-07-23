@@ -12,12 +12,16 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class DatabaseManageUnitTest {
 
-    private final String TEST_FILE_PATH = "core/test/resources/test_users.json";
-    UserRepository testRepo;
+    private static final String TEST_FILE_PATH = "core/test/resources/test_users.json";
+    private UserRepository testRepo;
     private User testUser;
 
     @Before
@@ -44,16 +48,15 @@ public class DatabaseManageUnitTest {
         DataBaseManager.resetRepositoryToDefault();
     }
 
-
     @Test
-    public void testSaveUser_userCanBeRetrievedAfterSave() {
+    public void testSaveUserUserCanBeRetrievedAfterSave() {
         User fetched = DataBaseManager.authenticateUser("ali123", "pass1234");
         assertNotNull("User should exist after saveOrUpdateUser", fetched);
         assertEquals("ali123", fetched.getUsername());
     }
 
     @Test
-    public void testSaveUser_updateExistingUser_overwritesCorrectly() {
+    public void testSaveUserUpdateExistingUserOverwritesCorrectly() {
         testUser.setNickname("AliUpdated");
         DataBaseManager.saveOrUpdateUser(testUser);
 
@@ -63,8 +66,7 @@ public class DatabaseManageUnitTest {
     }
 
     @Test
-    public void testSaveUser_doesNotDuplicateUser() {
-
+    public void testSaveUserDoesNotDuplicateUser() {
         DataBaseManager.saveOrUpdateUser(testUser);
         int countAfterFirstSave = testRepo.findAll().size();
 
@@ -72,44 +74,41 @@ public class DatabaseManageUnitTest {
         int countAfterSecondSave = testRepo.findAll().size();
 
         assertTrue(DataBaseManager.usernameExists("ali123"));
-
         assertNotNull(DataBaseManager.authenticateUser("ali123", "pass1234"));
 
-        assertEquals("repetition in saving same user shouldn't increase user count",
+        assertEquals("Repetition in saving same user shouldn't increase user count",
                 countAfterFirstSave, countAfterSecondSave);
     }
 
-
     @Test
-    public void testAuthenticateUser_correctCredentials_returnsUser() {
+    public void testAuthenticateUserCorrectCredentialsReturnsUser() {
         User result = DataBaseManager.authenticateUser("ali123", "pass1234");
         assertNotNull(result);
         assertEquals("ali123", result.getUsername());
     }
 
     @Test
-    public void testAuthenticateUser_wrongPassword_returnsNull() {
+    public void testAuthenticateUserWrongPasswordReturnsNull() {
         assertNull(DataBaseManager.authenticateUser("ali123", "wrongpass"));
     }
 
     @Test
-    public void testAuthenticateUser_wrongUsername_returnsNull() {
+    public void testAuthenticateUserWrongUsernameReturnsNull() {
         assertNull(DataBaseManager.authenticateUser("nobody", "pass1234"));
     }
 
     @Test
-    public void testAuthenticateUser_emptyCredentials_returnsNull() {
+    public void testAuthenticateUserEmptyCredentialsReturnsNull() {
         assertNull(DataBaseManager.authenticateUser("", ""));
     }
 
-
     @Test
-    public void testGetLoggedInUser_noOneLoggedIn_returnsNull() {
+    public void testGetLoggedInUserNoOneLoggedInReturnsNull() {
         assertNull(DataBaseManager.getLoggedInUser());
     }
 
     @Test
-    public void testGetLoggedInUser_userLoggedIn_returnsCorrectUser() {
+    public void testGetLoggedInUserUserLoggedInReturnsCorrectUser() {
         testUser.setStayLoggedIn(true);
         DataBaseManager.saveOrUpdateUser(testUser);
 
@@ -118,9 +117,8 @@ public class DatabaseManageUnitTest {
         assertEquals("ali123", loggedIn.getUsername());
     }
 
-
     @Test
-    public void testLogoutUser_clearsStayLoggedIn() {
+    public void testLogoutUserClearsStayLoggedIn() {
         testUser.setStayLoggedIn(true);
         DataBaseManager.saveOrUpdateUser(testUser);
 
@@ -130,82 +128,76 @@ public class DatabaseManageUnitTest {
     }
 
     @Test
-    public void testLogoutUser_nonExistentId_doesNotThrow() {
+    public void testLogoutUserNonExistentIdDoesNotThrow() {
         DataBaseManager.logoutUser("non-existent-id-999");
         assertNull(DataBaseManager.getLoggedInUser());
     }
 
-
     @Test
-    public void testGetUserForRecovery_correctUsernameAndEmail_returnsUser() {
+    public void testGetUserForRecoveryCorrectUsernameAndEmailReturnsUser() {
         User result = DataBaseManager.getUserForRecovery("ali123", "ali@example.com");
         assertNotNull(result);
         assertEquals("ali123", result.getUsername());
     }
 
     @Test
-    public void testGetUserForRecovery_wrongEmail_returnsNull() {
+    public void testGetUserForRecoveryWrongEmailReturnsNull() {
         assertNull(DataBaseManager.getUserForRecovery("ali123", "wrong@example.com"));
     }
 
     @Test
-    public void testGetUserForRecovery_wrongUsername_returnsNull() {
+    public void testGetUserForRecoveryWrongUsernameReturnsNull() {
         assertNull(DataBaseManager.getUserForRecovery("ghost", "ali@example.com"));
     }
 
-
     @Test
-    public void testUpdateForgotPassword_newPasswordWorksForLogin() {
+    public void testUpdateForgotPasswordNewPasswordWorksForLogin() {
         DataBaseManager.updateForgotPassword("ali123", PasswordUtils.hashPassword("newpass99"));
         assertNotNull(DataBaseManager.authenticateUser("ali123", "newpass99"));
     }
 
     @Test
-    public void testUpdateForgotPassword_oldPasswordNoLongerWorks() {
+    public void testUpdateForgotPasswordOldPasswordNoLongerWorks() {
         DataBaseManager.updateForgotPassword("ali123", PasswordUtils.hashPassword("newpass99"));
         assertNull(DataBaseManager.authenticateUser("ali123", "pass1234"));
     }
 
     @Test
-    public void testUpdateForgotPassword_nonExistentUser_doesNotThrow() {
-        // assert no exception
+    public void testUpdateForgotPasswordNonExistentUserDoesNotThrow() {
         DataBaseManager.updateForgotPassword("ghost_user", PasswordUtils.hashPassword("x"));
     }
 
-
     @Test
-    public void testUpdateUsername_returnsTrue() {
+    public void testUpdateUsernameReturnsTrue() {
         assertTrue(DataBaseManager.updateUsername(testUser, "ali_new"));
     }
 
     @Test
-    public void testUpdateUsername_newUsernameExistsInDB() {
+    public void testUpdateUsernameNewUsernameExistsInDB() {
         DataBaseManager.updateUsername(testUser, "ali_new");
         assertTrue(DataBaseManager.usernameExists("ali_new"));
     }
 
     @Test
-    public void testUpdateUsername_oldUsernameNoLongerExists() {
+    public void testUpdateUsernameOldUsernameNoLongerExists() {
         DataBaseManager.updateUsername(testUser, "ali_new");
         assertFalse(DataBaseManager.usernameExists("ali123"));
     }
 
-
     @Test
-    public void testUpdateEmail_newEmailWorksForRecovery() {
+    public void testUpdateEmailNewEmailWorksForRecovery() {
         DataBaseManager.updateEmail(testUser, "new@example.com");
         assertNotNull(DataBaseManager.getUserForRecovery("ali123", "new@example.com"));
     }
 
     @Test
-    public void testUpdateEmail_oldEmailNoLongerWorksForRecovery() {
+    public void testUpdateEmailOldEmailNoLongerWorksForRecovery() {
         DataBaseManager.updateEmail(testUser, "new@example.com");
         assertNull(DataBaseManager.getUserForRecovery("ali123", "ali@example.com"));
     }
 
-
     @Test
-    public void testUpdateNickname_nicknameChangedSuccessfully() {
+    public void testUpdateNicknameNicknameChangedSuccessfully() {
         DataBaseManager.updateNickname(testUser, "SuperAli");
 
         User fetched = DataBaseManager.authenticateUser("ali123", "pass1234");
@@ -213,43 +205,41 @@ public class DatabaseManageUnitTest {
         assertEquals("SuperAli", fetched.getNickname());
     }
 
-
     @Test
-    public void testUpdatePassword_correctOldPassword_returnsTrue() {
+    public void testUpdatePasswordCorrectOldPasswordReturnsTrue() {
         assertTrue(DataBaseManager.updatePassword(testUser, "pass1234", "newSecure99"));
     }
 
     @Test
-    public void testUpdatePassword_wrongOldPassword_returnsFalse() {
+    public void testUpdatePasswordWrongOldPasswordReturnsFalse() {
         assertFalse(DataBaseManager.updatePassword(testUser, "wrongOld", "newSecure99"));
     }
 
     @Test
-    public void testUpdatePassword_afterUpdate_newPasswordWorks() {
+    public void testUpdatePasswordAfterUpdateNewPasswordWorks() {
         DataBaseManager.updatePassword(testUser, "pass1234", "newSecure99");
         assertNotNull(DataBaseManager.authenticateUser("ali123", "newSecure99"));
     }
 
     @Test
-    public void testUpdatePassword_afterUpdate_oldPasswordFails() {
+    public void testUpdatePasswordAfterUpdateOldPasswordFails() {
         DataBaseManager.updatePassword(testUser, "pass1234", "newSecure99");
         assertNull(DataBaseManager.authenticateUser("ali123", "pass1234"));
     }
 
     @Test
-    public void testUpdatePassword_wrongOldPassword_passwordUnchanged() {
+    public void testUpdatePasswordWrongOldPasswordPasswordUnchanged() {
         DataBaseManager.updatePassword(testUser, "wrongOld", "newSecure99");
         assertNotNull(DataBaseManager.authenticateUser("ali123", "pass1234"));
     }
 
-
     @Test
-    public void testUsernameExists_existingUsername_returnsTrue() {
+    public void testUsernameExistsExistingUsernameReturnsTrue() {
         assertTrue(DataBaseManager.usernameExists("ali123"));
     }
 
     @Test
-    public void testUsernameExists_nonExistingUsername_returnsFalse() {
+    public void testUsernameExistsNonExistingUsernameReturnsFalse() {
         assertFalse(DataBaseManager.usernameExists("ghost_user"));
     }
 }

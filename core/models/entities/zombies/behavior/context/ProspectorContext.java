@@ -4,7 +4,7 @@ import models.game.GameSession;
 
 public class ProspectorContext {
     private int dynamiteTimer = 0;
-    private final int EXPLOSION_TIME = 100;
+    private static final int EXPLOSION_TIME = 100;
     private boolean isDynamiteLit = true;
     private boolean isMovingReverse = false;
 

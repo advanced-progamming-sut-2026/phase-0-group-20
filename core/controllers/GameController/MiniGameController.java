@@ -96,7 +96,8 @@ public class MiniGameController {
             return new Result(false, "You can only spawn zombies in iZombie minigame!");
 
         if (!level.isValidZombiePlacement(col))
-            return new Result(false, "Invalid placement! You must place zombies behind the red line (Col " + level.getRedLineCol() + " or greater).");
+            return new Result(false, "Invalid placement! You must place zombies behind the red line"+
+                    " (Col " + level.getRedLineCol() + " or greater).");
 
         ZombieType type = ZombieType.fromAlias(zombieAlias);
         Zombie newZombie = InGameEntityGenerator.getZombieForGame(type, row);
@@ -104,7 +105,8 @@ public class MiniGameController {
         int cost = newZombie.getWaveCost();
 
         if (session.getCurrentSun() < cost)
-            return new Result(false, "Not enough sun! You need " + cost + " but have " + session.getCurrentSun());
+            return new Result(false, "Not enough sun! " +
+                    "You need " + cost + " but have " + session.getCurrentSun());
 
         session.addSun(-cost);
         newZombie.setCol(col);
@@ -149,7 +151,7 @@ public class MiniGameController {
 
         } else if (currentMode instanceof VaseBreakerLevel) {
             mapDisplay.append("Minigame: Vasebreaker\n");
-        } else if (currentMode instanceof models.game.minigame.BeghouledLevel level) {
+        } else if (currentMode instanceof BeghouledLevel level) {
             mapDisplay.append("Minigame: Beghouled\n");
             mapDisplay.append("Sun: ").append(session.getCurrentSun()).append("\n");
             mapDisplay.append("Matches Progress: ").append(level.getSuccessfulMatches())
@@ -158,6 +160,12 @@ public class MiniGameController {
 
         mapDisplay.append("----------------------------\n");
 
+        makeTheField(arena, mapDisplay);
+
+        return new Result(true, mapDisplay.toString().trim());
+    }
+
+    private static void makeTheField(Arena arena, StringBuilder mapDisplay) {
         int rows = arena.getRows();
         int cols = arena.getCols();
 
@@ -182,42 +190,48 @@ public class MiniGameController {
                 }
 
                 mapDisplay.append("-zombies:\n");
-                if (zombiesInTile.isEmpty()) {
-                    mapDisplay.append("     -None\n");
-                } else {
-                    mapDisplay.append("     -");
-                    for (int k = 0; k < zombiesInTile.size(); k++) {
-                        Zombie z = zombiesInTile.get(k);
-                        mapDisplay.append(z.getName()).append(":")
-                                .append((int) (z.getX() / models.enums.PhysicalConstants.TILE_UNIT_LENGTH)).append(",")
-                                .append(z.getRow());
-
-                        if (k < zombiesInTile.size() - 1) {
-                            mapDisplay.append(", ");
-                        }
-                    }
-                    mapDisplay.append("\n");
-                }
+                addZombiesToMap(mapDisplay, zombiesInTile);
 
                 mapDisplay.append("-plants:\n");
-                if (tile == null || tile.getPlants() == null || tile.getPlants().isEmpty()) {
-                    mapDisplay.append("    -None\n");
-                } else {
-                    mapDisplay.append("    -");
-                    java.util.List<Plant> plantsInTile = tile.getPlants();
-                    for (int k = 0; k < plantsInTile.size(); k++) {
-                        mapDisplay.append(plantsInTile.get(k).getName());
-
-                        if (k < plantsInTile.size() - 1) {
-                            mapDisplay.append(", ");
-                        }
-                    }
-                    mapDisplay.append("\n");
-                }
+                addPlantToMap(mapDisplay, tile);
             }
         }
+    }
 
-        return new Result(true, mapDisplay.toString().trim());
+    private static void addPlantToMap(StringBuilder mapDisplay, Tile tile) {
+        if (tile == null || tile.getPlants() == null || tile.getPlants().isEmpty()) {
+            mapDisplay.append("    -None\n");
+        } else {
+            mapDisplay.append("    -");
+            List<Plant> plantsInTile = tile.getPlants();
+            for (int k = 0; k < plantsInTile.size(); k++) {
+                mapDisplay.append(plantsInTile.get(k).getName());
+
+                if (k < plantsInTile.size() - 1) {
+                    mapDisplay.append(", ");
+                }
+            }
+            mapDisplay.append("\n");
+        }
+    }
+
+    private static void addZombiesToMap(StringBuilder mapDisplay, List<Zombie> zombiesInTile) {
+        if (zombiesInTile.isEmpty()) {
+            mapDisplay.append("     -None\n");
+        } else {
+            mapDisplay.append("     -");
+            for (int k = 0; k < zombiesInTile.size(); k++) {
+                Zombie z = zombiesInTile.get(k);
+                mapDisplay.append(z.getName()).append(":")
+                        .append((int) (z.getX() / models.enums.PhysicalConstants.TILE_UNIT_LENGTH)).append(",")
+                        .append(z.getRow());
+
+                if (k < zombiesInTile.size() - 1) {
+                    mapDisplay.append(", ");
+                }
+            }
+            mapDisplay.append("\n");
+        }
     }
 
 

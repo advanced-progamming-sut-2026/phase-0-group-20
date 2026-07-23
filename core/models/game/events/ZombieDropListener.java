@@ -40,18 +40,18 @@ public class ZombieDropListener implements GameEventListener {
                         cnt++;
                         if (pot.getPotCondition() == PotCondition.LOCKED) {
                             pot.setPotCondition(PotCondition.EMPTY);
-                            GameSession.notify("A zombie dropped a pot; you have " + cnt + " <coins/diamonds/pots> now.");
+                            GameSession.notify("A zombie dropped a pot; you have " + cnt + " pots now.");
                         }
                     }
                 }
             }
             case DIAMOND -> {
                 user.earnDiamond(1);
-                GameSession.notify("A zombie dropped a diamond; you have " + user.getDiamond() + " <coins/diamonds/pots> now.");
+                GameSession.notify("A zombie dropped a diamond; you have " + user.getDiamond() + " diamonds now.");
             }
             case COIN -> {
                 user.earnCoin(50);
-                GameSession.notify("A zombie dropped 50 coins; you have " + user.getCoin() + " <coins/diamonds/pots> now.");
+                GameSession.notify("A zombie dropped 50 coins; you have " + user.getCoin() + " coins now.");
             }
         }
 

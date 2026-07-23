@@ -33,7 +33,8 @@ public class ScoreManager implements GameEventListener, Ticker {
             if (entry.getValue() > 1) {
                 int multiKillBonus = entry.getValue() * 50;
                 totalMewpoints += multiKillBonus;
-                GameSession.notify("Multikill! One plant killed " + entry.getValue() + " zombies! +" + multiKillBonus + " Mewpoints");
+                GameSession.notify("Multikill! One plant killed " + entry.getValue() +
+                        " zombies! +" + multiKillBonus + " Mewpoints");
             }
         }
 

@@ -14,7 +14,7 @@ import java.util.List;
  */
 
 public class SpikeStrategy implements IPlantStrategy {
-    private final int DAMAGE_INTERVAL = TimeManager.TICKS_PER_SECOND;
+    private static final int DAMAGE_INTERVAL = TimeManager.TICKS_PER_SECOND;
     boolean hasArmor = false;
     int damage;
     private int lastDamageTick = 0;
@@ -29,7 +29,8 @@ public class SpikeStrategy implements IPlantStrategy {
             boolean dealtDamage = false;
 
 
-            List<Zombie> attackingZombies = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 0.8);
+            List<Zombie> attackingZombies = GameSession.getInstance().getArena()
+                    .getZombiesInRadius(plantCol, plantRow, 0.8);
 
             for (Zombie z : attackingZombies) {
                 damage = 20;

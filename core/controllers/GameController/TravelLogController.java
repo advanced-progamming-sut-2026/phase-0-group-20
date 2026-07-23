@@ -147,7 +147,8 @@ public class TravelLogController {
 
             int maxUnlocked = activeUser.getUnlockedLevelInMinigame(type);
             if (levelNumber - 1 > maxUnlocked)
-                return new Result(false, "Level " + levelNumber + " is LOCKED! You must beat level " + (levelNumber - 1) + " first.");
+                return new Result(false, "Level " + levelNumber + " is LOCKED!" +
+                        " You must beat level " + (levelNumber - 1) + " first.");
 
             Level minigameLevel = MiniGameFactory.createLevel(type, levelNumber);
             GameSession.setMinigameLevel(minigameLevel);

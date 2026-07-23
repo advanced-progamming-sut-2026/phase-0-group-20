@@ -16,11 +16,14 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class MainMenuControllerUnitTest {
 
-    private final String TEST_FILE_PATH = "core/test/resources/test_users_main.json";
+    private static final String TEST_FILE_PATH = "core/test/resources/test_users_main.json";
     private MainMenuController controller;
     private User testUser;
 
@@ -50,28 +53,27 @@ public class MainMenuControllerUnitTest {
         DataBaseManager.resetRepositoryToDefault();
     }
 
-
     @Test
-    public void testLogout_loggedInUser_returnsSuccess() {
+    public void testLogoutLoggedInUserReturnsSuccess() {
         Result result = controller.logout();
         assertTrue(result.isSuccessful());
         assertEquals("logged out successfully", result.message());
     }
 
     @Test
-    public void testLogout_clearsActiveUser() {
+    public void testLogoutClearsActiveUser() {
         controller.logout();
         assertNull(App.getActiveUser());
     }
 
     @Test
-    public void testLogout_setsMenuToLoginMenu() {
+    public void testLogoutSetsMenuToLoginMenu() {
         controller.logout();
         assertEquals(Menu.LOGIN_MENU, App.getActiveMenu());
     }
 
     @Test
-    public void testLogout_clearsStayLoggedIn() {
+    public void testLogoutClearsStayLoggedIn() {
         testUser.setStayLoggedIn(true);
         DataBaseManager.saveOrUpdateUser(testUser);
 
@@ -81,7 +83,7 @@ public class MainMenuControllerUnitTest {
     }
 
     @Test
-    public void testLogout_noLoggedInUser_returnsFailure() {
+    public void testLogoutNoLoggedInUserReturnsFailure() {
         App.setActiveUser(null);
         Result result = controller.logout();
         assertFalse(result.isSuccessful());

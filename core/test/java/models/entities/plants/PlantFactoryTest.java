@@ -44,13 +44,20 @@ public class PlantFactoryTest {
         Plant actualPlant = PlantFactory.create(expectedData.id());
 
         assertAll("Verifying initial stats for plant: " + expectedData.name(),
-                () -> assertEquals(expectedData.name(), actualPlant.getName(), "Plant name mismatch"),
-                () -> assertEquals(expectedData.baseHp(), actualPlant.getBaseHp(), "Base HP mismatch"),
-                () -> assertEquals(expectedData.baseHp(), actualPlant.getCurrentHp(), "Plant should spawn with full HP"),
-                () -> assertEquals(expectedData.cost(), actualPlant.getCost(), "Sun cost mismatch"),
-                () -> assertEquals(expectedData.damage(), actualPlant.getDamage(), "Initial damage mismatch"),
-                () -> assertEquals(expectedData.actionInterval(), actualPlant.getActionInterval(), "Action interval mismatch"),
-                () -> assertEquals(expectedData.recharge(), actualPlant.getRecharge(), "Recharge time mismatch")
+                () -> assertEquals(expectedData.name(),
+                        actualPlant.getName(), "Plant name mismatch"),
+                () -> assertEquals(expectedData.baseHp(),
+                        actualPlant.getBaseHp(), "Base HP mismatch"),
+                () -> assertEquals(expectedData.baseHp(),
+                        actualPlant.getCurrentHp(), "Plant should spawn with full HP"),
+                () -> assertEquals(expectedData.cost(),
+                        actualPlant.getCost(), "Sun cost mismatch"),
+                () -> assertEquals(expectedData.damage(),
+                        actualPlant.getDamage(), "Initial damage mismatch"),
+                () -> assertEquals(expectedData.actionInterval(),
+                        actualPlant.getActionInterval(), "Action interval mismatch"),
+                () -> assertEquals(expectedData.recharge(),
+                        actualPlant.getRecharge(), "Recharge time mismatch")
         );
     }
 }

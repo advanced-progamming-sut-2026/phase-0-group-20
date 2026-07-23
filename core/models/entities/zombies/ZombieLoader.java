@@ -60,7 +60,9 @@ public class ZombieLoader {
                 }
             }
 
-            ZombieData data = new ZombieData(aliases.getString(0), hp, speed, eatDps, waveCost, food, smash, imp, armorProps);
+            ZombieData data = new ZombieData(aliases.getString(
+                    0), hp, speed, eatDps, waveCost, food, smash, imp, armorProps
+            );
 
             for (int j = 0; j < aliases.length(); j++) {
                 dataMap.put(aliases.getString(j), data);

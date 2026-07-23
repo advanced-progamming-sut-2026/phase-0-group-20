@@ -116,11 +116,11 @@ public class IceCaveModifier implements SeasonModifier {
             if (!frozenRow.contains(lane)) frozenRow.add(lane);
         }
 
-        for (int Row : frozenRow) {
-            notify("A freezing wind sweeps through lane " + Row + "!");
+        for (int row : frozenRow) {
+            notify("A freezing wind sweeps through lane " + row + "!");
             for (Plant plant : new ArrayList<>(arena.getActivePlants())) {
                 Tile tile = plant.getPlacedTile();
-                if (tile == null || tile.getRow() != Row) continue;
+                if (tile == null || tile.getRow() != row) continue;
                 if (plant.getTags().contains(PlantTag.FIRE)) continue;
 
                 applyFrostbite(plant, arena);

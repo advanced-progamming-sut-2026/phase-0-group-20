@@ -7,7 +7,9 @@ import models.news.Message;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class NewsControllerUnitTest {
 
@@ -20,13 +22,13 @@ public class NewsControllerUnitTest {
     }
 
     private void addMessages(Message... messages) {
-        for (Message m : messages)
+        for (Message m : messages) {
             App.getNews().addMessages(m);
+        }
     }
 
-
     @Test
-    public void testShowUnreadNews_singleUnreadMessage_returnsMessageText() {
+    public void testShowUnreadNewsSingleUnreadMessageReturnsMessageText() {
         addMessages(new Message("msg1"));
         Result result = controller.showUnreadNews();
         assertTrue(result.isSuccessful());
@@ -34,7 +36,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowUnreadNews_multipleUnreadMessages_returnsAllTexts() {
+    public void testShowUnreadNewsMultipleUnreadMessagesReturnsAllTexts() {
         addMessages(new Message("msg1"), new Message("msg2"), new Message("msg3"));
         Result result = controller.showUnreadNews();
         assertTrue(result.isSuccessful());
@@ -44,7 +46,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowUnreadNews_marksUnreadMessagesAsRead() {
+    public void testShowUnreadNewsMarksUnreadMessagesAsRead() {
         Message msg1 = new Message("msg1");
         Message msg2 = new Message("msg2");
         addMessages(msg1, msg2);
@@ -56,7 +58,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowUnreadNews_excludesAlreadyReadMessages() {
+    public void testShowUnreadNewsExcludesAlreadyReadMessages() {
         Message readMsg = new Message("already read");
         readMsg.setUnread(false);
         Message unreadMsg = new Message("new message");
@@ -68,7 +70,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowUnreadNews_noUnreadMessages_returnsEmptyText() {
+    public void testShowUnreadNewsNoUnreadMessagesReturnsEmptyText() {
         Message readMsg = new Message("already read");
         readMsg.setUnread(false);
         addMessages(readMsg);
@@ -79,14 +81,14 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowUnreadNews_noMessages_returnsEmptyText() {
+    public void testShowUnreadNewsNoMessagesReturnsEmptyText() {
         Result result = controller.showUnreadNews();
         assertTrue(result.isSuccessful());
         assertEquals("", result.message());
     }
 
     @Test
-    public void testShowUnreadNews_calledTwice_secondCallReturnsEmpty() {
+    public void testShowUnreadNewsCalledTwiceSecondCallReturnsEmpty() {
         addMessages(new Message("msg1"), new Message("msg2"));
 
         controller.showUnreadNews();
@@ -97,7 +99,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowUnreadNews_mixedMessages_onlyUnreadInResult() {
+    public void testShowUnreadNewsMixedMessagesOnlyUnreadInResult() {
         Message read1 = new Message("first read message");
         read1.setUnread(false);
         Message unread1 = new Message("first unread message");
@@ -114,7 +116,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowUnreadNews_doesNotChangeReadStatusOfAlreadyReadMessages() {
+    public void testShowUnreadNewsDoesNotChangeReadStatusOfAlreadyReadMessages() {
         Message readMsg = new Message("already read");
         readMsg.setUnread(false);
         addMessages(readMsg);
@@ -124,15 +126,14 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowUnreadNews_multipleMessages_noTrailingNewline() {
+    public void testShowUnreadNewsMultipleMessagesNoTrailingNewline() {
         addMessages(new Message("msg1"), new Message("msg2"));
         Result result = controller.showUnreadNews();
         assertFalse(result.message().endsWith("\n"));
     }
 
-
     @Test
-    public void testShowAllNews_singleMessage_returnsMessageText() {
+    public void testShowAllNewsSingleMessageReturnsMessageText() {
         addMessages(new Message("msg1"));
         Result result = controller.showAllNews();
         assertTrue(result.isSuccessful());
@@ -140,7 +141,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowAllNews_multipleMessages_returnsAllTexts() {
+    public void testShowAllNewsMultipleMessagesReturnsAllTexts() {
         addMessages(new Message("msg1"), new Message("msg2"), new Message("msg3"));
         Result result = controller.showAllNews();
         assertTrue(result.isSuccessful());
@@ -150,7 +151,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowAllNews_marksAllMessagesAsRead() {
+    public void testShowAllNewsMarksAllMessagesAsRead() {
         Message msg1 = new Message("msg1");
         Message msg2 = new Message("msg2");
         addMessages(msg1, msg2);
@@ -162,7 +163,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowAllNews_includesAlreadyReadMessages() {
+    public void testShowAllNewsIncludesAlreadyReadMessages() {
         Message readMsg = new Message("already read");
         readMsg.setUnread(false);
         addMessages(readMsg);
@@ -173,14 +174,14 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowAllNews_noMessages_returnsEmptyText() {
+    public void testShowAllNewsNoMessagesReturnsEmptyText() {
         Result result = controller.showAllNews();
         assertTrue(result.isSuccessful());
         assertEquals("", result.message());
     }
 
     @Test
-    public void testShowAllNews_calledTwice_secondCallStillReturnsAllMessages() {
+    public void testShowAllNewsCalledTwiceSecondCallStillReturnsAllMessages() {
         addMessages(new Message("msg1"), new Message("msg2"));
 
         controller.showAllNews();
@@ -192,7 +193,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowAllNews_mixedReadAndUnread_returnsAll() {
+    public void testShowAllNewsMixedReadAndUnreadReturnsAll() {
         Message readMsg = new Message("read");
         readMsg.setUnread(false);
         Message unreadMsg = new Message("unread");
@@ -204,7 +205,7 @@ public class NewsControllerUnitTest {
     }
 
     @Test
-    public void testShowAllNews_multipleMessages_noTrailingNewline() {
+    public void testShowAllNewsMultipleMessagesNoTrailingNewline() {
         addMessages(new Message("msg1"), new Message("msg2"));
         Result result = controller.showAllNews();
         assertFalse(result.message().endsWith("\n"));
