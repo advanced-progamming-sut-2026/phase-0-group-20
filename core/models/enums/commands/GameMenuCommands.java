@@ -8,8 +8,8 @@ public enum GameMenuCommands implements Commands {
     ENTER_LEADERBOARD("^\\s*menu\\s+leaderboard\\s*$"),
     ENTER_COIN_WALLET("^\\s*menu\\s+coin-wallet\\s*$"),
     ENTER_GEM_WALLET("^\\s*menu\\s+gem-wallet\\s*$"),
-    CHEAT_ADD("^\\s*menu\\s+cheat\\s+add\\s+(?<amount>\\d+)\\s+(?<type>coin|diamond)\\s*$");
-
+    CHEAT_ADD("^\\s*menu\\s+cheat\\s+add\\s+(?<amount>\\d+)\\s+(?<type>coin|diamond)\\s*$"),
+    PRINT_ADVENTURE("^\\s*print\\s+adventure\\s*$");
     private final String pattern;
 
     GameMenuCommands(String pattern) {

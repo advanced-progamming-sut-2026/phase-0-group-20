@@ -177,6 +177,55 @@ public class TravelLogController {
         }
     }
 
+    public Result printMiniGames() {
+        if (currentPage != ValidPageNames.MINIGAME)
+            return new Result(false, "You must be in the MINIGAME page to view the minigames map.");
+
+        activeUser = App.getActiveUser();
+        if (activeUser == null)
+            return new Result(false, "No active user found!");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n--- MiniGames Map ---\n\n");
+
+        MiniGameType[] minigames = MiniGameType.values();
+        for (int i = 0; i < minigames.length; i++) {
+            MiniGameType type = minigames[i];
+
+            String rawName = type.name().replace("_", " ").toLowerCase();
+            String prettyName = rawName.substring(0, 1).toUpperCase() + rawName.substring(1);
+
+            String prefix = String.format("%d. %-15s -> ", i + 1, prettyName);
+
+            StringBuilder boxRow = new StringBuilder(prefix);
+            StringBuilder labelRow = new StringBuilder(" ".repeat(prefix.length()));
+
+            int completedLevels = activeUser.getUnlockedLevelInMinigame(type);
+            int totalLevels = 3;
+
+            for (int j = 1; j <= totalLevels; j++) {
+
+                boolean isUnlocked = (j <= completedLevels + 1);
+
+                String box = isUnlocked ? "[Unlocked]" : "[ Locked ]";
+                String lbl = String.format("  Lvl %-4d", j);
+
+                boxRow.append(box);
+                labelRow.append(lbl);
+
+                if (j < totalLevels) {
+                    boxRow.append("--");
+                    labelRow.append("  ");
+                }
+            }
+
+            sb.append(boxRow.toString()).append("\n");
+            sb.append(labelRow.toString()).append("\n\n");
+        }
+
+        return new Result(true, sb.toString().trim());
+    }
+
     private String buildMinigamesView() {
         StringBuilder sb = new StringBuilder();
 
@@ -204,5 +253,7 @@ public class TravelLogController {
         EPIC,
         MINIGAME;
     }
+
+
 
 }

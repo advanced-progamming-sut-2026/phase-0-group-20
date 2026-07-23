@@ -34,6 +34,8 @@ public class GameMenu implements AppMenu {
             int amount = Integer.parseInt(matcher.group("amount")); // bug for string
             String type = matcher.group("type");
             System.out.println(controller.cheat(amount, type));
+        } else if ((matcher = GameMenuCommands.PRINT_ADVENTURE.getMatcher(input)) != null) {
+            System.out.println(controller.printAdventure());
         } else {
             invalidCommands();
         }
