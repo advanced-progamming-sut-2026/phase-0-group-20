@@ -90,6 +90,8 @@ public class BonusLevel extends Level implements GameEventListener {
 
         if (availableZombies == null || availableZombies.isEmpty()) return;
 
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.WAVE_STARTED).build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.WAVE_STARTED,payload);
         while (accumulatedCost < targetDifficulty) {
             Zombie template = availableZombies.get(waveRandom.nextInt(availableZombies.size()));
 

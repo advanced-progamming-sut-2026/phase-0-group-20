@@ -116,7 +116,8 @@ public abstract class Level implements GameMode {
 
         List<Zombie> allowedZombies = session.getChosenZombies();
         if (allowedZombies.isEmpty()) return;
-
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.WAVE_STARTED).build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.WAVE_STARTED,payload);
         Random random = new Random();
         while (accumulatedCost < targetDifficulty) {
             Zombie template = allowedZombies.get(random.nextInt(allowedZombies.size()));

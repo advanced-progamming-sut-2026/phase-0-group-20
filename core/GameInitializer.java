@@ -24,7 +24,6 @@ public class GameInitializer {
         initPlants();
         initZombies();
         DailyResetListener dailyResetListener = new DailyResetListener();
-        GameEventMessenger.getInstance().addListener(GameEvent.NEW_DAY_STARTED, dailyResetListener);
     }
 
     private static void initPlants() {
