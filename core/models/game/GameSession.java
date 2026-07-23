@@ -25,6 +25,12 @@ public class GameSession {
     private static GameSession instance;
     // for mew points
     private static BonusLevel pendingBonusLevel = null;
+    // for minigame
+    private static Level minigameLevel = null;
+    //for all level
+    private static Level pendingLevel = null;
+    private static Chapter pendingChapter = null;
+
     private final List<Plant> chosenPlants;
     private final List<Zombie> chosenZombies;
     private final List<PlantFood> plantFoods = new ArrayList<>();
@@ -42,9 +48,6 @@ public class GameSession {
     private boolean zombieBreached = false;
     private ZombieDropListener dropListener;
     private ProgressListener progressListener;
-
-    // for minigame
-    private static Level minigameLevel = null;
 
 
     private GameSession(Chapter chapter, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
@@ -87,7 +90,7 @@ public class GameSession {
 
     public static void startNewGame(List<Plant> inGamePlants) {
         Adventure adventure = App.getActiveAdventure();
-        Level currentLevel = adventure.getCurrentChapter().getCurrentLevel();
+        Level currentLevel = pendingLevel;
 
         List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(
                 adventure.getCurrentChapter().getSeasonType(),
@@ -96,7 +99,7 @@ public class GameSession {
 
         Arena arena = new Arena();
         GameSession.destroyInstance();
-        GameSession session = GameSession.getInstance(adventure.getCurrentChapter(),
+        GameSession session = GameSession.getInstance(pendingChapter,
                 arena, inGamePlants, inGameZombies);
         arena.registerLawnMowers();
         App.setActiveSession(session);
@@ -105,6 +108,8 @@ public class GameSession {
             for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));
         currentLevel.onStart(session);
+        pendingChapter = null;
+        pendingLevel = null;
     }
 
     public static void startMiniGame(Level minigameLevel, List<Plant> inGamePlants) {
@@ -114,7 +119,6 @@ public class GameSession {
         Chapter fakeChapter = new Chapter(SeasonType.MINI_GAME);
 
         List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(SeasonType.MINI_GAME, minigameLevel.getLevelNumber());
-        if (inGameZombies == null) inGameZombies = new ArrayList<>();
 
         GameSession session = GameSession.getInstance(fakeChapter, arena, inGamePlants, inGameZombies);
 
@@ -398,5 +402,18 @@ public class GameSession {
 
     public static void setMinigameLevel(Level minigameLevel) {
         GameSession.minigameLevel = minigameLevel;
+    }
+
+
+    public static void setPendingLevel(Level pendingLevel) {
+        GameSession.pendingLevel = pendingLevel;
+    }
+
+    public static Chapter getPendingChapter() {
+        return pendingChapter;
+    }
+
+    public static void setPendingChapter(Chapter pendingChapter) {
+        GameSession.pendingChapter = pendingChapter;
     }
 }

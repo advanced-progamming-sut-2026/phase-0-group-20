@@ -1,5 +1,6 @@
 package controllers.GameController;
 
+import controllers.NavigationController;
 import models.App;
 import models.InGameEntityGenerator;
 import models.Result;
@@ -7,6 +8,7 @@ import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
+import models.entities.zombies.ZombieType;
 import models.fields.LawnMower;
 import models.fields.tiles.*;
 import models.game.Arena;
@@ -20,7 +22,6 @@ import models.timeManager.TimeManager;
 import models.users.User;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,6 +42,12 @@ public class GameFlowController {
             return new Result(false, "Invalid amount given. (Integer above ZERO)");
         }
         GameSession.getInstance().update(timeAmount);
+
+        if (GameSession.getInstance().isGameOver()) {
+            NavigationController.exitMenu();
+            return new Result(true, "Returned to " + App.getActiveMenu().getName());
+        }
+
         return new Result(true, "Successfully advanced time for " + timeAmount + " ticks.");
     }
 
@@ -246,6 +253,40 @@ public class GameFlowController {
             user.addPlantFoodCount(1);
         }
         return new Result(true, "You successfully gained a food plant");
+    }
+
+    public Result cheatSpawnZombie(String zombieTypeStr, String x, String y) {
+        Integer spawnX = parsePositiveInt(x);
+        Integer spawnY = parsePositiveInt(y);
+
+        if (spawnX == null || spawnY == null)
+            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
+
+        GameSession session = GameSession.getInstance();
+        Arena arena = session.getArena();
+
+        if (spawnY - 1 >= arena.getRows() || spawnX - 1 >= arena.getCols())
+            return new Result(false, "Az khat zadi biroon ke!!");
+
+        ZombieType type = null;
+        for (ZombieType zombieType : ZombieType.values()) {
+            if (zombieType.name().replace("_", "")// look at names we don't need _
+                    .equalsIgnoreCase(zombieTypeStr.replace(" ", ""))) {
+                type = zombieType;
+                break;
+            }
+        }
+
+        if (type == null)
+            return new Result(false, "Invalid zombie type: " + zombieTypeStr);
+
+        Zombie newZombie = InGameEntityGenerator.getZombieForGame(type, spawnY - 1);
+        newZombie.setCol(spawnX - 1);
+        arena.addZombie(newZombie);
+        session.getTimeManager().registerNewTicker(newZombie);
+
+        return new Result(true, "Cheat Activated. Spawned " + newZombie.getName() +
+                " at (" + spawnX + ", " + spawnY + ").");
     }
 
     public Result showMap() {

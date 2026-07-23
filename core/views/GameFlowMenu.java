@@ -75,6 +75,9 @@ public class GameFlowMenu implements AppMenu {
             System.out.println(gameFlowcontroller.showTileStatus(matcher.group("x"), matcher.group("y")));
         } else if (GameFlowCommands.PRINT_MAP.getMatcher(input) != null) {
             System.out.println(gameFlowcontroller.printMap());
+        } else if ((matcher = GameFlowCommands.CHEAT_SPAWN_ZOMBIE.getMatcher(input)) != null) {
+            System.out.println(gameFlowcontroller.cheatSpawnZombie(
+                    matcher.group("zombieType"), matcher.group("x"), matcher.group("y")));
         } else {
             return false;
         }
