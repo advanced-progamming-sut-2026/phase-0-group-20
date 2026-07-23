@@ -105,52 +105,46 @@ public class ProjectileMechanism {
         String name = plant.getName();
 
         switch (name) {
-            case "Peashooter":
-            case "Snow Pea":
-            case "Fire Peashooter":
-            case "Goo Peashooter":
-            case "Sea-shroom":
-            case "Puff-shroom":
-                configs.add(new float[]{0, 0, 1, 0});
-                break;
-            case "Repeater":
+            case "Peashooter", "Snow Pea", "Fire Peashooter", "Goo Peashooter", "Sea-shroom", "Puff-shroom" ->
+                    configs.add(new float[]{0, 0, 1, 0});
+            case "Repeater" -> {
                 configs.add(new float[]{0, 0, 1, 0});
                 configs.add(new float[]{-1, 0, 1, 0});
-                break;
-            case "Pea Pod":
+            }
+            case "Pea Pod" -> {
                 for (int i = 0; i < plant.getStackCount(); i++) {
                     configs.add(new float[]{-i, 0, 1, 0});
                 }
-                break;
-            case "Threepeater":
+            }
+            case "Threepeater" -> {
                 configs.add(new float[]{0, -1, 1, 0}); // top line
                 configs.add(new float[]{0, 0, 1, 0});  // middle line
                 configs.add(new float[]{0, 1, 1, 0});  // bottom line
-                break;
-            case "Rotobaga":
+            }
+            case "Rotobaga" -> {
                 configs.add(new float[]{0, 0, 1, -1});  // top-right
                 configs.add(new float[]{0, 0, 1, 1});   // bottom-right
                 configs.add(new float[]{0, 0, -1, -1}); // top-left
                 configs.add(new float[]{0, 0, -1, 1});  // bottom-left
-                break;
-            case "Split Pea":
-                configs.add(new float[]{0, 0, 1, 0}); //forward
+            }
+            case "Split Pea" -> {
+                configs.add(new float[]{0, 0, 1, 0}); // forward
                 configs.add(new float[]{0, 0, -1, 0}); // one backward
                 configs.add(new float[]{1, 0, -1, 0}); // two backward
-                break;
-            case "Starfruit":
+            }
+            case "Starfruit" -> {
                 configs.add(new float[]{0, 0, -1, 0});  // backward
                 configs.add(new float[]{0, 0, 0, -1});  // up
                 configs.add(new float[]{0, 0, 0, 1});   // down
                 configs.add(new float[]{0, 0, 1, -1});  // up-right
                 configs.add(new float[]{0, 0, 1, 1});   // down-right
-                break;
-            case "Mega Gatling Pea":
+            }
+            case "Mega Gatling Pea" -> {
                 configs.add(new float[]{0, 0, 1, 0});
                 configs.add(new float[]{-1, 0, 1, 0});
                 configs.add(new float[]{-2, 0, 1, 0});
                 configs.add(new float[]{-3, 0, 1, 0});
-                break;
+            }
         }
         return configs;
     }

@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class App {
-    private static final Settings settings = Settings.getInstance();
-    private static final News news = News.getInstance();
+    private static final Settings SETTINGS = Settings.getInstance();
+    private static final News NEWS = News.getInstance();
     private static User activeUser;
     private static Menu activeMenu = Menu.SIGNUP_MENU;
     private static ArrayList<Zombie> allZombies;
@@ -25,7 +25,7 @@ public class App {
     private static List<User> allUsers;
 
     public static void changeDifficulty(int difficulty) {
-        settings.setDifficulty(difficulty);
+        SETTINGS.setDifficulty(difficulty);
     }
 
     public static User getActiveUser() {
@@ -61,11 +61,11 @@ public class App {
     }
 
     public static Settings getSettings() {
-        return settings;
+        return SETTINGS;
     }
 
     public static News getNews() {
-        return news;
+        return NEWS;
     }
 
     public static Adventure getActiveAdventure() {

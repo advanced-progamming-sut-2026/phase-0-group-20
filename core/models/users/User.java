@@ -57,7 +57,9 @@ public class User {
     public User(String username, String passwordHash, String nickname, String email,
                 Gender gender, SecurityQuestion securityQuestion, String securityAnswerHash) {
 
-        this.account = new UserAccount(username, passwordHash, nickname, email, gender, securityQuestion, securityAnswerHash);
+        this.account = new UserAccount(
+                username, passwordHash, nickname, email, gender, securityQuestion, securityAnswerHash
+        );
         this.wallet = new UserWallet();
         this.progress = new UserProgress();
 
@@ -333,7 +335,9 @@ public class User {
     public Map<MiniGameType, Integer> getUnlockedMinigames() {
         return progress.getUnlockedMinigames();
     }
-
+    public void unlockedPlants(Plant p) {
+        getUnlockedPlants().add(p);
+    }
     public int getUnlockedLevelInMinigame(MiniGameType type) {
         return progress.getUnlockedLevelInMinigame(type);
     }
@@ -348,10 +352,6 @@ public class User {
 
     public void unlockAdventureLevel(int targetChapterIndex, int targetLevelIndex, String chapterName) {
         progress.unlockAdventureLevel(targetChapterIndex, targetLevelIndex, chapterName, this);
-    }
-
-    public void unlockedPlants(Plant p) {
-        getUnlockedPlants().add(p);
     }
 
     public Inventory getInventory() {

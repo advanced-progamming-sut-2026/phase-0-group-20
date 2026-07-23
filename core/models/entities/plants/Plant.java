@@ -45,10 +45,10 @@ public class Plant implements IPlant, Ticker {
 
     private int iceStacks = 0;
     private int iceBlockHp = 0;
-    private final int MAX_ICE_HP = 600;
+    private static final int MAX_ICE_HP = 600;
 
     private int octopusHp = 0;
-    private final int MAX_OCTOPUS_HP = 800;
+    private static final int MAX_OCTOPUS_HP = 800;
 
     protected int size = 1;
     protected boolean boosted = false;
@@ -156,7 +156,8 @@ public class Plant implements IPlant, Ticker {
         }
 
         this.currentHp -= amount;
-        GameSession.notify(getName() + " Taking " + amount + " damage in " + (placedTile.getCol() + 1) + "," + (placedTile.getRow() + 1));
+        GameSession.notify(getName() + " Taking " + amount + " damage in " +
+                (placedTile.getCol() + 1) + "," + (placedTile.getRow() + 1));
 
 
         if (isDead()) {

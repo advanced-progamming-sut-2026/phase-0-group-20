@@ -9,10 +9,9 @@ import models.users.User;
 import java.util.Scanner;
 
 public class AppView {
-    private static final Scanner sc = new Scanner(System.in);
-
 
     public static void run() {
+        Scanner sc = new Scanner(System.in);
         ConsoleNotifier.register();
 
         User stayedUser = DataBaseManager.getLoggedInUser();

@@ -64,18 +64,12 @@ public class HomingStrategy implements IPlantStrategy {
                         target = validTargets.get(random.nextInt(validTargets.size()));
                     }
                 }
-
                 if (target != null) {
                     int burstCount = plantName.equals("Cat-tail") ? 2 : 1;
                     for (int i = 0; i < burstCount; i++)
                         ProjectileMechanism.executeTargetedProjectile(context, target, i);
                     notify(context.getName() + " locked onto " + target.getName() + "!");
                     lastShotTick = currentTick;
-
-//                    shootHomingProjectile(context, target, gameSession);
-//                    System.out.println(context.getName() + " locked onto " + target.getName() + "!");
-//                    lastShotTick = currentTick;
-
                 }
             }
         }

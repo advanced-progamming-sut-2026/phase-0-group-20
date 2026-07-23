@@ -7,19 +7,29 @@ import models.entities.plants.PlantFactory;
 import models.entities.zombies.Zombie;
 import models.enums.GameConstants;
 import models.fields.tiles.Tile;
+import models.game.Arena;
 import models.game.GameSession;
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.Level;
 import models.game.adventure.levels.conditions.NormalLoseCondition;
 import models.game.minigame.minigameCondition.BeghouledWinCondition;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class BeghouledLevel extends Level implements IMinigame {
     private final Random random = new Random();
 
-    private final String[] basePlants = {"peashooter", "sunflower", "wall-nut", "snow pea", "repeater", "puff-shroom", "cabbage-pult", "melon-pult"};
+    private final String[] basePlants = {
+            "peashooter",
+            "sunflower",
+            "wall-nut",
+            "snow pea",
+            "repeater",
+            "puff-shroom",
+            "cabbage-pult",
+            "melon-pult"};
     // we can add or remove plants from this list
     private final int targetMatches;
     private int successfulMatches = 0;
@@ -114,62 +124,51 @@ public class BeghouledLevel extends Level implements IMinigame {
 
     public String upgradePlants(String fromPlantName) {
         GameSession session = GameSession.getInstance();
+        UpgradeInfo upgradeInfo = getUpgradeInfo(fromPlantName.toLowerCase());
 
-        String toPlantName;
-        int cost;
-
-        switch (fromPlantName.toLowerCase()) {
-            case "peashooter":
-                toPlantName = "repeater";
-                cost = 500;
-                break;
-            case "repeater":
-                toPlantName = "mega gatling pea";
-                cost = 1500;
-                break;
-            case "wall-nut":
-                toPlantName = "tall-nut";
-                cost = 500;
-                break;
-            case "puff-shroom":
-                toPlantName = "fume-shroom";
-                cost = 250;
-                break;
-            case "cabbage-pult":
-                toPlantName = "melon-pult";
-                cost = 1000;
-                break;
-            case "melon-pult":
-                toPlantName = "winter melon";
-                cost = 750;
-                break;
-            default:
-                return "Upgrade not available for " + fromPlantName;
+        if (upgradeInfo == null) {
+            return "Upgrade not available for " + fromPlantName;
         }
 
-        if (session.getCurrentSun() < cost) {
-            return "Not enough sun! You need " + cost + " suns.";
+        if (session.getCurrentSun() < upgradeInfo.cost()) {
+            return "Not enough sun! You need " + upgradeInfo.cost() + " suns.";
         }
 
-        session.useSun(cost);
+        Plant template = App.findPlantByName(upgradeInfo.toPlantName());
+        if (template == null) {
+            return "Error: Target plant template not found.";
+        }
+
+        int upgradedCount = replacePlantsOnBoard(session, fromPlantName, template);
+
+        if (upgradedCount > 0) {
+            session.useSun(upgradeInfo.cost());
+        }
+
+        return "Successfully upgraded " + upgradedCount + " " +
+                fromPlantName + "s to " + upgradeInfo.toPlantName() + "!";
+    }
+
+    private int replacePlantsOnBoard(GameSession session, String fromPlantName, Plant template) {
         int upgradedCount = 0;
+        Arena arena = session.getArena();
 
-        int rows = session.getArena().getRows();
-        int cols = session.getArena().getCols();
+        for (int r = 0; r < arena.getRows(); r++) {
+            for (int c = 0; c < arena.getCols(); c++) {
+                Tile tile = arena.getTile(r, c);
 
-        Plant template = App.findPlantByName(toPlantName);
+                List<Plant> plantsOnTile = new ArrayList<>(tile.getPlants());
 
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                Tile tile = session.getArena().getTile(r, c);
-                if (!tile.getPlants().isEmpty()) {
-                    Plant currentPlant = tile.getPlants().get(0);
+                for (Plant currentPlant : plantsOnTile) {
                     if (currentPlant.getName().equalsIgnoreCase(fromPlantName)) {
 
-                        tile.getPlants().clear();
+                        tile.getPlants().remove(currentPlant);
+                        arena.getActivePlants().remove(currentPlant);
+                        session.getTimeManager().unregisterTicker(currentPlant);
+
                         Plant newPlant = PlantFactory.create(template.getId());
                         tile.addPlant(newPlant);
-                        session.getArena().addPlant(newPlant);
+                        arena.addPlant(newPlant);
                         session.getTimeManager().registerNewTicker(newPlant);
 
                         upgradedCount++;
@@ -177,10 +176,22 @@ public class BeghouledLevel extends Level implements IMinigame {
                 }
             }
         }
-
-        return "Successfully upgraded " + upgradedCount + " " + fromPlantName + "s to " + toPlantName + "!";
+        return upgradedCount;
     }
 
+    private UpgradeInfo getUpgradeInfo(String fromPlantName) {
+        return switch (fromPlantName) {
+            case "peashooter" -> new UpgradeInfo("repeater", 500);
+            case "repeater" -> new UpgradeInfo("mega gatling pea", 1500);
+            case "wall-nut" -> new UpgradeInfo("tall-nut", 500);
+            case "puff-shroom" -> new UpgradeInfo("fume-shroom", 250);
+            case "cabbage-pult" -> new UpgradeInfo("melon-pult", 1000);
+            case "melon-pult" -> new UpgradeInfo("winter melon", 750);
+            default -> null;
+        };
+    }
+
+    private record UpgradeInfo(String toPlantName, int cost) {}
     @Override
     public MiniGameType getMiniGameType() {
         return MiniGameType.BEGHOULED;

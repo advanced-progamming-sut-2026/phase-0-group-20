@@ -9,7 +9,7 @@ import models.game.events.GameEventMessenger;
 
 public class LovePlants extends SpecialLevel {
     private final LovePlantLoseCondition loseCondition;
-    private final int LIMIT = 5;
+    private static final int LIMIT = 5;
 
     public LovePlants(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);

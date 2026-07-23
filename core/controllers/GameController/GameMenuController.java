@@ -70,7 +70,8 @@ public class GameMenuController {
             App.setActiveMenu(Menu.GAME_FLOW_MENU);
         }
 
-        return new Result(true, "Entered Chapter " + currentChapter.getDisplayName() + " - Level: " + selectedLevel.getName() + "...");
+        return new Result(true, "Entered Chapter " + currentChapter.getDisplayName() +
+                " - Level: " + selectedLevel.getName() + "...");
     }
 
 
@@ -81,7 +82,8 @@ public class GameMenuController {
         SeasonType season = (currentChapter != null) ? currentChapter.getSeasonType() : SeasonType.ANCIENT_EGYPT;
         int levelNumber = (currentChapter != null) ? currentChapter.getCurrentLevelIndex() + 1 : 1;
 
-        BonusLevel bonusLevel = new BonusLevel("Scoring Challenge", season, 3, 1200, levelNumber, true);
+        BonusLevel bonusLevel = new BonusLevel("Scoring Challenge", season, 3, 1200,
+                levelNumber, true);
 
         GameSession.setPendingBonusLevel(bonusLevel);
 

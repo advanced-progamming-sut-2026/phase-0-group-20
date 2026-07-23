@@ -57,14 +57,15 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
                 break;
 
             case "garlic":
-                for (Zombie zombie : gameSession.getArena().zombieInRow(plantRow)) //just the zombies in the current row not whole field
+                for (Zombie zombie : gameSession.getArena().zombieInRow(plantRow))
                     if (!zombie.isDead())
                         shiftZombieToAdjacentLane(zombie, gameSession);
                 break;
 
             case "sweet potato":
                 plant.setCurrentHp(plant.getBaseHp());
-                List<Zombie> nearby = gameSession.getArena().getZombiesInRadius(plantCol, plantRow, PhysicalConstants.TILE_UNIT_LENGTH * 2);
+                List<Zombie> nearby = gameSession.getArena().getZombiesInRadius(
+                        plantCol, plantRow, PhysicalConstants.TILE_UNIT_LENGTH * 2);
                 for (Zombie zombie : nearby)
                     if (!zombie.isDead() && zombie.getRow() != plantRow)
                         zombie.setRow(plantRow);

@@ -16,16 +16,19 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SignupMenuControllerUnitTest {
 
-    private final String TEST_FILE_PATH = "core/test/resources/test_users_signup.json";
-    private final String VALID_USERNAME = "newUser123";
-    private final String VALID_PASSWORD = "Secure1!";
-    private final String VALID_NICKNAME = "Ali";
-    private final String VALID_EMAIL = "ali@example.com";
-    private final String VALID_GENDER = "male";
+    private static final String TEST_FILE_PATH = "core/test/resources/test_users_signup.json";
+    private static final String VALID_USERNAME = "newUser123";
+    private static final String VALID_PASSWORD = "Secure1!";
+    private static final String VALID_NICKNAME = "Ali";
+    private static final String VALID_EMAIL = "ali@example.com";
+    private static final String VALID_GENDER = "male";
+
     private SignupMenuController controller;
 
     @Before
@@ -52,9 +55,8 @@ public class SignupMenuControllerUnitTest {
         DataBaseManager.resetRepositoryToDefault();
     }
 
-
     @Test
-    public void testRegister_validInputs() {
+    public void testRegisterValidInputs() {
         Result result = controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -62,9 +64,8 @@ public class SignupMenuControllerUnitTest {
         assertTrue(result.message().contains("please select and answer one of the following security questions"));
     }
 
-
     @Test
-    public void testRegister_duplicateUsername() {
+    public void testRegisterDuplicateUsername() {
         Result result = controller.register("existingUser", VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -73,7 +74,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testRegister_invalidUsername() {
+    public void testRegisterInvalidUsername() {
         Result result = controller.register("invalid@user", VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -81,9 +82,8 @@ public class SignupMenuControllerUnitTest {
         assertFalse(result.message().isEmpty());
     }
 
-
     @Test
-    public void testRegister_weakPassword() {
+    public void testRegisterWeakPassword() {
         Result result = controller.register(VALID_USERNAME, "weak", "weak",
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -92,7 +92,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testRegister_passwordMismatch() {
+    public void testRegisterPasswordMismatch() {
         Result result = controller.register(VALID_USERNAME, VALID_PASSWORD, "Different1!",
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -100,9 +100,8 @@ public class SignupMenuControllerUnitTest {
         assertEquals("password and repeat password don't match", result.message());
     }
 
-
     @Test
-    public void testRegister_invalidEmail() {
+    public void testRegisterInvalidEmail() {
         Result result = controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, "not-an-email", VALID_GENDER);
 
@@ -111,7 +110,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testRegister_invalidNickname() {
+    public void testRegisterInvalidNickname() {
         Result result = controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 "Al", VALID_EMAIL, VALID_GENDER);
 
@@ -120,7 +119,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testRegister_invalidGender() {
+    public void testRegisterInvalidGender() {
         Result result = controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, "HELICOPTER");
 
@@ -129,7 +128,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testRegister_trimsWhitespace() {
+    public void testRegisterTrimsWhitespace() {
         Result result = controller.register("  " + VALID_USERNAME + "  ", VALID_PASSWORD, VALID_PASSWORD,
                 "  " + VALID_NICKNAME + "  ", "  " + VALID_EMAIL + "  ", "  " + VALID_GENDER + "  ");
 
@@ -137,9 +136,8 @@ public class SignupMenuControllerUnitTest {
         assertTrue(result.message().contains("security questions"));
     }
 
-
     @Test
-    public void testPickQuestion_validAfterRegister() {
+    public void testPickQuestionValidAfterRegister() {
         controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -150,7 +148,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testPickQuestion_validAfterRegister_userSavedInDB() {
+    public void testPickQuestionValidAfterRegisterUserSavedInDB() {
         controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -161,7 +159,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testPickQuestion_validAfterRegister_correctMessage() {
+    public void testPickQuestionValidAfterRegisterCorrectMessage() {
         controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -171,9 +169,8 @@ public class SignupMenuControllerUnitTest {
         assertEquals("registration was successful, you can now login to your account", result.message());
     }
 
-
     @Test
-    public void testPickQuestion_withoutRegisterFirst() {
+    public void testPickQuestionWithoutRegisterFirst() {
         Result result = controller.pickQuestion("1", "myAnswer", "myAnswer");
 
         assertFalse(result.isSuccessful());
@@ -181,7 +178,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testPickQuestion_answerMismatch() {
+    public void testPickQuestionAnswerMismatch() {
         controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -192,7 +189,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testPickQuestion_invalidQuestionNumber() {
+    public void testPickQuestionInvalidQuestionNumber() {
         controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -203,7 +200,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testPickQuestion_nonNumericQuestion() {
+    public void testPickQuestionNonNumericQuestion() {
         controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -214,7 +211,7 @@ public class SignupMenuControllerUnitTest {
     }
 
     @Test
-    public void testPickQuestion_afterFailedAttempt_pendingStillValid() {
+    public void testPickQuestionAfterFailedAttemptPendingStillValid() {
         controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -226,9 +223,8 @@ public class SignupMenuControllerUnitTest {
         assertEquals("registration was successful, you can now login to your account", successResult.message());
     }
 
-
     @Test
-    public void testPickQuestion_validAfterRegister_changesMenuToLogin() {
+    public void testPickQuestionValidAfterRegisterChangesMenuToLogin() {
         App.setActiveMenu(Menu.SIGNUP_MENU);
 
         controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
@@ -239,16 +235,15 @@ public class SignupMenuControllerUnitTest {
         assertEquals(Menu.LOGIN_MENU, App.getActiveMenu());
     }
 
-
     @Test
-    public void testRegister_nullInputs_doesNotCrashAndReturnsFailure() {
+    public void testRegisterNullInputsDoesNotCrashAndReturnsFailure() {
         Result result = controller.register(null, null, null,
                 null, null, null);
         assertFalse(result.isSuccessful());
     }
 
     @Test
-    public void testPickQuestion_invalidQuestionNumber_returnsFailure() {
+    public void testPickQuestionInvalidQuestionNumberReturnsFailure() {
         controller.register(VALID_USERNAME, VALID_PASSWORD, VALID_PASSWORD,
                 VALID_NICKNAME, VALID_EMAIL, VALID_GENDER);
 
@@ -260,5 +255,4 @@ public class SignupMenuControllerUnitTest {
         assertFalse(resultNegative.isSuccessful());
         assertEquals("invalid question number", resultNegative.message());
     }
-
 }

@@ -6,7 +6,9 @@ import models.Result;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SettingControllerUnitTest {
 
@@ -18,9 +20,8 @@ public class SettingControllerUnitTest {
         controller = new SettingController();
     }
 
-
     @Test
-    public void testChangeDifficulty_validInteger_settingsUpdated() {
+    public void testChangeDifficultyValidIntegerSettingsUpdated() {
         Result result = controller.changeDifficulty("5");
         assertTrue(result.isSuccessful());
         assertEquals("Difficulty changed successfully to 5", result.message());
@@ -28,61 +29,61 @@ public class SettingControllerUnitTest {
     }
 
     @Test
-    public void testChangeDifficulty_nonInteger() {
+    public void testChangeDifficultyNonInteger() {
         Result result = controller.changeDifficulty("abc");
         assertFalse(result.isSuccessful());
         assertEquals("Invalid difficulty (Must be an integer [1-5])", result.message());
     }
 
     @Test
-    public void testChangeDifficulty_emptyString() {
+    public void testChangeDifficultyEmptyString() {
         Result result = controller.changeDifficulty("");
         assertFalse(result.isSuccessful());
         assertEquals("Invalid difficulty (Must be an integer [1-5])", result.message());
     }
 
     @Test
-    public void testChangeDifficulty_floatInput() {
+    public void testChangeDifficultyFloatInput() {
         Result result = controller.changeDifficulty("2.5");
         assertFalse(result.isSuccessful());
         assertEquals("Invalid difficulty (Must be an integer [1-5])", result.message());
     }
 
     @Test
-    public void testChangeDifficulty_invalidInput_settingsNotChanged() {
+    public void testChangeDifficultyInvalidInputSettingsNotChanged() {
         controller.changeDifficulty("abc");
         assertEquals(3, App.getSettings().getDifficulty());
     }
 
     @Test
-    public void testChangeDifficulty_aboveRange() {
+    public void testChangeDifficultyAboveRange() {
         Result result = controller.changeDifficulty("6");
         assertFalse(result.isSuccessful());
         assertEquals("Invalid difficulty (Must be an integer [1-5])", result.message());
     }
 
     @Test
-    public void testChangeDifficulty_belowRange() {
+    public void testChangeDifficultyBelowRange() {
         Result result = controller.changeDifficulty("0");
         assertFalse(result.isSuccessful());
         assertEquals("Invalid difficulty (Must be an integer [1-5])", result.message());
     }
 
     @Test
-    public void testChangeDifficulty_outOfRange_settingsNotChanged() {
+    public void testChangeDifficultyOutOfRangeSettingsNotChanged() {
         controller.changeDifficulty("6");
         assertEquals(3, App.getSettings().getDifficulty());
     }
 
     @Test
-    public void testChangeDifficulty_boundaryMin() {
+    public void testChangeDifficultyBoundaryMin() {
         Result result = controller.changeDifficulty("1");
         assertTrue(result.isSuccessful());
         assertEquals("Difficulty changed successfully to 1", result.message());
     }
 
     @Test
-    public void testChangeDifficulty_boundaryMax_returnsSuccess() {
+    public void testChangeDifficultyBoundaryMaxReturnsSuccess() {
         Result result = controller.changeDifficulty("5");
         assertTrue(result.isSuccessful());
         assertEquals("Difficulty changed successfully to 5", result.message());

@@ -88,7 +88,9 @@ public class ChargeStrategy implements IPlantStrategy {
             Zombie target = null;
 
             if (isHoming) {
-                List<Zombie> actives = GameSession.getInstance().getArena().getActiveZombies().stream().filter(z -> !z.isDead()).toList();
+                List<Zombie> actives = GameSession.getInstance().getArena().getActiveZombies()
+                        .stream()
+                        .filter(z -> !z.isDead()).toList();
                 if (!actives.isEmpty()) {
                     target = actives.get(random.nextInt(actives.size()));
                 }

@@ -143,7 +143,8 @@ public class TravelLogController {
             MiniGameType type = MiniGameType.findByName(miniGameName);
             int maxUnlocked = activeUser.getUnlockedLevelInMinigame(type);
             if (levelNumber > maxUnlocked)
-                return new Result(false, "Level " + levelNumber + " is LOCKED! You must beat level " + (levelNumber - 1) + " first.");
+                return new Result(false, "Level " + levelNumber + " is LOCKED!" +
+                        " You must beat level " + (levelNumber - 1) + " first.");
 
             Level minigameLevel = MiniGameFactory.createLevel(type, levelNumber);
             if (minigameLevel instanceof BowlingLevel bowling) {

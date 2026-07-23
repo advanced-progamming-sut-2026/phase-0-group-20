@@ -30,7 +30,8 @@ public class MultiMagnetFoodStrategy implements PlantFoodStrategy {
             for (Armor armor : zombie.getArmorPieces()) {
                 if (!armor.isDestroyed() && armor.isMetallic()) {
                     armor.takeDamage(99999);
-                    notify(plant.getName() + " magnetically yanked " + armor.getData().getAlias() + " off " + zombie.getName() + "!");
+                    notify(plant.getName() + " magnetically yanked " + armor.getData().getAlias() +
+                            " off " + zombie.getName() + "!");
                 }
                 if (!zombie.getArmorPieces().isEmpty())
                     zombie.getArmorPieces().clear();

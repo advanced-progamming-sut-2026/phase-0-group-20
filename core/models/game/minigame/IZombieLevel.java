@@ -51,7 +51,6 @@ public class IZombieLevel extends Level implements IMinigame {
     private void spawnPrePlacedPlants(GameSession session, int row, int redLineCol) {
         int cols = session.getArena().getCols();
 
-
         Zombie sunZombie = InGameEntityGenerator.getZombieForGame(ZombieType.BUCKET, row);
         sunZombie.setCol(cols - 1);
         sunZombie.setBaseSpeed(0);
@@ -70,7 +69,10 @@ public class IZombieLevel extends Level implements IMinigame {
 
                 ticksPassed++;
                 if (ticksPassed >= currentInterval) {
-                    session.getArena().addSun(new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow(), currentTick));
+                    session.getArena().addSun(
+                            new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow()
+                            , currentTick)
+                    );
                     ticksPassed = 0;
 
                     if (currentInterval > 200) currentInterval -= 100;
