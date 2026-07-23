@@ -14,15 +14,14 @@ import models.game.minigame.MiniGameType;
 import models.game.minigame.VaseBreakerLevel;
 import models.quest.Quest;
 import models.quest.QuestCategory;
-import models.quest.QuestManager;
 import models.users.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TravelLogController {
     private User activeUser;
     private ValidPageNames currentPage = ValidPageNames.DAILY;
+
     public TravelLogController() {
 
     }
@@ -54,11 +53,11 @@ public class TravelLogController {
     public Result changePage(String pageName) {
         activeUser = App.getActiveUser();
         pageName = pageName.toUpperCase();
-        if (ValidPageNames.valueOf(pageName) == null) {
+        ValidPageNames nextPage = findByName(pageName);
+        if (nextPage == null) {
             return new Result(false, "Invalid page name\nValid page names:\n" +
                     "1.daily\n2.main\n3.epic\n4.minigame");
         }
-        ValidPageNames nextPage = ValidPageNames.valueOf(pageName);
         if (nextPage == currentPage) {
             return new Result(false, "You are already in this page.");
         }
@@ -71,52 +70,50 @@ public class TravelLogController {
         if (currentPage != ValidPageNames.MINIGAME)
             return showCategoryQuests();
         return new Result(true, buildMinigamesView());
-    } // temporary
+    }
+
 
     private Result showCategoryQuests() {
         activeUser = App.getActiveUser();
-        QuestManager questManager = activeUser.getQuestManager();
-        List<Quest> quests = new ArrayList<>();
         QuestCategory category = findQuestCategory();
-        for (Quest quest : questManager.getActiveQuests()) {
-            if (quest.getCategory() == category) {
-                quests.add(quest);
-            }
-        }
+
+        List<Quest> quests = activeUser.getQuestManager().getActiveQuests().stream()
+                .filter(q -> q.getCategory() == category)
+                .sorted(java.util.Comparator.comparing(Quest::getPriority))
+                .toList();
 
         if (quests.isEmpty()) {
             return new Result(true, "No quests available in the " + category.name().toLowerCase() + " category.");
         }
 
+        return new Result(true, buildQuestDisplayString(quests, category));
+    }
+
+    private String buildQuestDisplayString(List<Quest> quests, QuestCategory category) {
         StringBuilder pageDisplay = new StringBuilder();
         pageDisplay.append("--- ").append(category.name()).append(" Quests ---\n");
 
         for (int i = 0; i < quests.size(); i++) {
             Quest quest = quests.get(i);
-
             String rewardText = (quest.getReward() != null) ? quest.getReward().toString() : "No Reward";
-
             String progressText = "0/0";
+
             if (quest.isCompleted()) {
                 progressText = "Completed!";
             } else if (quest.getCondition() != null) {
                 int current = quest.getCondition().getCurrentProgress();
-                int target = quest.getCondition().getTargetProgress();
-                if (target == 0) target = 1;
+                int target = Math.max(1, quest.getCondition().getTargetProgress());
                 progressText = current + "/" + target;
             }
 
             pageDisplay.append(i + 1).append(". ").append(quest.getTitle()).append("\n")
+                    .append("   Priority:    ").append(quest.getPriority()).append("\n")
                     .append("   Description: ").append(quest.getDescription()).append("\n")
                     .append("   Progress:    [").append(progressText).append("]\n")
                     .append("   Reward:      ").append(rewardText).append("\n\n");
         }
 
-        if (pageDisplay.length() > 0) {
-            pageDisplay.setLength(pageDisplay.length() - 2);
-        }
-
-        return new Result(true, pageDisplay.toString());
+        return pageDisplay.substring(0, pageDisplay.length() - 2);
     }
 
     private QuestCategory findQuestCategory() {
@@ -203,6 +200,15 @@ public class TravelLogController {
         MAIN,
         EPIC,
         MINIGAME;
+    }
+
+    private ValidPageNames findByName(String name) {
+        for (ValidPageNames page : ValidPageNames.values()) {
+            if (page.name().equalsIgnoreCase(name))
+                return page;
+
+        }
+        return null;
     }
 
 }

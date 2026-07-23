@@ -7,4 +7,8 @@ public enum SeasonType {
     BIG_WAVE_BEACH,
     MINI_GAME;
 
+
+    public  String getName() {
+        return this.name().replace("_", " ").toLowerCase();
+    }
 }

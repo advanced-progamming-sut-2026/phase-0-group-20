@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CollectionController {
-    private static final int MAX_LEVEL = 3;
+    private static final int MAX_LEVEL = 4;
     private static final int BASE_COST = 200;
-    private static final int BASE_SEED_PACKETS = 1;
+    private static final int BASE_SEED_PACKETS = 10;
     private static final int PURCHASE_COST = 2000;
 
     public Result showPlants() {
@@ -95,6 +95,7 @@ public class CollectionController {
 
     public Result upgradePlant(String name) {
         User activeUser = App.getActiveUser();
+        String capitalName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
         ArrayList<Plant> plants = activeUser.getUnlockedPlants();
         Plant foundPlant = plants.stream()
                 .filter(plant -> plant.getName().equalsIgnoreCase(name))
@@ -109,8 +110,9 @@ public class CollectionController {
         }
         HashMap<String, Integer> seeds = activeUser.getInventory().getSeedPackets();
         int cost = BASE_COST * foundPlant.getLevel();
-        int seedPacketCost = BASE_SEED_PACKETS * foundPlant.getLevel();
-        if (!seeds.containsKey(name) || seedPacketCost > seeds.get(name)) {
+        int mathPower =(int) Math.pow(2,foundPlant.getLevel());
+        int seedPacketCost = BASE_SEED_PACKETS * mathPower;
+        if (!seeds.containsKey(capitalName) || seedPacketCost > seeds.get(capitalName)) {
             return new Result(false, "You don't have enough seed packets to upgrade this plant.");
         }
         if (cost > activeUser.getCoin()) {
@@ -121,7 +123,7 @@ public class CollectionController {
         }
         foundPlant.upgrade();
         activeUser.costCoin(cost);
-        seeds.computeIfPresent("Sunflower", (k, v) -> Math.max(0, v - seedPacketCost));
+        seeds.computeIfPresent(capitalName, (k, v) -> Math.max(0, v - seedPacketCost));
 
         return new Result(true, "You successfully upgraded " + foundPlant.getName() +
                 " to level " + foundPlant.getLevel() + ".");

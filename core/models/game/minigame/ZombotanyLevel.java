@@ -9,6 +9,9 @@ import models.game.adventure.SeasonType;
 import models.game.adventure.levels.Level;
 import models.game.adventure.levels.conditions.NormalLoseCondition;
 import models.game.adventure.levels.conditions.NormalWinCondition;
+import models.game.events.GameEvent;
+import models.game.events.GameEventMessenger;
+import models.game.events.GameEventPayload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +41,10 @@ public class ZombotanyLevel extends Level implements IMinigame {
         zombotanyTypes.add(InGameEntityGenerator.getZombieForGame(ZombieType.ZOMBOTANY_WALLNUT, 0));
         zombotanyTypes.add(InGameEntityGenerator.getZombieForGame(ZombieType.ZOMBOTANY_JALAPENO, 0));
         zombotanyTypes.add(InGameEntityGenerator.getZombieForGame(ZombieType.ZOMBOTANY_SQUASH, 0));
+        zombotanyTypes.add(InGameEntityGenerator.getZombieForGame(ZombieType.NORMAL, 0 ));
 
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.WAVE_STARTED).build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.WAVE_STARTED,payload);
         Random random = new Random();
         while (accumulatedCost < targetDifficulty) {
             Zombie template = zombotanyTypes.get(random.nextInt(zombotanyTypes.size()));
