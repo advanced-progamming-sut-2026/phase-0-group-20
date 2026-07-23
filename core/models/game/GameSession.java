@@ -50,7 +50,8 @@ public class GameSession {
     private ProgressListener progressListener;
 
 
-    private GameSession(Chapter chapter, Level currentLevel, Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
+    private GameSession(Chapter chapter, Level currentLevel,
+                        Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         this.currentChapter = chapter;
         this.arena = arena;
         this.timeManager = new TimeManager();
@@ -60,7 +61,8 @@ public class GameSession {
         this.chosenZombies = chosenZombies;
         this.currentSun = 50;
 
-        this.sunManager = new SunManager(this.arena);
+        if(this.currentChapter.getCurrentLevel().skySunFalls())
+            this.sunManager = new SunManager(this.arena);
         this.timeManager.registerNewTicker(sunManager);
 
         this.collisionManager = new CollisionManager(this);
@@ -118,7 +120,8 @@ public class GameSession {
 
         Chapter fakeChapter = new Chapter(SeasonType.MINI_GAME);
 
-        List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(SeasonType.ANCIENT_EGYPT, minigameLevel.getLevelNumber());
+        List<Zombie> inGameZombies =
+                InGameEntityGenerator.getZombiesForLevel(SeasonType.ANCIENT_EGYPT, minigameLevel.getLevelNumber());
 
         GameSession session = GameSession.getInstance(fakeChapter, minigameLevel,
                 arena, inGamePlants, inGameZombies);
@@ -164,6 +167,7 @@ public class GameSession {
     }
 
     public static void destroyInstance() {
+        App.getActiveUser().getQuestManager().resetOneMissionQuests();
         if (instance != null) {
             if (instance.dropListener != null) {
                 GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED, instance.dropListener);

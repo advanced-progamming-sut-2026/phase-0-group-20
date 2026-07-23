@@ -205,7 +205,7 @@ public class InGameEntityGenerator {
 
     public static List<Zombie> getZombiesForDailyChallenge() {
 
-        long todaySeed = LocalDate.now().toEpochDay();
+        long todaySeed = LocalDate.now().toEpochDay()+2;
         Random dailyRandom = new Random(todaySeed);
 
         ZombieType[] allowedDailyTypes = ZombieType.values();

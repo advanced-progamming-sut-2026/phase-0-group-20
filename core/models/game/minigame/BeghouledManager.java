@@ -23,7 +23,9 @@ public class BeghouledManager {
 
         Tile tile1 = session.getArena().getTile(r1, c1);
         Tile tile2 = session.getArena().getTile(r2, c2);
-
+        if (tile1 == null || tile2 == null) {
+            return "Invalid move: Coordinates are out of bounds!";
+        }
         if (tile1.isCrater() || tile2.isCrater()) {
             return "Invalid move: Cannot swap with a crater!";
         }
