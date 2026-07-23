@@ -81,7 +81,6 @@ public class TrapStrategy implements IPlantStrategy {
                     break;
 
                 case "Primal Potato Mine":
-                    Zombie ppmTarget = targets.get(0);
                     List<Zombie> aoeTargets = GameSession.getInstance().getArena().getZombiesInRadius((int) plantCol, plantRow, 1.5);
                     for (Zombie z : aoeTargets) {
                         if (!z.isDead()) {
@@ -126,13 +125,12 @@ public class TrapStrategy implements IPlantStrategy {
 
     }
 
+    public int getArmingTimeTicks() {
+        return armingTimeTicks;
+    }
 
     public void setArmingTimeTicks(int armingTime) {
         this.armingTimeTicks = armingTime;
-    }
-
-    public int getArmingTimeTicks() {
-        return armingTimeTicks;
     }
 
     public void setArmed(boolean armed) {

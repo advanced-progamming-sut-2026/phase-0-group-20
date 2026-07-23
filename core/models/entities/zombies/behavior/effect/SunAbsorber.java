@@ -9,9 +9,8 @@ import java.util.Random;
 public class SunAbsorber extends Effect {
     private final int stealIntervalTicks; // interval for steal sun
     private final int sunAmount; // amount of sun
-    private boolean isAbsorbing;
     private final Random random = new Random();
-
+    private boolean isAbsorbing;
     private int absorbingTicksCounter;
     private int intervalTicksCounter;
 

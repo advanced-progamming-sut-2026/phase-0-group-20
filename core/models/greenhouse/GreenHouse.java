@@ -25,6 +25,16 @@ public class GreenHouse {
         }
     }
 
+    @JsonIgnore
+    public static int getROW() {
+        return ROW;
+    }
+
+    @JsonIgnore
+    public static int getCOL() {
+        return COL;
+    }
+
     public Pot[][] getPots() {
         return pots;
     }
@@ -70,15 +80,5 @@ public class GreenHouse {
 
     public Pot getSpecificPot(int x, int y) {
         return pots[x][y];
-    }
-
-    @JsonIgnore
-    public static int getROW() {
-        return ROW;
-    }
-
-    @JsonIgnore
-    public static int getCOL() {
-        return COL;
     }
 }

@@ -15,31 +15,6 @@ import java.util.Map;
 
 public class PlantLoader {
 
-    private static class PlantJsonDto {
-        int id;
-        String name;
-        String category;
-        List<String> tags;
-        int cost;
-        int baseHp;
-        int damage;
-        float actionInterval;
-        float recharge;
-        String abilityType;
-        float abilityValue;
-        String plantFoodType;
-        float plantFoodValue;
-        List<UpgradeDto> upgrades;
-    }
-
-    private static class UpgradeDto {
-        int level;
-        String type;
-        float value;
-        String specialTag;
-    }
-
-
     public static List<PlantData> loadAll(String jsonPath) {
         List<PlantData> plants = new ArrayList<>();
         Gson gson = new Gson();
@@ -115,5 +90,29 @@ public class PlantLoader {
     private static String normalizeTag(String raw) {
         String withUnderscores = raw.replaceAll("([a-z])([A-Z])", "$1_$2");
         return withUnderscores.toUpperCase().replace(" ", "_").replace("-", "_");
+    }
+
+    private static class PlantJsonDto {
+        int id;
+        String name;
+        String category;
+        List<String> tags;
+        int cost;
+        int baseHp;
+        int damage;
+        float actionInterval;
+        float recharge;
+        String abilityType;
+        float abilityValue;
+        String plantFoodType;
+        float plantFoodValue;
+        List<UpgradeDto> upgrades;
+    }
+
+    private static class UpgradeDto {
+        int level;
+        String type;
+        float value;
+        String specialTag;
     }
 }

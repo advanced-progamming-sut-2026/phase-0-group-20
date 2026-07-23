@@ -1,5 +1,4 @@
 import models.App;
-import models.database.DataBaseManager;
 import models.entities.plants.Plant;
 import models.entities.plants.PlantData;
 import models.entities.plants.PlantFactory;

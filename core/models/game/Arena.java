@@ -25,10 +25,10 @@ public class Arena {
     private final List<Projectile> activeProjectiles = new ArrayList<>();
     private final LawnMower[] lawnMowers;
     private final Brain[] brains;
+    private final List<Wave> spawnedWaves = new ArrayList<>();
     private Tile[][] tiles;
     private List<Sun> activeSuns = new ArrayList<>();
     private Wave currentActiveWave;
-    private final List<Wave> spawnedWaves = new ArrayList<>();
 
     public Arena() {
         this.tiles = new Tile[ROWS][COLS];

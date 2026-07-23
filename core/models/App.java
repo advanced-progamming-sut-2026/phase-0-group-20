@@ -48,8 +48,16 @@ public class App {
         return allZombies;
     }
 
+    public static void setAllZombies(ArrayList<Zombie> allZombies) {
+        App.allZombies = allZombies;
+    }
+
     public static ArrayList<Plant> getAllPlants() {
         return allPlants;
+    }
+
+    public static void setAllPlants(ArrayList<Plant> allPlants) {
+        App.allPlants = allPlants;
     }
 
     public static Settings getSettings() {
@@ -62,6 +70,10 @@ public class App {
 
     public static Adventure getActiveAdventure() {
         return activeAdventure;
+    }
+
+    public static void setActiveAdventure(Adventure activeAdventure) {
+        App.activeAdventure = activeAdventure;
     }
 
     public static Plant findPlantByName(String name) {
@@ -82,24 +94,12 @@ public class App {
         return null;
     }
 
-    public static void setAllZombies(ArrayList<Zombie> allZombies) {
-        App.allZombies = allZombies;
-    }
-
-    public static void setAllPlants(ArrayList<Plant> allPlants) {
-        App.allPlants = allPlants;
-    }
-
     public static ArrayList<Chapter> getAllChapters() {
         return allChapters;
     }
 
     public static void setAllChapters(ArrayList<Chapter> allChapters) {
         App.allChapters = allChapters;
-    }
-
-    public static void setActiveAdventure(Adventure activeAdventure) {
-        App.activeAdventure = activeAdventure;
     }
 
     public static GameSession getActiveSession() {

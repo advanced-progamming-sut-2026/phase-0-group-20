@@ -39,13 +39,13 @@ public class NecromanceTile extends Tile implements GraveHolder {
         return super.isPlantable(plantToPlant);
     }
 
-    public void setGraveStone(GraveStone graveStone) {
-        this.graveStone = graveStone;
-    }
-
     @Override
     public GraveStone getGraveStone() {
         return graveStone;
+    }
+
+    public void setGraveStone(GraveStone graveStone) {
+        this.graveStone = graveStone;
     }
 
     @Override

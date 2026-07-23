@@ -6,9 +6,9 @@ import models.fields.tiles.Tile;
 import models.game.GameSession;
 
 public class DodoMove implements MoveBehavior {
+    private static final int HIGH_HP_OBSTACLE_THRESHOLD = 1000; // Wall-nut tier HP
     private final Zombie zombie;
     private final int FLY_DURATION_TICKS = 45; // it will change
-    private static final int HIGH_HP_OBSTACLE_THRESHOLD = 1000; // Wall-nut tier HP
     private boolean isFlying;
     private int flyTicks;
 

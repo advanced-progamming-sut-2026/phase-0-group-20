@@ -1,7 +1,6 @@
 package views;
 
 import java.util.Scanner;
-import java.util.regex.Matcher;
 
 public class NetWork implements AppMenu {
     public void check(Scanner scanner) {
@@ -11,6 +10,5 @@ public class NetWork implements AppMenu {
             return;
         }
 
-        Matcher matcher;
     }
 }

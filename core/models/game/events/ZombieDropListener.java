@@ -11,12 +11,6 @@ import models.users.User;
 import java.util.Random;
 
 public class ZombieDropListener implements GameEventListener {
-    enum ZombieDrop {
-        POT,
-        DIAMOND,
-        COIN
-    }
-
     @Override
     public void onEvent(GameEvent event, GameEventPayload payload) {
         if (!(event == GameEvent.ZOMBIE_KILLED_LAWN_MOWER || event == GameEvent.ZOMBIE_KILLED)) return;
@@ -63,7 +57,6 @@ public class ZombieDropListener implements GameEventListener {
 
     }
 
-
     private ZombieDrop getDropType() {
         Random rand = new Random();
         int chance = rand.nextInt(10);
@@ -75,6 +68,13 @@ public class ZombieDropListener implements GameEventListener {
                 default -> ZombieDrop.COIN;
             };
         } else return null;
+    }
+
+
+    enum ZombieDrop {
+        POT,
+        DIAMOND,
+        COIN
     }
 
 }
