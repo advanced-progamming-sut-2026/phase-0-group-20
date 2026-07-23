@@ -76,6 +76,8 @@ public class BeghouledLevel extends Level implements IMinigame {
 
         session.getArena().addZombie(newZombie);
         session.getTimeManager().registerNewTicker(newZombie);
+        String message = "A new zombie "+newZombie.getName()+" has been spawned in" +
+                "("+(newZombie.getCol()+1)+", "+(newZombie.getRow()+1)+")!";
 
     }
 
@@ -84,7 +86,7 @@ public class BeghouledLevel extends Level implements IMinigame {
         int cols = session.getArena().getCols();
 
         for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
+            for (int c = 0; c < cols - 1; c++) {
                 Tile tile = session.getArena().getTile(r, c);
 
                 if (tile.isCrater()) continue;
@@ -120,6 +122,11 @@ public class BeghouledLevel extends Level implements IMinigame {
     @Override
     public boolean skySunFalls() {
         return false;
+    }
+
+    @Override
+    public boolean skipsPlantSelection() {
+        return true;
     }
 
     public String upgradePlants(String fromPlantName) {

@@ -3,11 +3,16 @@ package controllers.GameController;
 import models.InGameEntityGenerator;
 import models.Position;
 import models.Result;
+import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieType;
+import models.enums.PhysicalConstants;
 import models.enums.plants.ProjectileType;
+import models.fields.Brain;
+import models.fields.LawnMower;
+import models.fields.tiles.SlipperyTile;
 import models.fields.tiles.Tile;
 import models.fields.tiles.VaseInside;
 import models.fields.tiles.VaseTile;
@@ -129,7 +134,7 @@ public class MiniGameController {
             mapDisplay.append("Red Line Column: ").append(level.getRedLineCol()).append("\n");
 
             for (int i = 0; i < arena.getRows(); i++) {
-                models.fields.Brain brain = arena.getBrainInRow(i);
+                Brain brain = arena.getBrainInRow(i);
                 boolean isBrainSafe = (brain != null && !brain.isEaten());
                 mapDisplay.append("Brain row ").append(i).append(": ")
                         .append(isBrainSafe ? "safe" : "eaten").append("\n");
@@ -182,7 +187,7 @@ public class MiniGameController {
                 List<Zombie> zombiesInTile = new ArrayList<>();
                 if (arena.zombieInRow(row) != null) {
                     for (Zombie z : arena.zombieInRow(row)) {
-                        int zombieCol = (int) (z.getX() / models.enums.PhysicalConstants.TILE_UNIT_LENGTH);
+                        int zombieCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
                         if (!z.isDead() && zombieCol == col) {
                             zombiesInTile.add(z);
                         }
@@ -223,7 +228,7 @@ public class MiniGameController {
             for (int k = 0; k < zombiesInTile.size(); k++) {
                 Zombie z = zombiesInTile.get(k);
                 mapDisplay.append(z.getName()).append(":")
-                        .append((int) (z.getX() / models.enums.PhysicalConstants.TILE_UNIT_LENGTH)).append(",")
+                        .append((int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH)).append(",")
                         .append(z.getRow());
 
                 if (k < zombiesInTile.size() - 1) {
@@ -253,7 +258,7 @@ public class MiniGameController {
         }
 
         BeghouledManager manager = new BeghouledManager();
-        String response = manager.swapPlants(x1, y1, x2, y2);
+        String response = manager.swapPlants(y1-1,x1-1,y2-1,x2-1);
 
         boolean isSuccess = response.startsWith("Match found") || response.startsWith("Cascade");
         return new Result(isSuccess, response);
@@ -262,12 +267,126 @@ public class MiniGameController {
     public Result upgradeBeghouledPlants(String plantName) {
         GameSession session = GameSession.getInstance();
 
-        if (!(session.getCurrentMode() instanceof models.game.minigame.BeghouledLevel level)) {
+        if (!(session.getCurrentMode() instanceof BeghouledLevel level)) {
             return new Result(false, "You can only upgrade plants like this in the Beghouled minigame!");
         }
 
         String response = level.upgradePlants(plantName);
         boolean isSuccess = response.startsWith("Successfully");
         return new Result(isSuccess, response);
+    }
+
+    public Result showBeghouledPlants() {
+        GameSession session = GameSession.getInstance();
+        Arena arena = session.getArena();
+        StringBuilder sb = new StringBuilder();
+        String horizontalBorder = "+----------".repeat(arena.getCols()) + "+\n";
+
+        sb.append("\n=== PIXEL-PERFECT ARENA MAP ===\n");
+
+        for (int r = 0; r < arena.getRows(); r++) {
+            sb.append(horizontalBorder);
+            sb.append(renderPixelRow(arena, r));
+
+            LawnMower lm = arena.getLawnMowers()[r];
+            if (lm != null && !lm.isActivate()) {
+                sb.append(" [LM]");
+            }
+            sb.append("\n");
+        }
+        sb.append(horizontalBorder);
+
+        java.util.List<String> activePlants = arena.getActivePlants().stream()
+                .map(models.entities.plants.Plant::getName)
+                .distinct()
+                .toList();
+
+        String plantNames = activePlants.isEmpty() ? "None" : String.join(", ", activePlants);
+
+        sb.append("\nLegend: [xx] Plant Initials | [*] Zombie | [-] Projectile | [s] Sun | [O] Crater\n");
+        sb.append("Active Plants: ").append(plantNames).append("\n");
+
+        return new Result(true, sb.toString());
+    }
+
+    private String renderPixelRow(Arena arena, int row) {
+        char[] rowContent = new char[arena.getCols() * 10];
+
+        fillBaseTileSymbols(arena, row, rowContent);
+        overlayEntitiesOnRow(arena, row, rowContent);
+
+        StringBuilder sb = new StringBuilder("|");
+        for (int c = 0; c < arena.getCols(); c++) {
+            sb.append(new String(rowContent, c * 10, 10)).append("|");
+        }
+        return sb.toString();
+    }
+
+    private void fillBaseTileSymbols(Arena arena, int row, char[] rowContent) {
+        for (int c = 0; c < arena.getCols(); c++) {
+            Tile tile = arena.getTile(row, c);
+            if (tile != null) {
+                String prefix = getTilePrefix(tile.getType(), tile);
+                rowContent[c * 10] = prefix.charAt(0);
+                rowContent[c * 10 + 1] = prefix.charAt(1);
+                for (int i = 2; i < 10; i++) rowContent[c * 10 + i] = ' ';
+                if (tile.isCrater()) rowContent[c * 10 + 2] = 'O';
+            } else {
+                for (int i = 0; i < 10; i++) rowContent[c * 10 + i] = ' ';
+            }
+        }
+    }
+
+    private String getTilePrefix(String tileType, Tile tile) {
+        return switch (tileType) {
+            case "WaterTile" -> "W~";
+            case "LowShoreTile" -> "L/";
+            case "SlipperyTile" -> {
+                String arrow = (tile instanceof SlipperyTile s && s.getDirection()
+                        == SlipperyTile.SlideDirection.UP) ? "^" : "v";
+                yield "S" + arrow;
+            }
+            case "GraveStone" -> "G ";
+            case "NecromancyTile" -> "NG";
+            case "PlantVaseTile" -> "PV";
+            case "ZombieVaseTile" -> "ZV";
+            case "RandomVaseTile" -> "RV";
+            case "VaseTile" -> "V ";
+            default -> "N ";
+        };
+    }
+
+    private void overlayEntitiesOnRow(Arena arena, int row, char[] rowContent) {
+        for (Sun sun : arena.getActiveSuns()) {
+            if (!sun.isCollected() && sun.getRow() == row) {
+                int pos = sun.getCol() * 10 + 2;
+                if (pos >= 0 && pos < rowContent.length) rowContent[pos] = 's';
+            }
+        }
+
+        for (Plant p : arena.getActivePlants()) {
+            if (p.getPlacedTile() != null && p.getPlacedTile().getRow() == row) {
+                int pos = p.getPlacedTile().getCol() * 10 + 4;
+                if (pos >= 0 && pos + 1 < rowContent.length) {
+                    String name = p.getName();
+                    rowContent[pos] = name.length() > 0 ? name.charAt(0) : '+';
+                    rowContent[pos + 1] = name.length() > 1 ? name.charAt(1) : ' ';
+                }
+            }
+        }
+
+        for (Zombie z : arena.getActiveZombies()) {
+            if (!z.isDead() && z.getRow() == row) {
+                int pos = (int) z.getX();
+                if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '*';
+            }
+        }
+
+        for (Projectile p : arena.getActiveProjectiles()) {
+            if (!p.isDestroyed() && p.getPosition().getRow() == row) {
+                int pos = (int) p.getX();
+                if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '-';
+            }
+        }
     }
 }
