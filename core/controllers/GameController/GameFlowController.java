@@ -212,10 +212,10 @@ public class GameFlowController {
         for (Plant p : desiredTile.getPlants()) {
             GameSession.getInstance().getTimeManager().unregisterTicker(p);
             arena.getActivePlants().remove(p);
-            desiredTile.setPlants(Collections.emptyList());
+            desiredTile.setPlants(new ArrayList<>());
         }
 
-        desiredTile.setPlants(Collections.emptyList()); // hal kardi parham?
+        desiredTile.setPlants(new ArrayList<>()); // hal kardi parham?
         return new Result(true, "You successfully plucked all the plants in the tile");
     }
 
