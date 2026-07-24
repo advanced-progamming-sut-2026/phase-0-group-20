@@ -1,5 +1,6 @@
 package models.fields.obstacle;
 
+import models.App;
 import models.game.GameSession;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
@@ -19,12 +20,12 @@ public interface GraveHolder {
         if (graveStone.getHp() <= 0) {
             GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
                     new GameEventPayload.Builder(GameEvent.NOTIFY)
-                            .message("Grave destroyed at row: " + row + ", col: " + col)
+                            .message("Grave destroyed at row: " + (row + 1) + ", col: " + (col + 1))
                             .build());
 
             GameSession session = GameSession.getInstance();
             if (graveStone.hasSun()) session.addSun(50);
-            if (graveStone.hasPlantFood()) session.spawnPlantFood(row, col);
+            if (graveStone.hasPlantFood()) App.getActiveUser().addPlantFoodCount(1);
 
             removeGrave();
         }
