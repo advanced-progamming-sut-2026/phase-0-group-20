@@ -24,7 +24,6 @@ public class AppView {
             App.setActiveMenu(Menu.MAIN_MENU);
             App.setActiveAdventure(new Adventure());
             System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
-            App.setActiveAdventure(new Adventure());
             App.setAllUsers(DataBaseManager.getAllUsers());
         }
 
