@@ -475,6 +475,7 @@ public class GameMapController {
         }
     }
 
+
     public Result showZombieInfo() {
         if (GameSession.getInstance().getArena().getActiveZombies().isEmpty()) {
             return new Result(false, "There are no active zombies");

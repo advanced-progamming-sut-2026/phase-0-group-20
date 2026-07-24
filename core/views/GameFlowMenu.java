@@ -6,6 +6,7 @@ import controllers.GameController.MiniGameController;
 import models.enums.commands.GameFlowCommands;
 import models.enums.commands.MiniGameCommands;
 import models.game.GameSession;
+import models.game.minigame.IMinigame;
 import models.game.minigame.IZombieLevel;
 
 import java.util.Scanner;
@@ -65,7 +66,7 @@ public class GameFlowMenu implements AppMenu {
             System.out.println(gameMapController.showZombieInfo());
         } else if ((matcher = GameFlowCommands.SHOW_MAP.getMatcher(input)) != null) {
             GameSession session = GameSession.getInstance();
-            if (session.getCurrentMode() instanceof IZombieLevel) {
+            if (session.getCurrentMode() instanceof IMinigame) {
                 System.out.println(miniGameController.showMap());
             } else {
                 System.out.println(gameMapController.showMap());
@@ -114,7 +115,9 @@ public class GameFlowMenu implements AppMenu {
             System.out.println(miniGameController.upgradeBeghouledPlants(
                     matcher.group("plantName").trim()
             ));
-        } else {
+        }else if((matcher = MiniGameCommands.BEGHOULED_MAP.getMatcher(input)) != null){
+            System.out.println(miniGameController.showBeghouledPlants());
+        }else {
             return false;
         }
 
