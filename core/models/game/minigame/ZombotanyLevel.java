@@ -59,7 +59,7 @@ public class ZombotanyLevel extends Level implements IMinigame {
             session.getArena().addZombie(newZombie);
             session.getTimeManager().registerNewTicker(newZombie);
 
-            notify("Zombotany: " + newZombie.getType().name() + " spawned in lane " + lane);
+            notify("Zombotany: " + newZombie.getType().name() + " spawned in lane " + (lane+1));
         }
     }
 

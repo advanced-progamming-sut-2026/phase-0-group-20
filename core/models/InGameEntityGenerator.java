@@ -153,7 +153,7 @@ public class InGameEntityGenerator {
                     ZombieType.WIZARD,
                     ZombieType.KING,
                     ZombieType.PIANIST,
-                    ZombieType.ARCADE,
+//                    ZombieType.ARCADE,
                     ZombieType.GARGANTUAR,
                     ZombieType.IMP_DRAGON
             );

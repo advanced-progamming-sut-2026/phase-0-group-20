@@ -37,6 +37,30 @@ public class TrapStrategy implements IPlantStrategy {
     public void execute(Plant context, int currentTick) {
         String name = context.getName();
 
+        if (!handleArming(context, currentTick, name)) {
+            return;
+        }
+
+        int plantRow = context.getPlacedTile().getRow();
+        double plantCol = context.getPlacedTile().getCol();
+
+        List<Zombie> targets = findTargets(name, plantRow, plantCol);
+
+        if (!targets.isEmpty()) {
+            notify("🚨 " + name + " TRAP TRIGGERED!");
+            int baseDamage = context.getDamage() > 0 ? context.getDamage() : 1800;
+
+            boolean shouldDie = executeTrapEffect(
+                    name, context, targets, baseDamage, currentTick, plantCol, plantRow
+            );
+
+            if (shouldDie) {
+                context.takeDamage(context.getCurrentHp());
+            }
+        }
+    }
+
+    private boolean handleArming(Plant context, int currentTick, String name) {
         if (!initialized) {
             armingTimeTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
             if (armingTimeTicks <= 0) {
@@ -50,19 +74,17 @@ public class TrapStrategy implements IPlantStrategy {
         if (!isArmed) {
             if ((currentTick - startTick) >= armingTimeTicks) {
                 isArmed = true;
-                 notify("💣 " + name + " is now armed and ready!");
+                notify("💣 " + name + " is now armed and ready!");
             } else {
-                return;
+                return false;
             }
         }
+        return true;
+    }
 
-        int plantRow = context.getPlacedTile().getRow();
-        double plantCol = context.getPlacedTile().getCol();
-
+    private List<Zombie> findTargets(String name, int plantRow, double plantCol) {
         List<Zombie> targets = new ArrayList<>();
-
         double detectionRadius = name.equals("Squash") ? 1.5 : 0.5;
-
         int maxTargetsAllowed = name.equals("Tangle Kelp") ? (1 + extraGrabTargets) : 1;
 
         for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
@@ -78,68 +100,58 @@ public class TrapStrategy implements IPlantStrategy {
                 }
             }
         }
+        return targets;
+    }
 
-        if (!targets.isEmpty()) {
-            notify("🚨 " + name + " TRAP TRIGGERED!");
+    private boolean executeTrapEffect(String name, Plant context, List<Zombie> targets,
+                                      int baseDamage, int currentTick, double plantCol, int plantRow) {
+        boolean shouldDie = true;
 
-            boolean shouldDie = true;
-
-            int baseDamage = context.getDamage() > 0 ? context.getDamage() : 1800;
-
-            switch (name) {
-                case "Potato Mine":
-                    Zombie pmTarget = targets.getFirst();
-                    pmTarget.takeDamage(baseDamage);
-                    if (pmTarget.isDead()) context.onZombieDeath(pmTarget);
-                    break;
-
-                case "Primal Potato Mine":
-                    List<Zombie> aoeTargets = GameSession.getInstance().getArena()
-                            .getZombiesInRadius((int) plantCol, plantRow, 1.5);
-
-                    for (Zombie z : aoeTargets) {
-                        if (!z.isDead()) {
-                            z.takeDamage(Math.max(baseDamage, 2400));
-                            if (z.isDead()) context.onZombieDeath(z);
-                        }
-                    }
-                    notify("💥 Primal Potato Mine dealt massive AoE damage!");
-                    break;
-
-                case "Squash":
-                    Zombie squashTarget = targets.getFirst();
-                    squashTarget.takeDamage(baseDamage);
-                    if (squashTarget.isDead()) context.onZombieDeath(squashTarget);
-                    notify("🪨 Squash crushed " + squashTarget.getName() + "!");
-
-                    smashCount++;
-                    int totalAllowedSmashes = 1 + extraSmashCharges;
-                    if (smashCount < totalAllowedSmashes) {
-                        shouldDie = false;
-                        lastAttackTick = currentTick;
-                    }
-                    break;
-
-                case "Tangle Kelp":
-                    for (Zombie z : targets) {
-                        z.takeDamage(9999);
-                        if (z.isDead()) context.onZombieDeath(z);
-                        notify("🌊 Tangle Kelp pulled " + z.getName() + " underwater!");
-                    }
-                    break;
-
-                case "Iceberg Lettuce":
-                    Zombie iceTarget = targets.getFirst();
-                    iceTarget.addEffect(new ChillEffect(iceTarget, (int) (10 + freezeDurationBonus)));
-                    notify("❄️ Iceberg Lettuce completely froze " + iceTarget.getName() + "!");
-                    break;
+        switch (name) {
+            case "Potato Mine" -> {
+                Zombie pmTarget = targets.getFirst();
+                pmTarget.takeDamage(baseDamage);
+                if (pmTarget.isDead()) context.onZombieDeath(pmTarget);
             }
+            case "Primal Potato Mine" -> {
+                List<Zombie> aoeTargets = GameSession.getInstance().getArena()
+                        .getZombiesInRadius((int) plantCol, plantRow, 1.5);
+                for (Zombie z : aoeTargets) {
+                    if (!z.isDead()) {
+                        z.takeDamage(Math.max(baseDamage, 2400));
+                        if (z.isDead()) context.onZombieDeath(z);
+                    }
+                }
+                notify("💥 Primal Potato Mine dealt massive AoE damage!");
+            }
+            case "Squash" -> {
+                Zombie squashTarget = targets.getFirst();
+                squashTarget.takeDamage(baseDamage);
+                if (squashTarget.isDead()) context.onZombieDeath(squashTarget);
+                notify("🪨 Squash crushed " + squashTarget.getName() + "!");
 
-            if (shouldDie) {
-                context.takeDamage(context.getCurrentHp());
+                smashCount++;
+                int totalAllowedSmashes = 1 + extraSmashCharges;
+                if (smashCount < totalAllowedSmashes) {
+                    shouldDie = false;
+                    lastAttackTick = currentTick;
+                }
+            }
+            case "Tangle Kelp" -> {
+                for (Zombie z : targets) {
+                    z.takeDamage(9999);
+                    if (z.isDead()) context.onZombieDeath(z);
+                    notify("🌊 Tangle Kelp pulled " + z.getName() + " underwater!");
+                }
+            }
+            case "Iceberg Lettuce" -> {
+                Zombie iceTarget = targets.getFirst();
+                iceTarget.addEffect(new ChillEffect(iceTarget, (int) (10 + freezeDurationBonus)));
+                notify("❄️ Iceberg Lettuce completely froze " + iceTarget.getName() + "!");
             }
         }
 
+        return shouldDie;
     }
 
 

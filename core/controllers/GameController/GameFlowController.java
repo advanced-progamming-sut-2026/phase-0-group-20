@@ -155,7 +155,7 @@ public class GameFlowController {
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
         session.getTimeManager().registerNewTicker(newPlant);
-
+        session.setCooldownForPlant(newPlant);
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +
                 " with the name of " + newPlant.getName() + ".");
     }
