@@ -46,11 +46,10 @@ public class ZombieDropListener implements GameEventListener {
         }
     }
 
-    private static void handlePotUnlock(User user) {
+    private void handlePotUnlock(User user) {
         GreenHouse userGreenHouse = user.getGreenHouse();
         boolean unlockedOne = false;
         int totalUnlockedPots = 0;
-        int cnt = 0;
         searchLoop:
         for (Pot[] pots : userGreenHouse.getPots()) {
             for (Pot pot : pots) {
@@ -62,6 +61,7 @@ public class ZombieDropListener implements GameEventListener {
                         pot.setPotCondition(PotCondition.EMPTY);
                         totalUnlockedPots++;
                         unlockedOne = true;
+                        GameSession.notify("A zombie dropped a pot; you have " + totalUnlockedPots + " pots now.");
                         break searchLoop;
                     }
                 }

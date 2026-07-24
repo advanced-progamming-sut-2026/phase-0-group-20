@@ -76,8 +76,9 @@ public class BeghouledLevel extends Level implements IMinigame {
 
         session.getArena().addZombie(newZombie);
         session.getTimeManager().registerNewTicker(newZombie);
-        String message = "A new zombie " + newZombie.getName() + " has been spawned in" +
-                "(" + (newZombie.getCol() + 1) + ", " + (newZombie.getRow() + 1) + ")!";
+        String message = "A new zombie "+newZombie.getName()+" has been spawned in" +
+                "("+(newZombie.getCol()+1)+", "+(newZombie.getRow()+1)+")!";
+        GameSession.notify(message);
 
     }
 

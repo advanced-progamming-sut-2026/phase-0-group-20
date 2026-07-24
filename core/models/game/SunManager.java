@@ -43,7 +43,7 @@ public class SunManager implements Ticker {
         SunType type = randomSunType();
         int spawnX = rand.nextInt(arena.getCols());
         int spawnY = rand.nextInt(arena.getRows());
-        Sun sun = new Sun(type, spawnX, spawnY, currentTick);
+        Sun sun = new Sun(type, spawnX, spawnY);
         GameSession.getInstance().getTimeManager().registerNewTicker(sun);
         String message = "New " + sun.getType().getLabel() + " sun reached from the sky at "
                 + (spawnX + 1) + ", " + (spawnY + 1) + ".";

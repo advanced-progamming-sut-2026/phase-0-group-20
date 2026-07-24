@@ -8,7 +8,6 @@ import models.game.events.GameEventPayload;
 import models.timeManager.Ticker;
 
 public class Sun implements Ticker {
-    private int productionTime;
     private int amountProduced;
 
     // don't forget to use position beautiful boys
@@ -20,17 +19,15 @@ public class Sun implements Ticker {
     private boolean isCollected = false;
     private boolean exploded = false;
 
-    public Sun(SunType type, int col, int row, int currentTick) {
+    public Sun(SunType type, int col, int row) {
         this.type = type;
         this.position = new Position(col, row);
-        this.productionTime = currentTick;
         this.amountProduced = type.getValue();
     }
 
-    public Sun(int amount, int col, int row, int currentTick) {
+    public Sun(int amount, int col, int row) {
         this.type = null;
         this.position = new Position(col, row);
-        this.productionTime = currentTick;
         this.amountProduced = amount;
     }
 

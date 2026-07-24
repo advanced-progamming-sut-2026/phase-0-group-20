@@ -50,7 +50,6 @@ public class Zombie implements Ticker {
     private Tile tile;
     private SpawnEffect spawnEffect = SpawnEffect.NORMAL;
     private boolean isHypnotized = false;
-    private GameEventMessenger messenger = GameEventMessenger.getInstance();
     private boolean hypnotized = false;
     private Zombie targetZombie = null;
     private boolean shiny = false;
@@ -218,11 +217,14 @@ public class Zombie implements Ticker {
 
         info.append("health: ").append(this.health).append("\n");
 
-        info.append("armor: ");
+        info.append("    armor:\n");
         if (armorPieces != null && !armorPieces.isEmpty()) {
             for (int i = 0; i < armorPieces.size(); i++) {
-                info.append(armorPieces.get(i).getData().getAlias());
-                if (i < armorPieces.size() - 1) info.append(", ");
+                info.append("        ")
+                        .append(armorPieces.get(i).getData().getAlias())
+                        .append(": ")
+                        .append(armorPieces.get(i).getCurrentHealth())
+                        .append("\n");
             }
         }
         info.append("\n");

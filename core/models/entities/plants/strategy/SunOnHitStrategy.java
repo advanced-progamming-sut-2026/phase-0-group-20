@@ -31,7 +31,7 @@ public class SunOnHitStrategy implements IPlantStrategy {
             int spawnX = context.getPlacedTile().getCol();
             int spawnY = context.getPlacedTile().getRow();
 
-            Sun newSun = new Sun(sunPerHit, spawnX, spawnY, currentTick);
+            Sun newSun = new Sun(sunPerHit, spawnX, spawnY);
             GameSession.getInstance().getArena().addSun(newSun);
             GameSession.getInstance().getTimeManager().registerNewTicker(newSun);
 
