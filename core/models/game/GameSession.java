@@ -15,6 +15,7 @@ import models.game.adventure.levels.BonusLevel;
 import models.game.adventure.levels.Level;
 import models.game.events.*;
 import models.timeManager.TimeManager;
+import models.users.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,6 +118,14 @@ public class GameSession {
     public static void startMiniGame(Level minigameLevel, List<Plant> inGamePlants) {
         Arena arena = new Arena();
         GameSession.destroyInstance();
+
+        if (inGamePlants == null || inGamePlants.isEmpty()) {
+            User activeUser = App.getActiveUser();
+            if (activeUser != null && activeUser.getUnlockedPlants() != null)
+                inGamePlants = new ArrayList<>(activeUser.getUnlockedPlants());
+            else
+                inGamePlants = new ArrayList<>();
+        }
 
         Chapter fakeChapter = new Chapter(SeasonType.MINI_GAME);
 

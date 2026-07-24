@@ -13,6 +13,7 @@ import models.game.Arena;
 import models.game.GameMode;
 import models.game.GameSession;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
+import models.game.minigame.DroppedSeedPacket;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -391,7 +392,7 @@ public class GameMapController {
             sb.append("\n");
         }
         sb.append(horizontalBorder);
-        sb.append("\nLegend: [+] Plant | [*] Zombie | [-] Projectile | [s] Sun | [O] Crater\n");
+        sb.append("\nLegend: [+] Plant | [*] Zombie | [-] Projectile | [s] Sun | [O] Crater | [SP] Seed Packet\n");
         sb.append("Tiles:  [N ] Normal | [W~] Water | [L/] LowShore |" +
                 " [S#] Slippery | [G / NG] Graves | [PV/ZV/RV] Vases| [IC] IceBlock\n");
 
@@ -471,6 +472,17 @@ public class GameMapController {
             if (!p.isDestroyed() && p.getPosition().getRow() == row) {
                 int pos = (int) p.getX();
                 if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '-';
+            }
+        }
+        if (arena.getDroppedSeedPackets() != null) {
+            for (DroppedSeedPacket sp : arena.getDroppedSeedPackets()) {
+                if (!sp.isExpired() && sp.getRow() == row) {
+                    int pos = sp.getCol() * 10 + 6;
+                    if (pos >= 0 && pos + 1 < rowContent.length) {
+                        rowContent[pos] = 'S';
+                        rowContent[pos + 1] = 'P';
+                    }
+                }
             }
         }
     }

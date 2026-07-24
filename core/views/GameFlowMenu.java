@@ -93,20 +93,21 @@ public class GameFlowMenu implements AppMenu {
 
         if ((matcher = MiniGameCommands.BREAK_VASE.getMatcher(input)) != null) {
             System.out.println(miniGameController.breakVase(
-                    Integer.parseInt(matcher.group("x")),
-                    Integer.parseInt(matcher.group("y"))
+                    matcher.group("x"), matcher.group("y")
+            ));
+        } else if ((matcher = MiniGameCommands.PLANT_FROM_VASE.getMatcher(input)) != null) {
+            System.out.println(miniGameController.plantFromVase(
+                    matcher.group("srcX"), matcher.group("srcY"),
+                    matcher.group("dstX"), matcher.group("dstY")
             ));
         } else if ((matcher = MiniGameCommands.PUT_ZOMBIE.getMatcher(input)) != null) {
             System.out.println(miniGameController.handlePutZombie(
                     matcher.group("zombieName"),
-                    Integer.parseInt(matcher.group("x")),
-                    Integer.parseInt(matcher.group("y"))
+                    matcher.group("x"), matcher.group("y")
             ));
         } else if ((matcher = MiniGameCommands.BOWL.getMatcher(input)) != null) {
             System.out.println(miniGameController.plantBowlingNut(
-                    Integer.parseInt(matcher.group("index")),
-                    Integer.parseInt(matcher.group("x")),
-                    Integer.parseInt(matcher.group("y"))
+                    matcher.group("index"), matcher.group("x"), matcher.group("y")
             ));
         } else if ((matcher = MiniGameCommands.SWAP_PLANTS.getMatcher(input)) != null) {
             System.out.println(miniGameController.swapPlants(
