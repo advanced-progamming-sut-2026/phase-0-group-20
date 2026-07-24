@@ -20,6 +20,7 @@ import models.timeManager.Ticker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Plant implements IPlant, Ticker {
 
@@ -296,240 +297,68 @@ public class Plant implements IPlant, Ticker {
     public void applySpecialMechanic(String tag, float value) {
         switch (tag) {
             // sun production
-            case "DOUBLE_SUN_CHANCE" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof SunProductionStrategy sunStrategy) {
-                        sunStrategy.setDoubleSunChance(true);
-                    }
-                }
-            }
-            case "SUN_AMOUNT_BUFF" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof SunProductionStrategy sunProductionStrategy) {
-                        sunProductionStrategy.increaseSunAmount(value);
-                    }
-                }
-            }
-            case "SUN_DROP_INCREMENT" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof SunOnHitStrategy sunOnHitStrategy) {
-                        sunOnHitStrategy.addSunPerHitMultiplier((int) value);
-                    }
-                }
-            }
+            case "DOUBLE_SUN_CHANCE" -> applyToStrategy(SunProductionStrategy.class, s -> s.setDoubleSunChance(true));
+            case "SUN_AMOUNT_BUFF" -> applyToStrategy(SunProductionStrategy.class, s -> s.increaseSunAmount(value));
+            case "SUN_DROP_INCREMENT" -> applyToStrategy(SunOnHitStrategy.class, s -> s.addSunPerHitMultiplier((int) value));
+
             // time and speed management
-            case "GROW_TIME_REDUCTION" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof SunProductionStrategy sunStrategy) {
-                        sunStrategy.reduceGrowTime(value);
-                    }
-                }
-            }
-            case "REGEN_SPEEDUP" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof ChargeStrategy regen) {
-                        regen.speedUpRegen(value);
-                    }
-                }
-            }
-            case "EAT_TIME_REDUCTION" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof GraveBusterStrategy grave) {
-                        grave.reduceEatTime(value);
-                    }
-                }
-            }
+            case "GROW_TIME_REDUCTION" -> applyToStrategy(SunProductionStrategy.class, s -> s.reduceGrowTime(value));
+            case "REGEN_SPEEDUP" -> applyToStrategy(ChargeStrategy.class, s -> s.speedUpRegen(value));
+            case "EAT_TIME_REDUCTION" -> applyToStrategy(GraveBusterStrategy.class, s -> s.reduceEatTime(value));
 
+            // range and area
             case "TILE_RANGE_EXT" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof ShootingStrategy shooter) {
-                        shooter.increaseRange((int) value);
-                    } else if (s instanceof StrikeThroughStrategy strike) {
-                        strike.increaseRange((int) value);
-                    } else if (s instanceof MeleeStrategy melee) {
-                        melee.increaseRange(value);
-                    } else if (s instanceof MagnetStrategy magnet) {
-                        magnet.increaseRange(value);
-                    }
-                }
+                applyToStrategy(ShootingStrategy.class, s -> s.increaseRange((int) value));
+                applyToStrategy(StrikeThroughStrategy.class, s -> s.increaseRange((int) value));
+                applyToStrategy(MeleeStrategy.class, s -> s.increaseRange(value));
+                applyToStrategy(MagnetStrategy.class, s -> s.increaseRange(value));
             }
-            case "SPLASH_DAMAGE_BUFF" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof LobberStrategy lobber) {
-                        lobber.increaseSplashDamage((int) value);
-                    }
-                }
-            }
-            case "WARM_RADIUS_EXT" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof LobberStrategy warm) {
-                        warm.increaseWarmRadius(value);
-                    }
-                }
-            }
-            case "MELT_AREA_3X3" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof MeltIceStrategy melt) {
-                        melt.setAreaOfEffect3x3(true);
-                    }
-                }
-            }
+            case "SPLASH_DAMAGE_BUFF" -> applyToStrategy(LobberStrategy.class, s -> s.increaseSplashDamage((int) value));
+            case "WARM_RADIUS_EXT" -> applyToStrategy(LobberStrategy.class, s -> s.increaseWarmRadius(value));
+            case "MELT_AREA_3X3" -> applyToStrategy(MeltIceStrategy.class, s -> s.setAreaOfEffect3x3(true));
 
-            case "LIFESPAN_EXT" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof LifespanStrategy decay) {
-                        decay.increaseLifespan(value);
-                    }
-                }
+            // durations
+            case "LIFESPAN_EXT" -> applyToStrategy(LifespanStrategy.class, s -> s.increaseLifespan(value));
+            case "CHILL_DURATION_EXT" -> applyToStrategy(ShootingStrategy.class, s -> s.increaseChillDuration(value));
+            case "FREEZE_DURATION_EXT" -> {
+                applyToStrategy(TrapStrategy.class, s -> s.increaseFreezeDuration(value));
+                applyToStrategy(GlobalEffectStrategy.class, s -> s.increaseFreezeDuration(value));
             }
-            case "CHILL_DURATION_EXT" -> { // its not completed because we need to add projectile effect
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof ShootingStrategy shoot) {
-                        shoot.increaseChillDuration(value);
-                    }
-                }
-            }
-            case "FREEZE_DURATION_EXT" -> { // its not completed because we need to add freeze zombie
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof TrapStrategy freeze) {
-                        freeze.increaseFreezeDuration(value);
-                    } else if (s instanceof GlobalEffectStrategy globalEffect) {
-                        globalEffect.increaseFreezeDuration(value);
-                    }
-                }
-            }
-            case "DURATION_EXT" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof MintBuffStrategy mint) {
-                        mint.increaseBoostDuration(value);
-                    }
-                }
-            }
+            case "DURATION_EXT" -> applyToStrategy(MintBuffStrategy.class, s -> s.increaseBoostDuration(value));
 
-            case "ADDITIONAL_PIERCE" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof StrikeThroughStrategy shoot) {
-                        shoot.increasePierceLimit((int) value);
-                    }
-                }
-            }
-            case "POISON_TICK_BUFF" -> {
-                for (IPlantStrategy s : this.strategies) { // it's not completed we need projectile effect
-                    if (s instanceof ShootingStrategy shoot) {
-                        shoot.increasePoisonTickDamage((int) value);
-                    }
-                }
-            }
-            case "PRIORITIZE_GARGANTUARS" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof HomingStrategy target) {
-                        target.setPrioritizeGargantuars(true);
-                    }
-                }
-            }
-            case "BONUS_SMASH_CHARGES" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof TrapStrategy trap) {
-                        trap.increaseSmashCharges((int) value);
-                    }
-                }
-            }
-            case "GRAPE_BOUNCE_EXT" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof ExplosiveStrategy explode) {
-                        explode.increaseBounceLimit((int) value);
-                    }
-                }
-            }
-            case "BONUS_GRAB_TARGETS" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof TrapStrategy waterTrap) {
-                        waterTrap.increaseMaxTargets((int) value);
-                    }
-                }
-            }
-            case "BUTTER_CHANCE_BUFF" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof LobberStrategy lobber) {
-                        lobber.increaseButterChance(value);
-                    }
-                }
-            }
-            case "GROWTH_STAGE_MAX_UP" -> {
-                this.setSize(this.getSize() + (int) value);
-            }
+            // offensive buffs
+            case "ADDITIONAL_PIERCE" -> applyToStrategy(StrikeThroughStrategy.class, s -> s.increasePierceLimit((int) value));
+            case "POISON_TICK_BUFF" -> applyToStrategy(ShootingStrategy.class, s -> s.increasePoisonTickDamage((int) value));
+            case "PRIORITIZE_GARGANTUARS" -> applyToStrategy(HomingStrategy.class, s -> s.setPrioritizeGargantuars(true));
+            case "BONUS_SMASH_CHARGES" -> applyToStrategy(TrapStrategy.class, s -> s.increaseSmashCharges((int) value));
+            case "GRAPE_BOUNCE_EXT" -> applyToStrategy(ExplosiveStrategy.class, s -> s.increaseBounceLimit((int) value));
+            case "BONUS_GRAB_TARGETS" -> applyToStrategy(TrapStrategy.class, s -> s.increaseMaxTargets((int) value));
+            case "BUTTER_CHANCE_BUFF" -> applyToStrategy(LobberStrategy.class, s -> s.increaseButterChance(value));
+            case "REFLECT_DAMAGE_BUFF" -> applyToStrategy(SpikeStrategy.class, s -> s.increaseReflectDamage((int) value));
+            case "EXPLODE_DAMAGE_BUFF" -> applyToStrategy(DeathExplosionStrategy.class, s -> s.increaseExplosionDamage((int) value));
 
-
-            case "REFLECT_DAMAGE_BUFF" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof SpikeStrategy spike) {
-                        spike.increaseReflectDamage((int) value);
-                    }
-                }
-            }
-            case "EXPLODE_DAMAGE_BUFF" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof DeathExplosionStrategy deathExplode) {
-                        deathExplode.increaseExplosionDamage((int) value);
-                    }
-                }
-            }
-            case "DEATH_EXPLOSION_AOE" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof TorchwoodStrategy torchwood) {
-                        torchwood.setExplodesOnDeath(value > 0);
-                    }
-                }
-            }
+            // structural and special
+            case "GROWTH_STAGE_MAX_UP" -> this.setSize(this.getSize() + (int) value);
+            case "DEATH_EXPLOSION_AOE" -> applyToStrategy(TorchwoodStrategy.class, s -> s.setExplodesOnDeath(value > 0));
             case "EXPLODE_ON_FINISH" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof GraveBusterStrategy grave) {
-                        grave.setExplodeOnFinish(true);
-                    } else if (s instanceof MeltIceStrategy melt) {
-                        melt.setExplodeOnFinish(true);
-                    }
-                }
+                applyToStrategy(GraveBusterStrategy.class, s -> s.setExplodeOnFinish(true));
+                applyToStrategy(MeltIceStrategy.class, s -> s.setExplodeOnFinish(true));
             }
-
-            case "ZOMBIE_HEALTH_MULTIPLIER" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof HypnotizeStrategy hypno) {
-                        hypno.setHealthMultiplier(value);
-                    }
-                }
-            }
-            case "ZOMBIE_DAMAGE_MULTIPLIER" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof HypnotizeStrategy hypno) {
-                        hypno.setDamageMultiplier(value);
-                    }
-                }
-            }
-
-
-            case "AUTO_PLANT_FOOD_CHANCE" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof ShootingStrategy shoot) {
-                        shoot.setAutoPlantFoodChance(value);
-                    }
-                }
-            }
-            case "AUTO_PLANTFOOD_ON_ENTER" -> {
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof ImitateStrategy imitate) {
-                        imitate.setAutoPlantFood(value > 0);
-                    }
-                }
-            }
-            case "RESET_FAMILY_COOLDOWNS" -> { // new strategy
-                for (IPlantStrategy s : this.strategies) {
-                    if (s instanceof MintBuffStrategy mint) {
-                        mint.setResetCooldowns(value > 0);
-                    }
-                }
-            }
+            case "ZOMBIE_HEALTH_MULTIPLIER" -> applyToStrategy(HypnotizeStrategy.class, s -> s.setHealthMultiplier(value));
+            case "ZOMBIE_DAMAGE_MULTIPLIER" -> applyToStrategy(HypnotizeStrategy.class, s -> s.setDamageMultiplier(value));
+            case "AUTO_PLANT_FOOD_CHANCE" -> applyToStrategy(ShootingStrategy.class, s -> s.setAutoPlantFoodChance(value));
+            case "AUTO_PLANTFOOD_ON_ENTER" -> applyToStrategy(ImitateStrategy.class, s -> s.setAutoPlantFood(value > 0));
+            case "RESET_FAMILY_COOLDOWNS" -> applyToStrategy(MintBuffStrategy.class, s -> s.setResetCooldowns(value > 0));
 
             default -> System.out.println("Unhandled special mechanic: " + tag);
+        }
+    }
+
+    private <T extends IPlantStrategy> void applyToStrategy(Class<T> strategyClass, Consumer<T> action) {
+        for (IPlantStrategy s : this.strategies) {
+            if (strategyClass.isInstance(s)) {
+                action.accept(strategyClass.cast(s));
+            }
         }
     }
 
