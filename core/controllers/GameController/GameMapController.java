@@ -349,6 +349,9 @@ public class GameMapController {
         if (tile instanceof IceHolder iceHolder && iceHolder.hasIceBlock())
             return "IC";
 
+        if (tile instanceof LowShoreTile lowShoreTile && lowShoreTile.isFlooded())
+            return "L~";
+
         return switch (tileType) {
             case "WaterTile" -> "W~";
             case "LowShoreTile" -> "L/";
