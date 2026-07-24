@@ -79,23 +79,10 @@ public abstract class JsonRepository<T, ID> {
         return new ArrayList<>(readAll().values());
     }
 
-    public void deleteById(ID id) {
-        Map<String, T> data = readAll();
-        data.remove(String.valueOf(id));
-        writeAll(data);
-    }
+
 
     public Optional<T> findOne(Predicate<T> predicate) {
         return readAll().values().stream().filter(predicate).findFirst();
     }
 
-    public List<T> findAll(Predicate<T> predicate) {
-        List<T> result = new ArrayList<>();
-        for (T entity : readAll().values()) {
-            if (predicate.test(entity)) {
-                result.add(entity);
-            }
-        }
-        return result;
-    }
 }

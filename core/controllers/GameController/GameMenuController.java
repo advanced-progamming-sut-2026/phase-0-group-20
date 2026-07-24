@@ -146,8 +146,9 @@ public class GameMenuController {
         }
 
         Adventure adventure = App.getActiveAdventure();
-        if (adventure == null)
+        if (adventure == null) {
             return new Result(false, "No active adventure found!");
+        }
 
         int userHighChap = activeUser.getHighestUnlockedChapterIndex();
         int userHighLevel = activeUser.getHighestUnlockedLevelIndex();
@@ -161,45 +162,52 @@ public class GameMenuController {
         for (int i = 0; i < chapters.size(); i++) {
             Chapter chapter = chapters.get(i);
 
-            if (chapter.getSeasonType() != null && chapter.getSeasonType().name().equals("MINI_GAME"))
+            if (chapter.getSeasonType() != null && chapter.getSeasonType().name().equals("MINI_GAME")) {
                 continue;
-
-            String chapterName = chapter.getDisplayName();
-            if (chapterName == null) chapterName = "Unknown";
-
-            String prefix = String.format("Chapter %d: %-15s -> ", displayIndex++, chapterName);
-
-            StringBuilder boxRow = new StringBuilder(prefix);
-            StringBuilder labelRow = new StringBuilder(" ".repeat(prefix.length()));
-
-            int totalLevels = 4;
-            if (chapter.getLevels() != null && !chapter.getLevels().isEmpty())
-                totalLevels = chapter.getLevels().size();
-
-            for (int j = 0; j < totalLevels; j++) {
-                boolean isUnlocked = false;
-                if (i < userHighChap)
-                    isUnlocked = true;
-                else if (i == userHighChap && j <= userHighLevel)
-                    isUnlocked = true;
-
-                String box = isUnlocked ? "[Unlocked]" : "[ Locked ]";
-                String lbl = String.format("  Lvl %-4d", j + 1);
-
-                boxRow.append(box);
-                labelRow.append(lbl);
-
-                if (j < totalLevels - 1) {
-                    boxRow.append("--");
-                    labelRow.append("  ");
-                }
             }
 
-            sb.append(boxRow.toString()).append("\n");
-            sb.append(labelRow.toString()).append("\n\n");
+            sb.append(formatChapter(chapter, displayIndex++, i, userHighChap, userHighLevel));
         }
 
         return new Result(true, sb.toString().trim());
+    }
+
+    private String formatChapter(Chapter chapter, int displayIndex, int chapterIndex,
+                                 int userHighChap, int userHighLevel) {
+        String chapterName = chapter.getDisplayName();
+        if (chapterName == null) chapterName = "Unknown";
+
+        String prefix = String.format("Chapter %d: %-15s -> ", displayIndex, chapterName);
+
+        StringBuilder boxRow = new StringBuilder(prefix);
+        StringBuilder labelRow = new StringBuilder(" ".repeat(prefix.length()));
+
+        int totalLevels = 4;
+        if (chapter.getLevels() != null && !chapter.getLevels().isEmpty()) {
+            totalLevels = chapter.getLevels().size();
+        }
+
+        for (int j = 0; j < totalLevels; j++) {
+            boolean isUnlocked = false;
+            if (chapterIndex < userHighChap) {
+                isUnlocked = true;
+            } else if (chapterIndex == userHighChap && j <= userHighLevel) {
+                isUnlocked = true;
+            }
+
+            String box = isUnlocked ? "[Unlocked]" : "[ Locked ]";
+            String lbl = String.format("  Lvl %-4d", j + 1);
+
+            boxRow.append(box);
+            labelRow.append(lbl);
+
+            if (j < totalLevels - 1) {
+                boxRow.append("--");
+                labelRow.append("  ");
+            }
+        }
+
+        return boxRow.toString() + "\n" + labelRow.toString() + "\n\n";
     }
 
 }
