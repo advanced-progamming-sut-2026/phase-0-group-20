@@ -26,8 +26,6 @@ public enum GameFlowCommands implements Commands {
 
     SHOW_MAP("^\\s*show\\s+map\\s*$"),
 
-    SHOW_STATE("^\\s*show\\s+state\\s*$"),
-
     SHOW_PLANTS_STATUS("^\\s*show\\s+plants\\s+status\\s*$"),
 
     SHOW_TILE_STATUS("^\\s*show\\s+tile\\s+status\\s+-l\\s+\\(\\s*(?<x>\\S+)\\s*,\\s*(?<y>\\S+)\\s*\\)\\s*$"),

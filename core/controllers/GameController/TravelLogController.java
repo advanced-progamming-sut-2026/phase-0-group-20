@@ -164,7 +164,8 @@ public class TravelLogController {
             return new Result(true, "Started " + type.getName() + " Level " + (levelNumber) + "! Good luck!");
 
         } catch (IllegalArgumentException e) {
-            return new Result(false, "Invalid minigame name! Available: vasebreaker, bowling, izombie, beghouled, zombotany");
+            return new Result(false,
+                    "Invalid minigame name! Available: vasebreaker, bowling, izombie, beghouled, zombotany");
         } catch (NullPointerException e) {
             return new Result(false, "Invalid minigame name!");
         } catch (Exception e) {
