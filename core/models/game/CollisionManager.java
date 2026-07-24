@@ -2,9 +2,9 @@ package models.game;
 
 import models.entities.Sun;
 import models.entities.SunType;
+import models.entities.obstacle.PushableObstacle;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
-import models.entities.obstacle.PushableObstacle;
 import models.entities.zombies.Zombie;
 import models.enums.PhysicalConstants;
 import models.enums.plants.ProjectileType;

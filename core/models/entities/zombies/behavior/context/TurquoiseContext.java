@@ -40,11 +40,14 @@ public class TurquoiseContext implements GameEventListener {
     public boolean isCharging() {
         return isCharging;
     }
+
     public void startCharging() {
         isCharging = true;
     }
+
     public void reset() {
-        isCharging = false; chargeTicks = 0;
+        isCharging = false;
+        chargeTicks = 0;
     }
 
     public int getChargeTicks() {

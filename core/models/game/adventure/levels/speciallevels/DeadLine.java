@@ -4,7 +4,6 @@ import models.game.GameSession;
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.SpecialLevel;
 import models.game.adventure.levels.conditions.DeadLineLoseCondition;
-import models.game.adventure.levels.conditions.NormalWinCondition;
 
 public class DeadLine extends SpecialLevel {
     private static final int LOSE_COL = 3;// zero_based

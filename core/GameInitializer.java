@@ -7,8 +7,6 @@ import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieFactory;
 import models.entities.zombies.ZombieType;
 import models.game.events.DailyResetListener;
-import models.game.events.GameEvent;
-import models.game.events.GameEventMessenger;
 
 import java.util.ArrayList;
 import java.util.HashMap;

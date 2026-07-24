@@ -101,7 +101,7 @@ public class MiniGameController {
             return new Result(false, "You can only spawn zombies in iZombie minigame!");
 
         if (!level.isValidZombiePlacement(col))
-            return new Result(false, "Invalid placement! You must place zombies behind the red line"+
+            return new Result(false, "Invalid placement! You must place zombies behind the red line" +
                     " (Col " + level.getRedLineCol() + " or greater).");
 
         ZombieType type = ZombieType.fromAlias(zombieAlias);
@@ -258,7 +258,7 @@ public class MiniGameController {
         }
 
         BeghouledManager manager = new BeghouledManager();
-        String response = manager.swapPlants(y1-1,x1-1,y2-1,x2-1);
+        String response = manager.swapPlants(y1 - 1, x1 - 1, y2 - 1, x2 - 1);
 
         boolean isSuccess = response.startsWith("Match found") || response.startsWith("Cascade");
         return new Result(isSuccess, response);

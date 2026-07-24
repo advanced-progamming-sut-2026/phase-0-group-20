@@ -39,8 +39,7 @@ public class FishermanHookAttack implements AttackBehavior {
 
                 targetPlant.takeDamage(99999);
                 notify("Fisherman hooked and destroyed " + targetPlant.getName() + "!");
-            }
-            else {
+            } else {
                 Tile oldTile = session.getArena().getTile(zRow, pCol);
                 Tile newTile = session.getArena().getTile(zRow, pCol + 1);
 

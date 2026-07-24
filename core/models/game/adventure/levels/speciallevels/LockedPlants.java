@@ -4,8 +4,6 @@ import models.entities.plants.Plant;
 import models.game.GameSession;
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.SpecialLevel;
-import models.game.adventure.levels.conditions.NormalLoseCondition;
-import models.game.adventure.levels.conditions.NormalWinCondition;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -8,7 +8,7 @@ public enum SeasonType {
     MINI_GAME;
 
 
-    public  String getName() {
+    public String getName() {
         return this.name().replace("_", " ").toLowerCase();
     }
 }

@@ -99,7 +99,7 @@ public class ProgressListener implements GameEventListener {
 
 
         for (Plant plant : rewardPlant) {
-             user.unlockedPlants(plant);
+            user.unlockedPlants(plant);
 
             GameEventPayload unlockPayload = new GameEventPayload.Builder(GameEvent.PLANT_UNLOCKED)
                     .plant(plant)

@@ -76,8 +76,8 @@ public class BeghouledLevel extends Level implements IMinigame {
 
         session.getArena().addZombie(newZombie);
         session.getTimeManager().registerNewTicker(newZombie);
-        String message = "A new zombie "+newZombie.getName()+" has been spawned in" +
-                "("+(newZombie.getCol()+1)+", "+(newZombie.getRow()+1)+")!";
+        String message = "A new zombie " + newZombie.getName() + " has been spawned in" +
+                "(" + (newZombie.getCol() + 1) + ", " + (newZombie.getRow() + 1) + ")!";
 
     }
 
@@ -198,7 +198,9 @@ public class BeghouledLevel extends Level implements IMinigame {
         };
     }
 
-    private record UpgradeInfo(String toPlantName, int cost) {}
+    private record UpgradeInfo(String toPlantName, int cost) {
+    }
+
     @Override
     public MiniGameType getMiniGameType() {
         return MiniGameType.BEGHOULED;

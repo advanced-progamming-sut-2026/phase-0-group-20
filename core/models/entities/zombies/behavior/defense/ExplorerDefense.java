@@ -5,7 +5,7 @@ import models.entities.zombies.behavior.context.ExplorerContext;
 import models.enums.plants.ProjectileType;
 import models.game.GameSession;
 
-public class ExplorerDefense implements DefenseBehavior{
+public class ExplorerDefense implements DefenseBehavior {
     private final Zombie zombie;
     private final ExplorerContext context;
 
@@ -22,9 +22,7 @@ public class ExplorerDefense implements DefenseBehavior{
                 context.setTorchLit(false);
                 GameSession.notify("Explorer's torch was extinguished by ice!");
             }
-        }
-
-        else if (ProjectileType.isFireProjectile(damageType)) {
+        } else if (ProjectileType.isFireProjectile(damageType)) {
             if (!context.isTorchLit()) {
                 context.setTorchLit(true);
                 System.out.println("Explorer's torch was re-ignited by fire!");

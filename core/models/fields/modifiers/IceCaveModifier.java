@@ -204,7 +204,8 @@ public class IceCaveModifier implements SeasonModifier {
                     iceHolder.setIceBlock(iceBlock);
                     session.getTimeManager().registerNewTicker(iceBlock);
                     placed++;
-                }            }
+                }
+            }
         }
     }
 }

@@ -30,7 +30,7 @@ public enum PlantCategory {
         return categories[randomIndex];
     }
 
-    public String getName(){
+    public String getName() {
         return this.name().replaceAll("_", " ").toLowerCase();
     }
 }

@@ -115,7 +115,7 @@ public class ZombieFactory {
                     Tile targetTile = availableTiles.get(new Random().nextInt(availableTiles.size()));
                     session.getArena().changeTile(targetTile.getRow(), targetTile.getCol(),
                             new GraveStoneTile(targetTile.getRow(), targetTile.getCol()));
-                     GameSession.notify("Grave spawned at: " + targetTile.getRow() + ", " + targetTile.getCol());
+                    GameSession.notify("Grave spawned at: " + targetTile.getRow() + ", " + targetTile.getCol());
                 }
             });
 
