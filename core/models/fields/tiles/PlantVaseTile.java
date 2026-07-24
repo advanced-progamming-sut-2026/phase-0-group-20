@@ -19,7 +19,7 @@ public class PlantVaseTile extends Tile implements VaseTile {
     @Override
     public VaseInside breakVase() {
         isBroken = true;
-        notify("Vase broken at [" + position.getRow() + "][" + position.getCol() + "]");
+        notify("Vase broken at [" + (position.getCol()+1) + "][" + (position.getRow()+1) + "]");
         GameSession.getInstance().getArena().changeTile(position.getRow(), position.getCol(),
                 new NormalTile(position.getRow(), position.getCol()));
         return VaseInside.SEED_PACKET;
