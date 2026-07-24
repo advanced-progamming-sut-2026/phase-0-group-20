@@ -59,11 +59,7 @@ public class GameSession {
         this.chosenPlants = chosenPlants;
         plantsCooldown = new HashMap<>();
         if (chosenPlants != null) instantiateCooldowns(chosenPlants);
-
-        this.chosenZombies = InGameEntityGenerator.getZombiesForLevel(
-                App.getActiveAdventure().getCurrentChapter().getSeasonType(),
-                currentLevel.getLevelNumber()
-        );
+        this.chosenZombies = chosenZombies;
 
         App.getActiveUser().addZombiesToUnlock(this.chosenZombies);
 
@@ -85,9 +81,9 @@ public class GameSession {
     }
 
     public static GameSession getInstance() {
-        if (instance == null) {
-            notify("Instance is null");
-        }
+//        if (instance == null) {
+//            notify("Instance is null");
+//        }
         return instance;
     }
 
@@ -103,9 +99,15 @@ public class GameSession {
         Level currentLevel = pendingLevel;
 
         Arena arena = new Arena();
+
+        List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(
+                App.getActiveAdventure().getCurrentChapter().getSeasonType(),
+                currentLevel.getLevelNumber()
+        );
+
         GameSession.destroyInstance();
         GameSession session = GameSession.getInstance(pendingChapter, currentLevel,
-                arena, inGamePlants, null);
+                arena, inGamePlants, inGameZombies);
 
         arena.registerLawnMowers();
         App.setActiveSession(session);

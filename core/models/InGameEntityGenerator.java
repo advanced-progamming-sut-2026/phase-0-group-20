@@ -100,9 +100,9 @@ public class InGameEntityGenerator {
                     ZombieType.NORMAL,
                     ZombieType.CONE,
                     ZombieType.BUCKET,
-                    ZombieType.HUNTER
-//                    ZombieType.TROGLOBITE,
-//                    ZombieType.PROSPECTOR
+                    ZombieType.HUNTER,
+                    ZombieType.TROGLOBITE,
+                    ZombieType.PROSPECTOR
             );
             // Boss Level
             case 3 -> Arrays.asList(
@@ -153,7 +153,7 @@ public class InGameEntityGenerator {
                     ZombieType.WIZARD,
                     ZombieType.KING,
                     ZombieType.PIANIST,
-//                    ZombieType.ARCADE,
+                    ZombieType.ARCADE,
                     ZombieType.GARGANTUAR,
                     ZombieType.IMP_DRAGON
             );
