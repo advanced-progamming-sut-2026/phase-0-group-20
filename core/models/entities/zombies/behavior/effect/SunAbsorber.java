@@ -1,9 +1,11 @@
 package models.entities.zombies.behavior.effect;
 
+import models.entities.Sun;
 import models.entities.zombies.Zombie;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 
+import java.util.List;
 import java.util.Random;
 
 public class SunAbsorber extends Effect {
@@ -41,10 +43,17 @@ public class SunAbsorber extends Effect {
         if (!isAbsorbing) {
             intervalTicksCounter++;
             if (intervalTicksCounter >= stealIntervalTicks) {
-                isAbsorbing = true;
-                absorbingTicksCounter = 0;
-                intervalTicksCounter = 0;
-                notify("Ra zombie in (" + zombie.getCol() + ", " + zombie.getRow() + ") started absorbing...");
+                boolean hasSunOnGround = !GameSession.getInstance().getArena().getActiveSuns().isEmpty();
+                boolean hasSunInBank = GameSession.getInstance().getCurrentSun() > 0;
+
+                if (hasSunOnGround || hasSunInBank) {
+                    isAbsorbing = true;
+                    absorbingTicksCounter = 0;
+                    intervalTicksCounter = 0;
+                    notify("Ra zombie in (" + zombie.getCol() + ", " + zombie.getRow() + ") started absorbing...");
+                } else {
+                    intervalTicksCounter = 0;
+                }
             }
         } else {
             absorbingTicksCounter++;
@@ -66,15 +75,30 @@ public class SunAbsorber extends Effect {
     }
 
     private void stealSunFromPlayer() {
-        if (GameSession.getInstance().getArena().getActiveSuns().isEmpty()) {
-            return;
+        boolean stoleSomething = false;
+
+        List<Sun> activeSuns = GameSession.getInstance().getArena().getActiveSuns();
+        if (!activeSuns.isEmpty()) {
+            int index = random.nextInt(activeSuns.size());
+            Sun stolenSun = activeSuns.get(index);
+            activeSuns.remove(index);
+
+            GameSession.getInstance().getTimeManager().unregisterTicker(stolenSun);
+            stoleSomething = true;
         }
 
-        int total = GameSession.getInstance().getArena().getActiveSuns().size();
-        GameSession.getInstance().getArena().getActiveSuns().remove(random.nextInt(total));
-        GameSession.getInstance().useSun(sunAmount);
+        int currentBank = GameSession.getInstance().getCurrentSun();
+        if (currentBank >= sunAmount) {
+            GameSession.getInstance().useSun(sunAmount);
+            stoleSomething = true;
+        } else if (currentBank > 0) {
+            GameSession.getInstance().useSun(currentBank);
+            stoleSomething = true;
+        }
 
-        notify("Ra zombie in (" + zombie.getCol() + ", " + zombie.getRow() + ") stole a sun!");
+        if (stoleSomething) {
+            notify("Ra zombie in (" + zombie.getCol() + ", " + zombie.getRow() + ") stole a sun!");
+        }
     }
 
     @Override

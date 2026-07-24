@@ -59,7 +59,15 @@ public class GameSession {
         this.chosenPlants = chosenPlants;
         plantsCooldown = new HashMap<>();
         if (chosenPlants != null) instantiateCooldowns(chosenPlants);
-        this.chosenZombies = chosenZombies;
+
+        this.chosenZombies = InGameEntityGenerator.getZombiesForLevel(
+                App.getActiveAdventure().getCurrentChapter().getSeasonType(),
+                currentLevel.getLevelNumber()
+        );
+
+        App.getActiveUser().addZombiesToUnlock(this.chosenZombies);
+
+
         this.currentSun = 50;
 
         if (currentLevel.skySunFalls())
@@ -92,21 +100,16 @@ public class GameSession {
     }
 
     public static void startNewGame(List<Plant> inGamePlants) {
-        Adventure adventure = App.getActiveAdventure();
         Level currentLevel = pendingLevel;
-
-        List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(
-                adventure.getCurrentChapter().getSeasonType(),
-                currentLevel.getLevelNumber()
-        );
 
         Arena arena = new Arena();
         GameSession.destroyInstance();
         GameSession session = GameSession.getInstance(pendingChapter, currentLevel,
-                arena, inGamePlants, inGameZombies);
+                arena, inGamePlants, null);
+
         arena.registerLawnMowers();
         App.setActiveSession(session);
-        App.getActiveUser().addZombiesToUnlock(inGameZombies);
+
         for (int r = 0; r < arena.getRows(); r++)
             for (int c = 0; c < arena.getCols(); c++)
                 session.getTimeManager().registerNewTicker(arena.getTile(r, c));

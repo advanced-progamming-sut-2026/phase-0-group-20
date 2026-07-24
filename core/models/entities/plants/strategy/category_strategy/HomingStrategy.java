@@ -41,8 +41,8 @@ public class HomingStrategy implements IPlantStrategy {
                     int plantCol = context.getPlacedTile().getCol();
 
                     for (Zombie z : validTargets) {
-                        float dx = z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - plantCol;
-                        float dy = (z.getRow() - plantRow) * PhysicalConstants.TILE_UNIT_LENGTH;
+                        float dx = (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH) - plantCol;
+                        float dy = z.getRow() - plantRow;
                         float distance = (float) Math.sqrt(dx * dx + dy * dy);
                         if (distance < minDistance) {
                             minDistance = distance;

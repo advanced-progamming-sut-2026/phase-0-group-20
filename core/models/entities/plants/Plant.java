@@ -291,8 +291,6 @@ public class Plant implements IPlant, Ticker {
         if (upgrade != null) {
             upgrade.type().apply(this, upgrade.value(), upgrade.specialTag());
         }
-
-        // implement the effect of levels
     }
 
     public void applySpecialMechanic(String tag, float value) {
