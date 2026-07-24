@@ -91,7 +91,11 @@ public class DarkAgesModifier implements SeasonModifier {
                 .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
                 .count();
 
-        while (gravesToSpawn > 0 && remainTiles > 0) {
+        int attempts = 0;
+        int maxAttempts = 100;
+
+        while (gravesToSpawn > 0 && remainTiles > 0 &&  attempts < maxAttempts) {
+            attempts++;
             int randomRow = rand.nextInt(rows);
             int randomCol = rand.nextInt(cols / 2) + (cols / 2);
 
