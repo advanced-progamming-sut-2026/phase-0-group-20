@@ -1,10 +1,10 @@
 package controllers.GameController;
 
+import models.entities.plants.Plant;
 import models.InGameEntityGenerator;
 import models.Position;
 import models.Result;
 import models.entities.Sun;
-import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieType;
@@ -12,10 +12,7 @@ import models.enums.PhysicalConstants;
 import models.enums.plants.ProjectileType;
 import models.fields.Brain;
 import models.fields.LawnMower;
-import models.fields.tiles.SlipperyTile;
-import models.fields.tiles.Tile;
-import models.fields.tiles.VaseInside;
-import models.fields.tiles.VaseTile;
+import models.fields.tiles.*;
 import models.game.Arena;
 import models.game.GameSession;
 import models.game.adventure.levels.Level;
@@ -23,8 +20,18 @@ import models.game.minigame.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MiniGameController {
+
+    private Integer parsePositiveInt(String str) {
+        try {
+            int val = Integer.parseInt(str);
+            if (val > 0) return val;
+        } catch (NumberFormatException ignored) {
+        }
+        return null;
+    }
 
     public Result changeMenu(String newMenu) {
         return null;
@@ -34,28 +41,57 @@ public class MiniGameController {
         return null;
     }
 
-    public Result breakVase(int row, int col) {
-        Tile tile = GameSession.getInstance().getArena().getTile(row, col);
+    public Result breakVase(String x, String y) {
+        Integer spawnX = parsePositiveInt(x);
+        Integer spawnY = parsePositiveInt(y);
+        if (spawnX == null || spawnY == null) return new Result(false, "Invalid coordinate");
+        GameSession session = GameSession.getInstance();
+
+        Arena arena = session.getArena();
+        Tile tile = arena.getTile(spawnY - 1, spawnX - 1);
 
         if (tile instanceof VaseTile vase) {
             VaseInside vaseInside = vase.breakVase();
 
-            switch (vaseInside) {
-                case SEED_PACKET -> {
-                    return new Result(true, "You found a seed packet");
+            if (vaseInside == VaseInside.ZOMBIE) {
+                Zombie zombieTemplate;
+
+                if (vase instanceof ZombieVaseTile) {
+                    zombieTemplate = InGameEntityGenerator.getZombieForGame(ZombieType.GARGANTUAR, spawnY - 1);
+                } else {
+                    List<Zombie> zList = session.getChosenZombies();
+                    zombieTemplate = zList.get(new Random().nextInt(zList.size()));
                 }
-                case ZOMBIE -> {
-                    return new Result(true, "A zombie emerged");
-                }
-                default -> {
-                    return new Result(false, "The vase was empty");
-                }
+
+                Zombie freshZombie = InGameEntityGenerator.getZombieForGame(zombieTemplate.getType(), spawnY - 1);
+                freshZombie.setCol(spawnX - 1);
+                arena.addZombie(freshZombie);
+                session.getTimeManager().registerNewTicker(freshZombie);
+
+                return new Result(true, "A zombie emerged from the vase at [" + spawnX + "][" + spawnY + "]!");
+
+            } else if (vaseInside == VaseInside.SEED_PACKET) {
+                java.util.List<Plant> pList = session.getChosenPlants();
+                Plant template = pList.get(new Random().nextInt(pList.size()));
+                Plant freshPlant = InGameEntityGenerator.getPlantForGame(template, false);
+
+                DroppedSeedPacket packet = new DroppedSeedPacket(freshPlant, spawnY - 1, spawnX - 1);
+                arena.getDroppedSeedPackets().add(packet);
+                session.getTimeManager().registerNewTicker(packet);
+
+                return new Result(true, "A " + freshPlant.getName() + " seed packet dropped! Plant it quickly.");
             }
+            return new Result(true, "The vase was empty.");
         }
-        return new Result(false, "There is no vase here");
+        return new Result(false, "There is no vase here.");
     }
 
-    public Result plantBowlingNut(int index, int row, int col) {
+    public Result plantBowlingNut(String indexStr, String rowStr, String colStr) {
+        Integer index = parsePositiveInt(indexStr);
+        Integer row = parsePositiveInt(rowStr);
+        Integer col = parsePositiveInt(colStr);
+        if (index == null || row == null || col == null) return new Result(false, "Invalid coordinates or index");
+
         GameSession session = GameSession.getInstance();
         BowlingLevel level = (BowlingLevel) session.getCurrentMode();
 
@@ -94,7 +130,11 @@ public class MiniGameController {
     }
 
 
-    public Result handlePutZombie(String zombieAlias, int row, int col) {
+    public Result handlePutZombie(String zombieAlias, String rowStr, String colStr) {
+        Integer row = parsePositiveInt(rowStr);
+        Integer col = parsePositiveInt(colStr);
+        if (row == null || col == null) return new Result(false, "Invalid coordinates");
+
         GameSession session = GameSession.getInstance();
 
         if (!(session.getCurrentMode() instanceof IZombieLevel level))
@@ -388,5 +428,39 @@ public class MiniGameController {
                 if (pos >= 0 && pos < rowContent.length) rowContent[pos] = '-';
             }
         }
+    }
+
+    public Result plantFromVase(String sourceX, String sourceY, String destX, String destY) {
+        Integer srcX = parsePositiveInt(sourceX);
+        Integer srcY = parsePositiveInt(sourceY);
+        Integer dstX = parsePositiveInt(destX);
+        Integer dstY = parsePositiveInt(destY);
+
+        if (srcX == null || srcY == null || dstX == null || dstY == null)
+            return new Result(false, "Invalid coordinates");
+
+        GameSession session = GameSession.getInstance();
+       Arena arena = session.getArena();
+
+        DroppedSeedPacket packet = arena.getDroppedSeedPackets().stream()
+                .filter(p -> p.getCol() == srcX - 1 && p.getRow() == srcY - 1 && !p.isExpired())
+                .findFirst().orElse(null);
+
+        if (packet == null) return new Result(false, "No active seed packet found at this location.");
+
+       Tile destTile = arena.getTile(dstY - 1, dstX - 1);
+        if (!destTile.isPlantable(packet.getPlant()))
+            return new Result(false, "Cannot plant here.");
+
+       Plant plant = packet.getPlant();
+        destTile.addPlant(plant);
+        arena.addPlant(plant);
+        session.getTimeManager().registerNewTicker(plant);
+
+        packet.setExpired(true);
+        arena.getDroppedSeedPackets().remove(packet);
+        session.getTimeManager().unregisterTicker(packet);
+
+        return new Result(true, "Successfully planted " + plant.getName() + "!");
     }
 }

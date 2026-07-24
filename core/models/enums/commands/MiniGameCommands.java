@@ -22,7 +22,10 @@ public enum MiniGameCommands implements Commands {
     BEGHOULED_MAP("^\\s*show\\s+beghouled\\s+map\\s*$"),
 
     //upgrade -p peashooter
-    UPGRADE_PLANTS("^\\s*upgrade\\s+-p\\s+(?<plantName>.+)\\s*$");
+    UPGRADE_PLANTS("^\\s*upgrade\\s+-p\\s+(?<plantName>.+)\\s*$"),
+
+    //plant seed form x y to x y
+    PLANT_FROM_VASE("^\\s*plant\\s+seed\\s+from\\s+(?<srcX>\\d+)\\s+(?<srcY>\\d+)\\s+to\\s+(?<dstX>\\d+)\\s+(?<dstY>\\d+)\\s*$");
 
     private final String pattern;
 

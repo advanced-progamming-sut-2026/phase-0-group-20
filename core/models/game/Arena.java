@@ -11,6 +11,7 @@ import models.fields.Brain;
 import models.fields.LawnMower;
 import models.fields.tiles.NormalTile;
 import models.fields.tiles.Tile;
+import models.game.minigame.DroppedSeedPacket;
 import models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class Arena {
     private Wave currentActiveWave;
     private final List<Wave> spawnedWaves = new ArrayList<>();
     private List<PushableObstacle> activeObstacles = new ArrayList<>();
+    private final List<models.game.minigame.DroppedSeedPacket> droppedSeedPackets = new ArrayList<>();
+
 
     public Arena() {
         this.tiles = new Tile[ROWS][COLS];
@@ -249,4 +252,9 @@ public class Arena {
     public List<PushableObstacle> getActiveObstacles() {
         return this.activeObstacles;
     }
+
+    public List<DroppedSeedPacket> getDroppedSeedPackets() {
+        return droppedSeedPackets;
+    }
+
 }
