@@ -1,7 +1,6 @@
 package models.game.events;
 
 import models.App;
-import models.database.DataBaseManager;
 import models.entities.plants.Plant;
 import models.game.GameMode;
 import models.game.GameSession;
@@ -119,7 +118,7 @@ public class ProgressListener implements GameEventListener {
         switch (chapterIndex) {
             case 0 -> { // ANCIENT_EGYPT
                 if (levelIndex == 0) addRewards(rewards, "Repeater", "Cherry Bomb"); // NORMAL
-                else if (levelIndex == 1) addRewards(rewards, "Bonk Choy", "Twin Sunflower"); // NORMAL
+                else if (levelIndex == 1) addRewards(rewards, "Grave Buster", "Bonk Choy", "Twin Sunflower"); // NORMAL
                 else if (levelIndex == 2) addRewards(rewards, "Split Pea", "Torchwood"); // SPECIAL
                 else if (levelIndex == 3) addRewards(rewards, "Threepeater", "Squash"); // BOSS
             }
@@ -133,13 +132,13 @@ public class ProgressListener implements GameEventListener {
 
             case 2 -> { // DARK_AGES
                 if (levelIndex == 0) addRewards(rewards, "Puff-shroom", "Sun-shroom"); // NORMAL
-                else if (levelIndex == 1) addRewards(rewards, "Grave Buster", "Fume-shroom"); // NORMAL
+                else if (levelIndex == 1) addRewards(rewards, "Fume-shroom"); // NORMAL
                 else if (levelIndex == 2) addRewards(rewards, "Magnet-shroom", "Hypno-shroom"); // SPECIAL
-                else if (levelIndex == 3) addRewards(rewards, "Doom-shroom", "Sun Bean"); // BOSS
+                else if (levelIndex == 3) addRewards(rewards, "Lily Pad", "Doom-shroom", "Sun Bean"); // BOSS
             }
 
             case 3 -> { // BIG_WAVE_BEACH
-                if (levelIndex == 0) addRewards(rewards, "Lily Pad", "Tangle Kelp"); // NORMAL
+                if (levelIndex == 0) addRewards(rewards, "Tangle Kelp"); // NORMAL
                 else if (levelIndex == 1) addRewards(rewards, "Sea-shroom", "Bowling Bulb"); // NORMAL
                 else if (levelIndex == 2) addRewards(rewards, "Sweet Potato", "Chomper"); // SPECIAL
                 else if (levelIndex == 3) addRewards(rewards, "Melon-pult", "Tall-nut"); // BOSS

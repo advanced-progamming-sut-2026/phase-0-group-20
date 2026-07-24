@@ -309,10 +309,6 @@ public class GameSession {
         }
     }
 
-    public void removeZombie(Zombie z) {
-        chosenZombies.remove(z);
-    }
-
     public TimeManager getTimeManager() {
         return timeManager;
     }
@@ -357,10 +353,6 @@ public class GameSession {
         return currentSun;
     }
 
-    public void setCurrentSun(int currentSun) {
-        this.currentSun = currentSun;
-    }
-
     public void useSun(int amount) {
         this.currentSun -= amount;
     }
@@ -379,23 +371,6 @@ public class GameSession {
             }
         }
         return false;
-    }
-
-    public void cleanUpExpiredPlantFoods() {
-        plantFoods.removeIf(pf -> pf.isCollected() || pf.isExpired());
-    }
-
-    public List<PlantFood> getPlantFoods() {
-        return plantFoods;
-    }
-
-    public void addPlantFood(PlantFood pf) {
-        plantFoods.add(pf);
-    }
-
-    public void consumePlantFood() {
-        if (plantFoods.isEmpty()) return;
-        plantFoods.removeLast();
     }
 
     public void setPlantCooldown(Plant plant) {
@@ -421,7 +396,6 @@ public class GameSession {
     public static void setMinigameLevel(Level minigameLevel) {
         GameSession.minigameLevel = minigameLevel;
     }
-
 
     public static void setPendingLevel(Level pendingLevel) {
         GameSession.pendingLevel = pendingLevel;
