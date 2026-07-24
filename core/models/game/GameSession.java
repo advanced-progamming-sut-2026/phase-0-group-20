@@ -61,7 +61,7 @@ public class GameSession {
         this.chosenZombies = chosenZombies;
         this.currentSun = 50;
 
-        if (this.currentChapter.getCurrentLevel().skySunFalls())
+        if (currentLevel.skySunFalls())
             this.sunManager = new SunManager(this.arena);
         this.timeManager.registerNewTicker(sunManager);
 

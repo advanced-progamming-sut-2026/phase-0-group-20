@@ -94,7 +94,7 @@ public class IceCaveModifier implements SeasonModifier {
                 SlipperyTile.SlideDirection direction = pickDirection(randomRow, rows);
                 arena.changeTile(randomRow, randomCol, new SlipperyTile(randomRow, randomCol, direction));
                 notify("An ice floe sliding " + direction
-                        + " covers row " + randomRow + ", col " + randomCol + ".");
+                        + " covers row " + (randomRow + 1) + ", col " + (randomCol + 1) + ".");
                 placed++;
                 remainTiles--;
             }
@@ -118,7 +118,7 @@ public class IceCaveModifier implements SeasonModifier {
         }
 
         for (int row : frozenRow) {
-            notify("A freezing wind sweeps through lane " + row + "!");
+            notify("A freezing wind sweeps through lane " + (row + 1) + "!");
             for (Plant plant : new ArrayList<>(arena.getActivePlants())) {
                 Tile tile = plant.getPlacedTile();
                 if (tile == null || tile.getRow() != row) continue;
@@ -157,7 +157,7 @@ public class IceCaveModifier implements SeasonModifier {
             ((IceHolder) tile).setIceBlock(iceBlock);
             session.getTimeManager().registerNewTicker(iceBlock);
             notify(plant.getName() + " is completely frozen inside an IceBlock at row " +
-                    row + ", col " + col + "!");
+                    (row + 1) + ", col " + (col + 1) + "!");
         }
     }
 
@@ -187,7 +187,7 @@ public class IceCaveModifier implements SeasonModifier {
                         Plant templatePlant = plants.get(rand.nextInt(plants.size()));
                         Plant freshPlant = InGameEntityGenerator.getPlantForGame(templatePlant, false);
                         iceBlock = new IceBlock(freshPlant, randomRow, randomCol);
-                        notify("A pre-frozen Plant was placed at row " + randomRow + ", col " + randomCol);
+                        notify("A pre-frozen Plant was placed at row " + (randomRow + 1) + ", col " + (randomCol + 1));
                     }
                 } else {
                     List<Zombie> zombies = GameSession.getInstance().getChosenZombies();
@@ -196,7 +196,7 @@ public class IceCaveModifier implements SeasonModifier {
                         Zombie newZombie = InGameEntityGenerator.getZombieForGame(randomZombie.getType(), randomRow);
                         newZombie.setCol(randomCol);
                         iceBlock = new IceBlock(newZombie, randomRow, randomCol);
-                        notify("A pre-frozen Zombie was placed at row " + randomRow + ", col " + randomCol);
+                        notify("A pre-frozen Zombie was placed at row " + (randomRow + 1) + ", col " + (randomCol + 1));
                     }
                 }
 
