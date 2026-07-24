@@ -3,6 +3,7 @@ package models.entities.plants.strategy.tag_strategy;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.zombies.Zombie;
+import models.entities.zombies.behavior.effect.ChillEffect;
 import models.enums.PhysicalConstants;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
@@ -27,7 +28,10 @@ public class TrapStrategy implements IPlantStrategy {
     private int extraSmashCharges = 0;
     private int smashCount = 0;
 
+    private int lastAttackTick = 0;
+
     private int extraGrabTargets = 0;
+    private float freezeDurationBonus = 0f;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -35,22 +39,28 @@ public class TrapStrategy implements IPlantStrategy {
 
         if (!initialized) {
             armingTimeTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
+            if (armingTimeTicks <= 0) {
+                isArmed = true;
+            }
             initialized = true;
         }
+
         if (startTick == -1) startTick = currentTick;
 
-        if (!isArmed && (currentTick - startTick) >= armingTimeTicks) {
-            isArmed = true;
-            if (armingTimeTicks > 0) {
-                notify("💣 " + name + " is now armed and ready!");
+        if (!isArmed) {
+            if ((currentTick - startTick) >= armingTimeTicks) {
+                isArmed = true;
+                 notify("💣 " + name + " is now armed and ready!");
+            } else {
+                return;
             }
         }
 
-        if (!isArmed) return;
-
         int plantRow = context.getPlacedTile().getRow();
         double plantCol = context.getPlacedTile().getCol();
+
         List<Zombie> targets = new ArrayList<>();
+
         double detectionRadius = name.equals("Squash") ? 1.5 : 0.5;
 
         int maxTargetsAllowed = name.equals("Tangle Kelp") ? (1 + extraGrabTargets) : 1;
@@ -58,7 +68,9 @@ public class TrapStrategy implements IPlantStrategy {
         for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
             if (z.isDead()) continue;
 
-            double dist = Math.abs(z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - plantCol);
+            double zColFloat = z.getX() / PhysicalConstants.TILE_UNIT_LENGTH;
+            double dist = Math.abs(zColFloat - plantCol);
+
             if (dist <= detectionRadius) {
                 targets.add(z);
                 if (targets.size() >= maxTargetsAllowed) {
@@ -72,19 +84,22 @@ public class TrapStrategy implements IPlantStrategy {
 
             boolean shouldDie = true;
 
+            int baseDamage = context.getDamage() > 0 ? context.getDamage() : 1800;
+
             switch (name) {
                 case "Potato Mine":
                     Zombie pmTarget = targets.getFirst();
-                    pmTarget.takeDamage(1800);
+                    pmTarget.takeDamage(baseDamage);
                     if (pmTarget.isDead()) context.onZombieDeath(pmTarget);
                     break;
 
                 case "Primal Potato Mine":
                     List<Zombie> aoeTargets = GameSession.getInstance().getArena()
                             .getZombiesInRadius((int) plantCol, plantRow, 1.5);
+
                     for (Zombie z : aoeTargets) {
                         if (!z.isDead()) {
-                            z.takeDamage(2400);
+                            z.takeDamage(Math.max(baseDamage, 2400));
                             if (z.isDead()) context.onZombieDeath(z);
                         }
                     }
@@ -93,7 +108,7 @@ public class TrapStrategy implements IPlantStrategy {
 
                 case "Squash":
                     Zombie squashTarget = targets.getFirst();
-                    squashTarget.takeDamage(1800);
+                    squashTarget.takeDamage(baseDamage);
                     if (squashTarget.isDead()) context.onZombieDeath(squashTarget);
                     notify("🪨 Squash crushed " + squashTarget.getName() + "!");
 
@@ -101,6 +116,7 @@ public class TrapStrategy implements IPlantStrategy {
                     int totalAllowedSmashes = 1 + extraSmashCharges;
                     if (smashCount < totalAllowedSmashes) {
                         shouldDie = false;
+                        lastAttackTick = currentTick;
                     }
                     break;
 
@@ -114,6 +130,7 @@ public class TrapStrategy implements IPlantStrategy {
 
                 case "Iceberg Lettuce":
                     Zombie iceTarget = targets.getFirst();
+                    iceTarget.addEffect(new ChillEffect(iceTarget, (int) (10 + freezeDurationBonus)));
                     notify("❄️ Iceberg Lettuce completely froze " + iceTarget.getName() + "!");
                     break;
             }
@@ -139,7 +156,10 @@ public class TrapStrategy implements IPlantStrategy {
     }
 
     public void increaseFreezeDuration(float value) {
+    }
 
+    public boolean isArmed() {
+        return isArmed;
     }
 
     public void increaseSmashCharges(int amount) {

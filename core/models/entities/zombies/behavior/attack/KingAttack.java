@@ -28,7 +28,7 @@ public class KingAttack implements AttackBehavior {
                     && target.getArmorPieces().isEmpty()) {
 
                 try {
-                    ArmorData knightArmorData = ArmorLoader.getInstance().get("ZombieDarkArmor3");
+                    ArmorData knightArmorData = ArmorLoader.getInstance().get("ShoulderArmorDefault");
                     target.addArmor(new Armor(knightArmorData));
                     target.setType(ZombieType.DARK_ARMOR);
 

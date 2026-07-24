@@ -1,17 +1,22 @@
 package models.entities.zombies.behavior.attack;
 
+import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieState;
 import models.entities.zombies.behavior.context.TurquoiseContext;
+import models.enums.PhysicalConstants;
 import models.game.GameSession;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class LaserAttack implements AttackBehavior {
     private final Zombie zombie;
     private final TurquoiseContext context;
+    private final Random random = new Random();
+    private static final int LASER_DAMAGE = 4000;
 
     public LaserAttack(Zombie zombie, TurquoiseContext context) {
         this.zombie = zombie;
@@ -36,17 +41,42 @@ public class LaserAttack implements AttackBehavior {
         }
     }
 
-    private void stealSun(int amount) {
-        GameSession.getInstance().useSun(amount);
-        context.addStolenSun(amount);
+    private void stealSun(int targetAmount) {
+        boolean stoleSomething = false;
+        int actualStolen = 0;
 
-        notify("Turquoise Skull stole " + amount + " suns!");
+        List<Sun> activeSuns = GameSession.getInstance().getArena().getActiveSuns();
+        if (!activeSuns.isEmpty()) {
+            int index = random.nextInt(activeSuns.size());
+            Sun stolenSun = activeSuns.get(index);
+            activeSuns.remove(index);
+            GameSession.getInstance().getTimeManager().unregisterTicker(stolenSun);
+
+            actualStolen = 50;
+            stoleSomething = true;
+        } else {
+            int currentBank = GameSession.getInstance().getCurrentSun();
+            if (currentBank >= targetAmount) {
+                GameSession.getInstance().useSun(targetAmount);
+                actualStolen = targetAmount;
+                stoleSomething = true;
+            } else if (currentBank > 0) {
+                GameSession.getInstance().useSun(currentBank);
+                actualStolen = currentBank;
+                stoleSomething = true;
+            }
+        }
+
+        if (stoleSomething) {
+            context.addStolenSun(actualStolen);
+            notify("Turquoise Skull stole " + actualStolen + " suns!");
+        }
     }
 
     private void fireLaser() {
         GameSession session = GameSession.getInstance();
         int zRow = zombie.getRow();
-        int zCol = zombie.getCol();
+        int zCol = (int) (zombie.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
 
         List<Plant> targets = new ArrayList<>();
         for (Plant p : session.getArena().getActivePlants()) {
@@ -58,7 +88,7 @@ public class LaserAttack implements AttackBehavior {
         }
 
         for (Plant p : targets) {
-            p.takeDamage(99999);
+            p.takeDamage(LASER_DAMAGE);
         }
         notify("Turquoise Skull fired a deadly laser!");
 

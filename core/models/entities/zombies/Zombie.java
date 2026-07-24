@@ -83,7 +83,8 @@ public class Zombie implements Ticker {
     public void onTick(int currentTick) {
         if (dead) return;
 
-        for (ZombieEffect effect : activeEffects) {
+        List<ZombieEffect> snapshot = new ArrayList<>(activeEffects);
+        for (ZombieEffect effect : snapshot) {
             effect.execute();
         }
 

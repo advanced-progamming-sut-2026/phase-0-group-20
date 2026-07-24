@@ -50,6 +50,7 @@ public class IceBlock implements Ticker {
 
     public void takeDamage(int amount) {
         iceHp -= amount;
+        GameSession.notify("IceBlock in " + (position.getCol() + 1) + ","  + (position.getRow() + 1) + "take " + amount + " damage");
         if (iceHp <= 0) melt();
     }
 

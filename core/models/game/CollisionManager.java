@@ -4,6 +4,8 @@ import models.entities.Sun;
 import models.entities.SunType;
 import models.entities.obstacle.PushableObstacle;
 import models.entities.plants.Plant;
+import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
 import models.enums.PhysicalConstants;
@@ -37,6 +39,7 @@ public class CollisionManager {
             if (proj.isDestroyed()) continue;
 
             Tile currentTile = arena.getTile(proj.getPosition().getRow(), proj.getPosition().getCol());
+            if (currentTile == null) continue;
 
             Plant frozenPlantInTile = null;
             for (Plant p : currentTile.getPlants()) {
@@ -50,6 +53,20 @@ public class CollisionManager {
 
                 frozenPlantInTile.damageIceBlock(proj.getDamage());
 
+                proj.setDestroyed(true);
+                continue;
+            }
+
+            Plant octopusPlantInTile = null;
+            for (Plant p : currentTile.getPlants()) {
+                if (p.hasOctopus()) {
+                    octopusPlantInTile = p;
+                    break;
+                }
+            }
+
+            if (octopusPlantInTile != null &&  !ProjectileType.isLobbed(proj.getType())) {
+                octopusPlantInTile.damageOctopus(proj.getDamage());
                 proj.setDestroyed(true);
                 continue;
             }
@@ -86,7 +103,7 @@ public class CollisionManager {
         if (tile == null || tile.getPlants().isEmpty()) return;
 
         List<Plant> plantsHere = tile.getPlants();
-        Plant target = plantsHere.get(plantsHere.size() - 1);
+        Plant target = plantsHere.getLast();
 
         projectile.onHit(target);
     }
@@ -131,6 +148,10 @@ public class CollisionManager {
         for (Zombie z : nearbyZombies) {
             if (z.isDead()) continue;
 
+            if (projectile.getTarget() != null && projectile.getTarget() != z) {
+                continue;
+            }
+
             double dx = projectile.getX() - z.getX();
             double dy = projectile.getY() - z.getY();
             double distanceSquared = (dx * dx) + (dy * dy);
@@ -153,6 +174,7 @@ public class CollisionManager {
 
         if (currentTile instanceof GraveHolder graveHolder && graveHolder.getGraveStone() != null) {
             graveHolder.takeDamage(proj.getDamage(), projectileRow, projectileCol);
+            GameSession.notify("grave in " + projectileCol + "," +  projectileRow + " take damage");
             proj.onHitObstacle(currentTile);
             return true;
         } else if (currentTile instanceof IceHolder iceHolder && iceHolder.hasIceBlock()) {
@@ -168,15 +190,21 @@ public class CollisionManager {
         if (z.isDead()) return;
 
         int row = z.getRow();
-        int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - 0.2);
+        int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH + 0.2);
+
+        if (targetCol >= arena.getCols()) return;
 
         Tile targetTile = arena.getTile(row, targetCol);
 
         if (targetTile != null) {
             List<Zombie> zombiesToEat = arena.getZombiesOnTile(targetTile);
             Zombie targetZombie = null;
-            if (!zombiesToEat.isEmpty()) {
-                targetZombie = zombiesToEat.get(0);
+
+            for (Zombie enemyZ : zombiesToEat) {
+                if (!enemyZ.isHypnotized() && !enemyZ.isDead()) {
+                    targetZombie = enemyZ;
+                    break;
+                }
             }
 
             if (targetZombie != null) {
@@ -193,7 +221,7 @@ public class CollisionManager {
         if (z.isDead()) return;
 
         int row = z.getRow();
-        int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - 0.2);
+        int targetCol = z.getCol();
 
         Tile targetTile = arena.getTile(row, targetCol);
 
@@ -224,7 +252,27 @@ public class CollisionManager {
         List<Plant> plantToEat = targetTile.getPlants();
         Plant eatingPlant = null;
         if (!plantToEat.isEmpty()) {
-            eatingPlant = plantToEat.get(plantToEat.size() - 1);
+            for (int i = plantToEat.size() - 1; i >= 0; i--) {
+                Plant p = plantToEat.get(i);
+                boolean canEat = true;
+
+                for (IPlantStrategy strategy : p.getStrategies()) {
+                    if (strategy instanceof TrapStrategy trap) {
+                        if (trap.isArmed()) {
+                            canEat = false;
+                        }
+                    }
+                }
+
+                if (p.getName().equals("Spikeweed") || p.getName().equals("Spikerock")) {
+                    canEat = false;
+                }
+
+                if (canEat) {
+                    eatingPlant = p;
+                    break;
+                }
+            }
         }
 
         List<Zombie> zombiesToEat = arena.getZombiesOnTile(targetTile);

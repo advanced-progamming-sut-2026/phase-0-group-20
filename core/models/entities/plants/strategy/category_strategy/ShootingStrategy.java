@@ -3,6 +3,7 @@ package models.entities.plants.strategy.category_strategy;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.zombies.Zombie;
+import models.enums.PhysicalConstants;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 
@@ -46,6 +47,7 @@ public class ShootingStrategy implements IPlantStrategy {
                     if (z.isDead()) continue;
                     int rowDiff = Math.abs(z.getRow() - plantRow);
                     int colDiff = Math.abs(z.getCol() - plantCol);
+
                     if (rowDiff == colDiff && rowDiff > 0 && rowDiff <= 2) {
                         shootForward = true;
                         shootBackward = true;
@@ -55,8 +57,12 @@ public class ShootingStrategy implements IPlantStrategy {
             } else if (plantName.equals("Starfruit")) {
                 for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
                     if (z.isDead()) continue;
-                    int rowDiff = z.getRow() - plantRow;
-                    int colDiff = z.getCol() - plantCol;
+
+                    int zRow = z.getRow();
+                    int zCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
+
+                    int rowDiff = zRow - plantRow;
+                    int colDiff = zCol - plantCol;
 
                     boolean isBackward = (rowDiff == 0 && colDiff < 0);
                     boolean isUpOrDown = (colDiff == 0 && rowDiff != 0);
@@ -71,6 +77,8 @@ public class ShootingStrategy implements IPlantStrategy {
             } else {
                 List<Integer> targetLines = projectileInLine(plantName, plantRow);
                 for (int line : targetLines) {
+                    if (line < 0 || line >= GameSession.getInstance().getArena().getRows()) continue;
+
                     for (Zombie z : GameSession.getInstance().getArena().zombieInRow(line)) {
                         if (z.isDead()) continue;
 

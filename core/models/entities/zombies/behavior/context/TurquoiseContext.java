@@ -22,16 +22,18 @@ public class TurquoiseContext implements GameEventListener {
 
     @Override
     public void onEvent(GameEvent event, GameEventPayload payload) {
-        if (event == GameEvent.GAME_OVER ||
-                (event == GameEvent.ZOMBIE_KILLED && payload.getZombie() == this.zombie)) {
+        boolean isGameOver = (event == GameEvent.GAME_OVER);
+        boolean isThisZombieKilled = (event == GameEvent.ZOMBIE_KILLED && payload != null && payload.getZombie() == this.zombie);
 
-            if (event == GameEvent.ZOMBIE_KILLED) {
+        if (isGameOver || isThisZombieKilled) {
+            if (isThisZombieKilled) {
                 int sunToDrop = stolenSuns / 2;
                 if (sunToDrop > 0) {
                     GameSession.getInstance().addSun(sunToDrop);
                     GameSession.notify("Turquoise Skull Zombie died and dropped " + sunToDrop + " suns!");
                 }
             }
+
             GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED, this);
             GameEventMessenger.getInstance().removeListener(GameEvent.GAME_OVER, this);
         }

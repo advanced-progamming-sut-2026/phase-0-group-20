@@ -3,6 +3,7 @@ package models.entities.zombies.behavior.move;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.behavior.context.TurquoiseContext;
+import models.enums.PhysicalConstants;
 import models.game.GameSession;
 
 public class TurquoiseMove implements MoveBehavior {
@@ -31,7 +32,7 @@ public class TurquoiseMove implements MoveBehavior {
     private boolean canSeePlantIn4Tiles() {
         GameSession session = GameSession.getInstance();
         int zRow = zombie.getRow();
-        int zCol = zombie.getCol();
+        int zCol = (int) (zombie.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
 
         for (Plant p : session.getArena().getActivePlants()) {
             int pRow = p.getPlacedTile().getRow();
