@@ -7,6 +7,8 @@ import models.entities.projectiles.NormalEffect;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
 import models.enums.plants.ProjectileType;
+import models.fields.obstacle.IceHolder;
+import models.fields.tiles.Tile;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 
@@ -34,7 +36,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
             int plantRow = context.getPlacedTile().getRow();
             int plantCol = context.getPlacedTile().getCol();
 
-            int damage = 1800;
+            int damage = context.getDamage() > 0 ? context.getDamage() : 1800;
 
             notify("💥 " + name + " DETONATED!");
 
@@ -62,6 +64,7 @@ public class ExplosiveStrategy implements IPlantStrategy {
                             int finalBounceLimit = 3 + extraBounces;
                             grape.setBouncesLeft(finalBounceLimit);
 
+                            GameSession.getInstance().getTimeManager().registerNewTicker(grape);
                             GameSession.getInstance().getArena().addProjectile(grape);
                         }
                         notify("🍇 Grapeshot scattered 8 bouncing grapes in all directions!");
@@ -79,12 +82,23 @@ public class ExplosiveStrategy implements IPlantStrategy {
                             }
                         }
                     }
+
+                    for (int col = 0; col < GameSession.getInstance().getArena().getCols(); col++) {
+                        Tile tile = GameSession.getInstance().getArena().getTile(plantRow, col);
+                        if (tile instanceof IceHolder iceHolder && iceHolder.hasIceBlock()) {
+                            iceHolder.takeIceDamage(9999);
+                        }
+                    }
+
                     notify("🔥 Jalapeno burned the entire lane!");
                     break;
 
                 case "Doom-shroom":
                     applyAreaDamage(plantCol, plantRow, 3.5f, damage, context);
-                    // change tile type
+                    Tile doomedTile = GameSession.getInstance().getArena().getTile(plantRow, plantCol);
+                    if (doomedTile != null) {
+                         doomedTile.setCrater(true);
+                    }
                     notify("🕳️ Doom-shroom left a massive crater behind!");
                     break;
             }

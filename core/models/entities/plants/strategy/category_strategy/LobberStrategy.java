@@ -17,10 +17,6 @@ public class LobberStrategy implements IPlantStrategy {
 
     private float butterChanceBonus = 0.0f;
 
-    public void increaseButterChance(float chance) {
-        this.butterChanceBonus += chance;
-    }
-
     @Override
     public void execute(Plant context, int currentTick) {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
@@ -28,24 +24,29 @@ public class LobberStrategy implements IPlantStrategy {
         if (intervalInTicks > 0 && (currentTick - lastLobTick) >= intervalInTicks) {
             int plantRow = context.getPlacedTile().getRow();
             float plantCol = context.getPlacedTile().getCol();
-            boolean zombieFound = false;
+
+            Zombie targetZombie = null;
+            float minDistance = Float.MAX_VALUE;
 
             for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
-                if (!z.isDead() && z.getX() / PhysicalConstants.TILE_UNIT_LENGTH >= plantCol) {
-                    zombieFound = true;
-                    break;
+                if (!z.isDead()) {
+                    float distance = Math.abs(z.getCol() - plantCol);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        targetZombie = z;
+                    }
                 }
             }
 
-            if (zombieFound) {
-                executeNewLobbedProjectile(context);
+            if (targetZombie != null) {
+                executeNewLobbedProjectile(context, targetZombie);
                 lastLobTick = currentTick;
             }
         }
     }
 
 
-    private void executeNewLobbedProjectile(Plant context) {
+    private void executeNewLobbedProjectile(Plant context, Zombie targetZombie) {
         String name = context.getName();
         float spawnX = context.getPlacedTile().getCol();
         float spawnY = context.getPlacedTile().getRow();
@@ -92,10 +93,11 @@ public class LobberStrategy implements IPlantStrategy {
                     context,
                     type, effect, damage,
                     new Position(spawnX, spawnY),
-                    1.5f, 0,
+                    0, 0,
                     false,
-                    true
+                    true // canPassObstacles
             );
+            projectile.setHomingTarget(targetZombie, 1.5f);
             GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
             GameSession.getInstance().getArena().addProjectile(projectile);
             notify("🥔 " + name + " lobbed a " + type.name() + "!");
@@ -108,5 +110,9 @@ public class LobberStrategy implements IPlantStrategy {
 
     public void increaseWarmRadius(float r) {
         this.paperRadiusBonus += r;
+    }
+
+    public void increaseButterChance(float chance) {
+        this.butterChanceBonus += chance;
     }
 }
