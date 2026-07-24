@@ -1,6 +1,7 @@
 package models.game.events;
 
 import models.App;
+import models.database.DataBaseManager;
 import models.entities.plants.Plant;
 import models.game.GameMode;
 import models.game.GameSession;
@@ -85,12 +86,14 @@ public class ProgressListener implements GameEventListener {
             }
         }
 
+
     }
 
     private void handelLevelLost() {
         User activeUser = App.getActiveUser();
         if (activeUser != null)
             activeUser.setGamesPlayed(activeUser.getGamesPlayed() + 1);
+
     }
 
     private void unlockPlantRewardIfNeeded(User user, int chapterIndex, int levelIndex) {

@@ -41,6 +41,7 @@ public class GameFlowController {
         if (GameSession.getInstance().isGameOver()) {
             NavigationController.exitMenu();
             App.getActiveUser().setPlantFoodCount(0);
+
             return new Result(true, "Returned to " + App.getActiveMenu().getName());
         }
 
