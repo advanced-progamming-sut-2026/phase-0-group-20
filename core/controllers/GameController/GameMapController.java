@@ -164,91 +164,6 @@ public class GameMapController {
         return sb.toString();
     }
 
-    public Result showCurrentState() {
-        GameSession session = GameSession.getInstance();
-        Arena arena = session.getArena();
-        StringBuilder mapDisplay = new StringBuilder();
-
-        int currentWave = (session.getArena().getCurrentActiveWave() != null) ?
-                session.getArena().getCurrentActiveWave().getCurrentNumber() : 0;
-        int sunAmount = session.getCurrentSun();
-        int plantFoodsCount = (session.getPlantFoods() != null) ? session.getPlantFoods().size() : 0;
-
-        mapDisplay.append("==============================\n");
-        mapDisplay.append("Wave: ").append(currentWave).append(" | ");
-        mapDisplay.append("Sun: ").append(sunAmount).append(" | ");
-        mapDisplay.append("Plant Food: ").append(plantFoodsCount).append("\n");
-        mapDisplay.append("==============================\n\n");
-
-        int rows = arena.getRows();
-        int cols = arena.getCols();
-
-        mapDisplay.append("--- PLANTS ---\n");
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                Tile tile = arena.getTile(r, c);
-                String cell = " ";
-
-                if (tile != null && tile.getPlants() != null && !tile.getPlants().isEmpty()) {
-                    cell = String.valueOf(tile.getPlants().get(0).getName().charAt(0));
-                }
-                mapDisplay.append("[").append(cell).append("]");
-            }
-            mapDisplay.append("\n");
-        }
-        mapDisplay.append("\n");
-
-        mapDisplay.append("--- ZOMBIES ---\n");
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                String cell = " ";
-
-                if (session.getArena().zombieInRow(r) != null) {
-                    for (Zombie z : session.getArena().zombieInRow(r)) {
-                        if (!z.isDead() && (int) z.getCol() == c) {
-                            cell = String.valueOf(z.getName().charAt(0));
-                            break;
-                        }
-                    }
-                }
-                mapDisplay.append("[").append(cell).append("]");
-            }
-            mapDisplay.append("\n");
-        }
-        mapDisplay.append("\n");
-
-        mapDisplay.append("--- ITEMS (Suns/Coins/Etc) ---\n");
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                String cell = " ";
-                mapDisplay.append("[").append(cell).append("]");
-            }
-            mapDisplay.append("\n");
-        }
-        mapDisplay.append("\n");
-
-        mapDisplay.append("--- PROJECTILES ---\n");
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                String cell = " ";
-
-                if (arena.getActiveProjectiles() != null) {
-                    for (Projectile p : arena.getActiveProjectiles()) {
-                        if (!p.isDestroyed() && (int) p.getY() == r && (int) p.getX() == c) {
-                            cell = "*";
-                            break;
-                        }
-                    }
-                }
-                mapDisplay.append("[").append(cell).append("]");
-            }
-            mapDisplay.append("\n");
-        }
-        mapDisplay.append("\n");
-
-        return new Result(true, mapDisplay.toString().trim());
-    }
-
     public Result showPlantsStatus() {
         GameSession session = GameSession.getInstance();
         StringBuilder statusDisplay = new StringBuilder();
@@ -266,6 +181,9 @@ public class GameMapController {
             return new Result(true, statusDisplay.toString());
         }
         List<Plant> chosenPlants = session.getChosenPlants();
+        if(chosenPlants == null || chosenPlants.isEmpty()) {
+            return new Result(false , " You have no chosen plants");
+        }
         int currentSun = session.getCurrentSun();
         HashMap<Plant, Integer> cooldowns = session.getPlantsCooldown();
 

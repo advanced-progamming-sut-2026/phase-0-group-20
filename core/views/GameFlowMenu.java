@@ -37,14 +37,11 @@ public class GameFlowMenu implements AppMenu {
 
     private boolean handleGameFlowCommands(String input) {
         Matcher matcher;
-
         if ((matcher = GameFlowCommands.ADVANCE_TIME.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.advanceTime(matcher.group("count")));
         } else if ((matcher = GameFlowCommands.COLLECT_SUN.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.collectSun(matcher.group("x"), matcher.group("y")));
-        } else if (GameFlowCommands.SHOW_STATE.getMatcher(input) != null) {
-            System.out.println(gameMapController.showCurrentState());
-        } else if ((matcher = GameFlowCommands.SHOW_SUN_AMOUNT.getMatcher(input)) != null) {
+        }else if ((matcher = GameFlowCommands.SHOW_SUN_AMOUNT.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.showSunAmount());
         } else if ((matcher = GameFlowCommands.CHEAT_ADD_SUN.getMatcher(input)) != null) {
             System.out.println(gameFlowcontroller.cheatAddSun(matcher.group("count")));
@@ -84,7 +81,6 @@ public class GameFlowMenu implements AppMenu {
         } else {
             return false;
         }
-
         return true;
     }
 

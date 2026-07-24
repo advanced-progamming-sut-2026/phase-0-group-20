@@ -20,20 +20,14 @@ public class NormalAttack implements AttackBehavior {
     @Override
     public void execute() {
         Tile currentTile = zombie.getTile();
-
         if (currentTile == null || currentTile.getPlants().isEmpty()) {
             resumeWalking();
             return;
         }
-
         boolean isZombieToEat = false;
-
         int damagePerTick = zombie.getEatDps() / TimeManager.TICKS_PER_SECOND;
-
         List<Zombie> zombiesToEat = GameSession.getInstance().getArena().getZombiesOnTile(currentTile);
-
         Zombie targetZombie = null;
-
         for (Zombie zombie : zombiesToEat) {
             if (zombie.isHypnotized()) {
                 targetZombie = zombie;
@@ -44,7 +38,6 @@ public class NormalAttack implements AttackBehavior {
 
         if (targetZombie != null) {
             targetZombie.takeDamage(damagePerTick);
-
             if (targetZombie.isDead()) {
                 isZombieToEat = false;
             }
@@ -59,7 +52,6 @@ public class NormalAttack implements AttackBehavior {
                     break;
                 }
             }
-
             if (targetPlant == null) {
                 resumeWalking();
                 return;
