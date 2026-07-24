@@ -6,25 +6,17 @@ import models.InGameEntityGenerator;
 import models.Result;
 import models.entities.Sun;
 import models.entities.plants.Plant;
-import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
-import models.entities.zombies.ZombieType;
-import models.fields.LawnMower;
-import models.fields.tiles.*;
+import models.fields.tiles.Tile;
 import models.game.Arena;
-import models.game.GameMode;
 import models.game.GameSession;
-import models.game.adventure.Adventure;
-import models.game.adventure.Chapter;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
 import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
-import models.timeManager.TimeManager;
 import models.users.User;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class GameFlowController {
@@ -47,15 +39,16 @@ public class GameFlowController {
 
         if (GameSession.getInstance().isGameOver()) {
             NavigationController.exitMenu();
+            App.getActiveUser().setPlantFoodCount(0);
             return new Result(true, "Returned to " + App.getActiveMenu().getName());
         }
 
         return new Result(true, "Successfully advanced time for " + timeAmount + " ticks.");
     }
 
-    public Result showPlantFoodAmount(){
+    public Result showPlantFoodAmount() {
         int amount = App.getActiveUser().getPlantFoodCount();
-        return new Result (true, "You currently have " + amount + " plants food left.");
+        return new Result(true, "You currently have " + amount + " plants food left.");
     }
 
     public Result collectSun(String colStr, String rowStr) {
@@ -144,7 +137,7 @@ public class GameFlowController {
         }
 
         Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
-        for(int i = 1 ; i<getPlantLevel(plant); i++) {
+        for (int i = 1; i < getPlantLevel(plant); i++) {
             newPlant.upgrade();
         }
         desiredTile.addPlant(newPlant);
@@ -243,6 +236,11 @@ public class GameFlowController {
         if (user.getPlantFoodCount() <= 0) {
             return new Result(false, "You don't have any Plant Food.");
         }
+
+        for (Plant plant : desiredTile.getPlants())
+            if (plant.isBoosted())
+                return new Result(false, "this plant already using food");
+
         user.addPlantFoodCount(-1);
 
         for (Plant plant : desiredTile.getPlants()) {
@@ -265,10 +263,10 @@ public class GameFlowController {
         return new Result(true, "You successfully gained a food plant");
     }
 
-    private int getPlantLevel (Plant plant){
+    private int getPlantLevel(Plant plant) {
         User user = App.getActiveUser();
         return user.getUnlockedPlants().stream()
-                .filter(p->p.getName().equals(plant.getName()))
+                .filter(p -> p.getName().equals(plant.getName()))
                 .findFirst().get().getLevel();
     }
 

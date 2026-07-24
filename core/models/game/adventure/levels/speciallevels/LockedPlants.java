@@ -19,8 +19,6 @@ public class LockedPlants extends SpecialLevel {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
         this.forcedToUsePlants = forcedToUsePlants != null ? forcedToUsePlants : new ArrayList<>();
         this.lockedPlants = lockedPlants != null ? lockedPlants : new ArrayList<>();
-        this.addWinCondition(new NormalWinCondition());
-        this.addLoseCondition(new NormalLoseCondition());
     }
 
     @Override

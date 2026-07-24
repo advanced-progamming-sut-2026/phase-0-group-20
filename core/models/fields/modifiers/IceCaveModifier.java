@@ -1,5 +1,6 @@
 package models.fields.modifiers;
 
+import models.InGameEntityGenerator;
 import models.Settings;
 import models.entities.plants.Plant;
 import models.entities.zombies.Wave;
@@ -171,35 +172,39 @@ public class IceCaveModifier implements SeasonModifier {
         while (placed < numberOfIceBlocks) {
             int randomRow = rand.nextInt(rows);
             int randomCol = rand.nextInt(cols / 2) + 2;
+            int rnd = rand.nextInt(2);
+            randomCol = (rnd == 1) ? randomCol : arena.getCols() - randomCol;
 
             Tile tile = arena.getTile(randomRow, randomCol);
 
             if (tile instanceof IceHolder iceHolder && tile.getPlants().isEmpty() && !iceHolder.hasIceBlock()) {
 
                 IceBlock iceBlock = null;
-                int rnd = rand.nextInt(2);
 
                 if (rnd == 1) {
                     List<Plant> plants = GameSession.getInstance().getChosenPlants();
                     if (!plants.isEmpty()) {
-                        Plant randomPlant = plants.get(rand.nextInt(plants.size()));
-                        iceBlock = new IceBlock(randomPlant, randomRow, randomCol);
+                        Plant templatePlant = plants.get(rand.nextInt(plants.size()));
+                        Plant freshPlant = InGameEntityGenerator.getPlantForGame(templatePlant, false);
+                        iceBlock = new IceBlock(freshPlant, randomRow, randomCol);
                         notify("A pre-frozen Plant was placed at row " + randomRow + ", col " + randomCol);
                     }
                 } else {
                     List<Zombie> zombies = GameSession.getInstance().getChosenZombies();
                     if (!zombies.isEmpty()) {
                         Zombie randomZombie = zombies.get(rand.nextInt(zombies.size()));
-                        iceBlock = new IceBlock(randomZombie, randomRow, randomCol);
+                        Zombie newZombie = InGameEntityGenerator.getZombieForGame(randomZombie.getType(), randomRow);
+                        newZombie.setCol(randomCol);
+                        iceBlock = new IceBlock(newZombie, randomRow, randomCol);
                         notify("A pre-frozen Zombie was placed at row " + randomRow + ", col " + randomCol);
                     }
                 }
 
-                iceHolder.setIceBlock(iceBlock);
-                session.getTimeManager().registerNewTicker(iceBlock);
-
-                placed++;
-            }
+                if (iceBlock != null) {
+                    iceHolder.setIceBlock(iceBlock);
+                    session.getTimeManager().registerNewTicker(iceBlock);
+                    placed++;
+                }            }
         }
     }
 }

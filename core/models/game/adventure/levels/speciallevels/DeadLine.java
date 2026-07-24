@@ -11,7 +11,6 @@ public class DeadLine extends SpecialLevel {
 
     public DeadLine(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
-        this.addWinCondition(new NormalWinCondition());
         this.addLoseCondition(new DeadLineLoseCondition(LOSE_COL));
     }
 
