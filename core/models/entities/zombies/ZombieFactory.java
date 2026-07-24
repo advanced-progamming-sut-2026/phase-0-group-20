@@ -230,7 +230,7 @@ public class ZombieFactory {
 
     private static MoveBehavior createBarrelMove(Zombie zombie) {
         Barrel barrel = new Barrel(zombie.getCol(), zombie.getRow());
-        GameSession.getInstance().getArena().getActiveObstacles().add(barrel);
+        if (GameSession.getInstance() != null) GameSession.getInstance().getArena().getActiveObstacles().add(barrel);
         return new PushMove(zombie,
                 () -> !barrel.isDestroyed(),
                 () -> {
@@ -245,7 +245,7 @@ public class ZombieFactory {
 
     private static MoveBehavior createArcadeMove(Zombie zombie) {
         ArcadeMachine arcadeMachine = new ArcadeMachine(zombie.getCol(), zombie.getRow());
-        GameSession.getInstance().getArena().getActiveObstacles().add(arcadeMachine);
+        if (GameSession.getInstance() != null) GameSession.getInstance().getArena().getActiveObstacles().add(arcadeMachine);
         return new PushMove(zombie,
                 () -> !arcadeMachine.isDestroyed(),
                 () -> {
@@ -272,7 +272,7 @@ public class ZombieFactory {
 
     private static MoveBehavior createTroglobiteMove(Zombie zombie) {
         IceBlock iceBlock = new IceBlock(zombie.getCol(), zombie.getRow());
-        GameSession.getInstance().getArena().getActiveObstacles().add(iceBlock);
+        if (GameSession.getInstance() != null) GameSession.getInstance().getArena().getActiveObstacles().add(iceBlock);
         return new PushMove(zombie,
                 () -> !iceBlock.isDestroyed(),
                 () -> {
