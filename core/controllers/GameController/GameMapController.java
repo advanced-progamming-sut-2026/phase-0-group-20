@@ -1,11 +1,13 @@
 package controllers.GameController;
 
+import models.App;
 import models.Result;
 import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
 import models.fields.LawnMower;
+import models.fields.obstacle.IceHolder;
 import models.fields.tiles.*;
 import models.game.Arena;
 import models.game.GameMode;
@@ -42,7 +44,7 @@ public class GameMapController {
     private String buildHeader(Arena arena, GameSession session) {
         int currentWave = (arena.getCurrentActiveWave() != null) ? arena.getCurrentActiveWave().getCurrentNumber() : 0;
         int sunAmount = session.getCurrentSun();
-        int plantFoodsCount = (session.getPlantFoods() != null) ? session.getPlantFoods().size() : 0;
+        int plantFoodsCount = App.getActiveUser().getPlantFoodCount();
 
         StringBuilder header = new StringBuilder();
         header.append("====================================================\n");
@@ -314,6 +316,13 @@ public class GameMapController {
         statusDisplay.append("Tile ").append(userRow).append(" / ").append(userCol).append(" Status:\n");
         statusDisplay.append("- Type: ").append(determineTileShape(tile)).append("\n");
 
+        if (tile instanceof IceHolder iceHolder && iceHolder.hasIceBlock())
+            statusDisplay.append("- IceBlock HP: ").append(iceHolder.getIceBlock().getIceHp()).append("\n");
+        if (tile instanceof GraveStoneTile graveTile)
+            statusDisplay.append("- Grave HP: ").append(graveTile.getGraveStone().getHp()).append("\n");
+        else if (tile instanceof NecromanceTile necroTile)
+            statusDisplay.append("- Grave HP: ").append(necroTile.getGraveStone().getHp()).append("\n");
+
         appendTilePlantsStatus(statusDisplay, tile);
         appendTileZombiesStatus(statusDisplay, session, internalRow, internalCol);
 
@@ -384,7 +393,7 @@ public class GameMapController {
         sb.append(horizontalBorder);
         sb.append("\nLegend: [+] Plant | [*] Zombie | [-] Projectile | [s] Sun | [O] Crater\n");
         sb.append("Tiles:  [N ] Normal | [W~] Water | [L/] LowShore |" +
-                " [S#] Slippery | [G / NG] Graves | [PV/ZV/RV] Vases\n");
+                " [S#] Slippery | [G / NG] Graves | [PV/ZV/RV] Vases| [IC] IceBlock\n");
 
         return new Result(true, sb.toString());
     }
@@ -418,6 +427,9 @@ public class GameMapController {
     }
 
     private String getTilePrefix(String tileType, Tile tile) {
+        if (tile instanceof IceHolder iceHolder && iceHolder.hasIceBlock())
+            return "IC";
+
         return switch (tileType) {
             case "WaterTile" -> "W~";
             case "LowShoreTile" -> "L/";

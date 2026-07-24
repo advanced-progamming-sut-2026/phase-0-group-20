@@ -82,7 +82,7 @@ public class UserProgress {
 
     public void addZombiesToUnlock(List<Zombie> inGameZombies, User user) {
         for (Zombie zombie : inGameZombies) {
-            if (this.unlockedZombies.stream().noneMatch(z -> z.getType()== zombie.getType())) {
+            if (this.unlockedZombies.stream().noneMatch(z -> z.getType() == zombie.getType())) {
                 this.unlockedZombies.add(zombie);
                 if (user != null) {
                     user.addMessage(Message.zombieUnlockedMessage(zombie));

@@ -4,8 +4,6 @@ import models.entities.plants.Plant;
 import models.game.GameSession;
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.SpecialLevel;
-import models.game.adventure.levels.conditions.NormalLoseCondition;
-import models.game.adventure.levels.conditions.NormalWinCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +17,6 @@ public class LockedPlants extends SpecialLevel {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
         this.forcedToUsePlants = forcedToUsePlants != null ? forcedToUsePlants : new ArrayList<>();
         this.lockedPlants = lockedPlants != null ? lockedPlants : new ArrayList<>();
-        this.addWinCondition(new NormalWinCondition());
-        this.addLoseCondition(new NormalLoseCondition());
     }
 
     @Override

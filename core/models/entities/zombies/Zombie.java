@@ -5,7 +5,6 @@ import models.entities.projectiles.Projectile;
 import models.entities.zombies.armour.Armor;
 import models.entities.zombies.behavior.attack.AttackBehavior;
 import models.entities.zombies.behavior.attack.HypnotizeAttack;
-import models.entities.zombies.behavior.attack.LaserAttack;
 import models.entities.zombies.behavior.defense.DefenseBehavior;
 import models.entities.zombies.behavior.effect.ChillEffect;
 import models.entities.zombies.behavior.effect.Effect;

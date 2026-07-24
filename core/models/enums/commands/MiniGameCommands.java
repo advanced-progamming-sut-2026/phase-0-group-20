@@ -19,7 +19,7 @@ public enum MiniGameCommands implements Commands {
     //swap -l1 (1,2) -l2 (3,5)
     SWAP_PLANTS("^\\s*swap\\s+-l1\\s+\\(\\s*(?<x1>\\d+)\\s*,\\s*(?<y1>\\d+)\\s*\\)\\s+" +
             "-l2\\s+\\(\\s*(?<x2>\\d+)\\s*,\\s*(?<y2>\\d+)\\s*\\)\\s*$"),
-    BEGHOULED_MAP ("^\\s*show\\s+beghouled\\s+map\\s*$"),
+    BEGHOULED_MAP("^\\s*show\\s+beghouled\\s+map\\s*$"),
 
     //upgrade -p peashooter
     UPGRADE_PLANTS("^\\s*upgrade\\s+-p\\s+(?<plantName>.+)\\s*$");

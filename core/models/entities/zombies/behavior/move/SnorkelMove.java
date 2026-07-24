@@ -22,12 +22,12 @@ public class SnorkelMove implements MoveBehavior {
         if (isWaterTile(currentTile)) {
             if (!context.isSubmerged()) {
                 context.setSubmerged(true);
-                 GameSession.notify("Snorkel Zombie dove underwater!");
+                GameSession.notify("Snorkel Zombie dove underwater!");
             }
         } else {
             if (context.isSubmerged()) {
                 context.setSubmerged(false);
-                 GameSession.notify("Snorkel Zombie is walking on land.");
+                GameSession.notify("Snorkel Zombie is walking on land.");
             }
         }
         zombie.moveForward();

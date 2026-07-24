@@ -11,7 +11,7 @@ public class PlantWhatYouGet extends SpecialLevel {
             , SeasonType season
             , int waveCount
             , int baseWaveBudget
-            , int  globalLevelNumber
+            , int globalLevelNumber
     ) {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
     }

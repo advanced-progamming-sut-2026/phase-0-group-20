@@ -70,7 +70,7 @@ public class IZombieLevel extends Level implements IMinigame {
                 if (ticksPassed >= currentInterval) {
                     session.getArena().addSun(
                             new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow()
-                            , currentTick)
+                                    , currentTick)
                     );
                     ticksPassed = 0;
 

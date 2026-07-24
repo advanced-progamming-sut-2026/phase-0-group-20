@@ -110,7 +110,7 @@ public class CollectionController {
         }
         HashMap<String, Integer> seeds = activeUser.getInventory().getSeedPackets();
         int cost = BASE_COST * foundPlant.getLevel();
-        int mathPower =(int) Math.pow(2,foundPlant.getLevel());
+        int mathPower = (int) Math.pow(2, foundPlant.getLevel());
         int seedPacketCost = BASE_SEED_PACKETS * mathPower;
         if (!seeds.containsKey(capitalName) || seedPacketCost > seeds.get(capitalName)) {
             return new Result(false, "You don't have enough seed packets to upgrade this plant.");

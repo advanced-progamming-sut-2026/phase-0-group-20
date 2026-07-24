@@ -28,10 +28,11 @@ public class InGameEntityGenerator {
         switch (season) {
             case ANCIENT_EGYPT -> allowedTypes = getEgyptZombies(level - 1);
             case FROZEN_CAVES -> allowedTypes = getFrozenCavesZombies(level - 1);
-            case DARK_AGES ->  allowedTypes = getDarkAgesZombies(level - 1);
+            case DARK_AGES -> allowedTypes = getDarkAgesZombies(level - 1);
             case BIG_WAVE_BEACH -> allowedTypes = getBeachZombies(level - 1);
             case MINI_GAME -> allowedTypes = getMiniGameZombies(level - 1);
-        };
+        }
+        ;
 
         List<Zombie> levelZombies = new ArrayList<>();
         for (ZombieType type : allowedTypes) {
@@ -205,7 +206,7 @@ public class InGameEntityGenerator {
 
     public static List<Zombie> getZombiesForDailyChallenge() {
 
-        long todaySeed = LocalDate.now().toEpochDay()+2;
+        long todaySeed = LocalDate.now().toEpochDay() + 2;
         Random dailyRandom = new Random(todaySeed);
 
         ZombieType[] allowedDailyTypes = ZombieType.values();

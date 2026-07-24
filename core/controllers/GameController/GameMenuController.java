@@ -12,6 +12,7 @@ import models.game.adventure.levels.Level;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
 import models.game.minigame.BowlingLevel;
 import models.users.User;
+
 import java.util.List;
 
 public class GameMenuController {
@@ -58,10 +59,14 @@ public class GameMenuController {
 
 
         Level selectedLevel = GameSession.getPendingChapter().getLevels().get(levelNumber - 1);
+        GameSession.setPendingLevel(selectedLevel);
 
-        if (selectedLevel != null && !selectedLevel.skipsPlantSelection()) {
+        Result result = new Result(true, "Entered Chapter " + GameSession.getPendingChapter().getDisplayName() +
+                " - Level: " + selectedLevel.getName() + "...");
+
+        if (!selectedLevel.skipsPlantSelection()) {
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
-        } else if (selectedLevel != null) {
+        } else {
             if (selectedLevel instanceof ConveyorBelt conveyorBelt) {
                 GameSession.startNewGame(conveyorBelt.getBelt());
             } else if (selectedLevel instanceof BowlingLevel bowlingLevel) {
@@ -69,10 +74,8 @@ public class GameMenuController {
             }
             App.setActiveMenu(Menu.GAME_FLOW_MENU);
         }
-        GameSession.setPendingLevel(selectedLevel);
 
-        return new Result(true, "Entered Chapter " + GameSession.getPendingChapter().getDisplayName() +
-                " - Level: " + selectedLevel.getName() + "...");
+        return result;
     }
 
 

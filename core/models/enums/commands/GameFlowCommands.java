@@ -7,7 +7,7 @@ public enum GameFlowCommands implements Commands {
 
     SHOW_SUN_AMOUNT("^\\s*show\\s+sun\\s+amount\\s*$"),
 
-    SHOW_PLANT_FOOD_AMOUNT ("\\s*show\\s+food\\s+amount\\s*$"),
+    SHOW_PLANT_FOOD_AMOUNT("\\s*show\\s+food\\s+amount\\s*$"),
 
     CHEAT_ADD_SUN("^\\s*cheat\\s+add\\s+-n\\s+(?<count>\\S+)\\s+suns\\s*$"),
 

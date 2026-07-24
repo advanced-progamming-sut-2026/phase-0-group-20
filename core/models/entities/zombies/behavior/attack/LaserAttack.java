@@ -40,7 +40,7 @@ public class LaserAttack implements AttackBehavior {
         GameSession.getInstance().useSun(amount);
         context.addStolenSun(amount);
 
-         notify("Turquoise Skull stole " + amount + " suns!");
+        notify("Turquoise Skull stole " + amount + " suns!");
     }
 
     private void fireLaser() {

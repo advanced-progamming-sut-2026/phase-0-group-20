@@ -16,9 +16,7 @@ import java.io.File;
 
 import static models.validation.ValidationConstants.NICKNAME_MAX_LENGTH;
 import static models.validation.ValidationConstants.NICKNAME_MIN_LENGTH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class UserValidationUnitTest {
 
