@@ -69,7 +69,6 @@ public class TrapStrategy implements IPlantStrategy {
 
         if (!targets.isEmpty()) {
             notify("🚨 " + name + " TRAP TRIGGERED!");
-            boolean killed;
 
             boolean shouldDie = true;
 
@@ -81,7 +80,6 @@ public class TrapStrategy implements IPlantStrategy {
                     break;
 
                 case "Primal Potato Mine":
-                    Zombie ppmTarget = targets.getFirst();
                     List<Zombie> aoeTargets = GameSession.getInstance().getArena()
                             .getZombiesInRadius((int) plantCol, plantRow, 1.5);
                     for (Zombie z : aoeTargets) {

@@ -60,20 +60,45 @@ public abstract class Tile implements Ticker {
 
 
     public String getType() {
-        return switch (this) {
-            case GraveStoneTile t -> "GraveStone";
-            case PlantVaseTile t -> "PlantVaseTile";
-            case RandomVaseTile t -> "RandomVaseTile";
-            case ZombieVaseTile t -> "ZombieVaseTile";
-            case VaseTile t -> "VaseTile";
-            case WaterTile t -> "WaterTile";
-            case NormalTile t -> "NormalTile";
-            case SlipperyTile t -> "SlipperyTile";
-            case LowShoreTile t -> "LowShoreTile";
-            case NecromanceTile t -> "NecromancyTile";
-            default -> getClass().getSimpleName();
-        };
+        String className = getClass().getSimpleName();
+
+        if (className.equals("GraveStoneTile")) {
+            return "GraveStone";
+        }
+        if (className.equals("NecromanceTile")) {
+            return "NecromancyTile";
+        }
+
+        return className;
     }
+
+    //public String getType() {
+    //
+    //return switch (this) {
+    //
+    //case GraveStoneTile t -> "GraveStone";
+    //
+    //case PlantVaseTile t -> "PlantVaseTile";
+    //
+    //case RandomVaseTile t -> "RandomVaseTile";
+    //
+    //case ZombieVaseTile t -> "ZombieVaseTile";
+    //
+    //case VaseTile t -> "VaseTile";
+    //
+    //case WaterTile t -> "WaterTile";
+    //
+    //case NormalTile t -> "NormalTile";
+    //
+    //case SlipperyTile t -> "SlipperyTile";
+    //
+    //case LowShoreTile t -> "LowShoreTile";
+    //
+    //case NecromanceTile t -> "NecromancyTile";
+    //
+    //default -> getClass().getSimpleName();
+    //
+    //};
 
     public boolean isCrater() {
         return isCrater;
