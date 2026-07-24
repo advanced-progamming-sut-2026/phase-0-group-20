@@ -10,6 +10,7 @@ import models.game.adventure.SeasonType;
 import models.game.adventure.levels.BonusLevel;
 import models.game.adventure.levels.Level;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
+import models.game.adventure.levels.speciallevels.LockedPlants;
 import models.game.minigame.BowlingLevel;
 import models.users.User;
 
@@ -57,13 +58,17 @@ public class GameMenuController {
         if (targetChapterIndex == userHighChap && (levelNumber - 1) > userHighLevel)
             return new Result(false, "This level is locked! You need to beat the previous levels first.");
 
-
         Level selectedLevel = GameSession.getPendingChapter().getLevels().get(levelNumber - 1);
         GameSession.setPendingLevel(selectedLevel);
-
-        Result result = new Result(true, "Entered Chapter " + GameSession.getPendingChapter().getDisplayName() +
-                " - Level: " + selectedLevel.getName() + "...");
-
+        StringBuilder resultText = new StringBuilder();
+        resultText.append("Entered Chapter ")
+                .append(GameSession.getPendingChapter().getDisplayName())
+                .append(" - Level: ").append(selectedLevel.getName()).append("...").append("\n");
+        if(selectedLevel instanceof LockedPlants lockLevel){
+            lockLevel.createModEntities();
+            resultText.append(lockLevel.createMessage()).append("\n");
+        }
+        Result result = new Result(true,resultText.toString());
         if (!selectedLevel.skipsPlantSelection()) {
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
         } else {

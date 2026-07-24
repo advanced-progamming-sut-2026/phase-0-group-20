@@ -1,17 +1,19 @@
 package models.game.adventure.levels;
 
+import models.App;
+import models.entities.plants.Plant;
+import models.enums.plants.PlantCategory;
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
 import models.game.adventure.levels.speciallevels.DeadLine;
 import models.game.adventure.levels.speciallevels.LockedPlants;
 import models.game.adventure.levels.speciallevels.LovePlants;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class LevelFactory {
 
     private static final int BOSS_WAVE_ADDITION = 2;
-
     public static Level createLevel(SeasonType season, int chapterLevelIndex) { //the index of level in each chapter
         int waveCount = 2 + (chapterLevelIndex / 2);
         int baseWaveBudget = 1000 + (chapterLevelIndex * 200);
@@ -39,7 +41,9 @@ public class LevelFactory {
                     new LovePlants("Beach Don't Lose Plants", season, waveCount, baseWaveBudget, globalLevelNumber);
 
             default -> new LockedPlants("Dark Ages Locked", season, waveCount, baseWaveBudget, globalLevelNumber,
-                    new ArrayList<>(), new ArrayList<>());
+                    new Random().nextInt(3)+1);
         };
     }
+
+
 }

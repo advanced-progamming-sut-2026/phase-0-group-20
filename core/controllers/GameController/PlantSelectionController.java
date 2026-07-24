@@ -7,6 +7,7 @@ import models.entities.plants.Plant;
 import models.enums.Menu;
 import models.game.GameSession;
 import models.game.adventure.levels.Level;
+import models.game.adventure.levels.speciallevels.LockedPlants;
 import models.users.User;
 
 import java.util.ArrayList;
@@ -72,6 +73,23 @@ public class PlantSelectionController {
 
         for (Plant p : activeUser.getUnlockedPlants()) {
             if (p.getName().equalsIgnoreCase(name.trim())) {
+                if (currentLevel instanceof LockedPlants lockedLevel) {
+                    Plant forcedPlant = lockedLevel.getForcedToUsePlant();
+                    if(forcedPlant != null &&
+                            !forcedPlant.getName().equalsIgnoreCase(name)&& !selectedPlants.contains(forcedPlant)){
+                        return new Result(false, "You first have to choose the forced plant: "+
+                                forcedPlant.getName()+" ("+forcedPlant.getCost()+")");
+                    }
+                    if (!lockedLevel.isPlantAllowed(p)) {
+                        return new Result(false, p.getName()
+                                + " is banned in this level due to family restrictions!");
+                    }
+                    int actualMaxSlots = currentLevel.getPlantSlotCount() - lockedLevel.getLockedSlots();
+                    if (selectedPlants.size() >= actualMaxSlots) {
+                        return new Result(false, "Your seed slots are full! (" +
+                                lockedLevel.getLockedSlots() + " slots are permanently locked for this level)");
+                    }
+                }
                 selectedPlants.add(p);
                 return new Result(true, p.getName() + " added to your selection.");
             }
