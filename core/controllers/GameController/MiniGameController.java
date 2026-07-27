@@ -297,7 +297,7 @@ public class MiniGameController {
             return new Result(false, "Invalid coordinates! Please enter valid integer numbers.");
         }
 
-        BeghouledManager manager = new BeghouledManager();
+        BeghouledManager manager = ((BeghouledLevel) session.getCurrentMode()).getManager();
         String response = manager.swapPlants(y1 - 1, x1 - 1, y2 - 1, x2 - 1);
 
         boolean isSuccess = response.startsWith("Match found") || response.startsWith("Cascade");
@@ -336,8 +336,8 @@ public class MiniGameController {
         }
         sb.append(horizontalBorder);
 
-        java.util.List<String> activePlants = arena.getActivePlants().stream()
-                .map(models.entities.plants.Plant::getName)
+        List<String> activePlants = arena.getActivePlants().stream()
+                .map(Plant::getName)
                 .distinct()
                 .toList();
 

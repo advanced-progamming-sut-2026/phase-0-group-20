@@ -58,6 +58,10 @@ public abstract class Tile implements Ticker {
         return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK);
     }
 
+    public void removePlant(Plant plant) {
+        this.plants.remove(plant);
+    }
+
 
     public String getType() {
         String className = getClass().getSimpleName();

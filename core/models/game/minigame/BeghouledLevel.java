@@ -2,6 +2,7 @@ package models.game.minigame;
 
 import models.App;
 import models.InGameEntityGenerator;
+import models.Position;
 import models.entities.plants.Plant;
 import models.entities.plants.PlantFactory;
 import models.entities.zombies.Zombie;
@@ -20,16 +21,12 @@ import java.util.Random;
 
 public class BeghouledLevel extends Level implements IMinigame {
     private final Random random = new Random();
+    private final BeghouledManager manager = new BeghouledManager();
 
-    private final String[] basePlants = {
-            "peashooter",
-            "sunflower",
-            "wall-nut",
-            "snow pea",
-            "repeater",
-            "puff-shroom",
-            "cabbage-pult",
-            "melon-pult"};
+    private final List<String> basePlants = new ArrayList<>(List.of(
+            "peashooter", "sunflower", "wall-nut", "snow pea", "cabbage-pult"
+    ));
+
     // we can add or remove plants from this list
     private final int targetMatches;
     private int successfulMatches = 0;
@@ -54,6 +51,7 @@ public class BeghouledLevel extends Level implements IMinigame {
     @Override
     public void engineLoop(GameSession session, int currentTick) {
         tickCounter++;
+        manager.tickUpdate(session);
 
         if (tickCounter >= currentSpawnInterval) {
             spawnSingleZombie(session);
@@ -96,11 +94,17 @@ public class BeghouledLevel extends Level implements IMinigame {
                     tile.getPlants().clear();
                 }
 
-                String randomPlantName = basePlants[random.nextInt(basePlants.length)];
+                String randomPlantName;
+                do {
+                    randomPlantName = basePlants.get(random.nextInt(basePlants.size()));
+                } while (formsMatch(session, r, c, randomPlantName));
+
                 Plant template = App.findPlantByName(randomPlantName);
                 if (template != null) {
                     Plant newPlant = PlantFactory.create(template.getId());
                     tile.addPlant(newPlant);
+                    newPlant.setPosition(new Position(tile.getCol(), tile.getRow()));
+                    newPlant.setPlacedTile(tile);
                     session.getArena().addPlant(newPlant);
                     session.getTimeManager().registerNewTicker(newPlant);
                 }
@@ -151,6 +155,11 @@ public class BeghouledLevel extends Level implements IMinigame {
 
         if (upgradedCount > 0) {
             session.useSun(upgradeInfo.cost());
+
+            int index = basePlants.indexOf(fromPlantName.toLowerCase());
+            if (index != -1) {
+                basePlants.set(index, upgradeInfo.toPlantName());
+            }
         }
 
         return "Successfully upgraded " + upgradedCount + " " +
@@ -205,6 +214,44 @@ public class BeghouledLevel extends Level implements IMinigame {
     @Override
     public MiniGameType getMiniGameType() {
         return MiniGameType.BEGHOULED;
+    }
+
+    public List<String> getBasePlants() {
+        return basePlants;
+    }
+
+    private boolean formsMatch(GameSession session, int r, int c, String plantName) {
+        Arena arena = session.getArena();
+
+        if (c >= 2) {
+            Plant p1 = getPlantAt(arena, r, c - 1);
+            Plant p2 = getPlantAt(arena, r, c - 2);
+            if (p1 != null && p2 != null &&
+                    p1.getName().equalsIgnoreCase(plantName) && p2.getName().equalsIgnoreCase(plantName)) {
+                return true;
+            }
+        }
+
+        if (r >= 2) {
+            Plant p1 = getPlantAt(arena, r - 1, c);
+            Plant p2 = getPlantAt(arena, r - 2, c);
+            if (p1 != null && p2 != null &&
+                    p1.getName().equalsIgnoreCase(plantName) && p2.getName().equalsIgnoreCase(plantName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private Plant getPlantAt(Arena arena, int r, int c) {
+        Tile tile = arena.getTile(r, c);
+        if (tile == null || tile.getPlants().isEmpty()) return null;
+        return tile.getPlants().get(0);
+    }
+
+    public BeghouledManager getManager() {
+        return manager;
     }
 
 }
