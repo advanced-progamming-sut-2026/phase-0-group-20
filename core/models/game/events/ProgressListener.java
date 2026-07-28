@@ -60,7 +60,7 @@ public class ProgressListener implements GameEventListener {
         if (currentMode instanceof IMinigame miniGame) {
             MiniGameType type = miniGame.getMiniGameType();
             int before = user.getUnlockedLevelInMinigame(type);
-            int playedLevel = ((Level) currentMode).getLevelNumber();
+            int playedLevel = ((Level) currentMode).getLevelNumber() - 1;
             user.unlockNextLevelInMinigame(type, playedLevel);
             if (user.getUnlockedLevelInMinigame(type) > before)
                 user.setLevelsCompleted(user.getLevelsCompleted() + 1);
