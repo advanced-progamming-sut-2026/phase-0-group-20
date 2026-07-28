@@ -5,6 +5,7 @@ import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
 import models.users.User;
+import models.enums.GameConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class Adventure {
         int unlockedChapIndex = (currentUser != null) ? currentUser.getHighestUnlockedChapterIndex() : 0;
         int unlockedLevelIndex = (currentUser != null) ? currentUser.getHighestUnlockedLevelIndex() : 0;
 
-        for (int i = 0; i < seasons.length; i++) {
+        for (int i = 0; i < GameConstants.CHAPTER_COUNT; i++) {
             Chapter chapter = new Chapter(seasons[i]);
 
             if (i <= unlockedChapIndex) {

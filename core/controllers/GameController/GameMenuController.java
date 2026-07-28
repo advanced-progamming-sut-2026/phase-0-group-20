@@ -2,6 +2,7 @@ package controllers.GameController;
 
 import models.App;
 import models.Result;
+import models.enums.GameConstants;
 import models.enums.Menu;
 import models.game.GameSession;
 import models.game.adventure.Adventure;
@@ -159,13 +160,9 @@ public class GameMenuController {
         List<Chapter> chapters = adventure.getChapters();
         int displayIndex = 1;
 
-        for (int i = 0; i < chapters.size(); i++) {
+        for (int i = 0; i < GameConstants.CHAPTER_COUNT; i++) {
             Chapter chapter = chapters.get(i);
-
-            if (chapter.getSeasonType() != null && chapter.getSeasonType().name().equals("MINI_GAME")) {
-                continue;
-            }
-
+            
             sb.append(formatChapter(chapter, displayIndex++, i, userHighChap, userHighLevel));
         }
 
