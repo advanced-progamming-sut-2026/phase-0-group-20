@@ -4,6 +4,7 @@ import models.App;
 import models.Result;
 import models.database.DataBaseManager;
 import models.enums.Menu;
+import models.game.GameSession;
 
 
 public final class NavigationController {
@@ -27,7 +28,9 @@ public final class NavigationController {
 
     public static Result exitMenu() {
         Menu current = App.getActiveMenu();
-
+        if(current == Menu.GAME_FLOW_MENU&& GameSession.getInstance().getCurrentChapter().getCurrentLevel()!=null){
+            GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
+        }
         if (current == Menu.MAIN_MENU)
             return new Result(false, "use the logout command to exit the main menu");
 
