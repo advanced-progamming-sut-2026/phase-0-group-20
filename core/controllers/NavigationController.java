@@ -2,6 +2,7 @@ package controllers;
 
 import models.App;
 import models.Result;
+import models.database.DataBaseManager;
 import models.enums.Menu;
 
 
@@ -36,6 +37,9 @@ public final class NavigationController {
         }
 
         App.setActiveMenu(target);
+        if(target != Menu.SIGNUP_MENU && target != Menu.LOGIN_MENU){
+            DataBaseManager.saveOrUpdateUser(App.getActiveUser());
+        }
         return new Result(true, "exited to " + target.getName());
     }
 

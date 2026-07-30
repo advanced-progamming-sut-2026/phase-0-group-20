@@ -170,7 +170,7 @@ public class Shop {
         }
 
         if (unlockedCount + count > 20) {
-            return new Result(false, "Cannot buy " + count + " pots. Greenhouse limit is 20!");
+            return new Result(false, "Cannot buy "+ count +" pots. Greenhouse only has "+unlockedCount+"locked pots.");
         }
 
         int unlockedThisPurchase = 0;
@@ -207,12 +207,13 @@ public class Shop {
 
         user.costCoin(totalCost);
         Random rand = new Random();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < count; i++) {
             Plant randomPlant = user.getUnlockedPlants().get(rand.nextInt(user.getUnlockedPlants().size()));
             user.getInventory().addSeedPacket(randomPlant, 5);
+            sb.append("Successfully added 5 seed packets to the plant : ").append(randomPlant.getName()).append("\n");
         }
-
-        return new Result(true, "Successfully purchased " + count + " Random Seed Packet(s)!");
+        return new Result(true, sb.toString().trim());
     }
 
     public Result buySelectiveSeedPacket(User user, int count, String plantName) {
@@ -232,7 +233,7 @@ public class Shop {
         user.costDiamond(totalCost);
         user.getInventory().addSeedPacket(selectedPlant, 10 * count);
         return new Result(true, "Successfully purchased "
-                + count + " Selective Seed Packet(s) for " + selectedPlant.getName() + "!");
+                + (count*10) + " Selective Seed Packet(s) for " + selectedPlant.getName() + "!");
     }
 
     public Result exchangeCurrency(User user, int count) {
