@@ -130,7 +130,7 @@ public class MiniGameController {
     }
 
 
-    public Result handlePutZombie(String zombieAlias, String rowStr, String colStr) {
+    public Result handlePutZombie(String zombieAlias, String colStr, String rowStr) {
         Integer row = parsePositiveInt(rowStr);
         Integer col = parsePositiveInt(colStr);
         if (row == null || col == null) return new Result(false, "Invalid coordinates");
@@ -140,12 +140,16 @@ public class MiniGameController {
         if (!(session.getCurrentMode() instanceof IZombieLevel level))
             return new Result(false, "You can only spawn zombies in iZombie minigame!");
 
-        if (!level.isValidZombiePlacement(col))
+        if (!level.isValidZombiePlacement(col - 1))
             return new Result(false, "Invalid placement! You must place zombies behind the red line" +
-                    " (Col " + level.getRedLineCol() + " or greater).");
+                    " (Col " + (level.getRedLineCol() + 1)+ " or greater).");
 
         ZombieType type = ZombieType.fromAlias(zombieAlias);
-        Zombie newZombie = InGameEntityGenerator.getZombieForGame(type, row);
+
+        if (!level.getZombiesForThisLevel().contains(type))
+            return new Result(false, "You cannot use " + zombieAlias + " in this level! Check your available zombies.");
+
+        Zombie newZombie = InGameEntityGenerator.getZombieForGame(type, row - 1);
 
         int cost = newZombie.getWaveCost();
 
@@ -154,7 +158,7 @@ public class MiniGameController {
                     "You need " + cost + " but have " + session.getCurrentSun());
 
         session.addSun(-cost);
-        newZombie.setCol(col);
+        newZombie.setCol(col - 1);
         session.getArena().addZombie(newZombie);
         session.getTimeManager().registerNewTicker(newZombie);
         return new Result(true, zombieAlias + " spawned at row " + row + ", col " + col + "!");

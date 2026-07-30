@@ -64,7 +64,7 @@ public class GameSession {
         App.getActiveUser().addZombiesToUnlock(this.chosenZombies);
 
 
-        this.currentSun = 50;
+        this.currentSun = currentLevel.getInitialSun();
 
         if (currentLevel.skySunFalls())
             this.sunManager = new SunManager(this.arena);
@@ -263,7 +263,7 @@ public class GameSession {
         });
 
         arena.getActivePlants().removeIf(plant -> {
-            if (plant.getCurrentHp() <= 0) {
+            if (plant.isDead()) {
                 timeManager.unregisterTicker(plant);
                 GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
                         .plant(plant)
