@@ -5,6 +5,7 @@ import models.entities.SunType;
 import models.entities.obstacle.PushableObstacle;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.plants.strategy.TorchwoodStrategy;
 import models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
@@ -40,6 +41,18 @@ public class CollisionManager {
 
             Tile currentTile = arena.getTile(proj.getPosition().getRow(), proj.getPosition().getCol());
             if (currentTile == null) continue;
+
+            if (!proj.isFiredByZombie() && !proj.isGetTorchWood()) {
+                for (Plant p : currentTile.getPlants()) {
+                    for (IPlantStrategy strategy : p.getStrategies()) {
+                        if (strategy instanceof TorchwoodStrategy torchwoodStrategy) {
+                            torchwoodStrategy.igniteProjectile(proj);
+                            proj.setGetTorchWood(true);
+                        }
+                    }
+                }
+            }
+
 
             Plant frozenPlantInTile = null;
             for (Plant p : currentTile.getPlants()) {
