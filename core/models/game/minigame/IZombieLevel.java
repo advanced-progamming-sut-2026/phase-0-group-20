@@ -16,8 +16,6 @@ import models.game.minigame.minigameCondition.IZombieLoseCondition;
 import models.game.minigame.minigameCondition.IZombieWinCondition;
 import models.timeManager.Ticker;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -37,7 +35,7 @@ public class IZombieLevel extends Level implements IMinigame {
 
         session.getArena().removeLawnMowers();
 
-        redLineCol = rand.nextInt(4) + levelNumber;
+        redLineCol = rand.nextInt(2) + 2 + levelNumber;
 
         for (int row = 0; row < session.getArena().getRows(); row++) {
             Brain brain = new Brain(row);
@@ -57,12 +55,12 @@ public class IZombieLevel extends Level implements IMinigame {
 
         session.getTimeManager().registerNewTicker(new Ticker() {
             int ticksPassed = 0;
-            int currentInterval = 1000;
+            int currentInterval = 120;
 
             @Override
             public void onTick(int currentTick) {
                 if (sunZombie.isDead()) {
-                    session.getTimeManager().unregisterTicker(sunZombie);
+                    session.getTimeManager().unregisterTicker(this);
                     return;
                 }
 
@@ -73,7 +71,7 @@ public class IZombieLevel extends Level implements IMinigame {
                     );
                     ticksPassed = 0;
 
-                    if (currentInterval > 200) currentInterval -= 100;
+                    if (currentInterval > 40) currentInterval -= 12;
 
                 }
             }
@@ -81,8 +79,14 @@ public class IZombieLevel extends Level implements IMinigame {
         });
 
         int numPlants = rand.nextInt(6) + 3 + levelNumber; // min: 3 different types
-        List<Plant> availableTemplates = new ArrayList<>(App.getAllPlants());
-        Collections.shuffle(availableTemplates);
+        List<Plant> availableTemplates = App.getActiveUser().getUnlockedPlants().stream()
+                .filter(plant -> {
+                    String plantName = plant.getName().toLowerCase();
+                    return !plantName.contains("sun") && !plantName.equals("gold bloom") &&
+                            !plantName.equals("grave buster") && !plantName.equals("hot potato") &&
+                            !plantName.equals("lily pad") && !plantName.equals("tangle kelp") &&
+                            !plantName.equals("sea-shroom") && !plantName.contains("mint");
+                }).toList();
         List<Plant> selectedTemplates = availableTemplates.subList(0, Math.min(numPlants, availableTemplates.size()));
 
 
@@ -123,5 +127,17 @@ public class IZombieLevel extends Level implements IMinigame {
     @Override
     public MiniGameType getMiniGameType() {
         return MiniGameType.I_ZOMBIE;
+    }
+
+    @Override
+    public boolean skipsPlantSelection() { return true; }
+
+    public java.util.List<ZombieType> getZombiesForThisLevel() {
+        return switch (levelNumber) {
+            case 1 -> java.util.List.of(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.IMP, ZombieType.ALL_STAR);
+            case 2 -> java.util.List.of(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.NEWSPAPER, ZombieType.DARK_ARMOR);
+            case 3 -> java.util.List.of(ZombieType.NORMAL, ZombieType.NEWSPAPER, ZombieType.BRICK, ZombieType.PROSPECTOR, ZombieType.GARGANTUAR);
+            default -> java.util.List.of(ZombieType.CONE, ZombieType.BUCKET, ZombieType.ALL_STAR, ZombieType.DARK_ARMOR, ZombieType.GARGANTUAR);
+        };
     }
 }

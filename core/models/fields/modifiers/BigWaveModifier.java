@@ -57,8 +57,8 @@ public class BigWaveModifier implements SeasonModifier {
 
         zombie.setSpawnEffect(Zombie.SpawnEffect.WATER_SPLASH); //for graphic phase
 
-        notify("A zombie emerged from the water at row " + shore.getRow()
-                + ", col " + shore.getCol() + "!");
+        notify("A zombie emerged from the water at row " + (shore.getRow() + 1)
+                + ", col " + (shore.getCol() + 1) + "!");
     }
 
     @Override
@@ -71,9 +71,10 @@ public class BigWaveModifier implements SeasonModifier {
     private void setupShore(Arena arena) {
         int rows = arena.getRows();
         int cols = arena.getCols();
+        int col = Math.min(MAX_WATER_COLS, PERMANENT_WATER_COLS + rand.nextInt(3) + getCurrentLevelNumber() + 1);
 
         for (int r = 0; r < rows; r++) {
-            for (int c = cols - MAX_WATER_COLS; c < cols; c++) {
+            for (int c = cols - col; c < cols; c++) {
                 if (c >= cols - PERMANENT_WATER_COLS)
                     arena.changeTile(r, c, new WaterTile(r, c));
                 else
@@ -86,11 +87,11 @@ public class BigWaveModifier implements SeasonModifier {
 
     private void changeTide(Arena arena) {
 
-        int levelEffect = getCurrentLevelNumber() - 1;
-        int randomTide = rand.nextInt(MAX_WATER_COLS - PERMANENT_WATER_COLS + 1);
-        int newWaterCols = Math.min(MAX_WATER_COLS, PERMANENT_WATER_COLS + randomTide + levelEffect);
+        int effect = getCurrentLevelNumber() + arena.getCurrentActiveWave().getCurrentNumber() - 2;
+        int randomTide = rand.nextInt(MAX_WATER_COLS - PERMANENT_WATER_COLS) / 2;
+        int newWaterCols = Math.min(MAX_WATER_COLS, PERMANENT_WATER_COLS + randomTide + effect);
 
-        if (newWaterCols == currentWaterCols) return;
+        if (newWaterCols == currentWaterCols) newWaterCols = newWaterCols > 6 ? newWaterCols - 1 : newWaterCols + 1;
 
         if (newWaterCols > currentWaterCols)
             notify("The tide is rising! Water now covers the " + newWaterCols + " rightmost columns.");
@@ -119,8 +120,8 @@ public class BigWaveModifier implements SeasonModifier {
         if (plantsOnTile.get(0).getTags().contains(PlantTag.WATER)) return;
 
         for (Plant plant : new ArrayList<>(plantsOnTile)) {
-            notify(plant.getName() + " at row " + shore.getRow()
-                    + ", col " + shore.getCol() + " was swallowed by the water!");
+            notify(plant.getName() + " at row " + (shore.getRow() + 1)
+                    + ", col " + (shore.getCol() + 1) + " was swallowed by the water!");
             plant.takeDamage(plant.getCurrentHp());
             plantsOnTile.remove(plant);
         }
