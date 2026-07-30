@@ -222,7 +222,7 @@ public class MiniGameController {
             for (int col = 0; col < cols; col++) {
                 Tile tile = arena.getTile(row, col);
 
-                mapDisplay.append("Tile ").append(row).append(" / ").append(col).append(":\n");
+                mapDisplay.append("Tile ").append(col + 1).append(" / ").append(row + 1).append(":\n");
 
                 if (tile instanceof VaseTile vase) {
                     mapDisplay.append("-vase: ").append(vase.isBroken() ? "Broken" : "Intact").append("\n");
@@ -272,8 +272,8 @@ public class MiniGameController {
             for (int k = 0; k < zombiesInTile.size(); k++) {
                 Zombie z = zombiesInTile.get(k);
                 mapDisplay.append(z.getName()).append(":")
-                        .append((int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH)).append(",")
-                        .append(z.getRow());
+                        .append(z.getCol() + 1).append(" , ")
+                        .append(z.getRow() + 1);
 
                 if (k < zombiesInTile.size() - 1) {
                     mapDisplay.append(", ");
