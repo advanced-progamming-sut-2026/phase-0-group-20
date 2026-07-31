@@ -187,7 +187,7 @@ public class CollisionManager {
 
         if (currentTile instanceof GraveHolder graveHolder && graveHolder.getGraveStone() != null) {
             graveHolder.takeDamage(proj.getDamage(), projectileRow, projectileCol);
-            GameSession.notify("grave in " + projectileCol + "," +  projectileRow + " take damage");
+            GameSession.notify("grave in " + (projectileCol + 1) + " , " + (projectileRow + 1) + " take damage");
             proj.onHitObstacle(currentTile);
             return true;
         } else if (currentTile instanceof IceHolder iceHolder && iceHolder.hasIceBlock()) {

@@ -25,7 +25,8 @@ public class GraveStoneTile extends Tile implements GraveHolder {
 
     @Override
     public boolean isPlantable(Plant plantToPlant) {
-        return false;
+        return this.getGraveStone() != null &&
+                (plantToPlant.getName().contains("Buster")|| plantToPlant.getName().contains("buster"));
     }
 
     public GraveStone getGraveStone() {

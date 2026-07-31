@@ -35,7 +35,8 @@ public class NecromanceTile extends Tile implements GraveHolder {
 
     @Override
     public boolean isPlantable(Plant plantToPlant) {
-        if (graveStone != null) return false;
+        boolean isGraveBuster = (plantToPlant.getName().contains("Buster")|| plantToPlant.getName().contains("buster"));
+        if (graveStone != null) return isGraveBuster;
         return super.isPlantable(plantToPlant);
     }
 
