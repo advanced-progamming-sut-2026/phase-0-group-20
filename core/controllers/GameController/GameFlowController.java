@@ -140,7 +140,6 @@ public class GameFlowController {
         if (!desiredTile.isPlantable(plant)) {
             return new Result(false, "You can not plant this plant here");
         }
-
         Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
         for (int i = 1; i < getPlantLevel(plant); i++) {
             newPlant.upgrade();
@@ -149,7 +148,9 @@ public class GameFlowController {
         arena.addPlant(newPlant);
         session.useSun(newPlant.getCost());
         session.getTimeManager().registerNewTicker(newPlant);
-        plant.useFood();
+        if(plant.isBoosted()) {
+            plant.useFood();
+        }
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
                 .plant(newPlant)
                 .arena(arena)
