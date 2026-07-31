@@ -17,12 +17,10 @@ public class ShootingStrategy implements IPlantStrategy {
     private int rangeExtension = 0;
     private float chillDurationExtension = 0;
     private int poisonTickDamageBonus = 0;
-
     private int pendingShots = 0;
     private int burstCooldownTicks = 0;
     private boolean currentShootForward = false;
     private boolean currentShootBackward = false;
-
     private float autoPlantFoodChance = 0.0f;
 
     private static List<Integer> projectileInLine(String name, int placedRow) {
@@ -113,10 +111,8 @@ public class ShootingStrategy implements IPlantStrategy {
                     context.useFood();
                 } else {
                     int stacks = context.getStackCount();
-
                     executeNewProjectile(context, shootForward, shootBackward);
                     notify(plantName + " fired a projectile!");
-
                     if (stacks > 1) {
                         this.pendingShots = stacks - 1;
                         this.burstCooldownTicks = 5;

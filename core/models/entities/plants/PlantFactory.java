@@ -253,9 +253,7 @@ public class PlantFactory {
     }
 
     private static IPlantStrategy createHomingStrategyFor(String plantName) {
-        if ("Cat-tail".equals(plantName)) {
-            return new HomingStrategy(HomingStrategy.TargetMode.NEAREST, 2);
-        }
+        if ("Cat-tail".equals(plantName)) {return new HomingStrategy(HomingStrategy.TargetMode.NEAREST, 2);}
         return new HomingStrategy(HomingStrategy.TargetMode.RANDOM, 1);
     }
 }

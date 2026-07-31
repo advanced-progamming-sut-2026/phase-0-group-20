@@ -105,20 +105,11 @@ public abstract class Tile implements Ticker {
     //
     //};
 
-    public boolean isCrater() {
-        return isCrater;
-    }
-
-    public void setCrater(boolean isCrater) {
-        this.isCrater = isCrater;
-    }
+    public boolean isCrater() {return isCrater;}
+    public void setCrater(boolean isCrater) {this.isCrater = isCrater;}
 
     public Plant getStackPlant() {
-        for (Plant plant : plants) {
-            if (plant.getTags().contains(PlantTag.STACK)) return plant;
-        }
+        for (Plant plant : plants) if (plant.getTags().contains(PlantTag.STACK)) return plant;
         return null;
     }
-
-
 }

@@ -12,22 +12,11 @@ import java.util.List;
 import java.util.Random;
 
 public class HomingStrategy implements IPlantStrategy {
-
-    public enum TargetMode {
-        NEAREST,
-        RANDOM,
-        GARGANTUAR_FIRST
-    }
-
+    public enum TargetMode {NEAREST, RANDOM, GARGANTUAR_FIRST}
     private final Random random = new Random();
     private int lastShotTick = 0;
-
     private TargetMode targetMode;
     private int burstCount;
-
-    public HomingStrategy() {
-        this(TargetMode.RANDOM, 1);
-    }
 
     public HomingStrategy(TargetMode targetMode, int burstCount) {
         this.targetMode = targetMode;
@@ -37,14 +26,11 @@ public class HomingStrategy implements IPlantStrategy {
     @Override
     public void execute(Plant context, int currentTick) {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
-
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
             List<Zombie> activeZombies = GameSession.getInstance().getArena().getActiveZombies();
             List<Zombie> validTargets = activeZombies.stream().filter(z -> !z.isDead()).toList();
-
             if (!validTargets.isEmpty()) {
                 Zombie target = selectTarget(context, validTargets);
-
                 if (target != null) {
                     for (int i = 0; i < burstCount; i++) {
                         ProjectileMechanism.executeTargetedProjectile(context, target, i);
@@ -58,7 +44,6 @@ public class HomingStrategy implements IPlantStrategy {
 
     private Zombie selectTarget(Plant context, List<Zombie> validTargets) {
         if (validTargets.isEmpty()) return null;
-
         switch (targetMode) {
             case NEAREST -> {
                 float minDistance = Float.MAX_VALUE;
@@ -78,21 +63,12 @@ public class HomingStrategy implements IPlantStrategy {
                 return nearest;
             }
             case GARGANTUAR_FIRST -> {
-                List<Zombie> gargantuars = validTargets.stream()
-                        .filter(z -> z.getName().toLowerCase().contains("gargantuar"))
-                        .toList();
-
-                if (!gargantuars.isEmpty()) {
-                    return gargantuars.get(random.nextInt(gargantuars.size()));
-                }
+                List<Zombie> gargantuars = validTargets.stream().filter(z -> z.getName().toLowerCase().contains("gargantuar")).toList();
+                if (!gargantuars.isEmpty()) return gargantuars.get(random.nextInt(gargantuars.size()));
                 return validTargets.get(random.nextInt(validTargets.size()));
             }
-            case RANDOM -> {
-                return validTargets.get(random.nextInt(validTargets.size()));
-            }
-            default -> {
-                return validTargets.get(0);
-            }
+            case RANDOM -> {return validTargets.get(random.nextInt(validTargets.size()));}
+            default -> {return validTargets.get(0);}
         }
     }
 

@@ -14,11 +14,9 @@ import java.util.List;
 import java.util.Random;
 
 public class ChargeStrategy implements IPlantStrategy {
-
     private final Random random = new Random();
     private int chargeStartTick = -1;
     private float regenSpeedup = 0;
-
     private ProjectileType projectileType;
     private ProjectileEffect effect;
     private int baseDamage;
@@ -79,19 +77,13 @@ public class ChargeStrategy implements IPlantStrategy {
                 canFire = true;
                 projType = ProjectileType.PEA;
 
-                if (chargedTicks >= orangeTime * TimeManager.TICKS_PER_SECOND) {
-                    currentDamage = 180; // Orange Bulb
-                } else if (chargedTicks >= blueTime * TimeManager.TICKS_PER_SECOND) {
-                    currentDamage = 120; // Blue Bulb
-                } else {
-                    currentDamage = 40;  // Cyan Bulb
-                }
+                if (chargedTicks >= orangeTime * TimeManager.TICKS_PER_SECOND) currentDamage = 180; // Orange Bulb
+                else if (chargedTicks >= blueTime * TimeManager.TICKS_PER_SECOND) currentDamage = 120; // Blue Bulb
+                else currentDamage = 40;  // Cyan Bulb
             }
         } else {
             int requiredCharge = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
-            if (chargedTicks >= requiredCharge) {
-                canFire = true;
-            }
+            if (chargedTicks >= requiredCharge) {canFire = true;}
         }
 
         if (canFire && projType != null) {
@@ -132,27 +124,10 @@ public class ChargeStrategy implements IPlantStrategy {
         return null;
     }
 
-    public void speedUpRegen(float seconds) {
-        this.regenSpeedup += seconds;
-    }
-
-    public void setProjectileType(ProjectileType projectileType) {
-        this.projectileType = projectileType;
-    }
-
-    public void setEffect(ProjectileEffect effect) {
-        this.effect = effect;
-    }
-
-    public void setBaseDamage(int baseDamage) {
-        this.baseDamage = baseDamage;
-    }
-
-    public void setHoming(boolean homing) {
-        isHoming = homing;
-    }
-
-    public void setBounceCount(int bounceCount) {
-        this.bounceCount = bounceCount;
-    }
+    public void speedUpRegen(float seconds) {this.regenSpeedup += seconds;}
+    public void setProjectileType(ProjectileType projectileType) {this.projectileType = projectileType;}
+    public void setEffect(ProjectileEffect effect) {this.effect = effect;}
+    public void setBaseDamage(int baseDamage) {this.baseDamage = baseDamage;}
+    public void setHoming(boolean homing) {isHoming = homing;}
+    public void setBounceCount(int bounceCount) {this.bounceCount = bounceCount;}
 }

@@ -369,18 +369,6 @@ public class Plant implements IPlant, Ticker {
         return true;
     }
 
-            // offensive buffs
-            case "ADDITIONAL_PIERCE" -> applyToStrategy(StrikeThroughStrategy.class, s -> s.increasePierceLimit((int) value));
-            case "POISON_TICK_BUFF" -> applyToStrategy(ShootingStrategy.class, s -> s.increasePoisonTickDamage((int) value));
-            case "PRIORITIZE_GARGANTUARS" -> applyToStrategy(HomingStrategy.class, s -> s.setTargetMode(HomingStrategy.TargetMode.GARGANTUAR_FIRST));
-            case "BONUS_SMASH_CHARGES" -> applyToStrategy(TrapStrategy.class, s -> s.increaseSmashCharges((int) value));
-            case "GRAPE_BOUNCE_EXT" -> applyToStrategy(ExplosiveStrategy.class, s -> s.increaseBounceLimit((int) value));
-            case "BONUS_GRAB_TARGETS" -> applyToStrategy(TrapStrategy.class, s -> s.increaseMaxTargets((int) value));
-            case "BUTTER_CHANCE_BUFF" -> applyToStrategy(LobberStrategy.class, s -> s.increaseButterChance(value));
-            case "REFLECT_DAMAGE_BUFF" -> applyToStrategy(SpikeStrategy.class, s -> s.increaseReflectDamage((int) value));
-            case "EXPLODE_DAMAGE_BUFF" -> applyToStrategy(DeathExplosionStrategy.class, s -> s.increaseExplosionDamage((int) value));
-
-            // structural and special
     private boolean applyOffensiveMechanic(String tag, float value) {
         switch (tag) {
             case "ADDITIONAL_PIERCE" ->
@@ -388,7 +376,7 @@ public class Plant implements IPlant, Ticker {
             case "POISON_TICK_BUFF" ->
                     applyToStrategy(ShootingStrategy.class, s -> s.increasePoisonTickDamage((int) value));
             case "PRIORITIZE_GARGANTUARS" ->
-                    applyToStrategy(HomingStrategy.class, s -> s.setPrioritizeGargantuars(true));
+                    applyToStrategy(HomingStrategy.class, s -> s.setTargetMode(HomingStrategy.TargetMode.GARGANTUAR_FIRST));
             case "BONUS_SMASH_CHARGES" ->
                     applyToStrategy(TrapStrategy.class, s -> s.increaseSmashCharges((int) value));
             case "GRAPE_BOUNCE_EXT" ->
