@@ -3,6 +3,7 @@ package models.entities.plants.strategy;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.fields.tiles.GraveStoneTile;
+import models.fields.tiles.NormalTile;
 import models.fields.tiles.NecromanceTile;
 import models.fields.tiles.Tile;
 import models.game.GameSession;
@@ -40,6 +41,8 @@ public class GraveBusterStrategy implements IPlantStrategy {
 
         if (currentTick - startTick >= bustDelayTicks) {
             notify("🪦 Grave Buster successfully destroyed the grave!");
+            // change type of tile
+            GameSession.getInstance().getArena().changeTile(currentTile.getRow(), currentTile.getCol(), new NormalTile(currentTile.getRow(), currentTile.getCol()));
             if (currentTile instanceof NecromanceTile necromanceTile) necromanceTile.removeGrave();
             else if (currentTile instanceof GraveStoneTile graveStoneTile) graveStoneTile.removeGrave();
 

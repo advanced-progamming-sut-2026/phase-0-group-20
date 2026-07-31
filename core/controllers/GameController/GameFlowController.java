@@ -8,6 +8,7 @@ import models.entities.Sun;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieType;
+import models.enums.plants.PlantTag;
 import models.fields.tiles.Tile;
 import models.game.Arena;
 import models.game.GameSession;
@@ -137,6 +138,31 @@ public class GameFlowController {
             return new Result(false, "Az khat zadi biroon ke!!");
         }
 
+
+        Plant existingPlant = desiredTile.getStackPlant();
+
+        if (existingPlant != null
+                && existingPlant.getName().equals(plant.getName())
+                && existingPlant.getTags().contains(PlantTag.STACK)) {
+
+            if (existingPlant.addStack()) {
+                session.useSun(plant.getCost());
+                session.setCooldownForPlant(plant);
+
+                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
+                        .plant(existingPlant)
+                        .arena(arena)
+                        .coordinate(existingPlant.getPlacedTile().getRow(), existingPlant.getPlacedTile().getCol())
+                        .build();
+                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
+
+                return new Result(true, "You stacked " + plant.getName() + " to level " +
+                        existingPlant.getStackCount() + " in " + spawnX + "," + spawnY);
+            } else {
+                return new Result(false, "This " + plant.getName() + " is already fully stacked (Max 5)!");
+            }
+        }
+
         if (!desiredTile.isPlantable(plant)) {
             return new Result(false, "You can not plant this plant here");
         }
@@ -157,7 +183,7 @@ public class GameFlowController {
                 .coordinate(newPlant.getPlacedTile().getRow(), newPlant.getPlacedTile().getCol())
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
-        session.getTimeManager().registerNewTicker(newPlant);
+//        session.getTimeManager().registerNewTicker(newPlant);
         session.setCooldownForPlant(plant);
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +
                 " with the name of " + newPlant.getName() + ".");

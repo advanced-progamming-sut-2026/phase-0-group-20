@@ -113,4 +113,12 @@ public abstract class Tile implements Ticker {
         this.isCrater = isCrater;
     }
 
+    public Plant getStackPlant() {
+        for (Plant plant : plants) {
+            if (plant.getTags().contains(PlantTag.STACK)) return plant;
+        }
+        return null;
+    }
+
+
 }

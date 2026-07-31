@@ -13,17 +13,43 @@ import models.timeManager.TimeManager;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Charge Strategy:
- * The plant requires a long uninterrupted period to charge its attack.
- * Once fully charged, it holds the attack until a target appears.
- */
-
 public class ChargeStrategy implements IPlantStrategy {
+
     private final Random random = new Random();
     private int chargeStartTick = -1;
-
     private float regenSpeedup = 0;
+
+    private ProjectileType projectileType;
+    private ProjectileEffect effect;
+    private int baseDamage;
+    private boolean isHoming;
+    private int bounceCount;
+    private boolean isMultiStage;
+
+    public ChargeStrategy() {
+        this.effect = new NormalEffect();
+        this.isHoming = false;
+        this.bounceCount = 0;
+        this.isMultiStage = false;
+    }
+
+    public ChargeStrategy(ProjectileType projectileType, ProjectileEffect effect, int baseDamage, boolean isHoming) {
+        this.projectileType = projectileType;
+        this.effect = effect != null ? effect : new NormalEffect();
+        this.baseDamage = baseDamage;
+        this.isHoming = isHoming;
+        this.bounceCount = 0;
+        this.isMultiStage = false;
+    }
+
+    public static ChargeStrategy createBowlingBulbStrategy() {
+        ChargeStrategy strategy = new ChargeStrategy();
+        strategy.isMultiStage = true;
+        strategy.projectileType = ProjectileType.PEA;
+        strategy.bounceCount = 3;
+        strategy.isHoming = false;
+        return strategy;
+    }
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -34,18 +60,17 @@ public class ChargeStrategy implements IPlantStrategy {
             return;
         }
 
-        String name = context.getName();
         int plantRow = context.getPlacedTile().getRow();
         float plantCol = context.getPlacedTile().getCol();
-
         int chargedTicks = currentTick - chargeStartTick;
-        boolean canFire = false;
-        int currentDamage = 0;
-        ProjectileType projType = null;
-        ProjectileEffect effect = new NormalEffect();
-        boolean isHoming = false;
 
-        if (name.equals("Bowling Bulb")) {
+        boolean canFire = false;
+        int currentDamage = this.baseDamage;
+        ProjectileType projType = this.projectileType;
+        ProjectileEffect currentEffect = this.effect;
+        boolean homingAttack = this.isHoming;
+
+        if (isMultiStage) {
             float cyanTime = Math.max(0, 2.0f - regenSpeedup);
             float blueTime = Math.max(0, 5.0f - regenSpeedup);
             float orangeTime = Math.max(0, 10.0f - regenSpeedup);
@@ -54,83 +79,80 @@ public class ChargeStrategy implements IPlantStrategy {
                 canFire = true;
                 projType = ProjectileType.PEA;
 
-                if (chargedTicks >= orangeTime * TimeManager.TICKS_PER_SECOND) currentDamage = 180; // Orange Bulb
-                else if (chargedTicks >= blueTime * TimeManager.TICKS_PER_SECOND) currentDamage = 120; // Blue Bulb
-                else currentDamage = 40; // Cyan Bulb
+                if (chargedTicks >= orangeTime * TimeManager.TICKS_PER_SECOND) {
+                    currentDamage = 180; // Orange Bulb
+                } else if (chargedTicks >= blueTime * TimeManager.TICKS_PER_SECOND) {
+                    currentDamage = 120; // Blue Bulb
+                } else {
+                    currentDamage = 40;  // Cyan Bulb
+                }
             }
         } else {
             int requiredCharge = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
-
             if (chargedTicks >= requiredCharge) {
                 canFire = true;
-
-                switch (name) {
-                    case "Citron" -> {
-                        projType = ProjectileType.PEA;
-                        currentDamage = 800;
-                    }
-                    case "Caulipower" -> {
-                        projType = ProjectileType.MAGIC_BEAM;
-                        effect = new HypnotizeEffect();
-                        isHoming = true;
-                    }
-                    case "Electric Blueberry" -> {
-                        projType = ProjectileType.LIGHTNING_CLOUD;
-                        currentDamage = 5000;
-                        effect = new LightningEffect();
-                        isHoming = true;
-                    }
-                }
             }
         }
 
-        if (canFire) {
-            Zombie target = null;
+        if (canFire && projType != null) {
+            Zombie target = selectTarget(plantRow, plantCol, homingAttack);
 
-            if (isHoming) {
-                List<Zombie> actives = GameSession.getInstance().getArena().getActiveZombies()
-                        .stream()
-                        .filter(z -> !z.isDead()).toList();
-                if (!actives.isEmpty()) {
-                    target = actives.get(random.nextInt(actives.size()));
-                }
-            } else {
-                for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
-                    if (!z.isDead() && z.getCol() >= plantCol) {
-                        target = z;
-                        break;
-                    }
-                }
-            }
-
-            if (target != null && projType != null) {
-                Projectile projectile = new Projectile(
-                        context,
-                        projType, effect, currentDamage,
-                        new Position(plantCol, plantRow),
-                        isHoming ? 0 : 1.5f,
-                        0,
-                        false, isHoming
-                );
-
-                if (isHoming) {
-                    projectile.setHomingTarget(target, 0.8f);
-                    notify("🔮 " + name + " fired a fully charged homing attack at " + target.getName() + "!");
+            if (target != null) {
+                if (homingAttack) {
+                    ProjectileMechanism.executeTargetedProjectile(context, target, 0);
+                    notify("🔮 " + context.getName() + " fired a fully charged homing attack at " + target.getName() + "!");
                 } else {
-                    notify("🔋 " + name + " fired a charged attack! (Damage: " + currentDamage + ")");
-
-                    if (name.equals("Bowling Bulb")) {
-                        projectile.setBouncesLeft(3);
-                        notify("🎳 Bowling Bulb fired a bouncing bulb!");
+                    notify("🔋 " + context.getName() + " fired a charged attack! (Damage: " + currentDamage + ")");
+                    ProjectileMechanism.executeTargetedProjectile(context, target, 0);
+                    if (bounceCount > 0) {
+//                        projectile.setBouncesLeft(bounceCount);
+                        notify("🎳 " + context.getName() + " fired a bouncing bulb!");
                     }
                 }
-                GameSession.getInstance().getArena().addProjectile(projectile);
                 chargeStartTick = currentTick;
             }
         }
     }
 
+    private Zombie selectTarget(int plantRow, float plantCol, boolean homing) {
+        if (homing) {
+            List<Zombie> actives = GameSession.getInstance().getArena().getActiveZombies()
+                    .stream()
+                    .filter(z -> !z.isDead()).toList();
+            if (!actives.isEmpty()) {
+                return actives.get(random.nextInt(actives.size()));
+            }
+        } else {
+            for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
+                if (!z.isDead() && z.getCol() >= plantCol) {
+                    return z;
+                }
+            }
+        }
+        return null;
+    }
+
     public void speedUpRegen(float seconds) {
         this.regenSpeedup += seconds;
+    }
+
+    public void setProjectileType(ProjectileType projectileType) {
+        this.projectileType = projectileType;
+    }
+
+    public void setEffect(ProjectileEffect effect) {
+        this.effect = effect;
+    }
+
+    public void setBaseDamage(int baseDamage) {
+        this.baseDamage = baseDamage;
+    }
+
+    public void setHoming(boolean homing) {
+        isHoming = homing;
+    }
+
+    public void setBounceCount(int bounceCount) {
+        this.bounceCount = bounceCount;
     }
 }
