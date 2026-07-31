@@ -42,6 +42,7 @@ public class GameFlowController {
         if (GameSession.getInstance().isGameOver()) {
             NavigationController.exitMenu();
             App.getActiveUser().setPlantFoodCount(0);
+            App.getActiveUser().getUnlockedPlants().forEach(p -> p.setBoosted(false));
             if(GameSession.getInstance().getCurrentChapter().getCurrentLevel()!=null){
                 GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
             }
@@ -165,7 +166,6 @@ public class GameFlowController {
         if (!desiredTile.isPlantable(plant)) {
             return new Result(false, "You can not plant this plant here");
         }
-
         Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
         for (int i = 1; i < getPlantLevel(plant); i++) {
             newPlant.upgrade();
@@ -174,7 +174,9 @@ public class GameFlowController {
         arena.addPlant(newPlant);
         session.useSun(newPlant.getCost());
         session.getTimeManager().registerNewTicker(newPlant);
-
+        if(plant.isBoosted()) {
+            plant.useFood();
+        }
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
                 .plant(newPlant)
                 .arena(arena)

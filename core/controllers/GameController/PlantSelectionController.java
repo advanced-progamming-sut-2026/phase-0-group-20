@@ -114,14 +114,15 @@ public class PlantSelectionController {
 
         boolean found = false;
         for (Plant p : selectedPlants) {
-            if (p.getName().equalsIgnoreCase(name.trim())) {
+            if (p.getName().equalsIgnoreCase(name.trim())&&
+                    !(p.getPlantFoodStrategy()==null || p.getPlantFoodStrategy().isEmpty())) {
                 found = true;
                 break;
             }
         }
 
         if (!found) {
-            return new Result(false, "You must add the plant to your selection first before boosting it!");
+            return new Result(false, "This plant is not in your selection or doesn't have boost effect");
         }
 
         if (boostedPlantNames.contains(name.trim().toLowerCase())) {
@@ -129,7 +130,7 @@ public class PlantSelectionController {
         }
 
         if (activeUser.getDiamond() >= 2) { // cost for boost (it can be different)
-            activeUser.earnDiamond(-2);
+            activeUser.costDiamond(2);
             boostedPlantNames.add(name.trim().toLowerCase());
             return new Result(true, name + " is BOOSTED for the upcoming level! (-2 Diamonds)");
         } else {

@@ -54,8 +54,9 @@ public abstract class Tile implements Ticker {
         boolean isWaterPlant = plantToPlant.getTags().contains(PlantTag.WATER);
 
         if (isWaterPlant) return false;
-
-        return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK);
+        boolean isGraveBuster = this instanceof GraveStoneTile tile && tile.getGraveStone() != null &&
+                (plantToPlant.getName().contains("Buster")|| plantToPlant.getName().contains("buster"));
+        return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK) || isGraveBuster;
     }
 
     public void removePlant(Plant plant) {
