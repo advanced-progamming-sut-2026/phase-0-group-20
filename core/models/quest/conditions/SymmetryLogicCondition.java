@@ -24,7 +24,7 @@ public class SymmetryLogicCondition extends QuestCondition {
     public void updateProgress(GameEventPayload payload) {
         if (payload.getType() == GameEvent.LEVEL_COMPLETED) {
             boolean symmet = checkIfSymmetry(payload.getArena());
-            isHappened = symmet == needsSymmetry;
+            isHappened = (symmet == needsSymmetry);
         }
     }
 
