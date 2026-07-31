@@ -127,6 +127,7 @@ public class PlantFactory {
         int foodValue = (int) data.plantFoodValue();
         String nameKey = data.name().toLowerCase();
 
+        assembleThePlantFoodStrategy(plant, nameKey);
         switch (foodType) {
             case "SPAWN_SUN_ITEMS" -> {
                 plant.addPlantFoodStrategy(new SunBurstFoodStrategy(foodValue));
@@ -162,10 +163,11 @@ public class PlantFactory {
             case "PROJECTILE_BURST" -> {
                 handleTheBurst(plant, data, nameKey, foodValue);
             }
-            default -> plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
+            default -> {
+                if (plant.getPlantFoodStrategy().isEmpty()) plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
+            }
         }
 
-        assembleThePlantFoodStrategy(plant, nameKey);
     }
 
     private static void handleTheBurst(Plant plant, PlantData data, String nameKey, int foodValue) {
@@ -183,6 +185,8 @@ public class PlantFactory {
             plant.addPlantFoodStrategy(new MultiLaneRapidFireFoodStrategy());
         } else if (nameKey.equals("rotobaga")) {
             plant.addPlantFoodStrategy(new MultiDirectionRapidFireFoodStrategy(4));
+        } else if (nameKey.equals("bowling bulb")) {
+            plant.addPlantFoodStrategy(new RapidFireFoodStrategy(3, true));
         } else if (nameKey.equals("starfruit")) {
             plant.addPlantFoodStrategy(new MultiDirectionRapidFireFoodStrategy(5));
         } else if (data.category() != PlantCategory.LOBBER && data.category() != PlantCategory.HOMING
@@ -211,6 +215,7 @@ public class PlantFactory {
                     3, "large pepper lob (fire)"));
             case "chomper" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
                     3, "swallowed instantly from range"));
+            case "squash" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(2, "crushed"));
             case "garlic" -> plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy(
                     "forces every zombie in the lane to move to another lane"));
             case "kernel-pult" -> plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy(
