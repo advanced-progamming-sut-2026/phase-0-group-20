@@ -14,9 +14,9 @@ Position {
     public Position(float x, float y) {
         this.x = x;
         this.y = y;
-        this.col = (int) (x / TILE_UNIT_LENGTH);
+        this.col = (int) Math.floor(x / TILE_UNIT_LENGTH);
 
-        this.row = (int) (y / TILE_UNIT_LENGTH);
+        this.row = (int) Math.floor(y / TILE_UNIT_LENGTH);
     }
 
 
@@ -40,12 +40,12 @@ Position {
 
     public void moveX(float dx) {
         this.x += dx;
-        this.col = (int) (x / TILE_UNIT_LENGTH);
+        this.col = (int) Math.floor(this.x / TILE_UNIT_LENGTH);
     }
 
     public void moveY(float dy) {
         this.y += dy;
-        this.row = (int) (y / TILE_UNIT_LENGTH);
+        this.row = (int) Math.floor(this.y / TILE_UNIT_LENGTH);
     }
 
     public float getX() {
@@ -54,7 +54,7 @@ Position {
 
     public void setX(float x) {
         this.x = x;
-        this.col = (int) (x / TILE_UNIT_LENGTH);
+        this.col = (int) Math.floor(this.x / TILE_UNIT_LENGTH);
     }
 
     public float getY() {
@@ -63,7 +63,7 @@ Position {
 
     public void setY(float y) {
         this.y = y;
-        this.row = (int) (y / TILE_UNIT_LENGTH);
+        this.row = (int) Math.floor(this.y / TILE_UNIT_LENGTH);
     }
 
     public int getRow() {

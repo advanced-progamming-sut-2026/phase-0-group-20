@@ -27,7 +27,7 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
 
         ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
         int damage = plant.getDamage();
-        float plantCol = plant.getPlacedTile().getCol();
+        int plantCol = plant.getPlacedTile().getCol();
 
         Projectile.spawnNewProjectile(
                 plant,

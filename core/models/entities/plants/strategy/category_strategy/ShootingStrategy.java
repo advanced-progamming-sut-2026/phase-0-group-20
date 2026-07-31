@@ -48,7 +48,7 @@ public class ShootingStrategy implements IPlantStrategy {
                     int rowDiff = Math.abs(z.getRow() - plantRow);
                     int colDiff = Math.abs(z.getCol() - plantCol);
 
-                    if (rowDiff == colDiff && rowDiff > 0 && rowDiff <= 2) {
+                    if (rowDiff == colDiff && rowDiff > 0) {
                         shootForward = true;
                         shootBackward = true;
                         break;
