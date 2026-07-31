@@ -182,8 +182,9 @@ public class Plant implements IPlant, Ticker {
     }
 
     public boolean addStack() {
-        if (this.getName().equals("Pea Pod") && stackCount < 5) {
+        if (this.getTags().contains(PlantTag.STACK) && stackCount < 5) {
             stackCount++;
+            GameSession.notify("Plant " + getName() + " has been Stacked! stack count: " +  stackCount);
             return true;
         }
         return false;
@@ -334,7 +335,7 @@ public class Plant implements IPlant, Ticker {
             // offensive buffs
             case "ADDITIONAL_PIERCE" -> applyToStrategy(StrikeThroughStrategy.class, s -> s.increasePierceLimit((int) value));
             case "POISON_TICK_BUFF" -> applyToStrategy(ShootingStrategy.class, s -> s.increasePoisonTickDamage((int) value));
-            case "PRIORITIZE_GARGANTUARS" -> applyToStrategy(HomingStrategy.class, s -> s.setPrioritizeGargantuars(true));
+            case "PRIORITIZE_GARGANTUARS" -> applyToStrategy(HomingStrategy.class, s -> s.setTargetMode(HomingStrategy.TargetMode.GARGANTUAR_FIRST));
             case "BONUS_SMASH_CHARGES" -> applyToStrategy(TrapStrategy.class, s -> s.increaseSmashCharges((int) value));
             case "GRAPE_BOUNCE_EXT" -> applyToStrategy(ExplosiveStrategy.class, s -> s.increaseBounceLimit((int) value));
             case "BONUS_GRAB_TARGETS" -> applyToStrategy(TrapStrategy.class, s -> s.increaseMaxTargets((int) value));

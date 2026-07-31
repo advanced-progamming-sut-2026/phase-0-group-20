@@ -277,10 +277,6 @@ public class CollisionManager {
                     }
                 }
 
-                if (p.getName().equals("Spikeweed") || p.getName().equals("Spikerock")) {
-                    canEat = false;
-                }
-
                 if (canEat) {
                     eatingPlant = p;
                     break;

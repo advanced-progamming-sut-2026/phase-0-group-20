@@ -18,6 +18,11 @@ public class ShootingStrategy implements IPlantStrategy {
     private float chillDurationExtension = 0;
     private int poisonTickDamageBonus = 0;
 
+    private int pendingShots = 0;
+    private int burstCooldownTicks = 0;
+    private boolean currentShootForward = false;
+    private boolean currentShootBackward = false;
+
     private float autoPlantFoodChance = 0.0f;
 
     private static List<Integer> projectileInLine(String name, int placedRow) {
@@ -32,6 +37,17 @@ public class ShootingStrategy implements IPlantStrategy {
 
     @Override
     public void execute(Plant context, int currentTick) {
+        if (pendingShots > 0) {
+            if (burstCooldownTicks > 0) {
+                burstCooldownTicks--;
+            } else {
+                executeNewProjectile(context, currentShootForward, currentShootBackward);
+                pendingShots--;
+                burstCooldownTicks = 2;
+            }
+            return;
+        }
+
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
@@ -96,8 +112,17 @@ public class ShootingStrategy implements IPlantStrategy {
                 if (autoPlantFoodChance > 0 && Math.random() < autoPlantFoodChance) {
                     context.useFood();
                 } else {
+                    int stacks = context.getStackCount();
+
                     executeNewProjectile(context, shootForward, shootBackward);
-                    notify(plantName + " fired projectiles!");
+                    notify(plantName + " fired a projectile!");
+
+                    if (stacks > 1) {
+                        this.pendingShots = stacks - 1;
+                        this.burstCooldownTicks = 5;
+                        this.currentShootForward = shootForward;
+                        this.currentShootBackward = shootBackward;
+                    }
                 }
                 lastShotTick = currentTick;
             }

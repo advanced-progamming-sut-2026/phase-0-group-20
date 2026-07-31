@@ -1,7 +1,9 @@
 package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
+import models.entities.zombies.behavior.effect.FreezeEffect;
 import models.entities.zombies.behavior.effect.PoisonEffect;
+import models.entities.zombies.behavior.effect.ZombieEffect;
 
 public class PoisonProjectileEffect implements ProjectileEffect {
 
@@ -10,6 +12,9 @@ public class PoisonProjectileEffect implements ProjectileEffect {
 
     @Override
     public void applyEffect(Zombie zombie, Projectile projectile) {
+        for (ZombieEffect effect : zombie.getActiveEffects()) {
+            if (effect instanceof PoisonEffect) return;
+        }
         zombie.addEffect(new PoisonEffect(
                 zombie, POISON_DURATION_TICKS, POISON_DPS));
     }

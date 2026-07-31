@@ -24,7 +24,6 @@ public class IceSplashEffect implements ProjectileEffect {
 
         for (Zombie z : nearbyZombies) {
             if (z.isDead()) continue;
-
             zombie.addEffect(new ChillEffect(zombie, CHILL_DURATION_TICKS)); //fully stop
 
             if (z != zombie) {
