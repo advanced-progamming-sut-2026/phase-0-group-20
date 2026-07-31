@@ -41,6 +41,9 @@ public class GameFlowController {
         if (GameSession.getInstance().isGameOver()) {
             NavigationController.exitMenu();
             App.getActiveUser().setPlantFoodCount(0);
+            if(GameSession.getInstance().getCurrentChapter().getCurrentLevel()!=null){
+                GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
+            }
 
             return new Result(true, "Returned to " + App.getActiveMenu().getName());
         }
@@ -111,7 +114,6 @@ public class GameFlowController {
     public Result plantPlant(String plantName, String x, String y) {
         Integer spawnX = parsePositiveInt(x);
         Integer spawnY = parsePositiveInt(y);
-
         if (spawnX == null || spawnY == null) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
@@ -143,7 +145,6 @@ public class GameFlowController {
             newPlant.upgrade();
         }
         desiredTile.addPlant(newPlant);
-        session.setPlantCooldown(newPlant);
         arena.addPlant(newPlant);
         session.useSun(newPlant.getCost());
         session.getTimeManager().registerNewTicker(newPlant);
@@ -155,7 +156,7 @@ public class GameFlowController {
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
         session.getTimeManager().registerNewTicker(newPlant);
-        session.setCooldownForPlant(newPlant);
+        session.setCooldownForPlant(plant);
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +
                 " with the name of " + newPlant.getName() + ".");
     }
@@ -178,7 +179,7 @@ public class GameFlowController {
             if (session.getCurrentSun() < plant.getCost()) {
                 return new Result(false, "Not enough sun to plant " + plant.getName() + "!");
             }
-            Integer cd = session.getPlantsCooldown().get(plant);
+            Float cd = session.getPlantsCooldown().get(plant);
             if (cd != null && cd > 0) {
                 return new Result(false, plant.getName() + " is still recharging!");
             }

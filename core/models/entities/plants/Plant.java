@@ -36,6 +36,7 @@ public class Plant implements IPlant, Ticker {
     protected float currentActionInterval;
     protected float currentRecharge;
     protected int bonusDamage = 0;
+    protected boolean dead = false;
 
     protected List<PlantFoodStrategy> plantFoodStrategy = new ArrayList<>();
     private int stackCount = 1;
@@ -152,6 +153,10 @@ public class Plant implements IPlant, Ticker {
     }
 
     public void takeDamage(int amount) {
+        if (currentHp <= 0) {
+            this.currentHp = 0;
+            this.dead = true;
+        }
         if (isDead()) {
             return;
         }
@@ -423,7 +428,7 @@ public class Plant implements IPlant, Ticker {
     }
 
     public boolean isDead() {
-        return currentHp <= 0;
+        return dead || currentHp < 0;
     }
 
     public void damageIceBlock(int damage) {

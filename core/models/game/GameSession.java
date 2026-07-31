@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GameSession {
-    private static final int PLANT_COOLDOWN = 50;
+    private static final float PLANT_COOLDOWN = 50f;
     private static GameSession instance;
     // for mew points
     private static BonusLevel pendingBonusLevel = null;
@@ -44,7 +44,7 @@ public class GameSession {
     private GameEvent event = GameEvent.GAME_STARTED;
     private GameState state = GameState.RUNNING;
     private SunManager sunManager;
-    private HashMap<Plant, Integer> plantsCooldown;
+    private HashMap<Plant, Float> plantsCooldown;
     private GameMode currentMode;
     private boolean zombieBreached = false;
     private ZombieDropListener dropListener;
@@ -64,7 +64,7 @@ public class GameSession {
         App.getActiveUser().addZombiesToUnlock(this.chosenZombies);
 
 
-        this.currentSun = 50;
+        this.currentSun = currentLevel.getInitialSun();
 
         if (currentLevel.skySunFalls())
             this.sunManager = new SunManager(this.arena);
@@ -212,8 +212,9 @@ public class GameSession {
     }
 
     public void instantiateCooldowns(List<Plant> chosenPlants) {
+        plantsCooldown.clear();
         for (Plant plant : chosenPlants) {
-            plantsCooldown.put(plant, 0);
+            plantsCooldown.put(plant, 0f);
         }
     }
 
@@ -231,7 +232,7 @@ public class GameSession {
 
     public void update(int timeAmount) {
         if (this.state != GameState.RUNNING) return;
-
+        plantsCooldown.replaceAll((plant, currentCooldown) -> Math.max(0, currentCooldown - timeAmount));
         for (int i = 0; i < timeAmount; i++) {
             timeManager.tick();
             if (currentMode != null)
@@ -262,7 +263,7 @@ public class GameSession {
         });
 
         arena.getActivePlants().removeIf(plant -> {
-            if (plant.getCurrentHp() <= 0) {
+            if (plant.isDead()) {
                 timeManager.unregisterTicker(plant);
                 GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
                         .plant(plant)
@@ -379,7 +380,7 @@ public class GameSession {
         plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
     }
 
-    public HashMap<Plant, Integer> getPlantsCooldown() {
+    public HashMap<Plant, Float> getPlantsCooldown() {
         return plantsCooldown;
     }
 

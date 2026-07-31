@@ -185,12 +185,12 @@ public class GameMapController {
             return new Result(false , " You have no chosen plants");
         }
         int currentSun = session.getCurrentSun();
-        HashMap<Plant, Integer> cooldowns = session.getPlantsCooldown();
+        HashMap<Plant, Float> cooldowns = session.getPlantsCooldown();
 
         for (Plant plant : chosenPlants) {
             int cost = plant.getCost();
-            int cooldownTicks = (cooldowns != null && cooldowns.containsKey(plant)) ? cooldowns.get(plant) : 0;
-            int cooldownSeconds = cooldownTicks / TimeManager.TICKS_PER_SECOND;
+            float cooldownTicks = (cooldowns != null && cooldowns.containsKey(plant)) ? cooldowns.get(plant) : 0;
+            float cooldownSeconds = (float)cooldownTicks / TimeManager.TICKS_PER_SECOND;
 
             statusDisplay.append(plant.getName()).append(":\n");
             statusDisplay.append("    - Sun Cost: ").append(cost).append("\n");

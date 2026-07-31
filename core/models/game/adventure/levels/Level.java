@@ -59,6 +59,8 @@ public abstract class Level implements GameMode {
         onLevelStart(session);
     }
 
+    public void destroyLevelFields(){};
+
     public abstract void onLevelStart(GameSession session);
 
     public GameState checkResult(GameSession session) {
