@@ -137,39 +137,19 @@ public class GameFlowController {
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
         }
-
-
         Plant existingPlant = desiredTile.getStackPlant();
-
-        if (existingPlant != null
-                && existingPlant.getName().equals(plant.getName())
-                && existingPlant.getTags().contains(PlantTag.STACK)) {
-
+        if (existingPlant != null && existingPlant.getName().equals(plant.getName()) && existingPlant.getTags().contains(PlantTag.STACK)) {
             if (existingPlant.addStack()) {
-                session.useSun(plant.getCost());
-                session.setCooldownForPlant(plant);
-
-                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
-                        .plant(existingPlant)
-                        .arena(arena)
-                        .coordinate(existingPlant.getPlacedTile().getRow(), existingPlant.getPlacedTile().getCol())
-                        .build();
-                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
-
+                session.useSun(plant.getCost()); session.setCooldownForPlant(plant);
+                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED).plant(existingPlant).arena(arena).coordinate(existingPlant.getPlacedTile().getRow(), existingPlant.getPlacedTile().getCol()).build();GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
                 return new Result(true, "You stacked " + plant.getName() + " to level " +
                         existingPlant.getStackCount() + " in " + spawnX + "," + spawnY);
-            } else {
-                return new Result(false, "This " + plant.getName() + " is already fully stacked (Max 5)!");
-            }
+            } else return new Result(false, "This " + plant.getName() + " is already fully stacked (Max 5)!");
         }
 
-        if (!desiredTile.isPlantable(plant)) {
-            return new Result(false, "You can not plant this plant here");
-        }
+        if (!desiredTile.isPlantable(plant)) return new Result(false, "You can not plant this plant here");
         Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
-        for (int i = 1; i < getPlantLevel(plant); i++) {
-            newPlant.upgrade();
-        }
+        for (int i = 1; i < getPlantLevel(plant); i++) newPlant.upgrade();
         desiredTile.addPlant(newPlant);
         arena.addPlant(newPlant);
         session.useSun(newPlant.getCost());
