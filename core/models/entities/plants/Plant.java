@@ -349,7 +349,6 @@ public class Plant implements IPlant, Ticker {
             case "SPLASH_DAMAGE_BUFF" ->
                     applyToStrategy(LobberStrategy.class, s -> s.increaseSplashDamage((int) value));
             case "WARM_RADIUS_EXT" -> applyToStrategy(LobberStrategy.class, s -> s.increaseWarmRadius(value));
-            case "MELT_AREA_3X3" -> applyToStrategy(MeltIceStrategy.class, s -> s.setAreaOfEffect3x3(true));
             default -> { return false; }
         }
         return true;

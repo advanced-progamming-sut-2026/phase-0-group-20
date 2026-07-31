@@ -1,6 +1,5 @@
 package models.entities.zombies.behavior.defense;
 
-import models.entities.zombies.Zombie;
 import models.entities.zombies.behavior.context.ExplorerContext;
 import models.enums.plants.ProjectileType;
 import models.game.GameSession;

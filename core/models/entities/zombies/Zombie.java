@@ -50,7 +50,6 @@ public class Zombie implements Ticker {
     private Tile tile;
     private SpawnEffect spawnEffect = SpawnEffect.NORMAL;
     private boolean isHypnotized = false;
-    private boolean hypnotized = false;
     private Zombie targetZombie = null;
     private boolean shiny = false;
 
@@ -480,10 +479,6 @@ public class Zombie implements Ticker {
 
     public Position getPosition() {
         return position;
-    }
-
-    public void setHypnotized(boolean hypnotized) {
-        this.hypnotized = hypnotized;
     }
 
     public Zombie getTargetZombie() {

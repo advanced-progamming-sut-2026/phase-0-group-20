@@ -1,6 +1,5 @@
 package models.entities.plants.strategy.tag_strategy;
 
-import models.Position;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.*;

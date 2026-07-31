@@ -5,7 +5,6 @@ import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.*;
 import models.entities.zombies.Zombie;
-import models.enums.PhysicalConstants;
 import models.enums.plants.ProjectileType;
 import models.game.GameSession;
 import models.timeManager.TimeManager;

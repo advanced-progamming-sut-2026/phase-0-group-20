@@ -51,6 +51,7 @@ public abstract class Tile implements Ticker {
     }
 
     public boolean isPlantable(Plant plantToPlant) {
+        if (isCrater) return false;
         boolean isWaterPlant = plantToPlant.getTags().contains(PlantTag.WATER);
 
         if (isWaterPlant) return false;
@@ -76,34 +77,6 @@ public abstract class Tile implements Ticker {
 
         return className;
     }
-
-    //public String getType() {
-    //
-    //return switch (this) {
-    //
-    //case GraveStoneTile t -> "GraveStone";
-    //
-    //case PlantVaseTile t -> "PlantVaseTile";
-    //
-    //case RandomVaseTile t -> "RandomVaseTile";
-    //
-    //case ZombieVaseTile t -> "ZombieVaseTile";
-    //
-    //case VaseTile t -> "VaseTile";
-    //
-    //case WaterTile t -> "WaterTile";
-    //
-    //case NormalTile t -> "NormalTile";
-    //
-    //case SlipperyTile t -> "SlipperyTile";
-    //
-    //case LowShoreTile t -> "LowShoreTile";
-    //
-    //case NecromanceTile t -> "NecromancyTile";
-    //
-    //default -> getClass().getSimpleName();
-    //
-    //};
 
     public boolean isCrater() {return isCrater;}
     public void setCrater(boolean isCrater) {this.isCrater = isCrater;}

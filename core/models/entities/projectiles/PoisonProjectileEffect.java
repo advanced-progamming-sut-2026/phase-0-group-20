@@ -1,7 +1,6 @@
 package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
-import models.entities.zombies.behavior.effect.FreezeEffect;
 import models.entities.zombies.behavior.effect.PoisonEffect;
 import models.entities.zombies.behavior.effect.ZombieEffect;
 

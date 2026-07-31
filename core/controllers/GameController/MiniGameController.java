@@ -33,14 +33,6 @@ public class MiniGameController {
         return null;
     }
 
-    public Result changeMenu(String newMenu) {
-        return null;
-    }
-
-    public Result handleRule(String newMenu) {
-        return null;
-    }
-
     public Result breakVase(String x, String y) {
         Integer spawnX = parsePositiveInt(x);
         Integer spawnY = parsePositiveInt(y);

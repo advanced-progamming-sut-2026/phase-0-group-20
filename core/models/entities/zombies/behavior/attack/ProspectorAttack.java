@@ -1,7 +1,6 @@
 package models.entities.zombies.behavior.attack;
 
 import models.entities.zombies.Zombie;
-import models.entities.zombies.behavior.context.ProspectorContext;
 
 public class ProspectorAttack implements AttackBehavior {
     private final AttackBehavior normalAttack;

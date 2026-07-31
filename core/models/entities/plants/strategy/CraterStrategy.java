@@ -1,6 +1,7 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
+import models.fields.tiles.Tile;
 
 /**
  * Crater Strategy:
@@ -17,10 +18,8 @@ public class CraterStrategy implements IPlantStrategy {
             notify("🕳️ " + context.getName() + " exploded and left a deep crater on the tile!");
 
             if (context.getPlacedTile() != null) {
-                int row = context.getPlacedTile().getRow();
-                int col = context.getPlacedTile().getCol();
-
-                // change tile
+                Tile tile = context.getPlacedTile();
+                tile.setCrater(true);
             }
 
             craterCreated = true;

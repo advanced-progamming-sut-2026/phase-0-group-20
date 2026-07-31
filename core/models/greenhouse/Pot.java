@@ -60,10 +60,6 @@ public class Pot implements Ticker {
         this.isItMari = false;
     }
 
-    public void growFaster(int x, int y) {
-
-    }
-
     public PotCondition getPotCondition() {
         if (this.potCondition == PotCondition.PLANTED) {
             if (System.currentTimeMillis() >= this.readyTime) {
