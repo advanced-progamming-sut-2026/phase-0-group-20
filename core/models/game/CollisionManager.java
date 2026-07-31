@@ -36,6 +36,23 @@ public class CollisionManager {
         List<Zombie> activeZombies = arena.getActiveZombies();
 
         // for projectiles
+        handleProjectiles();
+
+        // for plants & zombies
+        for (Zombie z : activeZombies) {
+            if (z.isHypnotized()) {
+                checkZombiesAndZombiesCollision(z);
+            } else {
+                checkZombiesAndPlantCollision(z);
+            }
+        }
+
+        for (Sun sun : arena.getActiveSuns()) {
+            checkSunCollision(sun);
+        }
+    }
+
+    private void handleProjectiles() {
         for (Projectile proj : arena.getActiveProjectiles()) {
             if (proj.isDestroyed()) continue;
 
@@ -92,19 +109,6 @@ public class CollisionManager {
                     checkProjectileForZombieCollision(proj);
             }
         }
-
-        // for plants & zombies
-        for (Zombie z : activeZombies) {
-            if (z.isHypnotized()) {
-                checkZombiesAndZombiesCollision(z);
-            } else {
-                checkZombiesAndPlantCollision(z);
-            }
-        }
-
-        for (Sun sun : arena.getActiveSuns()) {
-            checkSunCollision(sun);
-        }
     }
 
     private void checkProjectileForPlantCollision(Projectile projectile) {
@@ -137,15 +141,11 @@ public class CollisionManager {
         }
 
         if (hitObstacle) return;
-
-
         int tileLength = PhysicalConstants.TILE_UNIT_LENGTH;
         float projectileHitRadius = 0.25f;
         float zombieHitRadius = 0.25f;
-
         float physProjectileRadius = projectileHitRadius * tileLength;
         float physZombieRadius = zombieHitRadius * tileLength;
-
         int bottomRow = (int) Math.floor((projectile.getY() - physProjectileRadius) / tileLength);
         int topRow = (int) Math.floor((projectile.getY() + physProjectileRadius) / tileLength);
 
