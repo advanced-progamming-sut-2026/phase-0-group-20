@@ -41,6 +41,7 @@ public class GameFlowController {
         if (GameSession.getInstance().isGameOver()) {
             NavigationController.exitMenu();
             App.getActiveUser().setPlantFoodCount(0);
+            App.getActiveUser().getUnlockedPlants().forEach(p -> p.setBoosted(false));
             if(GameSession.getInstance().getCurrentChapter().getCurrentLevel()!=null){
                 GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
             }
@@ -148,7 +149,7 @@ public class GameFlowController {
         arena.addPlant(newPlant);
         session.useSun(newPlant.getCost());
         session.getTimeManager().registerNewTicker(newPlant);
-
+        plant.useFood();
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
                 .plant(newPlant)
                 .arena(arena)
