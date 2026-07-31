@@ -129,7 +129,7 @@ public class PlantSelectionController {
         }
 
         if (activeUser.getDiamond() >= 2) { // cost for boost (it can be different)
-            activeUser.earnDiamond(-2);
+            activeUser.costDiamond(2);
             boostedPlantNames.add(name.trim().toLowerCase());
             return new Result(true, name + " is BOOSTED for the upcoming level! (-2 Diamonds)");
         } else {
