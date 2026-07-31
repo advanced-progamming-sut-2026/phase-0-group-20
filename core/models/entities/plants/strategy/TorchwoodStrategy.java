@@ -47,9 +47,8 @@ public class TorchwoodStrategy implements IPlantStrategy {
     public void igniteProjectile(Projectile projectile) {
         ProjectileType type = projectile.getType();
 
-        if (type == ProjectileType.PEA || type == ProjectileType.ICE_PEA) {
-
-            int multiplier = blueFlame ? 3 : 2;
+        if (type == ProjectileType.PEA || type == ProjectileType.ICE_PEA || type == ProjectileType.FIRE_PEA) {
+            int multiplier = blueFlame ? 3 : 1;
             int newDamage = projectile.getDamage() * multiplier;
 
             projectile.setType(ProjectileType.FIRE_PEA);

@@ -26,6 +26,7 @@ public class ImitateStrategy implements IPlantStrategy {
 
             if (transformedPlant != null) {
                 transformedPlant.setPlacedTile(currentTile);
+                GameSession.getInstance().getTimeManager().registerNewTicker(transformedPlant);
                 GameSession.getInstance().getArena().addPlant(transformedPlant);
 
                 notify("🎭 Imitater transformed into " + transformedPlant.getName() + "!");

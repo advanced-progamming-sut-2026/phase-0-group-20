@@ -53,8 +53,8 @@ public class StrikeThroughStrategy implements IPlantStrategy {
 
     private void shootPiercingProjectile(Plant context) {
         String name = context.getName();
-        float spawnX = context.getPlacedTile().getCol();
-        float spawnY = context.getPlacedTile().getRow();
+        int plantRow = context.getPlacedTile().getRow();
+        int plantCol = context.getPlacedTile().getCol();;
 
         ProjectileType type = null;
         int damage = 0;
@@ -72,13 +72,12 @@ public class StrikeThroughStrategy implements IPlantStrategy {
         }
 
         if (type != null) {
-            Projectile projectile = new Projectile(
+            Projectile projectile = Projectile.spawnNewProjectile(
                     context,
                     type,
-                    new NormalEffect(),
                     damage,
-                    new Position(spawnX, spawnY),
-                    0.1f,
+                    new Position(plantCol, plantRow),
+                    1,
                     0,
                     true,
                     false
@@ -88,8 +87,6 @@ public class StrikeThroughStrategy implements IPlantStrategy {
             if (lifespan > 0) {
                 projectile.setLifespanTicks(lifespan);
             }
-
-            GameSession.getInstance().getArena().addProjectile(projectile);
             notify("💨 " + name + " fired a strike-through attack!");
         }
     }

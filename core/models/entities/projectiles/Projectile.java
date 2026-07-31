@@ -25,6 +25,7 @@ public class Projectile implements Ticker {
     private boolean piercing;
     private boolean canPassObstacles; // for lobber
     private boolean isDestroyed;
+    private boolean isGetTorchWood = false;
 
     private int size = 1;
 
@@ -414,6 +415,14 @@ public class Projectile implements Ticker {
 
     public Zombie getOwnerZombie() {
         return zombie;
+    }
+
+    public boolean isGetTorchWood() {
+        return isGetTorchWood;
+    }
+
+    public void setGetTorchWood(boolean getTorchWood) {
+        isGetTorchWood = getTorchWood;
     }
 
 }

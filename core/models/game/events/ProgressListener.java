@@ -101,6 +101,7 @@ public class ProgressListener implements GameEventListener {
 
 
         for (Plant plant : rewardPlant) {
+            if (user.getUnlockedPlants().contains(plant)) continue;
             user.unlockedPlants(plant);
 
             GameEventPayload unlockPayload = new GameEventPayload.Builder(GameEvent.PLANT_UNLOCKED)
