@@ -376,7 +376,8 @@ public class Plant implements IPlant, Ticker {
             case "POISON_TICK_BUFF" ->
                     applyToStrategy(ShootingStrategy.class, s -> s.increasePoisonTickDamage((int) value));
             case "PRIORITIZE_GARGANTUARS" ->
-                    applyToStrategy(HomingStrategy.class, s -> s.setTargetMode(HomingStrategy.TargetMode.GARGANTUAR_FIRST));
+                    applyToStrategy(HomingStrategy.class,
+                            s -> s.setTargetMode(HomingStrategy.TargetMode.GARGANTUAR_FIRST));
             case "BONUS_SMASH_CHARGES" ->
                     applyToStrategy(TrapStrategy.class, s -> s.increaseSmashCharges((int) value));
             case "GRAPE_BOUNCE_EXT" ->

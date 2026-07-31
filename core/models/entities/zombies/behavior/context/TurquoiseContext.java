@@ -23,7 +23,8 @@ public class TurquoiseContext implements GameEventListener {
     @Override
     public void onEvent(GameEvent event, GameEventPayload payload) {
         boolean isGameOver = (event == GameEvent.GAME_OVER);
-        boolean isThisZombieKilled = (event == GameEvent.ZOMBIE_KILLED && payload != null && payload.getZombie() == this.zombie);
+        boolean isThisZombieKilled =
+                (event == GameEvent.ZOMBIE_KILLED && payload != null && payload.getZombie() == this.zombie);
 
         if (isGameOver || isThisZombieKilled) {
             if (isThisZombieKilled) {

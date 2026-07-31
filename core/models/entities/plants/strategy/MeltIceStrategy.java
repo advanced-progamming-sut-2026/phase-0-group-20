@@ -18,7 +18,6 @@ import java.util.List;
 public class MeltIceStrategy implements IPlantStrategy {
     private static final int MELT_DELAY = (int) (0.5 * TimeManager.TICKS_PER_SECOND);
     private int startTick = -1;
-    private boolean is3x3 = false;
 
     private boolean explodeOnFinish = false;
 
@@ -62,9 +61,6 @@ public class MeltIceStrategy implements IPlantStrategy {
         }
     }
 
-    public void setAreaOfEffect3x3(boolean areaOfEffect3x3) {
-        this.is3x3 = areaOfEffect3x3;
-    }
 
     public void setExplodeOnFinish(boolean explode) {
         this.explodeOnFinish = explode;

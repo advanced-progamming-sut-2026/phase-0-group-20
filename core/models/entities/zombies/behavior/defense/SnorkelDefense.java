@@ -5,11 +5,9 @@ import models.entities.zombies.behavior.context.SnorkelContext;
 import models.enums.plants.ProjectileType;
 
 public class SnorkelDefense implements DefenseBehavior {
-    private final Zombie zombie;
     private final SnorkelContext context;
 
-    public SnorkelDefense(Zombie zombie, SnorkelContext context) {
-        this.zombie = zombie;
+    public SnorkelDefense( SnorkelContext context) {
         this.context = context;
     }
 

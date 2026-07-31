@@ -115,7 +115,6 @@ public class ProgressListener implements GameEventListener {
 
     private List<Plant> getRewardsForLevel(int chapterIndex, int levelIndex) {
         List<Plant> rewards = new ArrayList<>();
-
         switch (chapterIndex) {
             case 0 -> { // ANCIENT_EGYPT
                 if (levelIndex == 0) addRewards(rewards, "Repeater", "Cherry Bomb"); // NORMAL
@@ -123,7 +122,6 @@ public class ProgressListener implements GameEventListener {
                 else if (levelIndex == 2) addRewards(rewards, "Split Pea", "Torchwood"); // SPECIAL
                 else if (levelIndex == 3) addRewards(rewards, "Threepeater", "Squash"); // BOSS
             }
-
             case 1 -> { // FROZEN_CAVES
                 if (levelIndex == 0) addRewards(rewards, "Hot Potato", "Iceberg Lettuce"); // NORMAL
                 else if (levelIndex == 1) addRewards(rewards, "Fire Peashooter", "Snow Pea"); // NORMAL

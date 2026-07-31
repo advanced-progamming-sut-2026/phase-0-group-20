@@ -28,8 +28,6 @@ public class TrapStrategy implements IPlantStrategy {
     private int extraSmashCharges = 0;
     private int smashCount = 0;
 
-    private int lastAttackTick = 0;
-
     private int extraGrabTargets = 0;
     private float freezeDurationBonus = 0f;
 
@@ -134,7 +132,6 @@ public class TrapStrategy implements IPlantStrategy {
                 int totalAllowedSmashes = 1 + extraSmashCharges;
                 if (smashCount < totalAllowedSmashes) {
                     shouldDie = false;
-                    lastAttackTick = currentTick;
                 }
             }
             case "Tangle Kelp" -> {

@@ -6,11 +6,9 @@ import models.enums.plants.ProjectileType;
 import models.game.GameSession;
 
 public class ExplorerDefense implements DefenseBehavior {
-    private final Zombie zombie;
     private final ExplorerContext context;
 
-    public ExplorerDefense(Zombie zombie, ExplorerContext context) {
-        this.zombie = zombie;
+    public ExplorerDefense( ExplorerContext context) {
         this.context = context;
     }
 
