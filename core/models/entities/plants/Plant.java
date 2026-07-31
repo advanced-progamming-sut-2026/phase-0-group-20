@@ -163,7 +163,7 @@ public class Plant implements IPlant, Ticker {
                 (placedTile.getCol() + 1) + "," + (placedTile.getRow() + 1));
 
         if (currentHp <= 0) {
-            this.currentHp = 0;
+            this.currentHp = -1;
             this.dead = true;
         }
 
