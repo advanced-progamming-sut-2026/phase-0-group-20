@@ -153,10 +153,7 @@ public class Plant implements IPlant, Ticker {
     }
 
     public void takeDamage(int amount) {
-        if (currentHp <= 0) {
-            this.currentHp = 0;
-            this.dead = true;
-        }
+
         if (isDead()) {
             return;
         }
@@ -165,6 +162,10 @@ public class Plant implements IPlant, Ticker {
         GameSession.notify(getName() + " Taking " + amount + " damage in " +
                 (placedTile.getCol() + 1) + "," + (placedTile.getRow() + 1));
 
+        if (currentHp <= 0) {
+            this.currentHp = 0;
+            this.dead = true;
+        }
 
         if (isDead()) {
             GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,

@@ -66,13 +66,9 @@ public class IZombieLevel extends Level implements IMinigame {
 
                 ticksPassed++;
                 if (ticksPassed >= currentInterval) {
-                    session.getArena().addSun(
-                            new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow())
-                    );
+                    session.getArena().addSun(new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow()));
                     ticksPassed = 0;
-
                     if (currentInterval > 40) currentInterval -= 12;
-
                 }
             }
 
@@ -89,7 +85,6 @@ public class IZombieLevel extends Level implements IMinigame {
                 }).toList();
         List<Plant> selectedTemplates = availableTemplates.subList(0, Math.min(numPlants, availableTemplates.size()));
 
-
         for (int i = 0; i < redLineCol; i++) {
             Plant template = selectedTemplates.get(rand.nextInt(selectedTemplates.size()));
             Plant newPlant = PlantFactory.create(template.getId());
@@ -97,7 +92,6 @@ public class IZombieLevel extends Level implements IMinigame {
             session.getArena().addPlant(newPlant);
             session.getArena().getTile(row, i).addPlant(newPlant);
             session.getTimeManager().registerNewTicker(newPlant);
-
         }
     }
 
@@ -132,12 +126,16 @@ public class IZombieLevel extends Level implements IMinigame {
     @Override
     public boolean skipsPlantSelection() { return true; }
 
-    public java.util.List<ZombieType> getZombiesForThisLevel() {
+    public List<ZombieType> getZombiesForThisLevel() {
         return switch (levelNumber) {
-            case 1 -> java.util.List.of(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.IMP, ZombieType.ALL_STAR);
-            case 2 -> java.util.List.of(ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.NEWSPAPER, ZombieType.DARK_ARMOR);
-            case 3 -> java.util.List.of(ZombieType.NORMAL, ZombieType.NEWSPAPER, ZombieType.BRICK, ZombieType.PROSPECTOR, ZombieType.GARGANTUAR);
-            default -> java.util.List.of(ZombieType.CONE, ZombieType.BUCKET, ZombieType.ALL_STAR, ZombieType.DARK_ARMOR, ZombieType.GARGANTUAR);
+            case 1 -> List.of(
+                    ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.IMP, ZombieType.ALL_STAR);
+            case 2 -> List.of(ZombieType.NORMAL,
+                    ZombieType.CONE, ZombieType.BUCKET, ZombieType.NEWSPAPER, ZombieType.DARK_ARMOR);
+            case 3 -> List.of(ZombieType.NORMAL,
+                    ZombieType.NEWSPAPER, ZombieType.BRICK, ZombieType.PROSPECTOR, ZombieType.GARGANTUAR);
+            default -> List.of(ZombieType.CONE,
+                    ZombieType.BUCKET, ZombieType.ALL_STAR, ZombieType.DARK_ARMOR, ZombieType.GARGANTUAR);
         };
     }
 }
