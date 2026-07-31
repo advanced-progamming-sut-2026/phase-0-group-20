@@ -55,11 +55,8 @@ public class CollisionManager {
     private void handleProjectiles() {
         for (Projectile proj : arena.getActiveProjectiles()) {
             if (proj.isDestroyed()) continue;
-
             Tile currentTile = arena.getTile(proj.getPosition().getRow(), proj.getPosition().getCol());
             if (currentTile == null) continue;
-
-
             if (!proj.isFiredByZombie() && !proj.isGetTorchWood()) {
                 for (Plant p : currentTile.getPlants()) {
                     for (IPlantStrategy strategy : p.getStrategies()) {
@@ -70,7 +67,6 @@ public class CollisionManager {
                     }
                 }
             }
-
             Plant frozenPlantInTile = null;
             for (Plant p : currentTile.getPlants()) {
                 if (p.isFrozen()) {
@@ -78,7 +74,6 @@ public class CollisionManager {
                     break;
                 }
             }
-
             if (frozenPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {
 
                 frozenPlantInTile.damageIceBlock(proj.getDamage());
@@ -86,7 +81,6 @@ public class CollisionManager {
                 proj.setDestroyed(true);
                 continue;
             }
-
             Plant octopusPlantInTile = null;
             for (Plant p : currentTile.getPlants()) {
                 if (p.hasOctopus()) {
@@ -94,13 +88,11 @@ public class CollisionManager {
                     break;
                 }
             }
-
             if (octopusPlantInTile != null &&  !ProjectileType.isLobbed(proj.getType())) {
                 octopusPlantInTile.damageOctopus(proj.getDamage());
                 proj.setDestroyed(true);
                 continue;
             }
-
             if (proj.isFiredByZombie())
                 checkProjectileForPlantCollision(proj);
             else {

@@ -42,7 +42,8 @@ public class GraveBusterStrategy implements IPlantStrategy {
         if (currentTick - startTick >= bustDelayTicks) {
             notify("🪦 Grave Buster successfully destroyed the grave!");
             // change type of tile
-            GameSession.getInstance().getArena().changeTile(currentTile.getRow(), currentTile.getCol(), new NormalTile(currentTile.getRow(), currentTile.getCol()));
+            GameSession.getInstance().getArena().changeTile(currentTile.getRow(), currentTile.getCol(),
+                            new NormalTile(currentTile.getRow(), currentTile.getCol()));
             if (currentTile instanceof NecromanceTile necromanceTile) necromanceTile.removeGrave();
             else if (currentTile instanceof GraveStoneTile graveStoneTile) graveStoneTile.removeGrave();
 

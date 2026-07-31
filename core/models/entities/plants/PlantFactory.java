@@ -251,7 +251,8 @@ public class PlantFactory {
         return switch (plantName) {
             case "citron" -> new ChargeStrategy(ProjectileType.PEA, new NormalEffect(), 800, false);
             case "caulipower" -> new ChargeStrategy(ProjectileType.MAGIC_BEAM, new HypnotizeEffect(), 0, true);
-            case "electric blueberry" -> new ChargeStrategy(ProjectileType.LIGHTNING_CLOUD, new LightningEffect(), 5000, true);
+            case "electric blueberry" ->
+                    new ChargeStrategy(ProjectileType.LIGHTNING_CLOUD, new LightningEffect(), 5000, true);
             case "bowling bulb" -> ChargeStrategy.createBowlingBulbStrategy();
             default -> new ChargeStrategy();
         };

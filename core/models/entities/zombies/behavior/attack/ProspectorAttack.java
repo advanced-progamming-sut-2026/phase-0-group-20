@@ -5,11 +5,9 @@ import models.entities.zombies.behavior.context.ProspectorContext;
 
 public class ProspectorAttack implements AttackBehavior {
     private final AttackBehavior normalAttack;
-    private final ProspectorContext context;
 
-    public ProspectorAttack(Zombie zombie, ProspectorContext context) {
+    public ProspectorAttack(Zombie zombie ) {
         this.normalAttack = new NormalAttack(zombie);
-        this.context = context;
     }
 
     @Override

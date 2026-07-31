@@ -4,12 +4,10 @@ import models.entities.zombies.Zombie;
 import models.entities.zombies.behavior.context.SnorkelContext;
 
 public class SnorkelAttack implements AttackBehavior {
-    private final Zombie zombie;
     private final SnorkelContext context;
     private final AttackBehavior normalAttack;
 
     public SnorkelAttack(Zombie zombie, SnorkelContext context) {
-        this.zombie = zombie;
         this.context = context;
         this.normalAttack = new NormalAttack(zombie);
     }

@@ -63,7 +63,8 @@ public class HomingStrategy implements IPlantStrategy {
                 return nearest;
             }
             case GARGANTUAR_FIRST -> {
-                List<Zombie> gargantuars = validTargets.stream().filter(z -> z.getName().toLowerCase().contains("gargantuar")).toList();
+                List<Zombie> gargantuars = validTargets.stream()
+                        .filter(z -> z.getName().toLowerCase().contains("gargantuar")).toList();
                 if (!gargantuars.isEmpty()) return gargantuars.get(random.nextInt(gargantuars.size()));
                 return validTargets.get(random.nextInt(validTargets.size()));
             }

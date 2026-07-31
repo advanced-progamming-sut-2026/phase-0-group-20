@@ -52,7 +52,6 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
                 ProjectileMechanism.executeNewProjectile(plant, true, false);
             if (tickTimer == 2)
                 notify(plant.getName() + " unleashed a rapid-fire barrage!");
-            return;
         }
 
         if (giantShotsFired < totalGiantShots) {  //shoot giant pea if needed

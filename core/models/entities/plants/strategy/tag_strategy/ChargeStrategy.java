@@ -52,22 +52,17 @@ public class ChargeStrategy implements IPlantStrategy {
     @Override
     public void execute(Plant context, int currentTick) {
         if (context.getTags().contains(PlantTag.TRAP)) return;
-
         if (chargeStartTick == -1) {
             chargeStartTick = currentTick;
             return;
         }
-
         int plantRow = context.getPlacedTile().getRow();
         float plantCol = context.getPlacedTile().getCol();
         int chargedTicks = currentTick - chargeStartTick;
-
         boolean canFire = false;
         int currentDamage = this.baseDamage;
         ProjectileType projType = this.projectileType;
-        ProjectileEffect currentEffect = this.effect;
         boolean homingAttack = this.isHoming;
-
         if (isMultiStage) {
             float cyanTime = Math.max(0, 2.0f - regenSpeedup);
             float blueTime = Math.max(0, 5.0f - regenSpeedup);
@@ -85,14 +80,13 @@ public class ChargeStrategy implements IPlantStrategy {
             int requiredCharge = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
             if (chargedTicks >= requiredCharge) {canFire = true;}
         }
-
         if (canFire && projType != null) {
             Zombie target = selectTarget(plantRow, plantCol, homingAttack);
-
             if (target != null) {
                 if (homingAttack) {
                     ProjectileMechanism.executeTargetedProjectile(context, target, 0);
-                    notify("🔮 " + context.getName() + " fired a fully charged homing attack at " + target.getName() + "!");
+                    notify("🔮 " + context.getName() + " fired a fully charged homing attack at "
+                            + target.getName() + "!");
                 } else {
                     notify("🔋 " + context.getName() + " fired a charged attack! (Damage: " + currentDamage + ")");
                     ProjectileMechanism.executeTargetedProjectile(context, target, 0);
@@ -127,7 +121,5 @@ public class ChargeStrategy implements IPlantStrategy {
     public void speedUpRegen(float seconds) {this.regenSpeedup += seconds;}
     public void setProjectileType(ProjectileType projectileType) {this.projectileType = projectileType;}
     public void setEffect(ProjectileEffect effect) {this.effect = effect;}
-    public void setBaseDamage(int baseDamage) {this.baseDamage = baseDamage;}
-    public void setHoming(boolean homing) {isHoming = homing;}
-    public void setBounceCount(int bounceCount) {this.bounceCount = bounceCount;}
+
 }
