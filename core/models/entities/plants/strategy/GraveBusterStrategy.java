@@ -3,6 +3,7 @@ package models.entities.plants.strategy;
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
 import models.fields.tiles.GraveStoneTile;
+import models.fields.tiles.NecromanceTile;
 import models.fields.tiles.Tile;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
@@ -28,17 +29,19 @@ public class GraveBusterStrategy implements IPlantStrategy {
         Tile currentTile = context.getPlacedTile();
 
         if (!(currentTile instanceof GraveStoneTile)) {
-            notify("❌ Grave Buster must be planted on a GraveStone!");
-            context.takeDamage(context.getCurrentHp());
-            return;
+            if (currentTile instanceof NecromanceTile necromanceTile && necromanceTile.getGraveStone() == null) {
+                notify("❌ Grave Buster must be planted on a GraveStone!");
+                context.takeDamage(context.getCurrentHp());
+                return;
+            }
         }
-
         float finalDelaySeconds = Math.max(0, 4.0f - eatTimeReduction);
         int bustDelayTicks = (int) (finalDelaySeconds * TimeManager.TICKS_PER_SECOND);
 
         if (currentTick - startTick >= bustDelayTicks) {
             notify("🪦 Grave Buster successfully destroyed the grave!");
-            // change type of tile
+            if (currentTile instanceof NecromanceTile necromanceTile) necromanceTile.removeGrave();
+            else if (currentTile instanceof GraveStoneTile graveStoneTile) graveStoneTile.removeGrave();
 
             if (explodeOnFinish) {
                 triggerExplosion(context);
