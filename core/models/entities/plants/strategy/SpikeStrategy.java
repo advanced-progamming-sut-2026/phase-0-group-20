@@ -29,7 +29,8 @@ public class SpikeStrategy implements IPlantStrategy {
 
         if (currentTick - lastDamageTick >= DAMAGE_INTERVAL) {
             boolean dealtDamage = false;
-            List<Zombie> attackingZombies = GameSession.getInstance().getArena().getZombiesOnTile(context.getPlacedTile());
+            List<Zombie> attackingZombies =
+                    GameSession.getInstance().getArena().getZombiesOnTile(context.getPlacedTile());
 
             for (Zombie z : attackingZombies) {
                 if (!z.isDead()) {

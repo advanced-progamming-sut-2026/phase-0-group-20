@@ -13,7 +13,8 @@ public class LilyPadStrategy implements IPlantStrategy {
             if (tile != null) {
                 for (Plant stackedPlant : tile.getPlants()) {
                     if (stackedPlant != context && !stackedPlant.isDead()) {
-                        GameSession.notify("💦 " + stackedPlant.getName() + " drowned because its Lily Pad was destroyed!");
+                        GameSession.notify("💦 " + stackedPlant.getName()
+                                + " drowned because its Lily Pad was destroyed!");
                         stackedPlant.takeDamage(stackedPlant.getCurrentHp());
                     }
                 }
