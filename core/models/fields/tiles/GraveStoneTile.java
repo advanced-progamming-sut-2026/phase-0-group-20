@@ -19,13 +19,14 @@ public class GraveStoneTile extends Tile implements GraveHolder {
     }
 
     @Override
-    public void onTick(int currentTick) {
+    public void customTick(int currentTick) {
         // nothing to do
     }
 
     @Override
     public boolean isPlantable(Plant plantToPlant) {
-        return false;
+        return this.getGraveStone() != null &&
+                (plantToPlant.getName().contains("Buster")|| plantToPlant.getName().contains("buster"));
     }
 
     public GraveStone getGraveStone() {

@@ -66,7 +66,7 @@ public class LockedPlants extends SpecialLevel {
         List<PlantCategory> allCategories = new ArrayList<>(Arrays.asList(PlantCategory.values()));
         Collections.shuffle(allCategories);
 
-        return allCategories.subList(0, Math.min(3, allCategories.size()));
+        return allCategories.subList(0, Math.min(NUMBER_OF_LOCKED_PLANTS, allCategories.size()));
     }
 
     private static Plant getRandomPlant(){

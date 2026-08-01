@@ -4,24 +4,33 @@ import models.entities.plants.Plant;
 
 public class OctopusEffect implements PlantEffect {
     private int hp;
+    private boolean isDestroyed = false;
 
     public OctopusEffect(int hp) {
         this.hp = hp;
     }
 
-    public void takeDamage(int damage) {
+    public void takeDamage(Plant plant, int damage) {
+        if (isDestroyed) return;
+
         this.hp -= damage;
+        if (this.hp <= 0) {
+            this.hp = 0;
+            this.isDestroyed = true;
+
+            plant.setStunned(false);
+            notify("Octopus destroyed! " + plant.getName() + " is free!");
+        }
     }
 
     public int getHp() {
         return hp;
     }
 
-
     @Override
     public void apply(Plant plant) {
         plant.setStunned(true);
-        notify(plant.getName() + " is trapped under an Octopus!");
+        notify(plant.getName() + " is covered by an OCTOPUS!");
     }
 
     @Override
@@ -32,11 +41,10 @@ public class OctopusEffect implements PlantEffect {
     @Override
     public void remove(Plant plant) {
         plant.setStunned(false);
-        notify("The Octopus on " + plant.getName() + " was destroyed!");
     }
 
     @Override
     public boolean isExpired() {
-        return hp <= 0;
+        return isDestroyed;
     }
 }

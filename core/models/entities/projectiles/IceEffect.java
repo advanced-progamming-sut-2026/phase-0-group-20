@@ -2,6 +2,7 @@ package models.entities.projectiles;
 
 import models.entities.zombies.Zombie;
 import models.entities.zombies.behavior.effect.FreezeEffect;
+import models.entities.zombies.behavior.effect.ZombieEffect;
 
 public class IceEffect implements ProjectileEffect {
 
@@ -9,6 +10,9 @@ public class IceEffect implements ProjectileEffect {
 
     @Override
     public void applyEffect(Zombie zombie, Projectile projectile) {
+        for (ZombieEffect effect : zombie.getActiveEffects()) {
+            if (effect instanceof FreezeEffect) return;
+        }
         zombie.addEffect(new FreezeEffect(zombie, FREEZE_DURATION_TICKS));
     }
 

@@ -7,7 +7,7 @@ import models.game.GameSession;
 import models.timeManager.TimeManager;
 
 public class MagnetStrategy implements IPlantStrategy {
-    private int lastStealTick = 0;
+    private int lastStealTick = -1;
     private float rangeExtension = 0;
 
     @Override
@@ -15,7 +15,7 @@ public class MagnetStrategy implements IPlantStrategy {
 
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
-        if (intervalInTicks > 0 && (currentTick - lastStealTick) >= intervalInTicks) {
+        if (intervalInTicks > 0 && (lastStealTick == -1 || (currentTick - lastStealTick) >= intervalInTicks)){
 
             int plantRow = context.getPlacedTile().getRow();
             int plantCol = context.getPlacedTile().getCol();

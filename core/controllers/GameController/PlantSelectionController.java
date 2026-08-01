@@ -16,6 +16,7 @@ import java.util.List;
 public class PlantSelectionController {
     private final List<Plant> selectedPlants = new ArrayList<>();
     private final List<String> boostedPlantNames = new ArrayList<>();
+    private int imitaterTargetId = -1;
 
 
     public Result showAllPlants() {
@@ -48,6 +49,34 @@ public class PlantSelectionController {
             sb.append("\n");
         }
         return new Result(true, sb.toString().trim());
+    }
+
+    public Result addImitater(String targetName) {
+        User activeUser = App.getActiveUser();
+        Plant targetPlant = null;
+
+        for (Plant p : activeUser.getUnlockedPlants()) {
+            if (p.getName().equalsIgnoreCase(targetName)) {
+                targetPlant = p;
+                break;
+            }
+        }
+
+        if (targetPlant == null) {
+            return new Result(false, "You don't own a plant named " + targetName + " to imitate!");
+        }
+
+        if (targetPlant.getName().equalsIgnoreCase("Imitater")) {
+            return new Result(false, "Imitater cannot imitate itself!");
+        }
+
+        Result addResult = addPlant("Imitater");
+        if (addResult.isSuccessful()) {
+            this.imitaterTargetId = targetPlant.getId();
+            return new Result(true, "Imitater added! It will copy: " + targetPlant.getName());
+        } else {
+            return addResult;
+        }
     }
 
     public Result addPlant(String name) {
@@ -103,6 +132,11 @@ public class PlantSelectionController {
             if (p.getName().equalsIgnoreCase(name.trim())) {
                 selectedPlants.remove(p);
                 boostedPlantNames.remove(p.getName().toLowerCase());
+
+                if (p.getName().equalsIgnoreCase("Imitater")) {
+                    imitaterTargetId = -1;
+                }
+
                 return new Result(true, p.getName() + " removed from your selection.");
             }
         }
@@ -114,14 +148,15 @@ public class PlantSelectionController {
 
         boolean found = false;
         for (Plant p : selectedPlants) {
-            if (p.getName().equalsIgnoreCase(name.trim())) {
+            if (p.getName().equalsIgnoreCase(name.trim())&&
+                    !(p.getPlantFoodStrategy()==null || p.getPlantFoodStrategy().isEmpty())) {
                 found = true;
                 break;
             }
         }
 
         if (!found) {
-            return new Result(false, "You must add the plant to your selection first before boosting it!");
+            return new Result(false, "This plant is not in your selection or doesn't have boost effect");
         }
 
         if (boostedPlantNames.contains(name.trim().toLowerCase())) {
@@ -129,7 +164,7 @@ public class PlantSelectionController {
         }
 
         if (activeUser.getDiamond() >= 2) { // cost for boost (it can be different)
-            activeUser.earnDiamond(-2);
+            activeUser.costDiamond(2);
             boostedPlantNames.add(name.trim().toLowerCase());
             return new Result(true, name + " is BOOSTED for the upcoming level! (-2 Diamonds)");
         } else {
@@ -158,13 +193,17 @@ public class PlantSelectionController {
         } else if (GameSession.getMinigameLevel() != null) {
             GameSession.startMiniGame(GameSession.getMinigameLevel(), inGamePlants);
         } else {
-
             GameSession.startNewGame(inGamePlants);
+        }
+
+        if (imitaterTargetId != -1 && GameSession.getInstance() != null) {
+            GameSession.getInstance().setImitaterTargetId(imitaterTargetId);
         }
 
         App.setActiveMenu(Menu.GAME_FLOW_MENU);
         selectedPlants.clear();
         boostedPlantNames.clear();
+        imitaterTargetId = -1;
 
         return new Result(true, "Game Started! Good luck defending your brains!");
     }

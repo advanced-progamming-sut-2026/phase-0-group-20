@@ -60,7 +60,7 @@ public class ProgressListener implements GameEventListener {
         if (currentMode instanceof IMinigame miniGame) {
             MiniGameType type = miniGame.getMiniGameType();
             int before = user.getUnlockedLevelInMinigame(type);
-            int playedLevel = ((Level) currentMode).getLevelNumber();
+            int playedLevel = ((Level) currentMode).getLevelNumber() - 1;
             user.unlockNextLevelInMinigame(type, playedLevel);
             if (user.getUnlockedLevelInMinigame(type) > before)
                 user.setLevelsCompleted(user.getLevelsCompleted() + 1);
@@ -101,6 +101,7 @@ public class ProgressListener implements GameEventListener {
 
 
         for (Plant plant : rewardPlant) {
+            if (user.getUnlockedPlants().contains(plant)) continue;
             user.unlockedPlants(plant);
 
             GameEventPayload unlockPayload = new GameEventPayload.Builder(GameEvent.PLANT_UNLOCKED)
@@ -114,7 +115,6 @@ public class ProgressListener implements GameEventListener {
 
     private List<Plant> getRewardsForLevel(int chapterIndex, int levelIndex) {
         List<Plant> rewards = new ArrayList<>();
-
         switch (chapterIndex) {
             case 0 -> { // ANCIENT_EGYPT
                 if (levelIndex == 0) addRewards(rewards, "Repeater", "Cherry Bomb"); // NORMAL
@@ -122,7 +122,6 @@ public class ProgressListener implements GameEventListener {
                 else if (levelIndex == 2) addRewards(rewards, "Split Pea", "Torchwood"); // SPECIAL
                 else if (levelIndex == 3) addRewards(rewards, "Threepeater", "Squash"); // BOSS
             }
-
             case 1 -> { // FROZEN_CAVES
                 if (levelIndex == 0) addRewards(rewards, "Hot Potato", "Iceberg Lettuce"); // NORMAL
                 else if (levelIndex == 1) addRewards(rewards, "Fire Peashooter", "Snow Pea"); // NORMAL

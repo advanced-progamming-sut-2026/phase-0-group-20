@@ -33,14 +33,6 @@ public class MiniGameController {
         return null;
     }
 
-    public Result changeMenu(String newMenu) {
-        return null;
-    }
-
-    public Result handleRule(String newMenu) {
-        return null;
-    }
-
     public Result breakVase(String x, String y) {
         Integer spawnX = parsePositiveInt(x);
         Integer spawnY = parsePositiveInt(y);
@@ -130,7 +122,7 @@ public class MiniGameController {
     }
 
 
-    public Result handlePutZombie(String zombieAlias, String rowStr, String colStr) {
+    public Result handlePutZombie(String zombieAlias, String colStr, String rowStr) {
         Integer row = parsePositiveInt(rowStr);
         Integer col = parsePositiveInt(colStr);
         if (row == null || col == null) return new Result(false, "Invalid coordinates");
@@ -140,12 +132,16 @@ public class MiniGameController {
         if (!(session.getCurrentMode() instanceof IZombieLevel level))
             return new Result(false, "You can only spawn zombies in iZombie minigame!");
 
-        if (!level.isValidZombiePlacement(col))
+        if (!level.isValidZombiePlacement(col - 1))
             return new Result(false, "Invalid placement! You must place zombies behind the red line" +
-                    " (Col " + level.getRedLineCol() + " or greater).");
+                    " (Col " + (level.getRedLineCol() + 1)+ " or greater).");
 
         ZombieType type = ZombieType.fromAlias(zombieAlias);
-        Zombie newZombie = InGameEntityGenerator.getZombieForGame(type, row);
+
+        if (!level.getZombiesForThisLevel().contains(type))
+            return new Result(false, "You cannot use " + zombieAlias + " in this level! Check your available zombies.");
+
+        Zombie newZombie = InGameEntityGenerator.getZombieForGame(type, row - 1);
 
         int cost = newZombie.getWaveCost();
 
@@ -154,7 +150,7 @@ public class MiniGameController {
                     "You need " + cost + " but have " + session.getCurrentSun());
 
         session.addSun(-cost);
-        newZombie.setCol(col);
+        newZombie.setCol(col - 1);
         session.getArena().addZombie(newZombie);
         session.getTimeManager().registerNewTicker(newZombie);
         return new Result(true, zombieAlias + " spawned at row " + row + ", col " + col + "!");
@@ -218,7 +214,7 @@ public class MiniGameController {
             for (int col = 0; col < cols; col++) {
                 Tile tile = arena.getTile(row, col);
 
-                mapDisplay.append("Tile ").append(row).append(" / ").append(col).append(":\n");
+                mapDisplay.append("Tile ").append(col + 1).append(" / ").append(row + 1).append(":\n");
 
                 if (tile instanceof VaseTile vase) {
                     mapDisplay.append("-vase: ").append(vase.isBroken() ? "Broken" : "Intact").append("\n");
@@ -268,8 +264,8 @@ public class MiniGameController {
             for (int k = 0; k < zombiesInTile.size(); k++) {
                 Zombie z = zombiesInTile.get(k);
                 mapDisplay.append(z.getName()).append(":")
-                        .append((int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH)).append(",")
-                        .append(z.getRow());
+                        .append(z.getCol() + 1).append(" , ")
+                        .append(z.getRow() + 1);
 
                 if (k < zombiesInTile.size() - 1) {
                     mapDisplay.append(", ");
@@ -297,7 +293,7 @@ public class MiniGameController {
             return new Result(false, "Invalid coordinates! Please enter valid integer numbers.");
         }
 
-        BeghouledManager manager = new BeghouledManager();
+        BeghouledManager manager = ((BeghouledLevel) session.getCurrentMode()).getManager();
         String response = manager.swapPlants(y1 - 1, x1 - 1, y2 - 1, x2 - 1);
 
         boolean isSuccess = response.startsWith("Match found") || response.startsWith("Cascade");
@@ -336,8 +332,8 @@ public class MiniGameController {
         }
         sb.append(horizontalBorder);
 
-        java.util.List<String> activePlants = arena.getActivePlants().stream()
-                .map(models.entities.plants.Plant::getName)
+        List<String> activePlants = arena.getActivePlants().stream()
+                .map(Plant::getName)
                 .distinct()
                 .toList();
 

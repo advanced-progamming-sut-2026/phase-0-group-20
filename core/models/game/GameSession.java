@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GameSession {
-    private static final int PLANT_COOLDOWN = 50;
+    private static final float PLANT_COOLDOWN = 50f;
     private static GameSession instance;
     // for mew points
     private static BonusLevel pendingBonusLevel = null;
@@ -44,11 +44,12 @@ public class GameSession {
     private GameEvent event = GameEvent.GAME_STARTED;
     private GameState state = GameState.RUNNING;
     private SunManager sunManager;
-    private HashMap<Plant, Integer> plantsCooldown;
+    private HashMap<Plant, Float> plantsCooldown;
     private GameMode currentMode;
     private boolean zombieBreached = false;
     private ZombieDropListener dropListener;
     private ProgressListener progressListener;
+    private int imitaterTargetId = -1;
 
 
     private GameSession(Chapter chapter, Level currentLevel,
@@ -64,7 +65,7 @@ public class GameSession {
         App.getActiveUser().addZombiesToUnlock(this.chosenZombies);
 
 
-        this.currentSun = 50;
+        this.currentSun = currentLevel.getInitialSun();
 
         if (currentLevel.skySunFalls())
             this.sunManager = new SunManager(this.arena);
@@ -81,9 +82,6 @@ public class GameSession {
     }
 
     public static GameSession getInstance() {
-//        if (instance == null) {
-//            notify("Instance is null");
-//        }
         return instance;
     }
 
@@ -209,11 +207,15 @@ public class GameSession {
 
     public static void setPendingBonusLevel(BonusLevel level) {
         pendingBonusLevel = level;
+        pendingLevel = null ;
+        pendingChapter = null ;
+        minigameLevel = null ;
     }
 
     public void instantiateCooldowns(List<Plant> chosenPlants) {
+        plantsCooldown.clear();
         for (Plant plant : chosenPlants) {
-            plantsCooldown.put(plant, 0);
+            plantsCooldown.put(plant, 0f);
         }
     }
 
@@ -231,7 +233,7 @@ public class GameSession {
 
     public void update(int timeAmount) {
         if (this.state != GameState.RUNNING) return;
-
+        plantsCooldown.replaceAll((plant, currentCooldown) -> Math.max(0, currentCooldown - timeAmount));
         for (int i = 0; i < timeAmount; i++) {
             timeManager.tick();
             if (currentMode != null)
@@ -262,7 +264,7 @@ public class GameSession {
         });
 
         arena.getActivePlants().removeIf(plant -> {
-            if (plant.getCurrentHp() <= 0) {
+            if (plant.isDead()) {
                 timeManager.unregisterTicker(plant);
                 GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
                         .plant(plant)
@@ -379,7 +381,7 @@ public class GameSession {
         plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
     }
 
-    public HashMap<Plant, Integer> getPlantsCooldown() {
+    public HashMap<Plant, Float> getPlantsCooldown() {
         return plantsCooldown;
     }
 
@@ -397,10 +399,15 @@ public class GameSession {
 
     public static void setMinigameLevel(Level minigameLevel) {
         GameSession.minigameLevel = minigameLevel;
+        GameSession.pendingLevel = null;
+        GameSession.pendingChapter = null;
+        GameSession.pendingBonusLevel = null;
     }
 
     public static void setPendingLevel(Level pendingLevel) {
         GameSession.pendingLevel = pendingLevel;
+        GameSession.minigameLevel = null;
+        GameSession.pendingBonusLevel = null;
     }
 
     public static Chapter getPendingChapter() {
@@ -409,5 +416,15 @@ public class GameSession {
 
     public static void setPendingChapter(Chapter pendingChapter) {
         GameSession.pendingChapter = pendingChapter;
+        GameSession.minigameLevel = null;
+        GameSession.pendingBonusLevel = null;
+    }
+
+    public void setImitaterTargetId(int id) {
+        this.imitaterTargetId = id;
+    }
+
+    public int getImitaterTargetId() {
+        return imitaterTargetId;
     }
 }

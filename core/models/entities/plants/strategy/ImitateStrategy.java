@@ -22,10 +22,13 @@ public class ImitateStrategy implements IPlantStrategy {
         if (currentTick - startTick >= TRANSFORM_DELAY_TICKS) {
             Tile currentTile = context.getPlacedTile();
 
+            context.takeDamage(context.getCurrentHp());
+
             Plant transformedPlant = PlantFactory.create(targetPlantId); //bug?
 
             if (transformedPlant != null) {
                 transformedPlant.setPlacedTile(currentTile);
+                GameSession.getInstance().getTimeManager().registerNewTicker(transformedPlant);
                 GameSession.getInstance().getArena().addPlant(transformedPlant);
 
                 notify("🎭 Imitater transformed into " + transformedPlant.getName() + "!");

@@ -15,39 +15,34 @@ import java.util.List;
 
 public class SpikeStrategy implements IPlantStrategy {
     private static final int DAMAGE_INTERVAL = TimeManager.TICKS_PER_SECOND;
-    boolean hasArmor = false;
-    int damage;
-    private int lastDamageTick = 0;
+    private int lastDamageTick = -1;
     private int reflectDamageBonus = 0;
+    private boolean hasArmor = false;
 
 
     @Override
     public void execute(Plant context, int currentTick) {
+        if (lastDamageTick == -1) {
+            lastDamageTick = currentTick;
+            return;
+        }
+
         if (currentTick - lastDamageTick >= DAMAGE_INTERVAL) {
-            int plantRow = context.getPlacedTile().getRow();
-            int plantCol = context.getPlacedTile().getCol();
             boolean dealtDamage = false;
-
-
-            List<Zombie> attackingZombies = GameSession.getInstance().getArena()
-                    .getZombiesInRadius(plantCol, plantRow, 0.8);
+            List<Zombie> attackingZombies =
+                    GameSession.getInstance().getArena().getZombiesOnTile(context.getPlacedTile());
 
             for (Zombie z : attackingZombies) {
-                damage = 20;
                 if (!z.isDead()) {
-                    try {
-                        damage = context.getDamage();
-                    } catch (NumberFormatException e) {
+                    int currentDamage = context.getDamage();
+                    if (currentDamage <= 0) currentDamage = 20;
+                    currentDamage += reflectDamageBonus;
+
+                    if (hasArmor) {
+                        currentDamage *= 2;
                     }
 
-                    damage += reflectDamageBonus;
-
-                    hasArmor = context.getCurrentHp() > context.getBaseHp();
-
-                    if (hasArmor) //more hp = having armor
-                        damage *= 2;
-
-                    z.takeDamage(damage);
+                    z.takeDamage(currentDamage);
                     if (z.isDead()) {
                         context.onZombieDeath(z);
                     }
@@ -56,7 +51,7 @@ public class SpikeStrategy implements IPlantStrategy {
             }
 
             if (dealtDamage) {
-                notify("🦔 " + context.getName() + " reflected " + damage + " damage to attacking zombies!");
+                notify("🦔 " + context.getName() + " reflected damage to attacking zombies!");
                 lastDamageTick = currentTick;
             }
         }

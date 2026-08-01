@@ -3,6 +3,7 @@ package models.fields.tiles;
 import models.Position;
 import models.entities.plants.Plant;
 import models.enums.plants.PlantTag;
+import models.game.GameSession;
 import models.game.adventure.SeasonType;
 import models.timeManager.Ticker;
 
@@ -14,12 +15,18 @@ public abstract class Tile implements Ticker {
     protected ArrayList<Plant> plants = new ArrayList<>();
     protected Position position;
     protected boolean isCrater;
+    protected int craterTimer = 0;
 
     public Tile(int row, int col) {
         position = new Position(col, row);
     }
 
-    public abstract void onTick(int currentTick);
+    public void onTick(int currentTick) {
+        updateCraterLogic();
+        customTick(currentTick);
+    }
+
+    protected abstract void customTick(int currentTick);
 
     public int getCol() {
         return position.getCol();
@@ -51,11 +58,18 @@ public abstract class Tile implements Ticker {
     }
 
     public boolean isPlantable(Plant plantToPlant) {
+        if (isCrater) return false;
         boolean isWaterPlant = plantToPlant.getTags().contains(PlantTag.WATER);
 
         if (isWaterPlant) return false;
+        boolean isGraveBuster = this instanceof GraveStoneTile tile && tile.getGraveStone() != null &&
+                (plantToPlant.getName().contains("Buster")|| plantToPlant.getName().contains("buster"));
+        return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK) || isGraveBuster ||
+                plantToPlant.getName().equalsIgnoreCase("hot potato");
+    }
 
-        return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK);
+    public void removePlant(Plant plant) {
+        this.plants.remove(plant);
     }
 
 
@@ -72,40 +86,22 @@ public abstract class Tile implements Ticker {
         return className;
     }
 
-    //public String getType() {
-    //
-    //return switch (this) {
-    //
-    //case GraveStoneTile t -> "GraveStone";
-    //
-    //case PlantVaseTile t -> "PlantVaseTile";
-    //
-    //case RandomVaseTile t -> "RandomVaseTile";
-    //
-    //case ZombieVaseTile t -> "ZombieVaseTile";
-    //
-    //case VaseTile t -> "VaseTile";
-    //
-    //case WaterTile t -> "WaterTile";
-    //
-    //case NormalTile t -> "NormalTile";
-    //
-    //case SlipperyTile t -> "SlipperyTile";
-    //
-    //case LowShoreTile t -> "LowShoreTile";
-    //
-    //case NecromanceTile t -> "NecromancyTile";
-    //
-    //default -> getClass().getSimpleName();
-    //
-    //};
-
-    public boolean isCrater() {
-        return isCrater;
+    public boolean isCrater() {return isCrater;}
+    public void setCrater(boolean isCrater) {this.isCrater = isCrater;}
+    public void setCraterTimer(int ticks) {this.craterTimer = ticks;}
+    public int getCraterTimer() {return craterTimer;}
+    protected void updateCraterLogic() {
+        if (isCrater && craterTimer > 0) {
+            craterTimer--;
+            if (craterTimer <= 0) {
+                isCrater = false;
+                GameSession.notify("Creator is Back to Normal Tile.");
+            }
+        }
     }
 
-    public void setCrater(boolean isCrater) {
-        this.isCrater = isCrater;
+    public Plant getStackPlant() {
+        for (Plant plant : plants) if (plant.getTags().contains(PlantTag.STACK)) return plant;
+        return null;
     }
-
 }

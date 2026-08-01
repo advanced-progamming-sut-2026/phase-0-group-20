@@ -25,6 +25,7 @@ public class Projectile implements Ticker {
     private boolean piercing;
     private boolean canPassObstacles; // for lobber
     private boolean isDestroyed;
+    private boolean isGetTorchWood = false;
 
     private int size = 1;
 
@@ -157,14 +158,20 @@ public class Projectile implements Ticker {
     }
 
     public void move() {
-        if (target != null && !target.isDead()) {
-            float dx = target.getX() - position.getX();
-            float dy = target.getY() - position.getY();
-            float distance = (float) Math.sqrt(dx * dx + dy * dy);
+        if (target != null) {
+            if (target.isDead()) {
+                target = null;
+                canPassObstacles = false;
+                if (speedX == 0 && speedY == 0) speedX = baseSpeed > 0 ? baseSpeed : 1.5f;
+            } else {
+                float dx = target.getX() - position.getX();
+                float dy = target.getY() - position.getY();
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
-            if (distance > 0) {
-                speedX = (dx / distance) * baseSpeed;
-                speedY = (dy / distance) * baseSpeed;
+                if (distance > 0) {
+                    speedX = (dx / distance) * baseSpeed;
+                    speedY = (dy / distance) * baseSpeed;
+                }
             }
         }
 
@@ -414,6 +421,14 @@ public class Projectile implements Ticker {
 
     public Zombie getOwnerZombie() {
         return zombie;
+    }
+
+    public boolean isGetTorchWood() {
+        return isGetTorchWood;
+    }
+
+    public void setGetTorchWood(boolean getTorchWood) {
+        isGetTorchWood = getTorchWood;
     }
 
 }

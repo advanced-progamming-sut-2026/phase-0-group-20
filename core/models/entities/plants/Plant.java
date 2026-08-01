@@ -3,6 +3,8 @@ package models.entities.plants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import models.Position;
 import models.entities.plants.PlantFoodStrategy.PlantFoodStrategy;
+import models.entities.plants.effect.FreezeEffect;
+import models.entities.plants.effect.OctopusEffect;
 import models.entities.plants.effect.PlantEffect;
 import models.entities.plants.strategy.*;
 import models.entities.plants.strategy.category_strategy.*;
@@ -36,6 +38,8 @@ public class Plant implements IPlant, Ticker {
     protected float currentActionInterval;
     protected float currentRecharge;
     protected int bonusDamage = 0;
+    protected boolean dead = false;
+    protected boolean asleep = false;
 
     protected List<PlantFoodStrategy> plantFoodStrategy = new ArrayList<>();
     private int stackCount = 1;
@@ -44,12 +48,12 @@ public class Plant implements IPlant, Ticker {
     protected boolean frozen = false;
     protected boolean stunned = false;
 
-    private int iceStacks = 0;
-    private int iceBlockHp = 0;
-    private static final int MAX_ICE_HP = 600;
-
-    private int octopusHp = 0;
-    private static final int MAX_OCTOPUS_HP = 800;
+//    private int iceStacks = 0;
+//    private int iceBlockHp = 0;
+//    private static final int MAX_ICE_HP = 600;
+//
+//    private int octopusHp = 0;
+//    private static final int MAX_OCTOPUS_HP = 800;
 
     protected int size = 1;
     protected boolean boosted = false;
@@ -135,6 +139,10 @@ public class Plant implements IPlant, Ticker {
             return false;
         });
 
+        if (isAsleep()) {
+            return;
+        }
+
 
         if (boostTimer > 0) {
             for (PlantFoodStrategy strategy : plantFoodStrategy)
@@ -145,13 +153,15 @@ public class Plant implements IPlant, Ticker {
 
             if (boostTimer <= 0) boosted = false;
 
-        } else
+        } else {
             for (IPlantStrategy strategy : strategies)
                 strategy.execute(this, currentTick);
+        }
 
     }
 
     public void takeDamage(int amount) {
+
         if (isDead()) {
             return;
         }
@@ -160,6 +170,10 @@ public class Plant implements IPlant, Ticker {
         GameSession.notify(getName() + " Taking " + amount + " damage in " +
                 (placedTile.getCol() + 1) + "," + (placedTile.getRow() + 1));
 
+        if (currentHp <= 0) {
+            this.currentHp = -1;
+            this.dead = true;
+        }
 
         if (isDead()) {
             GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,
@@ -177,8 +191,9 @@ public class Plant implements IPlant, Ticker {
     }
 
     public boolean addStack() {
-        if (this.getName().equals("Pea Pod") && stackCount < 5) {
+        if (this.getTags().contains(PlantTag.STACK) && stackCount < 5) {
             stackCount++;
+            GameSession.notify("Plant " + getName() + " has been Stacked! stack count: " +  stackCount);
             return true;
         }
         return false;
@@ -295,29 +310,60 @@ public class Plant implements IPlant, Ticker {
     }
 
     public void applySpecialMechanic(String tag, float value) {
+        if (applySunMechanic(tag, value)) return;
+        if (applyTimeMechanic(tag, value)) return;
+        if (applyRangeMechanic(tag, value)) return;
+        if (applyDurationMechanic(tag, value)) return;
+        if (applyOffensiveMechanic(tag, value)) return;
+        if (applyStructuralMechanic(tag, value)) return;
+
+        System.out.println("Unhandled special mechanic: " + tag);
+    }
+
+    private boolean applySunMechanic(String tag, float value) {
         switch (tag) {
-            // sun production
-            case "DOUBLE_SUN_CHANCE" -> applyToStrategy(SunProductionStrategy.class, s -> s.setDoubleSunChance(true));
-            case "SUN_AMOUNT_BUFF" -> applyToStrategy(SunProductionStrategy.class, s -> s.increaseSunAmount(value));
-            case "SUN_DROP_INCREMENT" -> applyToStrategy(SunOnHitStrategy.class, s -> s.addSunPerHitMultiplier((int) value));
+            case "DOUBLE_SUN_CHANCE" ->
+                    applyToStrategy(SunProductionStrategy.class, s -> s.setDoubleSunChance(true));
+            case "SUN_AMOUNT_BUFF" ->
+                    applyToStrategy(SunProductionStrategy.class, s -> s.increaseSunAmount(value));
+            case "SUN_DROP_INCREMENT" ->
+                    applyToStrategy(SunOnHitStrategy.class, s -> s.addSunPerHitMultiplier((int) value));
+            default -> { return false; }
+        }
+        return true;
+    }
 
-            // time and speed management
-            case "GROW_TIME_REDUCTION" -> applyToStrategy(SunProductionStrategy.class, s -> s.reduceGrowTime(value));
-            case "REGEN_SPEEDUP" -> applyToStrategy(ChargeStrategy.class, s -> s.speedUpRegen(value));
-            case "EAT_TIME_REDUCTION" -> applyToStrategy(GraveBusterStrategy.class, s -> s.reduceEatTime(value));
+    private boolean applyTimeMechanic(String tag, float value) {
+        switch (tag) {
+            case "GROW_TIME_REDUCTION" ->
+                    applyToStrategy(SunProductionStrategy.class, s -> s.reduceGrowTime(value));
+            case "REGEN_SPEEDUP" ->
+                    applyToStrategy(ChargeStrategy.class, s -> s.speedUpRegen(value));
+            case "EAT_TIME_REDUCTION" ->
+                    applyToStrategy(GraveBusterStrategy.class, s -> s.reduceEatTime(value));
+            default -> { return false; }
+        }
+        return true;
+    }
 
-            // range and area
+    private boolean applyRangeMechanic(String tag, float value) {
+        switch (tag) {
             case "TILE_RANGE_EXT" -> {
                 applyToStrategy(ShootingStrategy.class, s -> s.increaseRange((int) value));
                 applyToStrategy(StrikeThroughStrategy.class, s -> s.increaseRange((int) value));
                 applyToStrategy(MeleeStrategy.class, s -> s.increaseRange(value));
                 applyToStrategy(MagnetStrategy.class, s -> s.increaseRange(value));
             }
-            case "SPLASH_DAMAGE_BUFF" -> applyToStrategy(LobberStrategy.class, s -> s.increaseSplashDamage((int) value));
+            case "SPLASH_DAMAGE_BUFF" ->
+                    applyToStrategy(LobberStrategy.class, s -> s.increaseSplashDamage((int) value));
             case "WARM_RADIUS_EXT" -> applyToStrategy(LobberStrategy.class, s -> s.increaseWarmRadius(value));
-            case "MELT_AREA_3X3" -> applyToStrategy(MeltIceStrategy.class, s -> s.setAreaOfEffect3x3(true));
+            default -> { return false; }
+        }
+        return true;
+    }
 
-            // durations
+    private boolean applyDurationMechanic(String tag, float value) {
+        switch (tag) {
             case "LIFESPAN_EXT" -> applyToStrategy(LifespanStrategy.class, s -> s.increaseLifespan(value));
             case "CHILL_DURATION_EXT" -> applyToStrategy(ShootingStrategy.class, s -> s.increaseChillDuration(value));
             case "FREEZE_DURATION_EXT" -> {
@@ -325,33 +371,61 @@ public class Plant implements IPlant, Ticker {
                 applyToStrategy(GlobalEffectStrategy.class, s -> s.increaseFreezeDuration(value));
             }
             case "DURATION_EXT" -> applyToStrategy(MintBuffStrategy.class, s -> s.increaseBoostDuration(value));
+            default -> { return false; }
+        }
+        return true;
+    }
 
-            // offensive buffs
-            case "ADDITIONAL_PIERCE" -> applyToStrategy(StrikeThroughStrategy.class, s -> s.increasePierceLimit((int) value));
-            case "POISON_TICK_BUFF" -> applyToStrategy(ShootingStrategy.class, s -> s.increasePoisonTickDamage((int) value));
-            case "PRIORITIZE_GARGANTUARS" -> applyToStrategy(HomingStrategy.class, s -> s.setPrioritizeGargantuars(true));
-            case "BONUS_SMASH_CHARGES" -> applyToStrategy(TrapStrategy.class, s -> s.increaseSmashCharges((int) value));
-            case "GRAPE_BOUNCE_EXT" -> applyToStrategy(ExplosiveStrategy.class, s -> s.increaseBounceLimit((int) value));
-            case "BONUS_GRAB_TARGETS" -> applyToStrategy(TrapStrategy.class, s -> s.increaseMaxTargets((int) value));
-            case "BUTTER_CHANCE_BUFF" -> applyToStrategy(LobberStrategy.class, s -> s.increaseButterChance(value));
-            case "REFLECT_DAMAGE_BUFF" -> applyToStrategy(SpikeStrategy.class, s -> s.increaseReflectDamage((int) value));
-            case "EXPLODE_DAMAGE_BUFF" -> applyToStrategy(DeathExplosionStrategy.class, s -> s.increaseExplosionDamage((int) value));
+    private boolean applyOffensiveMechanic(String tag, float value) {
+        switch (tag) {
+            case "ADDITIONAL_PIERCE" ->
+                    applyToStrategy(StrikeThroughStrategy.class, s -> s.increasePierceLimit((int) value));
+            case "POISON_TICK_BUFF" ->
+                    applyToStrategy(ShootingStrategy.class, s -> s.increasePoisonTickDamage((int) value));
+            case "PRIORITIZE_GARGANTUARS" ->
+                    applyToStrategy(HomingStrategy.class,
+                            s -> s.setTargetMode(HomingStrategy.TargetMode.GARGANTUAR_FIRST));
+            case "BONUS_SMASH_CHARGES" ->
+                    applyToStrategy(TrapStrategy.class, s -> s.increaseSmashCharges((int) value));
+            case "GRAPE_BOUNCE_EXT" ->
+                    applyToStrategy(ExplosiveStrategy.class, s -> s.increaseBounceLimit((int) value));
+            case "BONUS_GRAB_TARGETS" ->
+                    applyToStrategy(TrapStrategy.class, s -> s.increaseMaxTargets((int) value));
+            case "BUTTER_CHANCE_BUFF" ->
+                    applyToStrategy(LobberStrategy.class, s -> s.increaseButterChance(value));
+            case "REFLECT_DAMAGE_BUFF" ->
+                    applyToStrategy(SpikeStrategy.class, s -> s.increaseReflectDamage((int) value));
+            case "EXPLODE_DAMAGE_BUFF" ->
+                    applyToStrategy(DeathExplosionStrategy.class, s -> s.increaseExplosionDamage((int) value));
+            default -> { return false; }
+        }
+        return true;
+    }
 
-            // structural and special
+    private boolean applyStructuralMechanic(String tag, float value) {
+        switch (tag) {
             case "GROWTH_STAGE_MAX_UP" -> this.setSize(this.getSize() + (int) value);
-            case "DEATH_EXPLOSION_AOE" -> applyToStrategy(TorchwoodStrategy.class, s -> s.setExplodesOnDeath(value > 0));
+            case "DEATH_EXPLOSION_AOE" ->
+                    applyToStrategy(TorchwoodStrategy.class, s -> s.setExplodesOnDeath(value > 0));
             case "EXPLODE_ON_FINISH" -> {
                 applyToStrategy(GraveBusterStrategy.class, s -> s.setExplodeOnFinish(true));
                 applyToStrategy(MeltIceStrategy.class, s -> s.setExplodeOnFinish(true));
             }
-            case "ZOMBIE_HEALTH_MULTIPLIER" -> applyToStrategy(HypnotizeStrategy.class, s -> s.setHealthMultiplier(value));
-            case "ZOMBIE_DAMAGE_MULTIPLIER" -> applyToStrategy(HypnotizeStrategy.class, s -> s.setDamageMultiplier(value));
-            case "AUTO_PLANT_FOOD_CHANCE" -> applyToStrategy(ShootingStrategy.class, s -> s.setAutoPlantFoodChance(value));
-            case "AUTO_PLANTFOOD_ON_ENTER" -> applyToStrategy(ImitateStrategy.class, s -> s.setAutoPlantFood(value > 0));
-            case "RESET_FAMILY_COOLDOWNS" -> applyToStrategy(MintBuffStrategy.class, s -> s.setResetCooldowns(value > 0));
-
-            default -> System.out.println("Unhandled special mechanic: " + tag);
+            case "ZOMBIE_HEALTH_MULTIPLIER" ->
+                    applyToStrategy(HypnotizeStrategy.class, s -> s.setHealthMultiplier(value));
+            case "ZOMBIE_DAMAGE_MULTIPLIER" ->
+                    applyToStrategy(HypnotizeStrategy.class, s -> s.setDamageMultiplier(value));
+            case "AUTO_PLANT_FOOD_CHANCE" ->
+                    applyToStrategy(ShootingStrategy.class, s -> s.setAutoPlantFoodChance(value));
+            case "AUTO_PLANTFOOD_ON_ENTER" ->
+                    applyToStrategy(ImitateStrategy.class, s -> s.setAutoPlantFood(value > 0));
+            case "RESET_FAMILY_COOLDOWNS" ->
+                    applyToStrategy(MintBuffStrategy.class, s -> s.setResetCooldowns(value > 0));
+            case "MELT_AREA_3X3" ->
+                    applyToStrategy(MeltIceStrategy.class, s -> s.setMeltArea3x3(true));
+            default -> { return false; }
         }
+        return true;
     }
 
     private <T extends IPlantStrategy> void applyToStrategy(Class<T> strategyClass, Consumer<T> action) {
@@ -413,6 +487,14 @@ public class Plant implements IPlant, Ticker {
         this.position = position;
     }
 
+    public boolean isAsleep() {
+        return asleep;
+    }
+
+    public void setAsleep(boolean asleep) {
+        this.asleep = asleep;
+    }
+
 
     public int getMaxHp() {
         return maxHp;
@@ -423,55 +505,54 @@ public class Plant implements IPlant, Ticker {
     }
 
     public boolean isDead() {
-        return currentHp <= 0;
+        return dead || currentHp < 0;
     }
 
     public void damageIceBlock(int damage) {
-        if (!isFrozen()) return;
-
-        iceBlockHp -= damage;
-        if (iceBlockHp <= 0) {
-            iceBlockHp = 0;
-            System.out.println("Ice block broken! " + this.getName() + " is free!");
+        FreezeEffect freezeEffect = getEffect(FreezeEffect.class);
+        if (freezeEffect != null) {
+            freezeEffect.takeDamage(this, damage);
         }
     }
 
     public void receiveIceHit() {
         if (isFrozen()) return;
 
-        iceStacks++;
-        GameSession.notify(this.getName() + " got hit by ice! Stacks: " + iceStacks);
-
-        if (iceStacks >= 3) {
-            iceBlockHp = MAX_ICE_HP;
-            iceStacks = 0;
-            GameSession.notify(this.getName() + " is FROZEN!");
+        FreezeEffect freezeEffect = getEffect(FreezeEffect.class);
+        if (freezeEffect != null) {
+            freezeEffect.addStack(this);
+        } else {
+            addEffect(new FreezeEffect());
         }
     }
 
     public boolean isFrozen() {
-        return iceBlockHp > 0;
+        return frozen;
     }
 
     public boolean hasOctopus() {
-        return octopusHp > 0;
+        return getEffect(OctopusEffect.class) != null;
     }
 
     public void receiveOctopus() {
         if (hasOctopus() || isFrozen()) return;
 
-        octopusHp = MAX_OCTOPUS_HP;
-        GameSession.notify(this.getName() + " is covered by an OCTOPUS!");
+        addEffect(new OctopusEffect(800));
     }
 
     public void damageOctopus(int damage) {
-        if (!hasOctopus()) return;
-
-        octopusHp -= damage;
-        if (octopusHp <= 0) {
-            octopusHp = 0;
-            GameSession.notify("Octopus destroyed! " + this.getName() + " is free!");
+        OctopusEffect octopus = getEffect(OctopusEffect.class);
+        if (octopus != null) {
+            octopus.takeDamage(this, damage);
         }
     }
 
+    public <T extends PlantEffect> T getEffect(Class<T> effectClass) {
+        for (PlantEffect effect : activeEffects) {
+            if (effectClass.isInstance(effect)) {
+                return effectClass.cast(effect);
+            }
+        }
+        return null;
+    }
 }

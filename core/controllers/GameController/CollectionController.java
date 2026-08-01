@@ -140,8 +140,10 @@ public class CollectionController {
         if (foundPlant == null) {
             return new Result(false, "Your desired plant doesn't exist.");
         }
-        if (userPlants.contains(foundPlant)) {
-            return new Result(false, "You already have this plant.");
+        for (Plant p : userPlants) {
+            if (p.getName().equalsIgnoreCase(name)) {
+                return new Result(false, "You already have this plant.");
+            }
         }
         if (activeUser.getCoin() < BASE_COST) {
             return new Result(false, "You don't have enough coin to purchase this plant.");

@@ -10,3 +10,4 @@ data/*.json
 # OS generated files (Optional but good to have)
 .DS_Store
 Thumbs.db
+unused.xml

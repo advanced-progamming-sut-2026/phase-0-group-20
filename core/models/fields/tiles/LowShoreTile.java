@@ -13,7 +13,7 @@ public class LowShoreTile extends Tile {
     }
 
     @Override
-    public void onTick(int currentTick) {
+    public void customTick(int currentTick) {
         // nothing
     }
 

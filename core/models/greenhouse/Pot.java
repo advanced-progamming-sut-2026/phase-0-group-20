@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import models.App;
 import models.entities.plants.Plant;
+import models.entities.plants.PlantFactory;
 import models.entities.plants.PlantSaveData;
 import models.timeManager.Ticker;
 
@@ -59,10 +60,6 @@ public class Pot implements Ticker {
         this.isItMari = false;
     }
 
-    public void growFaster(int x, int y) {
-
-    }
-
     public PotCondition getPotCondition() {
         if (this.potCondition == PotCondition.PLANTED) {
             if (System.currentTimeMillis() >= this.readyTime) {
@@ -99,7 +96,7 @@ public class Pot implements Ticker {
         if (data == null) {
             this.plantedPlant = null;
         } else {
-            this.plantedPlant = models.entities.plants.PlantFactory.create(data.getId());
+            this.plantedPlant = PlantFactory.create(data.getId());
             if (this.plantedPlant != null) {
                 this.plantedPlant.setBoosted(data.isBoosted());
 

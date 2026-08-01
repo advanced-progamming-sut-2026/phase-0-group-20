@@ -16,7 +16,7 @@ public class SlipperyTile extends Tile {
     }
 
     @Override
-    public void onTick(int currentTick) {
+    public void customTick(int currentTick) {
 
         GameSession session = GameSession.getInstance();
         if (session == null || session.getArena() == null) return;

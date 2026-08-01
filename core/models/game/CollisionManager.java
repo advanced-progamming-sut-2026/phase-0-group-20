@@ -5,6 +5,7 @@ import models.entities.SunType;
 import models.entities.obstacle.PushableObstacle;
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.plants.strategy.TorchwoodStrategy;
 import models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import models.entities.projectiles.Projectile;
 import models.entities.zombies.Zombie;
@@ -35,50 +36,7 @@ public class CollisionManager {
         List<Zombie> activeZombies = arena.getActiveZombies();
 
         // for projectiles
-        for (Projectile proj : arena.getActiveProjectiles()) {
-            if (proj.isDestroyed()) continue;
-
-            Tile currentTile = arena.getTile(proj.getPosition().getRow(), proj.getPosition().getCol());
-            if (currentTile == null) continue;
-
-            Plant frozenPlantInTile = null;
-            for (Plant p : currentTile.getPlants()) {
-                if (p.isFrozen()) {
-                    frozenPlantInTile = p;
-                    break;
-                }
-            }
-
-            if (frozenPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {
-
-                frozenPlantInTile.damageIceBlock(proj.getDamage());
-
-                proj.setDestroyed(true);
-                continue;
-            }
-
-            Plant octopusPlantInTile = null;
-            for (Plant p : currentTile.getPlants()) {
-                if (p.hasOctopus()) {
-                    octopusPlantInTile = p;
-                    break;
-                }
-            }
-
-            if (octopusPlantInTile != null &&  !ProjectileType.isLobbed(proj.getType())) {
-                octopusPlantInTile.damageOctopus(proj.getDamage());
-                proj.setDestroyed(true);
-                continue;
-            }
-
-            if (proj.isFiredByZombie())
-                checkProjectileForPlantCollision(proj);
-            else {
-                boolean hitObstacle = checkProjectileForObstaclesCollision(proj);
-                if (!hitObstacle && !proj.isDestroyed())
-                    checkProjectileForZombieCollision(proj);
-            }
-        }
+        handleProjectiles();
 
         // for plants & zombies
         for (Zombie z : activeZombies) {
@@ -91,6 +49,57 @@ public class CollisionManager {
 
         for (Sun sun : arena.getActiveSuns()) {
             checkSunCollision(sun);
+        }
+    }
+
+    private void handleProjectiles() {
+        for (Projectile proj : arena.getActiveProjectiles()) {
+            if (proj.isDestroyed()) continue;
+            Tile currentTile = arena.getTile(proj.getPosition().getRow(), proj.getPosition().getCol());
+            if (currentTile == null) continue;
+            if (!proj.isFiredByZombie() && !proj.isGetTorchWood()) {
+                for (Plant p : currentTile.getPlants()) {
+                    for (IPlantStrategy strategy : p.getStrategies()) {
+                        if (strategy instanceof TorchwoodStrategy torchwoodStrategy) {
+                            torchwoodStrategy.igniteProjectile(proj);
+                            proj.setGetTorchWood(true);
+                        }
+                    }
+                }
+            }
+            Plant frozenPlantInTile = null;
+            for (Plant p : currentTile.getPlants()) {
+                if (p.isFrozen()) {
+                    frozenPlantInTile = p;
+                    break;
+                }
+            }
+            if (frozenPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {
+
+                frozenPlantInTile.damageIceBlock(proj.getDamage());
+
+                proj.setDestroyed(true);
+                continue;
+            }
+            Plant octopusPlantInTile = null;
+            for (Plant p : currentTile.getPlants()) {
+                if (p.hasOctopus()) {
+                    octopusPlantInTile = p;
+                    break;
+                }
+            }
+            if (octopusPlantInTile != null &&  !ProjectileType.isLobbed(proj.getType())) {
+                octopusPlantInTile.damageOctopus(proj.getDamage());
+                proj.setDestroyed(true);
+                continue;
+            }
+            if (proj.isFiredByZombie())
+                checkProjectileForPlantCollision(proj);
+            else {
+                boolean hitObstacle = checkProjectileForObstaclesCollision(proj);
+                if (!hitObstacle && !proj.isDestroyed())
+                    checkProjectileForZombieCollision(proj);
+            }
         }
     }
 
@@ -124,15 +133,11 @@ public class CollisionManager {
         }
 
         if (hitObstacle) return;
-
-
         int tileLength = PhysicalConstants.TILE_UNIT_LENGTH;
         float projectileHitRadius = 0.25f;
         float zombieHitRadius = 0.25f;
-
         float physProjectileRadius = projectileHitRadius * tileLength;
         float physZombieRadius = zombieHitRadius * tileLength;
-
         int bottomRow = (int) Math.floor((projectile.getY() - physProjectileRadius) / tileLength);
         int topRow = (int) Math.floor((projectile.getY() + physProjectileRadius) / tileLength);
 
@@ -174,7 +179,7 @@ public class CollisionManager {
 
         if (currentTile instanceof GraveHolder graveHolder && graveHolder.getGraveStone() != null) {
             graveHolder.takeDamage(proj.getDamage(), projectileRow, projectileCol);
-            GameSession.notify("grave in " + projectileCol + "," +  projectileRow + " take damage");
+            GameSession.notify("grave in " + (projectileCol + 1) + " , " + (projectileRow + 1) + " take damage");
             proj.onHitObstacle(currentTile);
             return true;
         } else if (currentTile instanceof IceHolder iceHolder && iceHolder.hasIceBlock()) {
@@ -262,10 +267,6 @@ public class CollisionManager {
                             canEat = false;
                         }
                     }
-                }
-
-                if (p.getName().equals("Spikeweed") || p.getName().equals("Spikerock")) {
-                    canEat = false;
                 }
 
                 if (canEat) {

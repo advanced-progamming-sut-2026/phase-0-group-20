@@ -8,8 +8,12 @@ import models.entities.plants.strategy.tag_strategy.ChargeStrategy;
 import models.entities.plants.strategy.tag_strategy.MoveZombiesStrategy;
 import models.entities.plants.strategy.tag_strategy.SleepStrategy;
 import models.entities.plants.strategy.tag_strategy.TrapStrategy;
+import models.entities.projectiles.HypnotizeEffect;
+import models.entities.projectiles.LightningEffect;
+import models.entities.projectiles.NormalEffect;
 import models.enums.plants.PlantCategory;
 import models.enums.plants.PlantTag;
+import models.enums.plants.ProjectileType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +42,9 @@ public class PlantFactory {
             case "SHOOT_PROJECTILE" -> {
                 switch (data.category()) {
                     case HOMING -> {
-                        if (!nameKey.equals("magnet-shroom")) plant.addStrategy(new HomingStrategy());
+                        if (!nameKey.equals("magnet-shroom") && !data.tags().contains(PlantTag.CHARGE)) {
+                            plant.addStrategy(createHomingStrategyFor(nameKey));
+                        }
                     }
                     case LOBBER -> plant.addStrategy(new LobberStrategy());
                     case STRIKE_THROUGH -> plant.addStrategy(new StrikeThroughStrategy());
@@ -75,7 +81,7 @@ public class PlantFactory {
             switch (tag) {
                 case SUN -> plant.addStrategy(new SunOnHitStrategy());
                 case TRAP -> plant.addStrategy(new TrapStrategy());
-                case CHARGE -> plant.addStrategy(new ChargeStrategy());
+                case CHARGE -> plant.addStrategy(createChargeStrategyFor(nameKey));
                 case MOVE_ZOMBIES -> plant.addStrategy(new MoveZombiesStrategy());
                 case NIGHT -> plant.addStrategy(new SleepStrategy());
                 case EXPLOSIVE -> {
@@ -121,6 +127,7 @@ public class PlantFactory {
         int foodValue = (int) data.plantFoodValue();
         String nameKey = data.name().toLowerCase();
 
+        assembleThePlantFoodStrategy(plant, nameKey);
         switch (foodType) {
             case "SPAWN_SUN_ITEMS" -> {
                 plant.addPlantFoodStrategy(new SunBurstFoodStrategy(foodValue));
@@ -156,10 +163,11 @@ public class PlantFactory {
             case "PROJECTILE_BURST" -> {
                 handleTheBurst(plant, data, nameKey, foodValue);
             }
-            default -> plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
+            default -> {
+                if (plant.getPlantFoodStrategy().isEmpty()) plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
+            }
         }
 
-        assembleThePlantFoodStrategy(plant, nameKey);
     }
 
     private static void handleTheBurst(Plant plant, PlantData data, String nameKey, int foodValue) {
@@ -177,6 +185,8 @@ public class PlantFactory {
             plant.addPlantFoodStrategy(new MultiLaneRapidFireFoodStrategy());
         } else if (nameKey.equals("rotobaga")) {
             plant.addPlantFoodStrategy(new MultiDirectionRapidFireFoodStrategy(4));
+        } else if (nameKey.equals("bowling bulb")) {
+            plant.addPlantFoodStrategy(new RapidFireFoodStrategy(3, true));
         } else if (nameKey.equals("starfruit")) {
             plant.addPlantFoodStrategy(new MultiDirectionRapidFireFoodStrategy(5));
         } else if (data.category() != PlantCategory.LOBBER && data.category() != PlantCategory.HOMING
@@ -205,6 +215,7 @@ public class PlantFactory {
                     3, "large pepper lob (fire)"));
             case "chomper" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
                     3, "swallowed instantly from range"));
+            case "squash" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(2, "crushed"));
             case "garlic" -> plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy(
                     "forces every zombie in the lane to move to another lane"));
             case "kernel-pult" -> plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy(
@@ -234,5 +245,21 @@ public class PlantFactory {
             newList.add(newPlant);
         }
         return newList;
+    }
+
+    private static IPlantStrategy createChargeStrategyFor(String plantName) {
+        return switch (plantName) {
+            case "citron" -> new ChargeStrategy(ProjectileType.PEA, new NormalEffect(), 800, false);
+            case "caulipower" -> new ChargeStrategy(ProjectileType.MAGIC_BEAM, new HypnotizeEffect(), 0, true);
+            case "electric blueberry" ->
+                    new ChargeStrategy(ProjectileType.LIGHTNING_CLOUD, new LightningEffect(), 5000, true);
+            case "bowling bulb" -> ChargeStrategy.createBowlingBulbStrategy();
+            default -> new ChargeStrategy();
+        };
+    }
+
+    private static IPlantStrategy createHomingStrategyFor(String plantName) {
+        if ("Cat-tail".equals(plantName)) {return new HomingStrategy(HomingStrategy.TargetMode.NEAREST, 2);}
+        return new HomingStrategy(HomingStrategy.TargetMode.RANDOM, 1);
     }
 }

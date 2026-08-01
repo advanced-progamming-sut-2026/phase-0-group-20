@@ -18,9 +18,9 @@ import java.util.List;
 public class MeltIceStrategy implements IPlantStrategy {
     private static final int MELT_DELAY = (int) (0.5 * TimeManager.TICKS_PER_SECOND);
     private int startTick = -1;
-    private boolean is3x3 = false;
 
     private boolean explodeOnFinish = false;
+    private boolean meltArea3x3 = false;
 
     @Override
     public void execute(Plant context, int currentTick) {
@@ -28,20 +28,54 @@ public class MeltIceStrategy implements IPlantStrategy {
 
         if (currentTick - startTick >= MELT_DELAY) {
             Tile currentTile = context.getPlacedTile();
+            int centerRow = currentTile.getRow();
+            int centerCol = currentTile.getCol();
 
-            if (currentTile instanceof IceHolder && ((IceHolder) currentTile).isBlockedByIce()) {
-                notify("🔥 Hot Potato melted the ice on its tile!");
-                // change type of tile
+            boolean meltedAnything = false;
+
+            if (meltArea3x3) {
+                for (int r = centerRow - 1; r <= centerRow + 1; r++) {
+                    for (int c = centerCol - 1; c <= centerCol + 1; c++) {
+                        if (meltIceOnTile(r, c)) meltedAnything = true;
+                    }
+                }
             } else {
-                notify("🔥 Hot Potato was planted, but there was no ice to melt!");
+                if (meltIceOnTile(centerRow, centerCol)) meltedAnything = true;
+            }
+
+            if (meltedAnything) {
+                GameSession.notify("🔥 " + context.getName() + " melted the ice!");
+            } else {
+                GameSession.notify("🔥 " + context.getName() + " was planted, but there was no ice to melt!");
             }
 
             if (explodeOnFinish) {
                 triggerExplosion(context);
             }
-
             context.takeDamage(context.getCurrentHp());
         }
+    }
+
+    private boolean meltIceOnTile(int row, int col) {
+        Tile tile = GameSession.getInstance().getArena().getTile(row, col);
+        if (tile == null) return false;
+
+        boolean melted = false;
+
+        if (tile instanceof IceHolder iceHolder) {
+            if (iceHolder.hasIceBlock()) {
+                iceHolder.removeIceBlock();
+                melted = true;
+            }
+        }
+
+        for (Plant p : tile.getPlants()) {
+            if (p.isFrozen()) {
+                p.damageIceBlock(99999);
+                melted = true;
+            }
+        }
+        return melted;
     }
 
     private void triggerExplosion(Plant context) {
@@ -62,11 +96,12 @@ public class MeltIceStrategy implements IPlantStrategy {
         }
     }
 
-    public void setAreaOfEffect3x3(boolean areaOfEffect3x3) {
-        this.is3x3 = areaOfEffect3x3;
-    }
 
     public void setExplodeOnFinish(boolean explode) {
         this.explodeOnFinish = explode;
+    }
+
+    public void setMeltArea3x3(boolean meltArea3x3) {
+        this.meltArea3x3 = meltArea3x3;
     }
 }

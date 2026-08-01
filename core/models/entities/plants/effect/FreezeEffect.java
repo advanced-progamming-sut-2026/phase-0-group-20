@@ -5,27 +5,35 @@ import models.entities.plants.Plant;
 public class FreezeEffect implements PlantEffect {
     private int stacks;
     private int hp;
+    private boolean isBroken = false;
 
     public FreezeEffect() {
         this.stacks = 1;
-        this.hp = 800;
+        this.hp = 600;
     }
 
     public void addStack(Plant plant) {
         if (stacks < 3) {
             stacks++;
-            notify(plant.getName() + " got chilled! Ice stacks: " + stacks);
+            notify(plant.getName() + " got hit by ice! Stacks: " + stacks);
 
             if (stacks >= 3) {
                 plant.setFrozen(true);
-                notify(plant.getName() + " is now completely FROZEN!");
+                notify(plant.getName() + " is FROZEN!");
             }
         }
     }
 
-    public void takeDamage(int damage) {
-        if (isFullyFrozen()) {
-            this.hp -= damage;
+    public void takeDamage(Plant plant, int damage) {
+        if (!isFullyFrozen() || isBroken) return;
+
+        this.hp -= damage;
+        if (this.hp <= 0) {
+            this.hp = 0;
+            this.isBroken = true;
+
+            plant.setFrozen(false);
+            System.out.println("Ice block broken! " + plant.getName() + " is free!");
         }
     }
 
@@ -40,7 +48,7 @@ public class FreezeEffect implements PlantEffect {
 
     @Override
     public void apply(Plant plant) {
-        notify(plant.getName() + " got chilled! Ice stacks: " + stacks);
+        notify(plant.getName() + " got hit by ice! Stacks: " + stacks);
     }
 
     @Override
@@ -51,11 +59,10 @@ public class FreezeEffect implements PlantEffect {
     @Override
     public void remove(Plant plant) {
         plant.setFrozen(false);
-        notify("The ice block on " + plant.getName() + " shattered!");
     }
 
     @Override
     public boolean isExpired() {
-        return isFullyFrozen() && hp <= 0;
+        return isBroken;
     }
 }

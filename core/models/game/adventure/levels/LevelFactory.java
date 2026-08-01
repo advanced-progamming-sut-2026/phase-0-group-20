@@ -1,8 +1,5 @@
 package models.game.adventure.levels;
 
-import models.App;
-import models.entities.plants.Plant;
-import models.enums.plants.PlantCategory;
 import models.game.adventure.SeasonType;
 import models.game.adventure.levels.speciallevels.ConveyorBelt;
 import models.game.adventure.levels.speciallevels.DeadLine;

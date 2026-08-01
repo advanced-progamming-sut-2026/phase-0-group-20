@@ -51,14 +51,14 @@ public class ZombieFactory {
             case PROSPECTOR -> {
                 ProspectorContext ctx = new ProspectorContext();
                 zombie.setMoveBehavior(new ProspectorMove(zombie, ctx));
-                zombie.setDefenseBehavior(new ProspectorDefense(zombie, ctx));
-                zombie.setAttackBehavior(new ProspectorAttack(zombie, ctx));
+                zombie.setDefenseBehavior(new ProspectorDefense( ctx));
+                zombie.setAttackBehavior(new ProspectorAttack(zombie));
             }
             case EXPLORER -> {
                 ExplorerContext ctx = new ExplorerContext();
                 zombie.setMoveBehavior(new NormalMove(zombie));
                 zombie.setAttackBehavior(new TorchBurnAttack(zombie, ctx));
-                zombie.setDefenseBehavior(new ExplorerDefense(zombie, ctx));
+                zombie.setDefenseBehavior(new ExplorerDefense(ctx));
             }
             case CRYSTAL_SKULL -> {
                 TurquoiseContext ctx = new TurquoiseContext(zombie);
@@ -82,7 +82,7 @@ public class ZombieFactory {
                 SnorkelContext ctx = new SnorkelContext();
                 zombie.setMoveBehavior(new SnorkelMove(zombie, ctx));
                 zombie.setAttackBehavior(new SnorkelAttack(zombie, ctx));
-                zombie.setDefenseBehavior(new SnorkelDefense(zombie, ctx));
+                zombie.setDefenseBehavior(new SnorkelDefense(ctx));
             }
             default -> {
                 zombie.setMoveBehavior(getMoveAI(type, zombie));
@@ -100,96 +100,11 @@ public class ZombieFactory {
             case ARCADE -> createArcadeMove(zombie);
             case TROGLOBITE -> createTroglobiteMove(zombie);
 
-            case TOMB_RAISER -> new PeriodicActionMove(zombie, 5 * TimeManager.TICKS_PER_SECOND, true, () -> {
-                GameSession session = GameSession.getInstance();
-                List<Tile> availableTiles = new ArrayList<>();
-                for (int r = 0; r < session.getArena().getRows(); r++) {
-                    for (int c = 5; c < session.getArena().getCols(); c++) {
-                        Tile tile = session.getArena().getTile(r, c);
-                        if (tile.getPlants().isEmpty() && !(tile instanceof GraveStoneTile)) {
-                            availableTiles.add(tile);
-                        }
-                    }
-                }
-                if (!availableTiles.isEmpty()) {
-                    Tile targetTile = availableTiles.get(new Random().nextInt(availableTiles.size()));
-                    session.getArena().changeTile(targetTile.getRow(), targetTile.getCol(),
-                            new GraveStoneTile(targetTile.getRow(), targetTile.getCol()));
-                    GameSession.notify("Grave spawned at: " + targetTile.getRow() + ", " + targetTile.getCol());
-                }
-            });
-
-            case HUNTER -> new PeriodicActionMove(zombie, 3 * TimeManager.TICKS_PER_SECOND, true, () -> {
-                GameSession session = GameSession.getInstance();
-                Plant nearestPlant = null;
-                int closestCol = -1;
-                for (Plant p : session.getArena().getActivePlants()) {
-                    if (p.getPlacedTile().getRow()
-                            == zombie.getRow() && p.getPlacedTile().getCol() <= zombie.getCol()) {
-                        if (p.getPlacedTile().getCol() > closestCol) {
-                            closestCol = p.getPlacedTile().getCol();
-                            nearestPlant = p;
-                        }
-                    }
-                }
-                if (nearestPlant != null && !nearestPlant.isFrozen()) {
-                    nearestPlant.receiveIceHit();
-                }
-            });
-
-            case OCTOPUS -> new PeriodicActionMove(zombie, 6 * TimeManager.TICKS_PER_SECOND, true, () -> {
-                GameSession session = GameSession.getInstance();
-                Plant nearestPlant = null;
-                int closestCol = -1;
-                for (Plant p : session.getArena().getActivePlants()) {
-                    if (p.getPlacedTile().getRow()
-                            == zombie.getRow() && p.getPlacedTile().getCol() <= zombie.getCol()) {
-                        if (p.getPlacedTile().getCol() > closestCol) {
-                            closestCol = p.getPlacedTile().getCol();
-                            nearestPlant = p;
-                        }
-                    }
-                }
-                if (nearestPlant != null && !nearestPlant.isFrozen() && !nearestPlant.hasOctopus()) {
-                    nearestPlant.receiveOctopus();
-                }
-            });
-
-            case WIZARD -> new PeriodicActionMove(zombie, 5 * TimeManager.TICKS_PER_SECOND, true, () -> {
-                GameSession session = GameSession.getInstance();
-                List<Plant> validTargets = new ArrayList<>();
-                for (Plant p : session.getArena().getActivePlants()) {
-                    boolean isCat = false;
-                    for (PlantEffect effect : p.getActiveEffects()) {
-                        if (effect instanceof CatEffect) {
-                            isCat = true;
-                            break;
-                        }
-                    }
-                    if (!isCat) validTargets.add(p);
-                }
-                if (!validTargets.isEmpty()) {
-                    Plant target = validTargets.get(new Random().nextInt(validTargets.size()));
-                    target.addEffect(new CatEffect(zombie));
-                }
-            });
-
-            case PIANIST -> new PeriodicActionMove(zombie, 4 * TimeManager.TICKS_PER_SECOND, true, () -> {
-                GameSession session = GameSession.getInstance();
-                Random rand = new Random();
-                int maxRows = session.getArena().getRows();
-                for (Zombie z : session.getArena().getActiveZombies()) {
-                    if (z == zombie || z.isDead() || z.isHypnotized()) continue;
-
-                    List<Integer> possibleRows = new ArrayList<>();
-                    if (z.getRow() > 0) possibleRows.add(z.getRow() - 1);
-                    if (z.getRow() < maxRows - 1) possibleRows.add(z.getRow() + 1);
-
-                    if (!possibleRows.isEmpty()) {
-                        z.setRow(possibleRows.get(rand.nextInt(possibleRows.size())));
-                    }
-                }
-            });
+            case TOMB_RAISER -> createTombRaiserMove(zombie);
+            case HUNTER -> createHunterMove(zombie);
+            case OCTOPUS -> createOctopusMove(zombie);
+            case WIZARD -> createWizardMove(zombie);
+            case PIANIST -> createPianistMove(zombie);
 
             case FISHERMAN -> new PeriodicActionMove(zombie, 4 * TimeManager.TICKS_PER_SECOND, false,
                     () -> zombie.getAttackBehavior().execute());
@@ -202,6 +117,119 @@ public class ZombieFactory {
 
             default -> new NormalMove(zombie);
         };
+    }
+
+    private static MoveBehavior createTombRaiserMove(Zombie zombie) {
+        return new PeriodicActionMove(zombie, 5 * TimeManager.TICKS_PER_SECOND, true, () -> {
+            GameSession session = GameSession.getInstance();
+            List<Tile> availableTiles = new ArrayList<>();
+
+            for (int r = 0; r < session.getArena().getRows(); r++) {
+                for (int c = 5; c < session.getArena().getCols(); c++) {
+                    Tile tile = session.getArena().getTile(r, c);
+                    if (tile.getPlants().isEmpty() && !(tile instanceof GraveStoneTile)) {
+                        availableTiles.add(tile);
+                    }
+                }
+            }
+
+            if (!availableTiles.isEmpty()) {
+                Tile targetTile = availableTiles.get(new Random().nextInt(availableTiles.size()));
+                session.getArena().changeTile(
+                        targetTile.getRow(),
+                        targetTile.getCol(),
+                        new GraveStoneTile(targetTile.getRow(), targetTile.getCol())
+                );
+                GameSession.notify("Grave spawned at: " + targetTile.getRow() + ", " + targetTile.getCol());
+            }
+        });
+    }
+
+    private static MoveBehavior createHunterMove(Zombie zombie) {
+        return new PeriodicActionMove(zombie, 3 * TimeManager.TICKS_PER_SECOND, true, () -> {
+            GameSession session = GameSession.getInstance();
+            Plant nearestPlant = null;
+            int closestCol = -1;
+
+            for (Plant p : session.getArena().getActivePlants()) {
+                if (p.getPlacedTile().getRow() == zombie.getRow()
+                        && p.getPlacedTile().getCol() <= zombie.getCol()) {
+                    if (p.getPlacedTile().getCol() > closestCol) {
+                        closestCol = p.getPlacedTile().getCol();
+                        nearestPlant = p;
+                    }
+                }
+            }
+
+            if (nearestPlant != null && !nearestPlant.isFrozen()) {
+                nearestPlant.receiveIceHit();
+            }
+        });
+    }
+
+    private static MoveBehavior createOctopusMove(Zombie zombie) {
+        return new PeriodicActionMove(zombie, 6 * TimeManager.TICKS_PER_SECOND, true, () -> {
+            GameSession session = GameSession.getInstance();
+            Plant nearestPlant = null;
+            int closestCol = -1;
+
+            for (Plant p : session.getArena().getActivePlants()) {
+                if (p.getPlacedTile().getRow() == zombie.getRow()
+                        && p.getPlacedTile().getCol() <= zombie.getCol()) {
+                    if (p.getPlacedTile().getCol() > closestCol) {
+                        closestCol = p.getPlacedTile().getCol();
+                        nearestPlant = p;
+                    }
+                }
+            }
+
+            if (nearestPlant != null && !nearestPlant.isFrozen() && !nearestPlant.hasOctopus()) {
+                nearestPlant.receiveOctopus();
+            }
+        });
+    }
+
+    private static MoveBehavior createWizardMove(Zombie zombie) {
+        return new PeriodicActionMove(zombie, 5 * TimeManager.TICKS_PER_SECOND, true, () -> {
+            GameSession session = GameSession.getInstance();
+            List<Plant> validTargets = new ArrayList<>();
+
+            for (Plant p : session.getArena().getActivePlants()) {
+                boolean isCat = false;
+                for (PlantEffect effect : p.getActiveEffects()) {
+                    if (effect instanceof CatEffect) {
+                        isCat = true;
+                        break;
+                    }
+                }
+                if (!isCat) validTargets.add(p);
+            }
+
+            if (!validTargets.isEmpty()) {
+                Plant target = validTargets.get(new Random().nextInt(validTargets.size()));
+                target.addEffect(new CatEffect(zombie));
+            }
+        });
+    }
+
+    private static MoveBehavior createPianistMove(Zombie zombie) {
+        return new PeriodicActionMove(zombie, 4 * TimeManager.TICKS_PER_SECOND, true, () -> {
+            GameSession session = GameSession.getInstance();
+            Random rand = new Random();
+            int maxRows = session.getArena().getRows();
+
+            for (Zombie z : session.getArena().getActiveZombies()) {
+                if (z == zombie || z.isDead() || z.isHypnotized()) continue;
+
+                List<Integer> possibleRows = new ArrayList<>();
+                if (z.getRow() > 0) possibleRows.add(z.getRow() - 1);
+                if (z.getRow() < maxRows - 1) possibleRows.add(z.getRow() + 1);
+
+                if (!possibleRows.isEmpty()) {
+                    z.setRow(possibleRows.get(rand.nextInt(possibleRows.size())));
+                }
+            }
+        });
     }
 
     private static AttackBehavior getAttackAI(ZombieType type, Zombie zombie, ZombieData data) {
@@ -245,7 +273,8 @@ public class ZombieFactory {
 
     private static MoveBehavior createArcadeMove(Zombie zombie) {
         ArcadeMachine arcadeMachine = new ArcadeMachine(zombie.getCol(), zombie.getRow());
-        if (GameSession.getInstance() != null) GameSession.getInstance().getArena().getActiveObstacles().add(arcadeMachine);
+        if (GameSession.getInstance() != null)
+            GameSession.getInstance().getArena().getActiveObstacles().add(arcadeMachine);
         return new PushMove(zombie,
                 () -> !arcadeMachine.isDestroyed(),
                 () -> {

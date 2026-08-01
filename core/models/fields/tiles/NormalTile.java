@@ -23,7 +23,7 @@ public class NormalTile extends Tile implements IceHolder {
     }
 
     @Override
-    public void onTick(int currentTick) {
+    public void customTick(int currentTick) {
     }
 
     @Override

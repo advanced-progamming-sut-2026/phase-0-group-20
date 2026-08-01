@@ -10,6 +10,7 @@ import models.game.events.GameEvent;
 import models.game.events.GameEventMessenger;
 import models.game.events.GameEventPayload;
 
+import java.util.List;
 import java.util.Random;
 
 public class BeghouledManager {
@@ -56,8 +57,16 @@ public class BeghouledManager {
     private void forceSwap(Tile t1, Tile t2, Plant p1, Plant p2) {
         t1.getPlants().clear();
         t2.getPlants().clear();
-        if (p2 != null) t1.addPlant(p2);
-        if (p1 != null) t2.addPlant(p1);
+        if (p2 != null) {
+            t1.addPlant(p2);
+            p2.setPosition(new Position(t1.getCol(), t1.getRow()));
+            p2.setPlacedTile(t1);
+        }
+        if (p1 != null) {
+            t2.addPlant(p1);
+            p1.setPosition(new Position(t2.getCol(), t2.getRow()));
+            p1.setPlacedTile(t2);
+        }
     }
 
     private void applyGravity(GameSession session) {
@@ -73,7 +82,7 @@ public class BeghouledManager {
         int cols = session.getArena().getCols();
         boolean movedAny = false;
 
-        for (int c = 0; c < cols; c++) {
+        for (int c = 0; c < cols - 1; c++) {
             for (int r = rows - 1; r >= 0; r--) {
                 Tile targetTile = session.getArena().getTile(r, c);
                 if (targetTile.isCrater()) continue;
@@ -108,14 +117,19 @@ public class BeghouledManager {
     }
 
     private boolean spawnRandomPlant(GameSession session, Tile targetTile) {
-        String[] basePlants = {"peashooter", "sunflower", "wall-nut", "snow pea", "cabbage-pult"};
+        BeghouledLevel level = (BeghouledLevel) session.getCurrentMode();
+        List<String> currentBasePlants = level.getBasePlants();
+
         Random random = new Random();
-        String randomPlantName = basePlants[random.nextInt(basePlants.length)];
+        String randomPlantName = currentBasePlants.get(random.nextInt(currentBasePlants.size()));
+
         Plant template = App.findPlantByName(randomPlantName);
 
         if (template != null) {
             Plant newPlant = PlantFactory.create(template.getId());
             targetTile.addPlant(newPlant);
+            newPlant.setPosition(new Position(targetTile.getCol(), targetTile.getRow()));
+            newPlant.setPlacedTile(targetTile);
             session.getArena().addPlant(newPlant);
             session.getTimeManager().registerNewTicker(newPlant);
             return true;
@@ -172,7 +186,7 @@ public class BeghouledManager {
     }
 
     private void flagVerticalMatches(GameSession session, boolean[][] matched, int rows, int cols) {
-        for (int c = 0; c < cols; c++) {
+        for (int c = 0; c < cols - 1; c++) {
             for (int r = 0; r <= rows - 3; r++) {
                 Plant p1 = getPlantAt(session, r, c);
                 Plant p2 = getPlantAt(session, r + 1, c);
@@ -200,7 +214,9 @@ public class BeghouledManager {
                     Plant p = tile.getPlants().get(0);
 
                     session.getTimeManager().unregisterTicker(p);
-                    tile.getPlants().clear();
+                    tile.removePlant(p);
+
+                    session.getArena().getActivePlants().remove(p);
                 }
             }
         }
@@ -211,6 +227,28 @@ public class BeghouledManager {
         Tile tile = session.getArena().getTile(r, c);
         if (tile == null || tile.isCrater() || tile.getPlants().isEmpty()) return null;
         return tile.getPlants().get(0);
+    }
+
+    public void tickUpdate(GameSession session) {
+        dropPlantsAndFill(session);
+
+        int score = checkForMatchesAndRemove(session, true);
+
+        if (score > 0) {
+            int matchesMade = score / 3;
+            if (matchesMade > 0) {
+                for (int i = 0; i < matchesMade; i++) {
+                    ((BeghouledLevel) session.getCurrentMode()).addSuccessfulMatch();
+                }
+            }
+
+            int sunGained = matchesMade * 50;
+            session.addSun(sunGained);
+
+            GameSession.notify("Auto-Match! You gained " + sunGained + " suns.");
+
+            applyGravity(session);
+        }
     }
 
 }

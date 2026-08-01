@@ -6,8 +6,11 @@ import models.InGameEntityGenerator;
 import models.Result;
 import models.entities.Sun;
 import models.entities.plants.Plant;
+import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.plants.strategy.ImitateStrategy;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieType;
+import models.enums.plants.PlantTag;
 import models.fields.tiles.Tile;
 import models.game.Arena;
 import models.game.GameSession;
@@ -41,6 +44,10 @@ public class GameFlowController {
         if (GameSession.getInstance().isGameOver()) {
             NavigationController.exitMenu();
             App.getActiveUser().setPlantFoodCount(0);
+            App.getActiveUser().getUnlockedPlants().forEach(p -> p.setBoosted(false));
+            if(GameSession.getInstance().getCurrentChapter().getCurrentLevel()!=null){
+                GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
+            }
 
             return new Result(true, "Returned to " + App.getActiveMenu().getName());
         }
@@ -111,7 +118,6 @@ public class GameFlowController {
     public Result plantPlant(String plantName, String x, String y) {
         Integer spawnX = parsePositiveInt(x);
         Integer spawnY = parsePositiveInt(y);
-
         if (spawnX == null || spawnY == null) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
@@ -133,29 +139,55 @@ public class GameFlowController {
         if (desiredTile == null) {
             return new Result(false, "Az khat zadi biroon ke!!");
         }
-
-        if (!desiredTile.isPlantable(plant)) {
-            return new Result(false, "You can not plant this plant here");
+        Plant existingPlant = desiredTile.getStackPlant();
+        if (existingPlant != null &&
+                existingPlant.getName().equals(plant.getName()) && existingPlant.getTags().contains(PlantTag.STACK)) {
+            if (existingPlant.addStack()) {
+                session.useSun(plant.getCost()); session.setCooldownForPlant(plant);
+                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
+                        .plant(existingPlant)
+                        .arena(arena)
+                        .coordinate(existingPlant.getPlacedTile().getRow(), existingPlant.getPlacedTile()
+                                .getCol()).build();
+                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
+                return new Result(true, "You stacked " + plant.getName() + " to level " +
+                        existingPlant.getStackCount() + " in " + spawnX + "," + spawnY);
+            } else return new Result(false, "This " + plant.getName() + " is already fully stacked (Max 5)!");
         }
 
+        if (!desiredTile.isPlantable(plant)) return new Result(false, "You can not plant this plant here");
         Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
-        for (int i = 1; i < getPlantLevel(plant); i++) {
-            newPlant.upgrade();
+        for (int i = 1; i < getPlantLevel(plant); i++) newPlant.upgrade();
+
+        if (newPlant.getName().equalsIgnoreCase("Imitater")) {
+            for (IPlantStrategy strategy : newPlant.getStrategies()) {
+                if (strategy instanceof ImitateStrategy imitateStrategy) {
+                    int targetId = session.getImitaterTargetId();
+
+                    if (targetId != -1) {
+                        imitateStrategy.setTargetPlantId(targetId);
+                    } else {
+                        return new Result(false, "You haven't selected a target for Imitater in your deck!");
+                    }
+                    break;
+                }
+            }
         }
+
         desiredTile.addPlant(newPlant);
-        session.setPlantCooldown(newPlant);
         arena.addPlant(newPlant);
         session.useSun(newPlant.getCost());
         session.getTimeManager().registerNewTicker(newPlant);
-
+        if(plant.isBoosted()) {
+            plant.useFood();
+        }
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
                 .plant(newPlant)
                 .arena(arena)
                 .coordinate(newPlant.getPlacedTile().getRow(), newPlant.getPlacedTile().getCol())
                 .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
-        session.getTimeManager().registerNewTicker(newPlant);
-        session.setCooldownForPlant(newPlant);
+        session.setCooldownForPlant(plant);
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +
                 " with the name of " + newPlant.getName() + ".");
     }
@@ -178,7 +210,7 @@ public class GameFlowController {
             if (session.getCurrentSun() < plant.getCost()) {
                 return new Result(false, "Not enough sun to plant " + plant.getName() + "!");
             }
-            Integer cd = session.getPlantsCooldown().get(plant);
+            Float cd = session.getPlantsCooldown().get(plant);
             if (cd != null && cd > 0) {
                 return new Result(false, plant.getName() + " is still recharging!");
             }

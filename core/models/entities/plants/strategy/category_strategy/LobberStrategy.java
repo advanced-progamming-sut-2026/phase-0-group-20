@@ -5,7 +5,6 @@ import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.projectiles.*;
 import models.entities.zombies.Zombie;
-import models.enums.PhysicalConstants;
 import models.enums.plants.ProjectileType;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
@@ -48,8 +47,8 @@ public class LobberStrategy implements IPlantStrategy {
 
     private void executeNewLobbedProjectile(Plant context, Zombie targetZombie) {
         String name = context.getName();
-        float spawnX = context.getPlacedTile().getCol();
-        float spawnY = context.getPlacedTile().getRow();
+        int spawnX = context.getPlacedTile().getCol();
+        int spawnY = context.getPlacedTile().getRow();
 
         ProjectileType type = null;
         int damage = 0;

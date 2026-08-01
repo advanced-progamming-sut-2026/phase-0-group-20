@@ -51,7 +51,7 @@ public class GameInitializer {
     }
 
     private static void initZombies() {
-        List<Zombie> loadedTestZombies = new ArrayList<>();
+        ArrayList <Zombie> loadedTestZombies = new ArrayList<>();
         System.out.println("Loading zombies...");
 
         try {
@@ -67,7 +67,7 @@ public class GameInitializer {
             }
 
             System.out.println("Total unique zombies created: " + loadedTestZombies.size());
-
+            App.setAllZombies(loadedTestZombies);
         } catch (Exception e) {
             throw new RuntimeException("CRITICAL: Failed to load zombie data. Halting startup.", e);
         }
