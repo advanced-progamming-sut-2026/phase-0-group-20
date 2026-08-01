@@ -19,7 +19,7 @@ public class GraveStoneTile extends Tile implements GraveHolder {
     }
 
     @Override
-    public void onTick(int currentTick) {
+    public void customTick(int currentTick) {
         // nothing to do
     }
 

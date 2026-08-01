@@ -15,7 +15,7 @@ public class NecromanceTile extends Tile implements GraveHolder {
     }
 
     @Override
-    public void onTick(int currentTick) {
+    public void customTick(int currentTick) {
         // nothing, the wave manager calls spawnZombieFromBelow at the start of each wave
     }
 

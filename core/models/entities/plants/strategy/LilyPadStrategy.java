@@ -1,16 +1,23 @@
 package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
-
-/**
- * Lily Pad Strategy:
- * Passive marker. Allows a non-aquatic plant to be planted on top of this tile
- * even though the tile itself is water. Also acts as the "stack" anchor:
- * the plant placed on top effectively replaces the Lily Pad's slot.
- */
+import models.fields.tiles.Tile;
+import models.game.GameSession;
 public class LilyPadStrategy implements IPlantStrategy {
+    private boolean isSinking = false;
     @Override
     public void execute(Plant context, int currentTick) {
-        // Passive marker - no per-tick behavior.
+        if ((context.getCurrentHp() <= 0 || context.isDead()) && !isSinking) {
+            isSinking = true;
+            Tile tile = context.getPlacedTile();
+            if (tile != null) {
+                for (Plant stackedPlant : tile.getPlants()) {
+                    if (stackedPlant != context && !stackedPlant.isDead()) {
+                        GameSession.notify("💦 " + stackedPlant.getName() + " drowned because its Lily Pad was destroyed!");
+                        stackedPlant.takeDamage(stackedPlant.getCurrentHp());
+                    }
+                }
+            }
+        }
     }
 }

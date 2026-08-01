@@ -3,6 +3,7 @@ package models.fields.tiles;
 import models.Position;
 import models.entities.plants.Plant;
 import models.enums.plants.PlantTag;
+import models.game.GameSession;
 import models.game.adventure.SeasonType;
 import models.timeManager.Ticker;
 
@@ -14,12 +15,18 @@ public abstract class Tile implements Ticker {
     protected ArrayList<Plant> plants = new ArrayList<>();
     protected Position position;
     protected boolean isCrater;
+    protected int craterTimer = 0;
 
     public Tile(int row, int col) {
         position = new Position(col, row);
     }
 
-    public abstract void onTick(int currentTick);
+    public void onTick(int currentTick) {
+        updateCraterLogic();
+        customTick(currentTick);
+    }
+
+    protected abstract void customTick(int currentTick);
 
     public int getCol() {
         return position.getCol();
@@ -57,7 +64,8 @@ public abstract class Tile implements Ticker {
         if (isWaterPlant) return false;
         boolean isGraveBuster = this instanceof GraveStoneTile tile && tile.getGraveStone() != null &&
                 (plantToPlant.getName().contains("Buster")|| plantToPlant.getName().contains("buster"));
-        return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK) || isGraveBuster;
+        return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK) || isGraveBuster ||
+                plantToPlant.getName().equalsIgnoreCase("hot potato");
     }
 
     public void removePlant(Plant plant) {
@@ -80,6 +88,17 @@ public abstract class Tile implements Ticker {
 
     public boolean isCrater() {return isCrater;}
     public void setCrater(boolean isCrater) {this.isCrater = isCrater;}
+    public void setCraterTimer(int ticks) {this.craterTimer = ticks;}
+    public int getCraterTimer() {return craterTimer;}
+    protected void updateCraterLogic() {
+        if (isCrater && craterTimer > 0) {
+            craterTimer--;
+            if (craterTimer <= 0) {
+                isCrater = false;
+                GameSession.notify("Creator is Back to Normal Tile.");
+            }
+        }
+    }
 
     public Plant getStackPlant() {
         for (Plant plant : plants) if (plant.getTags().contains(PlantTag.STACK)) return plant;

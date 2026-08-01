@@ -1,6 +1,8 @@
 package models.entities.zombies.behavior.attack;
 
 import models.entities.plants.Plant;
+import models.entities.plants.strategy.AntiJumpStrategy;
+import models.entities.plants.strategy.IPlantStrategy;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieState;
 import models.enums.plants.PlantCategory;
@@ -31,12 +33,12 @@ public class DodoAttack implements AttackBehavior {
 
         Plant targetPlant = targetPlants.getFirst();
 
-        String pName = targetPlant.getName().toLowerCase();
-
-        if (pName.equals("tall-nut")) {
-            notify("Dodo Rider is blocked by Tall-nut!");
-            normalEatAttack.execute();
-            return;
+        for (IPlantStrategy s : targetPlant.getStrategies()) {
+            if (s instanceof AntiJumpStrategy) {
+                notify("Dodo Rider is blocked by Tall-nut!");
+                normalEatAttack.execute();
+                return;
+            }
         }
 
         if (isFlyable(targetPlant)) {

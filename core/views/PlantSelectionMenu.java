@@ -23,7 +23,14 @@ public class PlantSelectionMenu implements AppMenu {
         } else if (PlantSelectionCommands.SHOW_AVAILABLE_PLANTS.getMatcher(input) != null) {
             System.out.println(controller.showAllAvailablePlants());
         } else if ((matcher = PlantSelectionCommands.ADD_PLANT.getMatcher(input)) != null) {
-            System.out.println(controller.addPlant(matcher.group("type")));
+            String plantName = matcher.group("type");
+            if (plantName.equalsIgnoreCase("Imitater")) {
+                System.out.print("Which plant would you like Imitater to copy? ");
+                String targetName = scanner.nextLine().trim();
+                System.out.println(controller.addImitater(targetName));
+            } else {
+                System.out.println(controller.addPlant(plantName));
+            }
         } else if ((matcher = PlantSelectionCommands.REMOVE_PLANT.getMatcher(input)) != null) {
             System.out.println(controller.removePlant(matcher.group("type")));
         } else if ((matcher = PlantSelectionCommands.BOOST_PLANT.getMatcher(input)) != null) {

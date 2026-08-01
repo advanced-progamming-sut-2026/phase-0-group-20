@@ -6,6 +6,8 @@ import models.InGameEntityGenerator;
 import models.Result;
 import models.entities.Sun;
 import models.entities.plants.Plant;
+import models.entities.plants.strategy.IPlantStrategy;
+import models.entities.plants.strategy.ImitateStrategy;
 import models.entities.zombies.Zombie;
 import models.entities.zombies.ZombieType;
 import models.enums.plants.PlantTag;
@@ -156,6 +158,22 @@ public class GameFlowController {
         if (!desiredTile.isPlantable(plant)) return new Result(false, "You can not plant this plant here");
         Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
         for (int i = 1; i < getPlantLevel(plant); i++) newPlant.upgrade();
+
+        if (newPlant.getName().equalsIgnoreCase("Imitater")) {
+            for (IPlantStrategy strategy : newPlant.getStrategies()) {
+                if (strategy instanceof ImitateStrategy imitateStrategy) {
+                    int targetId = session.getImitaterTargetId();
+
+                    if (targetId != -1) {
+                        imitateStrategy.setTargetPlantId(targetId);
+                    } else {
+                        return new Result(false, "You haven't selected a target for Imitater in your deck!");
+                    }
+                    break;
+                }
+            }
+        }
+
         desiredTile.addPlant(newPlant);
         arena.addPlant(newPlant);
         session.useSun(newPlant.getCost());

@@ -18,7 +18,7 @@ public class RandomVaseTile extends Tile implements VaseTile {
     }
 
     @Override
-    public void onTick(int currentTick) {
+    public void customTick(int currentTick) {
 
     }
 

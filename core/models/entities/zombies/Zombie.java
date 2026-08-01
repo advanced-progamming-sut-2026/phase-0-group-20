@@ -100,7 +100,7 @@ public class Zombie implements Ticker {
         if (dead) return;
 
         if (projectile == null) { // for lawn
-            applyHealthDamage(health);
+            takeDamage(health);
             return;
         }
 

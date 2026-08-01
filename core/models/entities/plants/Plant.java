@@ -3,6 +3,8 @@ package models.entities.plants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import models.Position;
 import models.entities.plants.PlantFoodStrategy.PlantFoodStrategy;
+import models.entities.plants.effect.FreezeEffect;
+import models.entities.plants.effect.OctopusEffect;
 import models.entities.plants.effect.PlantEffect;
 import models.entities.plants.strategy.*;
 import models.entities.plants.strategy.category_strategy.*;
@@ -37,6 +39,7 @@ public class Plant implements IPlant, Ticker {
     protected float currentRecharge;
     protected int bonusDamage = 0;
     protected boolean dead = false;
+    protected boolean asleep = false;
 
     protected List<PlantFoodStrategy> plantFoodStrategy = new ArrayList<>();
     private int stackCount = 1;
@@ -45,12 +48,12 @@ public class Plant implements IPlant, Ticker {
     protected boolean frozen = false;
     protected boolean stunned = false;
 
-    private int iceStacks = 0;
-    private int iceBlockHp = 0;
-    private static final int MAX_ICE_HP = 600;
-
-    private int octopusHp = 0;
-    private static final int MAX_OCTOPUS_HP = 800;
+//    private int iceStacks = 0;
+//    private int iceBlockHp = 0;
+//    private static final int MAX_ICE_HP = 600;
+//
+//    private int octopusHp = 0;
+//    private static final int MAX_OCTOPUS_HP = 800;
 
     protected int size = 1;
     protected boolean boosted = false;
@@ -136,6 +139,10 @@ public class Plant implements IPlant, Ticker {
             return false;
         });
 
+        if (isAsleep()) {
+            return;
+        }
+
 
         if (boostTimer > 0) {
             for (PlantFoodStrategy strategy : plantFoodStrategy)
@@ -146,9 +153,10 @@ public class Plant implements IPlant, Ticker {
 
             if (boostTimer <= 0) boosted = false;
 
-        } else
+        } else {
             for (IPlantStrategy strategy : strategies)
                 strategy.execute(this, currentTick);
+        }
 
     }
 
@@ -413,6 +421,8 @@ public class Plant implements IPlant, Ticker {
                     applyToStrategy(ImitateStrategy.class, s -> s.setAutoPlantFood(value > 0));
             case "RESET_FAMILY_COOLDOWNS" ->
                     applyToStrategy(MintBuffStrategy.class, s -> s.setResetCooldowns(value > 0));
+            case "MELT_AREA_3X3" ->
+                    applyToStrategy(MeltIceStrategy.class, s -> s.setMeltArea3x3(true));
             default -> { return false; }
         }
         return true;
@@ -477,6 +487,14 @@ public class Plant implements IPlant, Ticker {
         this.position = position;
     }
 
+    public boolean isAsleep() {
+        return asleep;
+    }
+
+    public void setAsleep(boolean asleep) {
+        this.asleep = asleep;
+    }
+
 
     public int getMaxHp() {
         return maxHp;
@@ -491,51 +509,50 @@ public class Plant implements IPlant, Ticker {
     }
 
     public void damageIceBlock(int damage) {
-        if (!isFrozen()) return;
-
-        iceBlockHp -= damage;
-        if (iceBlockHp <= 0) {
-            iceBlockHp = 0;
-            System.out.println("Ice block broken! " + this.getName() + " is free!");
+        FreezeEffect freezeEffect = getEffect(FreezeEffect.class);
+        if (freezeEffect != null) {
+            freezeEffect.takeDamage(this, damage);
         }
     }
 
     public void receiveIceHit() {
         if (isFrozen()) return;
 
-        iceStacks++;
-        GameSession.notify(this.getName() + " got hit by ice! Stacks: " + iceStacks);
-
-        if (iceStacks >= 3) {
-            iceBlockHp = MAX_ICE_HP;
-            iceStacks = 0;
-            GameSession.notify(this.getName() + " is FROZEN!");
+        FreezeEffect freezeEffect = getEffect(FreezeEffect.class);
+        if (freezeEffect != null) {
+            freezeEffect.addStack(this);
+        } else {
+            addEffect(new FreezeEffect());
         }
     }
 
     public boolean isFrozen() {
-        return iceBlockHp > 0;
+        return frozen;
     }
 
     public boolean hasOctopus() {
-        return octopusHp > 0;
+        return getEffect(OctopusEffect.class) != null;
     }
 
     public void receiveOctopus() {
         if (hasOctopus() || isFrozen()) return;
 
-        octopusHp = MAX_OCTOPUS_HP;
-        GameSession.notify(this.getName() + " is covered by an OCTOPUS!");
+        addEffect(new OctopusEffect(800));
     }
 
     public void damageOctopus(int damage) {
-        if (!hasOctopus()) return;
-
-        octopusHp -= damage;
-        if (octopusHp <= 0) {
-            octopusHp = 0;
-            GameSession.notify("Octopus destroyed! " + this.getName() + " is free!");
+        OctopusEffect octopus = getEffect(OctopusEffect.class);
+        if (octopus != null) {
+            octopus.takeDamage(this, damage);
         }
     }
 
+    public <T extends PlantEffect> T getEffect(Class<T> effectClass) {
+        for (PlantEffect effect : activeEffects) {
+            if (effectClass.isInstance(effect)) {
+                return effectClass.cast(effect);
+            }
+        }
+        return null;
+    }
 }

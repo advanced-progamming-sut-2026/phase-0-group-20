@@ -2,6 +2,9 @@ package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
 import models.entities.zombies.Zombie;
+import models.entities.zombies.behavior.effect.ChillEffect;
+import models.entities.zombies.behavior.effect.FreezeEffect;
+import models.entities.zombies.behavior.effect.ZombieEffect;
 import models.game.GameSession;
 import models.timeManager.TimeManager;
 
@@ -13,6 +16,7 @@ import models.timeManager.TimeManager;
 
 public class GlobalEffectStrategy implements IPlantStrategy {
     private static final int ACTIVATION_DELAY = TimeManager.TICKS_PER_SECOND;
+    private float chillBonusDuration;
     private int startTick = -1;
 
     @Override
@@ -26,17 +30,25 @@ public class GlobalEffectStrategy implements IPlantStrategy {
 
                 for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
                     if (!z.isDead()) {
-                        // freeze zombie
-                        notify("-> " + z.getName() + " is completely frozen!");
+                        boolean has = false;
+                       for (ZombieEffect effect : z.getActiveEffects()) {
+                           if (effect instanceof ChillEffect) {
+                               has = true;
+                               break;
+                           }
+                       }
+                       if (has) continue;
+                       int totalDurations = (int) (context.getAbilityValue() + chillBonusDuration);
+                       z.addEffect(new ChillEffect(z, totalDurations));
+                       notify("-> " + z.getName() + " is completely frozen! for " + totalDurations + " ticks");
                     }
                 }
             }
-
             context.takeDamage(context.getCurrentHp());
         }
     }
 
     public void increaseFreezeDuration(float value) {
-
+        chillBonusDuration += value;
     }
 }

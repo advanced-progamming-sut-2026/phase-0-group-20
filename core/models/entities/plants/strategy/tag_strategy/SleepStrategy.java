@@ -2,6 +2,8 @@ package models.entities.plants.strategy.tag_strategy;
 
 import models.entities.plants.Plant;
 import models.entities.plants.strategy.IPlantStrategy;
+import models.game.GameSession;
+import models.game.adventure.SeasonType;
 
 /**
  * Sleep Strategy (Day/Night mechanic):
@@ -10,12 +12,18 @@ import models.entities.plants.strategy.IPlantStrategy;
  */
 
 public class SleepStrategy implements IPlantStrategy {
-
-
+    private boolean isInitialized = false;
     @Override
     public void execute(Plant context, int currentTick) {
-        // If it's a day level, this DigestionStrategy can block other strategies from executing.
-        // In a real implementation, you might want to use a state machine or a flag
-        // inside the Plant class (e.g., context.isAsleep()).
+        if (!isInitialized) {
+            SeasonType t = GameSession.getInstance().getCurrentChapter().getSeasonType();
+            boolean isDay = false;
+            if (t != SeasonType.DARK_AGES) isDay = true;
+            if (isDay) {
+                context.setAsleep(true);
+                GameSession.notify(context.getName() + " fell asleep!");
+            }
+            isInitialized = true;
+        }
     }
 }

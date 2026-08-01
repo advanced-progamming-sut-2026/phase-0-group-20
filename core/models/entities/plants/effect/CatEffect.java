@@ -26,7 +26,6 @@ public class CatEffect implements PlantEffect {
 
     @Override
     public void remove(Plant plant) {
-        // plant.setTargetable(true);
         notify("The spell broke! " + plant.getName() + " is no longer a cat.");
     }
 

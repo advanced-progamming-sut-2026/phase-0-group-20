@@ -2,6 +2,7 @@ package models.entities.plants.strategy;
 
 import models.entities.plants.Plant;
 import models.fields.tiles.Tile;
+import models.timeManager.TimeManager;
 
 /**
  * Crater Strategy:
@@ -14,14 +15,14 @@ public class CraterStrategy implements IPlantStrategy {
 
     @Override
     public void execute(Plant context, int currentTick) {
-        if (context.getCurrentHp() <= 0 && !craterCreated) {
+        if ((context.getCurrentHp() <= 0 || context.isDead()) && !craterCreated) {
             notify("🕳️ " + context.getName() + " exploded and left a deep crater on the tile!");
-
             if (context.getPlacedTile() != null) {
                 Tile tile = context.getPlacedTile();
+                int craterDurationTicks = (int) (context.getAbilityValue() * TimeManager.TICKS_PER_SECOND);
                 tile.setCrater(true);
+                tile.setCraterTimer(craterDurationTicks);
             }
-
             craterCreated = true;
         }
     }

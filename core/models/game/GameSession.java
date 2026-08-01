@@ -49,6 +49,7 @@ public class GameSession {
     private boolean zombieBreached = false;
     private ZombieDropListener dropListener;
     private ProgressListener progressListener;
+    private int imitaterTargetId = -1;
 
 
     private GameSession(Chapter chapter, Level currentLevel,
@@ -410,5 +411,13 @@ public class GameSession {
 
     public static void setPendingChapter(Chapter pendingChapter) {
         GameSession.pendingChapter = pendingChapter;
+    }
+
+    public void setImitaterTargetId(int id) {
+        this.imitaterTargetId = id;
+    }
+
+    public int getImitaterTargetId() {
+        return imitaterTargetId;
     }
 }

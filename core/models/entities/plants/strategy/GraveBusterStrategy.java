@@ -70,7 +70,6 @@ public class GraveBusterStrategy implements IPlantStrategy {
                 }
             }
         }
-        // this method for explod
     }
 
     public void reduceEatTime(float seconds) {

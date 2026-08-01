@@ -46,8 +46,10 @@ public class InGameEntityGenerator {
         return switch (levelIndex) {
             case 0 -> Arrays.asList(
                     ZombieType.NORMAL,
-                    ZombieType.CONE,
-                    ZombieType.RA
+                    ZombieType.OCTOPUS
+//                    ZombieType.DARK_ARMOR
+//                    ZombieType.CONE,
+//                    ZombieType.RA
             );
             case 1 -> Arrays.asList(
                     ZombieType.NORMAL,

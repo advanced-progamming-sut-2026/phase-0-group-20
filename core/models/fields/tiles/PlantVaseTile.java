@@ -12,7 +12,7 @@ public class PlantVaseTile extends Tile implements VaseTile {
     }
 
     @Override
-    public void onTick(int currentTick) {
+    public void customTick(int currentTick) {
 
     }
 
