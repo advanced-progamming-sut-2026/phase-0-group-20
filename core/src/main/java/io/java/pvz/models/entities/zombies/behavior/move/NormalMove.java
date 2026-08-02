@@ -1,0 +1,16 @@
+package io.java.pvz.models.entities.zombies.behavior.move;
+
+import io.java.pvz.models.entities.zombies.Zombie;
+
+public class NormalMove implements MoveBehavior {
+    private final Zombie zombie;
+
+    public NormalMove(Zombie zombie) {
+        this.zombie = zombie;
+    }
+
+    @Override
+    public void execute() {
+        zombie.moveForward();
+    }
+}
