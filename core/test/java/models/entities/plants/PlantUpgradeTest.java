@@ -1,6 +1,6 @@
 package test.java.models.entities.plants;
 
-import models.entities.plants.*;
+import com.Project.PVZ.models.entities.plants.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

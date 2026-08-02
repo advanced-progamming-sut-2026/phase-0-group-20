@@ -1,14 +1,14 @@
 package test.java.controllers.MenuController;
 
-import controllers.MenuController.ProfileMenuController;
-import models.App;
-import models.Result;
-import models.database.DataBaseManager;
-import models.database.UserRepository;
-import models.enums.Gender;
-import models.enums.SecurityQuestion;
-import models.users.PasswordUtils;
-import models.users.User;
+import com.Project.PVZ.controllers.MenuController.ProfileMenuController;
+import com.Project.PVZ.models.App;
+import com.Project.PVZ.models.Result;
+import com.Project.PVZ.models.database.DataBaseManager;
+import com.Project.PVZ.models.database.UserRepository;
+import com.Project.PVZ.models.enums.Gender;
+import com.Project.PVZ.models.enums.SecurityQuestion;
+import com.Project.PVZ.models.users.PasswordUtils;
+import com.Project.PVZ.models.users.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,9 +1,9 @@
 package test.java.controllers;
 
-import controllers.NavigationController;
-import models.App;
-import models.Result;
-import models.enums.Menu;
+import com.Project.PVZ.controllers.NavigationController;
+import com.Project.PVZ.models.App;
+import com.Project.PVZ.models.Result;
+import com.Project.PVZ.models.enums.Menu;
 import org.junit.Before;
 import org.junit.Test;
 

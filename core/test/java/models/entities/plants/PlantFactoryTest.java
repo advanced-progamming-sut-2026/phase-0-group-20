@@ -1,9 +1,9 @@
 package test.java.models.entities.plants;
 
-import models.entities.plants.Plant;
-import models.entities.plants.PlantData;
-import models.entities.plants.PlantFactory;
-import models.entities.plants.PlantLoader;
+import com.Project.PVZ.models.entities.plants.Plant;
+import com.Project.PVZ.models.entities.plants.PlantData;
+import com.Project.PVZ.models.entities.plants.PlantFactory;
+import com.Project.PVZ.models.entities.plants.PlantLoader;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

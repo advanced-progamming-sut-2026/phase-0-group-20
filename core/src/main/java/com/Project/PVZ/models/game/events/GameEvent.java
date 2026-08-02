@@ -1,0 +1,18 @@
+package com.Project.PVZ.models.game.events;
+
+public enum GameEvent {
+    GAME_STARTED,
+    GAME_OVER,
+    ZOMBIE_KILLED,
+    ZOMBIE_KILLED_LAWN_MOWER,
+    SUN_COLLECTED,
+    PLANT_PLACED,
+    PLANT_LOST,
+    WAVE_STARTED,
+    WAVE_COMPLETED,
+    LEVEL_COMPLETED,
+    LAWNMOWER_TRIGGERED,
+    NOTIFY,
+    NEW_DAY_STARTED,
+    PLANT_UNLOCKED;
+}

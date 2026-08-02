@@ -1,0 +1,26 @@
+package com.Project.PVZ.models.entities.projectiles;
+
+import com.Project.PVZ.models.entities.zombies.Zombie;
+
+public class HypnotizeEffect implements ProjectileEffect {
+    @Override
+    public void applyEffect(Zombie zombie, Projectile projectile) {
+        zombie.hypnotize();
+        notify("🌀 " + zombie.getName() + " HAS BEEN HYPNOTIZED! 🌀");
+    }
+
+    @Override
+    public int getDamageMultiplier() {
+        return 0;
+    }
+
+    @Override
+    public boolean ignoresArmor() {
+        return true;
+    }
+
+    @Override
+    public boolean meltsIce() {
+        return false;
+    }
+}
