@@ -172,3 +172,4 @@ data/*.json
 
 # OS generated files (Optional but good to have)
 unused.xml
+.idea
