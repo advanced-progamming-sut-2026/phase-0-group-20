@@ -1,0 +1,221 @@
+package io.java.pvz.controllers.GameController;
+
+import io.java.pvz.models.App;
+import io.java.pvz.models.InGameEntityGenerator;
+import io.java.pvz.models.Result;
+import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.enums.Menu;
+import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.levels.Level;
+import io.java.pvz.models.game.adventure.levels.speciallevels.LockedPlants;
+import io.java.pvz.models.users.User;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PlantSelectionController {
+    private final List<Plant> selectedPlants = new ArrayList<>();
+    private final List<String> boostedPlantNames = new ArrayList<>();
+    private int imitaterTargetId = -1;
+
+
+    public Result showAllPlants() {
+        User activeUser = App.getActiveUser();
+        if (activeUser == null) return new Result(false, "No active user!");
+
+        List<Plant> unlocked = activeUser.getUnlockedPlants();
+        if (unlocked == null || unlocked.isEmpty()) {
+            return new Result(true, "You don't have any plants yet!");
+        }
+
+        StringBuilder sb = new StringBuilder("--- Your Unlocked Plants ---\n");
+        for (Plant p : unlocked) {
+            sb.append("- ").append(p.getName()).append(" (Cost: ").append(p.getCost()).append(")\n");
+        }
+        return new Result(true, sb.toString().trim());
+    }
+
+    public Result showAllAvailablePlants() {
+        if (selectedPlants.isEmpty()) {
+            return new Result(true, "You haven't selected any plants yet.");
+        }
+
+        StringBuilder sb = new StringBuilder("--- Selected Plants for this Level ---\n");
+        for (Plant p : selectedPlants) {
+            sb.append("- ").append(p.getName());
+            if (boostedPlantNames.contains(p.getName().toLowerCase())) {
+                sb.append(" [BOOSTED]");
+            }
+            sb.append("\n");
+        }
+        return new Result(true, sb.toString().trim());
+    }
+
+    public Result addImitater(String targetName) {
+        User activeUser = App.getActiveUser();
+        Plant targetPlant = null;
+
+        for (Plant p : activeUser.getUnlockedPlants()) {
+            if (p.getName().equalsIgnoreCase(targetName)) {
+                targetPlant = p;
+                break;
+            }
+        }
+
+        if (targetPlant == null) {
+            return new Result(false, "You don't own a plant named " + targetName + " to imitate!");
+        }
+
+        if (targetPlant.getName().equalsIgnoreCase("Imitater")) {
+            return new Result(false, "Imitater cannot imitate itself!");
+        }
+
+        Result addResult = addPlant("Imitater");
+        if (addResult.isSuccessful()) {
+            this.imitaterTargetId = targetPlant.getId();
+            return new Result(true, "Imitater added! It will copy: " + targetPlant.getName());
+        } else {
+            return addResult;
+        }
+    }
+
+    public Result addPlant(String name) {
+        User activeUser = App.getActiveUser();
+        Level currentLevel;
+        if (GameSession.getPendingBonusLevel() != null) {
+            currentLevel = GameSession.getPendingBonusLevel();
+        } else if (GameSession.getMinigameLevel() != null) {
+            currentLevel = GameSession.getMinigameLevel();
+        } else {
+            currentLevel = App.getActiveAdventure().getCurrentChapter().getCurrentLevel();
+        }
+
+        if (selectedPlants.size() >= currentLevel.getPlantSlotCount()) {
+            return new Result(false, "Your seed slots are full! (" + currentLevel.getPlantSlotCount() + " plants max)");
+        }
+
+        for (Plant p : selectedPlants) {
+            if (p.getName().equalsIgnoreCase(name.trim())) {
+                return new Result(false, "You have already selected this plant.");
+            }
+        }
+
+        for (Plant p : activeUser.getUnlockedPlants()) {
+            if (p.getName().equalsIgnoreCase(name.trim())) {
+                if (currentLevel instanceof LockedPlants lockedLevel) {
+                    Plant forcedPlant = lockedLevel.getForcedToUsePlant();
+                    if(forcedPlant != null &&
+                            !forcedPlant.getName().equalsIgnoreCase(name)&& !selectedPlants.contains(forcedPlant)){
+                        return new Result(false, "You first have to choose the forced plant: "+
+                                forcedPlant.getName()+" ("+forcedPlant.getCost()+")");
+                    }
+                    if (!lockedLevel.isPlantAllowed(p)) {
+                        return new Result(false, p.getName()
+                                + " is banned in this level due to family restrictions!");
+                    }
+                    int actualMaxSlots = currentLevel.getPlantSlotCount() - lockedLevel.getLockedSlots();
+                    if (selectedPlants.size() >= actualMaxSlots) {
+                        return new Result(false, "Your seed slots are full! (" +
+                                lockedLevel.getLockedSlots() + " slots are permanently locked for this level)");
+                    }
+                }
+                selectedPlants.add(p);
+                return new Result(true, p.getName() + " added to your selection.");
+            }
+        }
+
+        return new Result(false, "You don't own a plant named " + name + "!");
+    }
+
+    public Result removePlant(String name) {
+        for (Plant p : selectedPlants) {
+            if (p.getName().equalsIgnoreCase(name.trim())) {
+                selectedPlants.remove(p);
+                boostedPlantNames.remove(p.getName().toLowerCase());
+
+                if (p.getName().equalsIgnoreCase("Imitater")) {
+                    imitaterTargetId = -1;
+                }
+
+                return new Result(true, p.getName() + " removed from your selection.");
+            }
+        }
+        return new Result(false, "Plant not found in your current selection.");
+    }
+
+    public Result boostPlant(String name) {
+        User activeUser = App.getActiveUser();
+
+        boolean found = false;
+        for (Plant p : selectedPlants) {
+            if (p.getName().equalsIgnoreCase(name.trim())&&
+                    !(p.getPlantFoodStrategy()==null || p.getPlantFoodStrategy().isEmpty())) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            return new Result(false, "This plant is not in your selection or doesn't have boost effect");
+        }
+
+        if (boostedPlantNames.contains(name.trim().toLowerCase())) {
+            return new Result(false, "This plant is already boosted for this level!");
+        }
+
+        if (activeUser.getDiamond() >= 2) { // cost for boost (it can be different)
+            activeUser.costDiamond(2);
+            boostedPlantNames.add(name.trim().toLowerCase());
+            return new Result(true, name + " is BOOSTED for the upcoming level! (-2 Diamonds)");
+        } else {
+            return new Result(false, "Not enough diamonds to boost this plant! (Requires 2)");
+        }
+    }
+
+    public Result startGame() {
+        if (selectedPlants.isEmpty()) {
+            return new Result(false, "You must select at least one plant to start the game!");
+        }
+
+        for (String pName : boostedPlantNames) {
+            Plant p = getPlantByName(pName);
+            if (p != null) {
+                p.setBoosted(true);
+            }
+        }
+
+        List<Plant> inGamePlants = new ArrayList<>();
+        for (Plant p : selectedPlants) {
+            inGamePlants.add(InGameEntityGenerator.getPlantForGame(p, p.isBoosted()));
+        }
+        if (GameSession.getPendingBonusLevel() != null) {
+            GameSession.startScoringGame(GameSession.getPendingBonusLevel(), inGamePlants);
+        } else if (GameSession.getMinigameLevel() != null) {
+            GameSession.startMiniGame(GameSession.getMinigameLevel(), inGamePlants);
+        } else {
+            GameSession.startNewGame(inGamePlants);
+        }
+
+        if (imitaterTargetId != -1 && GameSession.getInstance() != null) {
+            GameSession.getInstance().setImitaterTargetId(imitaterTargetId);
+        }
+
+        App.setActiveMenu(Menu.GAME_FLOW_MENU);
+        selectedPlants.clear();
+        boostedPlantNames.clear();
+        imitaterTargetId = -1;
+
+        return new Result(true, "Game Started! Good luck defending your brains!");
+    }
+
+
+    private Plant getPlantByName(String name) {
+        for (Plant p : selectedPlants) {
+            if (p.getName().equalsIgnoreCase(name.trim())) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+}

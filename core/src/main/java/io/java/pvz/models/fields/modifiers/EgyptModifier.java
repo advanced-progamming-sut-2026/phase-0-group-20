@@ -1,0 +1,71 @@
+package io.java.pvz.models.fields.modifiers;
+
+import io.java.pvz.models.entities.zombies.Wave;
+import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.fields.tiles.GraveStoneTile;
+import io.java.pvz.models.game.Arena;
+import io.java.pvz.models.game.GameSession;
+
+import java.util.Random;
+
+public class EgyptModifier implements SeasonModifier {
+
+    Wave currentWave;
+
+    @Override
+    public void onCurrentLevelStart() {
+        Arena arena = GameSession.getInstance().getArena();
+        setupEgyptGraves(arena);
+    }
+
+    @Override
+    public void onWaveStart(Wave wave) {
+        currentWave = wave;
+    }
+
+    @Override
+    public void onZombieSpawn(Zombie zombie, Arena arena) {
+        if (currentWave == null) return;
+
+        if (currentWave.isLastWave()) {
+            if (Math.random() < 0.5) {
+                int randColAhead = (int) (Math.random() * 4) + 1;
+                int startCol = arena.getCols() - 1;
+                int targetCol = Math.max(0, startCol - randColAhead);
+
+                zombie.setCol(targetCol);
+
+                zombie.setSpawnEffect(Zombie.SpawnEffect.SANDSTORM); //for graphic phase
+
+                notify("A zombie was spawned by a tornado to column " + targetCol + "!");
+            }
+
+        }
+    }
+
+    @Override
+    public void updateEnvironment(int currentTick, Arena arena) {
+        // nothing will change during the game flow, just during zombie wave
+    }
+
+    private void setupEgyptGraves(Arena arena) {
+        Random rand = new Random();
+        int rows = arena.getRows();
+        int cols = arena.getCols();
+
+
+        int numberOfGraves = (rand.nextInt(3) + 3) + getCurrentLevelNumber(); //baada age monaseb nabood bishtar mikonim
+
+        int gravesPlanted = 0;
+        while (gravesPlanted < numberOfGraves) {
+            int randomRow = rand.nextInt(rows);
+            int randomCol = rand.nextInt(cols / 2) + (cols / 2);
+
+            if (!(arena.getTile(randomRow, randomCol) instanceof GraveStoneTile)) {
+                arena.changeTile(randomRow, randomCol, new GraveStoneTile(randomRow, randomCol));
+                gravesPlanted++;
+            }
+        }
+        notify(numberOfGraves + " graves generated for Egypt!");
+    }
+}
