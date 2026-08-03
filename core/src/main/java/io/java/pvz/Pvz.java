@@ -41,7 +41,6 @@ public class Pvz extends Game {
     @Override
     public void dispose() {
         batch.dispose();
-        // آزادسازی منابع لودر
         AssetLoader.getInstance().dispose();
     }
 }
