@@ -34,21 +34,23 @@ public class MainMenuScreen extends BaseScreen {
         mainLayer.clear();
         mainLayer.setFillParent(true);
 
-        Table root = new Table();
-        root.setFillParent(true);
         Table logoTable = new Table();
-
         Image logo = imageFor(textures, Ids.MainMenu.LOGO);
         logo.setScaling(Scaling.fit);
         logoTable.add(logo).size(700, 400);
 
-        root.add(logoTable).padTop(200).row();
-        root.add().height(100).expandY().row();
+        mainLayer.add(logoTable).padTop(100).row();
+
+        mainLayer.add().expandY().row();
 
         Table center = new Table();
+
         Table nameEntryTable = new Table();
         TextureRegion nameBgRegion = textures.region(Ids.MainMenu.NAME_ENTRY_ICON);
-        nameEntryTable.setBackground(new TextureRegionDrawable(nameBgRegion));
+        if (nameBgRegion != null) {
+            nameEntryTable.setBackground(new TextureRegionDrawable(nameBgRegion));
+        }
+
         Image profileIcon = imageFor(textures, Ids.MainMenu.PROFILE_ICON);
         profileIcon.setScaling(Scaling.fit);
 
@@ -57,15 +59,19 @@ public class MainMenuScreen extends BaseScreen {
         customFieldStyle.background = null;
         customFieldStyle.focusedBackground = null;
 
-        TextField nameField = new TextField("eieio", skin);
+        customFieldStyle.font = skin.getFont("FBUSV8C5EI_1");
+
+        TextField nameField = new TextField("eieio", customFieldStyle);
         nameField.setAlignment(Align.center);
-        nameEntryTable.add(nameField).expandX().fillX().padRight(15).padLeft(15);
-        nameEntryTable.add(profileIcon).right().size(40, 40).pad(15);
+
+        nameEntryTable.add(nameField).expandX().fillX().padRight(15);
+        nameEntryTable.add(profileIcon).left().size(40, 40).pad(15);
+
 
         center.add(nameEntryTable).width(360).height(65).padBottom(15).row();
 
         TextButton playBtn = new TextButton("Play", skin, "purple");
-
+        playBtn.getLabel().setFontScale(1.5f);
         playBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -73,25 +79,23 @@ public class MainMenuScreen extends BaseScreen {
             }
         });
         center.add(playBtn).prefSize(110).width(200).height(90).row();
-        root.add(center).expand().center().padBottom(40).row();
 
         Table bottomContainer = new Table();
-        Table cloudBtn = createIconButton(textures, skin, Ids.MainMenu.CLOUD_ICON);
-        Table newsBtn = createIconButton(textures, skin, Ids.MainMenu.NEWS_ICON);
-        Table leaderboardBtn = createIconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON);
-        Table settingsBtn = createIconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON);
 
-        bottomContainer.add(cloudBtn).padLeft(20).padRight(10);
-        bottomContainer.add(newsBtn);
+        Stack cloudBtn = createIconButton(textures, skin, Ids.MainMenu.CLOUD_ICON);
+        Stack newsBtn = createIconButton(textures, skin, Ids.MainMenu.NEWS_ICON);
+        Stack leaderboardBtn = createIconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON);
+        Stack settingsBtn = createIconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON);
 
-        bottomContainer.add().expandX();
+        bottomContainer.add(cloudBtn).padLeft(50).padRight(50).bottom();
+        bottomContainer.add(newsBtn).bottom();
 
-        bottomContainer.add(settingsBtn).padRight(10);
-        bottomContainer.add(leaderboardBtn).padRight(20);
+        bottomContainer.add(center).expandX().padBottom(50).center().bottom();
 
-        root.add(bottomContainer).growX().padBottom(20).bottom();
+        bottomContainer.add(settingsBtn).padRight(50).bottom();
+        bottomContainer.add(leaderboardBtn).padRight(50).bottom();
 
-        mainLayer.add(root).growX().padBottom(20).bottom();
+        mainLayer.add(bottomContainer).growX().padBottom(60).bottom();
 
         settingsBtn.addListener(new ClickListener() {
             @Override
@@ -99,27 +103,34 @@ public class MainMenuScreen extends BaseScreen {
                 System.out.println("Settings button clicked");
             }
         });
+
         leaderboardBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("leaderboard button clicked");
+                System.out.println("Leaderboard button clicked");
             }
         });
     }
 
-    private Table createIconButton(TextureBank textures, Skin skin, String iconId) {
-        Table buttonFrame = new Table();
+    private Stack createIconButton(TextureBank textures, Skin skin, String iconId) {
+        Stack stack = new Stack();
 
+        Table bgTable = new Table();
         if (skin.has("image_ui_generic_brownbutton_10", Drawable.class)) {
-            buttonFrame.setBackground(skin.getDrawable("image_ui_generic_brownbutton_10"));
+            bgTable.setBackground(skin.getDrawable("image_ui_generic_brownbutton_10"));
         }
+        Container<Table> bgContainer = new Container<>(bgTable);
+        bgContainer.size(100, 100);
 
         Image icon = imageFor(textures, iconId);
         icon.setScaling(Scaling.fit);
+        Container<Image> iconContainer = new Container<>(icon);
+        iconContainer.size(100, 100);
 
-        buttonFrame.add(icon).size(50, 50);
+        stack.add(bgContainer);
+        stack.add(iconContainer);
 
-        return buttonFrame;
+        return stack;
     }
 
     private Image imageFor(TextureBank textures, String imageId) {
