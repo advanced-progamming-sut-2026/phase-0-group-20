@@ -9,15 +9,15 @@ public class AssetLoader {
     private static AssetLoader instance;
     private TextureBank textures;
     private PamPlayer player;
-    public static AssetLoader getInstance ()
-    {
-        if (instance == null)
-        {
-            instance = new AssetLoader ();
+
+    public static AssetLoader getInstance() {
+        if (instance == null) {
+            instance = new AssetLoader();
         }
         return instance;
     }
-    public void init(){
+
+    public void init() {
         if (textures == null && player == null) {
             FileHandle assetsFolder = Gdx.files.internal("pvz2assets");
             textures = new TextureBank("768", assetsFolder);
@@ -46,8 +46,4 @@ public class AssetLoader {
             textures.dispose();
         }
     }
-
-
-
-
 }
