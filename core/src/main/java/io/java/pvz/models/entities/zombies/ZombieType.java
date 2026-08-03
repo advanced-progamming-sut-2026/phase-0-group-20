@@ -60,7 +60,7 @@ public enum ZombieType {
         for (ZombieType t : values()) {
             if (t.jsonAlias.equalsIgnoreCase(alias)) return t;
         }
-        throw new IllegalArgumentException("Unknown zombie alias: " + alias);
+        return null;
     }
 
     public String getJsonAlias() {

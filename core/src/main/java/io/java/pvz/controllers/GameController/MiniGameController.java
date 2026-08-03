@@ -91,7 +91,7 @@ public class MiniGameController {
             return new Result(false, "You must plant behind the red line!");
 
 
-        Plant nut = level.consumePlant(index);
+        Plant nut = level.consumePlant(index - 1);
         if (nut == null) return new Result(false, "No plant at this index!");
 
         ProjectileType type;
@@ -137,6 +137,9 @@ public class MiniGameController {
                     " (Col " + (level.getRedLineCol() + 1)+ " or greater).");
 
         ZombieType type = ZombieType.fromAlias(zombieAlias);
+
+        if (type == null)
+            return new Result(false, "Invalid zombie type: " + zombieAlias);
 
         if (!level.getZombiesForThisLevel().contains(type))
             return new Result(false, "You cannot use " + zombieAlias + " in this level! Check your available zombies.");
