@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
+import io.java.pvz.controllers.ButtonAnimator;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.utils.Ids;
 import pvz.libpvz.textures.TextureBank;
@@ -37,7 +39,7 @@ public class MainMenuScreen extends BaseScreen {
         Table logoTable = new Table();
         Image logo = imageFor(textures, Ids.MainMenu.LOGO);
         logo.setScaling(Scaling.fit);
-        logoTable.add(logo).size(700, 400);
+        logoTable.add(logo).size(900, 500);
 
         mainLayer.add(logoTable).padTop(100).row();
 
@@ -53,6 +55,10 @@ public class MainMenuScreen extends BaseScreen {
 
         Image profileIcon = imageFor(textures, Ids.MainMenu.PROFILE_ICON);
         profileIcon.setScaling(Scaling.fit);
+        ButtonAnimator.applyHoverAndClickEffect(profileIcon, 1.1f, 0.9f, () -> {
+            System.out.println("Profile Icon Clicked!");
+            // TODO: push profile ui later
+        });
 
         TextField.TextFieldStyle baseStyle = skin.get(TextField.TextFieldStyle.class);
         TextField.TextFieldStyle customFieldStyle = new TextField.TextFieldStyle(baseStyle);
@@ -68,51 +74,47 @@ public class MainMenuScreen extends BaseScreen {
         nameEntryTable.add(profileIcon).left().size(40, 40).pad(15);
 
 
-        center.add(nameEntryTable).width(360).height(65).padBottom(15).row();
+        center.add(nameEntryTable).width(360).height(65).padBottom(30).row();
 
         TextButton playBtn = new TextButton("Play", skin, "purple");
         playBtn.getLabel().setFontScale(1.5f);
-        playBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                // TODO : push game screen later
-            }
+        ButtonAnimator.applyHoverAndClickEffect(playBtn, 1.1f, 0.9f, () -> {
+            System.out.println("Play Button clicked!");
+            // TODO : push game menu later
         });
         center.add(playBtn).prefSize(110).width(200).height(90).row();
 
         Table bottomContainer = new Table();
 
-        Stack cloudBtn = createIconButton(textures, skin, Ids.MainMenu.CLOUD_ICON);
-        Stack newsBtn = createIconButton(textures, skin, Ids.MainMenu.NEWS_ICON);
-        Stack leaderboardBtn = createIconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON);
-        Stack settingsBtn = createIconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON);
+        Stack cloudBtn = createIconButton(textures, skin, Ids.MainMenu.CLOUD_ICON, () -> {
+            System.out.println("Cloud Icon Clicked!");
+            // TODO : push later
+        });
+        Stack newsBtn = createIconButton(textures, skin, Ids.MainMenu.NEWS_ICON, () -> {
+            System.out.println("News Icon Clicked!");
+            // TODO : push later
+        });
+        Stack leaderboardBtn = createIconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON, () -> {
+            System.out.println("Leader Board Clicked!");
+            // TODO : push later
+        });
+        Stack settingsBtn = createIconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON, () -> {
+            System.out.println("Settings button clicked");
+            // TODO : push later
+        });
 
         bottomContainer.add(cloudBtn).padLeft(50).padRight(50).bottom();
         bottomContainer.add(newsBtn).bottom();
 
-        bottomContainer.add(center).expandX().padBottom(50).center().bottom();
+        bottomContainer.add(center).expandX().padBottom(70).center().bottom();
 
         bottomContainer.add(settingsBtn).padRight(50).bottom();
         bottomContainer.add(leaderboardBtn).padRight(50).bottom();
 
         mainLayer.add(bottomContainer).growX().padBottom(60).bottom();
-
-        settingsBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Settings button clicked");
-            }
-        });
-
-        leaderboardBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Leaderboard button clicked");
-            }
-        });
     }
 
-    private Stack createIconButton(TextureBank textures, Skin skin, String iconId) {
+    private Stack createIconButton(TextureBank textures, Skin skin, String iconId, ButtonAnimator.OnClickListener clickListener) {
         Stack stack = new Stack();
 
         Table bgTable = new Table();
@@ -129,6 +131,12 @@ public class MainMenuScreen extends BaseScreen {
 
         stack.add(bgContainer);
         stack.add(iconContainer);
+
+        bgContainer.setTouchable(Touchable.disabled);
+        iconContainer.setTouchable(Touchable.disabled);
+        stack.setTouchable(Touchable.enabled);
+
+        ButtonAnimator.applyHoverAndClickEffect(stack, 1.5f, 0.9f, clickListener);
 
         return stack;
     }
