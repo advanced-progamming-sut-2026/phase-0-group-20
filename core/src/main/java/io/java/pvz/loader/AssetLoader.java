@@ -2,13 +2,18 @@ package io.java.pvz.loader;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import pvz.libpvz.pam.PamPlayer;
 import pvz.libpvz.textures.TextureBank;
+import pvz.skin.PvzSkin;
 
 public class AssetLoader {
     private static AssetLoader instance;
     private TextureBank textures;
     private PamPlayer player;
+
+    private final Skin skin = PvzSkin.get();
+
     public static AssetLoader getInstance ()
     {
         if (instance == null)
@@ -18,7 +23,7 @@ public class AssetLoader {
         return instance;
     }
     public void init(){
-        if (textures == null && player == null) {
+        if (textures == null || player == null) {
             FileHandle assetsFolder = Gdx.files.internal("pvz2assets");
             textures = new TextureBank("768", assetsFolder);
             player = new PamPlayer(textures, assetsFolder);
@@ -47,7 +52,11 @@ public class AssetLoader {
         }
     }
 
+    public Skin getSkin() {
+        return skin;
+    }
 
-
-
+    public TextureBank getTextures() {
+        return textures;
+    }
 }

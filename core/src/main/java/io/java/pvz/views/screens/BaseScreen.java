@@ -30,10 +30,6 @@ public abstract class BaseScreen implements Screen {
         this.batch = new SpriteBatch();
         this.camera = new OrthographicCamera();
         this.viewport = new FitViewport(1920, 1080, camera);
-    }
-
-    @Override
-    public void show() {
         stage = new Stage(viewport, batch);
 
         rootStack = new Stack();
@@ -48,6 +44,10 @@ public abstract class BaseScreen implements Screen {
         rootStack.add(toastLayer);
 
         stage.addActor(rootStack);
+    }
+
+    @Override
+    public void show() {
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -83,16 +83,14 @@ public abstract class BaseScreen implements Screen {
 
     @Override
     public void hide() {
-        Gdx.input.setInputProcessor(null);
+        if (Gdx.input.getInputProcessor() == stage) {
+            Gdx.input.setInputProcessor(null);
+        }
     }
 
     @Override
     public void dispose() {
-        if (stage != null) {
-            stage.dispose();
-        }
-        if (batch != null) {
-            batch.dispose();
-        }
+        if (stage != null) stage.dispose();
+        if (batch != null) batch.dispose();
     }
 }
