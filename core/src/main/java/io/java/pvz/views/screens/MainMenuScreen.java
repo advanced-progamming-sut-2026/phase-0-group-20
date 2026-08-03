@@ -116,6 +116,7 @@ public class MainMenuScreen extends BaseScreen {
 
     private Stack createIconButton(TextureBank textures, Skin skin, String iconId, ButtonAnimator.OnClickListener clickListener) {
         Stack stack = new Stack();
+        stack.setTouchable(Touchable.enabled);
 
         Table bgTable = new Table();
         if (skin.has("image_ui_generic_brownbutton_10", Drawable.class)) {
@@ -129,12 +130,11 @@ public class MainMenuScreen extends BaseScreen {
         Container<Image> iconContainer = new Container<>(icon);
         iconContainer.size(100, 100);
 
-        stack.add(bgContainer);
-        stack.add(iconContainer);
-
         bgContainer.setTouchable(Touchable.disabled);
         iconContainer.setTouchable(Touchable.disabled);
-        stack.setTouchable(Touchable.enabled);
+
+        stack.add(bgContainer);
+        stack.add(iconContainer);
 
         ButtonAnimator.applyHoverAndClickEffect(stack, 1.5f, 0.9f, clickListener);
 
