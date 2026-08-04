@@ -14,7 +14,8 @@ public final class ButtonAnimator {
         void onClick();
     }
 
-    public static void applyHoverAndClickEffect(Actor actor, float hoverScale, float clickScale, OnClickListener listener) {
+    public static void applyHoverAndClickEffect(Actor actor, float hoverScale,
+                                                float clickScale, OnClickListener listener) {
         actor.setOrigin(Align.center);
 
         actor.addListener(new InputListener() {
