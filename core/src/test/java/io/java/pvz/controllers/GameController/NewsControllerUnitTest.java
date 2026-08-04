@@ -1,9 +1,9 @@
 package io.java.pvz.controllers.GameController;
 
-import controllers.GameController.NewsController;
-import models.App;
-import models.Result;
-import models.news.Message;
+import io.java.pvz.controllers.GameController.NewsController;
+import io.java.pvz.models.App;
+import io.java.pvz.models.Result;
+import io.java.pvz.models.news.Message;
 import org.junit.Before;
 import org.junit.Test;
 

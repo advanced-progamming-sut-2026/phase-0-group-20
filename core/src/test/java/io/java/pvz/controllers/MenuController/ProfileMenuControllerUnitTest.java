@@ -1,14 +1,14 @@
 package io.java.pvz.controllers.MenuController;
 
-import controllers.MenuController.ProfileMenuController;
-import models.App;
-import models.Result;
-import models.database.DataBaseManager;
-import models.database.UserRepository;
-import models.enums.Gender;
-import models.enums.SecurityQuestion;
-import models.users.PasswordUtils;
-import models.users.User;
+import io.java.pvz.controllers.MenuController.ProfileMenuController;
+import io.java.pvz.models.App;
+import io.java.pvz.models.Result;
+import io.java.pvz.models.database.DataBaseManager;
+import io.java.pvz.models.database.UserRepository;
+import io.java.pvz.models.enums.Gender;
+import io.java.pvz.models.enums.SecurityQuestion;
+import io.java.pvz.models.users.PasswordUtils;
+import io.java.pvz.models.users.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

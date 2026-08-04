@@ -15,7 +15,7 @@ public class Pvz extends Game {
         AssetLoader.getInstance().init();
 
         ScreenManager.getInstance().initialize(this);
-        ScreenManager.getInstance().setRootScreen(new SignupScreen(this));
+        ScreenManager.getInstance().setRootScreen(new MainMenuScreen(this));
     }
 
     @Override
