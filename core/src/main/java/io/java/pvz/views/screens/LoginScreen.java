@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -58,7 +59,8 @@ public class LoginScreen extends BaseScreen {
         mainLayer.clear();
         mainLayer.setFillParent(true);
 
-        Table centerTable = new Table();
+        BorderedTable centerTable = new BorderedTable();
+        centerTable.pad(70);
         centerTable.defaults().pad(5).width(400);
 
         return centerTable;
@@ -82,6 +84,7 @@ public class LoginScreen extends BaseScreen {
 
         CheckBox stayLoggedIn = new CheckBox(" Stay logged in", skin);
         stayLoggedIn.getLabel().setFontScale(2);
+        stayLoggedIn.getLabel().setColor(Color.BROWN);
         stayLoggedIn.setScale(2);
         baseTable.add(stayLoggedIn).left().padTop(15).padBottom(15).row();
 
@@ -132,10 +135,7 @@ public class LoginScreen extends BaseScreen {
         modalLayer.clearChildren();
         TextField.TextFieldStyle style = buildStyle();
 
-        Table popup = new Table();
-
-        if (skin.has("BorderedTable", Drawable.class))
-            popup.setBackground(skin.getDrawable("BorderedTable"));
+        BorderedTable popup = new BorderedTable();
 
         popup.pad(40);
         popup.defaults().pad(10);
@@ -147,6 +147,7 @@ public class LoginScreen extends BaseScreen {
         popup.add(backBtn).width(100).height(50).left().padBottom(15).row();
 
         Label title = new Label("Forgot Password", skin);
+        title.setColor(Color.BROWN);
         title.setFontScale(1.5f);
         popup.add(title).padBottom(20).row();
 
@@ -181,9 +182,7 @@ public class LoginScreen extends BaseScreen {
         modalLayer.clearChildren();
         TextField.TextFieldStyle style = buildStyle();
 
-        Table popup = new Table();
-        if (skin.has("BorderedTable", Drawable.class))
-            popup.setBackground(skin.getDrawable("BorderedTable"));
+        BorderedTable popup = new BorderedTable();
 
         popup.pad(40);
         popup.defaults().pad(10);
@@ -193,10 +192,12 @@ public class LoginScreen extends BaseScreen {
         popup.add(backBtn).width(100).height(50).left().padBottom(15).row();
 
         Label title1 = new Label("Security Question:", skin);
+        title1.setColor(Color.BROWN);
         title1.setFontScale(1.5f);
         popup.add(title1).padBottom(5).row();
 
         Label title2 = new Label(securityQuestion, skin);
+        title2.setColor(Color.BROWN);
         title2.setFontScale(1.5f);
         popup.add(title2).padBottom(20).row();
 
@@ -226,9 +227,7 @@ public class LoginScreen extends BaseScreen {
         modalLayer.clearChildren();
         TextField.TextFieldStyle style = buildStyle();
 
-        Table popup = new Table();
-        if (skin.has("BorderedTable", Drawable.class))
-            popup.setBackground(skin.getDrawable("BorderedTable"));
+        BorderedTable popup = new BorderedTable();
 
         popup.pad(40);
         popup.defaults().pad(10);

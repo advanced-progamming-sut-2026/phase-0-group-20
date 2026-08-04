@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -14,6 +15,7 @@ import io.java.pvz.models.enums.SecurityQuestion;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
+import pvz.skin.BorderedTable;
 
 public class SignupScreen extends BaseScreen {
 
@@ -79,7 +81,8 @@ public class SignupScreen extends BaseScreen {
         mainLayer.clear();
         mainLayer.setFillParent(true);
 
-        Table centerTable = new Table();
+        BorderedTable centerTable = new BorderedTable();
+        centerTable.pad(80);
         centerTable.defaults().pad(5).width(400);
 
         return centerTable;
@@ -131,7 +134,7 @@ public class SignupScreen extends BaseScreen {
         mainLayer.clear();
         modalLayer.clearChildren();
         Skin skin = AssetLoader.getInstance().getSkin();
-        Table popup = new Table();
+        BorderedTable popup = new BorderedTable();
 
         TextButton backBtn = UiFactory.textButton("Back", skin, "default", 1.05f, 0.95f, () -> {
             modalLayer.clearChildren();
@@ -139,7 +142,9 @@ public class SignupScreen extends BaseScreen {
         });
         popup.add(backBtn).width(100).height(50).left().padBottom(15).row();
 
-        popup.add(new Label("Select a Security Question", skin)).padBottom(20).row();
+        Label questionTitle = new Label("Select a Security Question", skin);
+        questionTitle.setColor(Color.BROWN);
+        popup.add(questionTitle).padBottom(20).row();
 
         SecurityQuestion[] questions = SecurityQuestion.values();
         for (int i = 0; i < questions.length; i++) {
@@ -161,14 +166,16 @@ public class SignupScreen extends BaseScreen {
         Skin skin = AssetLoader.getInstance().getSkin();
         TextField.TextFieldStyle style = buildStyle();
 
-        Table popup = new Table();
+        BorderedTable popup = new BorderedTable();
 
         TextButton backBtn = UiFactory.textButton("Back", skin, "default",
             1.05f, 0.95f, this::showSecurityQuestionsList);
 
         popup.add(backBtn).width(100).height(50).left().padBottom(15).row();
 
-        popup.add(new Label(questionText, skin)).padBottom(20).row();
+        Label questionLabel = new Label(questionText, skin);
+        questionLabel.setColor(Color.BROWN);
+        popup.add(questionLabel).padBottom(20).row();
 
         TextField answerField = new TextField("", style);
         answerField.setMessageText("Your Answer");
