@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.views.screens.MainMenuScreen;
+import io.java.pvz.views.screens.SignupScreen;
 
 public class Pvz extends Game {
     @Override
@@ -14,7 +15,7 @@ public class Pvz extends Game {
         AssetLoader.getInstance().init();
 
         ScreenManager.getInstance().initialize(this);
-        ScreenManager.getInstance().setRootScreen(new MainMenuScreen(this));
+        ScreenManager.getInstance().setRootScreen(new SignupScreen(this));
     }
 
     @Override

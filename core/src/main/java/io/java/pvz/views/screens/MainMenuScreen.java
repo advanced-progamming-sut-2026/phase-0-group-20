@@ -2,13 +2,10 @@ package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -73,8 +70,12 @@ public class MainMenuScreen extends BaseScreen {
         nameEntryTable.add(nameField).expandX().fillX().padRight(15);
         nameEntryTable.add(profileIcon).left().size(40, 40).pad(15);
 
-
         center.add(nameEntryTable).width(360).height(65).padBottom(30).row();
+
+        mainLayer.add(buildButtons(textures, skin, center)).growX().padBottom(60).bottom();
+    }
+
+    private Table buildButtons(TextureBank textures, Skin skin, Table center) {
 
         TextButton playBtn = new TextButton("Play", skin, "purple");
         playBtn.getLabel().setFontScale(1.5f);
@@ -111,10 +112,11 @@ public class MainMenuScreen extends BaseScreen {
         bottomContainer.add(settingsBtn).padRight(50).bottom();
         bottomContainer.add(leaderboardBtn).padRight(50).bottom();
 
-        mainLayer.add(bottomContainer).growX().padBottom(60).bottom();
+        return bottomContainer;
     }
 
-    private Stack createIconButton(TextureBank textures, Skin skin, String iconId, ButtonAnimator.OnClickListener clickListener) {
+    private Stack createIconButton(TextureBank textures,
+                                   Skin skin, String iconId, ButtonAnimator.OnClickListener clickListener) {
         Stack stack = new Stack();
         stack.setTouchable(Touchable.enabled);
 
