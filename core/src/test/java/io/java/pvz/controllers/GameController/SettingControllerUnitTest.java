@@ -1,8 +1,8 @@
 package io.java.pvz.controllers.GameController;
 
-import controllers.GameController.SettingController;
-import models.App;
-import models.Result;
+import io.java.pvz.controllers.GameController.SettingController;
+import io.java.pvz.models.App;
+import io.java.pvz.models.Result;
 import org.junit.Before;
 import org.junit.Test;
 

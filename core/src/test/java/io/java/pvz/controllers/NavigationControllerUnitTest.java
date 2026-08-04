@@ -1,9 +1,9 @@
 package io.java.pvz.controllers;
 
-import controllers.NavigationController;
-import models.App;
-import models.Result;
-import models.enums.Menu;
+import io.java.pvz.controllers.NavigationController;
+import io.java.pvz.models.App;
+import io.java.pvz.models.Result;
+import io.java.pvz.models.enums.Menu;
 import org.junit.Before;
 import org.junit.Test;
 
