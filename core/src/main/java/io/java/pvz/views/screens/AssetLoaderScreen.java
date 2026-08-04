@@ -12,6 +12,10 @@ import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.GameInitializer;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.App;
+import io.java.pvz.models.database.DataBaseManager;
+import io.java.pvz.models.game.adventure.Adventure;
+import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import pvz.libpvz.textures.TextureBank;
 
@@ -86,9 +90,14 @@ public class AssetLoaderScreen extends BaseScreen {
             virtualProgress += delta;
         progressBar.setValue(virtualProgress);
 
-        if (isInitFinished && virtualProgress >= 1f)
-            ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
-
+        if (isInitFinished && virtualProgress >= 1f) {
+            User stayedUser = DataBaseManager.getLoggedInUser();
+            if (stayedUser == null) {
+                App.setActiveAdventure(new Adventure());
+                ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
+            } else
+                ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
+        }
         stage.act(delta);
         stage.draw();
     }

@@ -8,8 +8,6 @@ import io.java.pvz.views.screens.AssetLoaderScreen;
 public class Pvz extends Game {
     @Override
     public void create() {
-//        AssetLoader.getInstance().init();
-
         ScreenManager.getInstance().initialize(this);
         ScreenManager.getInstance().setRootScreen(new AssetLoaderScreen(this));
     }
