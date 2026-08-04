@@ -2,35 +2,38 @@ package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import io.java.pvz.controllers.ButtonAnimator;
 import io.java.pvz.controllers.MenuController.SignupMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
+import io.java.pvz.models.enums.SecurityQuestion;
 import io.java.pvz.utils.Ids;
+import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
 
 public class SignupScreen extends BaseScreen {
 
     private final SignupMenuController signupController;
     private TextureRegion backgroundRegion;
+    private final Skin skin;
+    private final TextureBank  textures;
 
     public SignupScreen(Game game) {
         super(game);
+        skin = AssetLoader.getInstance().getSkin();
+        textures = AssetLoader.getInstance().getTextures();
+
         this.signupController = new SignupMenuController();
         buildUI();
     }
 
     private void buildUI() {
-        Skin skin = AssetLoader.getInstance().getSkin();
-
         Table baseTable = buildBaseTable();
-        TextField.TextFieldStyle customFieldStyle = buildStyle(skin);
+        TextField.TextFieldStyle customFieldStyle = buildStyle();
 
         TextField usernameField = createField("Username", false, customFieldStyle);
         TextField passwordField = createField("Password", true, customFieldStyle);
@@ -39,12 +42,12 @@ public class SignupScreen extends BaseScreen {
         TextField emailField = createField("Email", false, customFieldStyle);
         TextField genderField = createField("Gender (MALE/FEMALE)", false, customFieldStyle);
 
-        baseTable.add(usernameField).height(50).row();
-        baseTable.add(passwordField).height(50).row();
-        baseTable.add(repeatPasswordField).height(50).row();
-        baseTable.add(nicknameField).height(50).row();
-        baseTable.add(emailField).height(50).row();
-        baseTable.add(genderField).height(50).row();
+        baseTable.add(usernameField).height(65).width(350).padBottom(5).row();
+        baseTable.add(passwordField).height(65).width(350).padBottom(5).row();
+        baseTable.add(repeatPasswordField).height(65).width(350).padBottom(5).row();
+        baseTable.add(nicknameField).height(65).width(350).padBottom(5).row();
+        baseTable.add(emailField).height(65).width(350).padBottom(5).row();
+        baseTable.add(genderField).height(65).width(350).padBottom(15).row();;
 
         TextButton registerBtn = new TextButton("Register", skin, "purple");
         ButtonAnimator.applyHoverAndClickEffect(registerBtn, 1.1f, 0.9f, () -> {
@@ -52,10 +55,10 @@ public class SignupScreen extends BaseScreen {
                 repeatPasswordField.getText(), nicknameField.getText(), emailField.getText(), genderField.getText()
             );
 
-            if (result.isSuccessful()) {
-                System.out.println("Registration Initial Step Success!");
-                // TODO: Security questions
-            } else System.out.println("Registration Failed: " + result.message());
+            if (result.isSuccessful())
+                showSecurityQuestionsList();
+            else
+                System.out.println("Registration Failed: " + result.message());
 
         });
         baseTable.add(registerBtn).height(70).padTop(15).row();
@@ -82,14 +85,17 @@ public class SignupScreen extends BaseScreen {
         return centerTable;
     }
 
-    private TextField.TextFieldStyle buildStyle(Skin skin) {
-
+    private TextField.TextFieldStyle buildStyle() {
         TextField.TextFieldStyle baseStyle = skin.get(TextField.TextFieldStyle.class);
         TextField.TextFieldStyle customFieldStyle = new TextField.TextFieldStyle(baseStyle);
-
-        customFieldStyle.background = null;
-        customFieldStyle.focusedBackground = null;
         customFieldStyle.font = skin.getFont("FBUSV8C5EI_1");
+        customFieldStyle.messageFont = skin.getFont("FBUSV8C5EI_1");
+
+        Label.LabelStyle labelStyle = skin.get("bundle_reward_multiplier", Label.LabelStyle.class);
+        Drawable woodBackground = labelStyle.background;
+
+        customFieldStyle.background = woodBackground;
+        customFieldStyle.focusedBackground = woodBackground;
 
         return customFieldStyle;
     }
@@ -119,5 +125,73 @@ public class SignupScreen extends BaseScreen {
 
         stage.act(delta);
         stage.draw();
+    }
+
+    private void showSecurityQuestionsList() {
+        mainLayer.clear();
+        modalLayer.clearChildren();
+        Skin skin = AssetLoader.getInstance().getSkin();
+        Table popup = new Table();
+
+        TextButton backBtn = UiFactory.textButton("Back", skin, "default", 1.05f, 0.95f, () -> {
+            modalLayer.clearChildren();
+            buildUI();
+        });
+        popup.add(backBtn).width(100).height(50).left().padBottom(15).row();
+
+        popup.add(new Label("Select a Security Question", skin)).padBottom(20).row();
+
+        SecurityQuestion[] questions = SecurityQuestion.values();
+        for (int i = 0; i < questions.length; i++) {
+            final String qNumber = String.valueOf(i + 1);
+            final String qText = questions[i].getQuestion();
+
+            TextButton qBtn = new TextButton(qText, skin, "default");
+            ButtonAnimator.applyHoverAndClickEffect(qBtn, 1.02f, 0.98f, () -> {
+                showAnswerPopup(qNumber, qText);
+            });
+            popup.add(qBtn).fillX().padBottom(5).row();
+        }
+
+        modalLayer.add(popup).center();
+    }
+
+    private void showAnswerPopup(String qNumber, String questionText) {
+        modalLayer.clearChildren();
+        Skin skin = AssetLoader.getInstance().getSkin();
+        TextField.TextFieldStyle style = buildStyle();
+
+        Table popup = new Table();
+
+        TextButton backBtn = UiFactory.textButton("Back", skin, "default",
+            1.05f, 0.95f, this::showSecurityQuestionsList);
+
+        popup.add(backBtn).width(100).height(50).left().padBottom(15).row();
+
+        popup.add(new Label(questionText, skin)).padBottom(20).row();
+
+        TextField answerField = new TextField("", style);
+        answerField.setMessageText("Your Answer");
+        answerField.setAlignment(Align.center);
+
+        TextField confirmField = new TextField("", style);
+        confirmField.setMessageText("Confirm Answer");
+        confirmField.setAlignment(Align.center);
+
+        TextButton submitBtn = new TextButton("Submit Registration", skin, "purple");
+        ButtonAnimator.applyHoverAndClickEffect(submitBtn, 1.1f, 0.9f, () -> {
+            Result result = signupController.pickQuestion(qNumber, answerField.getText(), confirmField.getText());
+            if (result.isSuccessful())
+                ScreenManager.getInstance().pushScreen(new LoginScreen(game));
+            else
+                System.out.println("Error: " + result.message());
+
+        });
+
+        popup.add(answerField).height(50).width(350).padBottom(10).row();
+        popup.add(confirmField).height(50).width(350).padBottom(20).row();
+        popup.add(submitBtn).height(60).width(250).row();
+
+        modalLayer.add(popup).center();
     }
 }

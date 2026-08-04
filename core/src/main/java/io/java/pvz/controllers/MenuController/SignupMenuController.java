@@ -105,7 +105,7 @@ public class SignupMenuController {
     }
 
     private void loadInitialQuestsForUser(User user) {
-        List<Quest> loadedQuests = QuestLoader.loadQuestsFromJson("core/resources/quests.json");
+        List<Quest> loadedQuests = QuestLoader.loadQuestsFromJson("resources/quests.json");
         for (Quest q : loadedQuests) {
             user.getQuestManager().addQuest(q);
         }

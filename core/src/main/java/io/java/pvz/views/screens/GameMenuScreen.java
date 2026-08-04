@@ -9,9 +9,9 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
 import io.java.pvz.controllers.GameMenuController;
-import io.java.pvz.controllers.GameMenuType;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.enums.Menu;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
@@ -35,13 +35,13 @@ public class GameMenuScreen extends BaseScreen {
     }
 
     private void registerMenuPanels() {
-//         menuController.register(GameMenuType.SHOP_MENU, () -> ShopMenu.build());
-//         menuController.register(GameMenuType.COLLECTION_MENU, () -> CollectionMenu.build());
-//         menuController.register(GameMenuType.GREENHOUSE_MENU, () -> GreenHouseMenu.build());
-//         menuController.register(GameMenuType.LEADERBOARD_MENU, () -> LeaderBoard.build());
-//         menuController.register(GameMenuType.PLANTSELECTION_MENU, () -> PlantSelectionMenu.build());
-//         menuController.register(GameMenuType.TRAVELLOG_MENU, () -> TravelLogMenu.build());
-//         menuController.register(GameMenuType.LEVEL_SELECTION_MENU, () -> LevelSelectionMenu.build());
+//         menuController.register(Menu.SHOP_MENU, () -> ShopMenu.build());
+//         menuController.register(Menu.COLLECTION_MENU, () -> CollectionMenu.build());
+//         menuController.register(Menu.GREENHOUSE_MENU, () -> GreenHouseMenu.build());
+//         menuController.register(Menu.LEADERBOARD_MENU, () -> LeaderBoard.build());
+//         menuController.register(Menu.PLANTSELECTION_MENU, () -> PlantSelectionMenu.build());
+//         menuController.register(Menu.TRAVELLOG_MENU, () -> TravelLogMenu.build());
+//         menuController.register(Menu.LEVEL_SELECTION_MENU, () -> LevelSelectionMenu.build());
     }
 
     private void buildTopBar() {
@@ -62,10 +62,10 @@ public class GameMenuScreen extends BaseScreen {
             () -> System.out.println("Options Clicked"))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.ALMANAC_ICON,100, 100,
-            () -> menuController.open(GameMenuType.COLLECTION_MENU))).padRight(30);
+            () -> menuController.open(Menu.COLLECTION_MENU))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.GREENHOUSE_ICON,100, 100,
-            () -> menuController.open(GameMenuType.GREENHOUSE_MENU))).padRight(30);
+            () -> menuController.open(Menu.GREENHOUSE_MENU))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON,100, 100,
             () -> System.out.println("News Clicked")));
@@ -79,7 +79,7 @@ public class GameMenuScreen extends BaseScreen {
         this.coinLabel = (Label) coinDisplay.getUserObject();
 
         Stack shopBtn = UiFactory.iconButton(textures, skin, Ids.GameScreen.SHOP_ICON,120, 120,
-            () -> menuController.open(GameMenuType.SHOP_MENU));
+            () -> menuController.open(Menu.SHOP_MENU));
 
         topRightGroup.add(diamondDisplay).width(160).height(55).padRight(40);
         topRightGroup.add(coinDisplay).width(160).height(55).padRight(100);
@@ -98,7 +98,7 @@ public class GameMenuScreen extends BaseScreen {
             () -> System.out.println("Event Clicked"))).padRight(30).padLeft(20);
 
         subLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON,90, 90,
-            () -> menuController.open(GameMenuType.TRAVELLOG_MENU)));
+            () -> menuController.open(Menu.TRAVELLOG_MENU)));
 
         Table subRightGroup = new Table();
         TextButton earnDiamondBtn = createEarnButton(skin, () -> System.out.println("Earn Diamond!"));

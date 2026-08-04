@@ -3,13 +3,10 @@ package io.java.pvz.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Container;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 
 import io.java.pvz.controllers.ButtonAnimator;
@@ -55,4 +52,23 @@ public final class UiFactory {
         ButtonAnimator.applyHoverAndClickEffect(stack, 1.1f, 0.9f, clickListener);
         return stack;
     }
+
+    public static TextButton textButton(String text, Skin skin, String styleName, float hoverScale, float clickScale,
+                                        ButtonAnimator.OnClickListener clickListener) {
+        TextButton button = new TextButton(text, skin, styleName);
+        if (clickListener != null)
+            ButtonAnimator.applyHoverAndClickEffect(button, hoverScale, clickScale, clickListener);
+        return button;
+    }
+
+    public static Image imageButton(Skin skin, String drawableName, float hoverScale, float clickScale,
+                                    ButtonAnimator.OnClickListener clickListener) {
+        Image image = new Image(skin.getDrawable(drawableName));
+        image.setOrigin(Align.center);
+        image.setTouchable(Touchable.enabled);
+        if (clickListener != null)
+            ButtonAnimator.applyHoverAndClickEffect(image, hoverScale, clickScale, clickListener);
+        return image;
+    }
+
 }
