@@ -17,8 +17,8 @@ import java.util.Map;
 
 public class GameInitializer {
 
-    private static final String PLANTS_JSON_PATH = "core/resources/plants.json";
-    private static final String ZOMBIES_JSON_PATH = "core/resources/zombies.json";
+    private static final String PLANTS_JSON_PATH = "resources/plants.json";
+    private static final String ZOMBIES_JSON_PATH = "resources/zombies.json";
 
     public static void loadAllResources() {
         initPlants();

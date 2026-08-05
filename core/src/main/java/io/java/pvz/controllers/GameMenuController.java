@@ -2,6 +2,7 @@ package io.java.pvz.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import io.java.pvz.models.enums.Menu;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -10,19 +11,20 @@ import java.util.function.Supplier;
 public class GameMenuController {
 
     private final Table modalLayer;
-    private final Map<GameMenuType, Supplier<Table>> panelFactories = new EnumMap<>(GameMenuType.class);
-    private GameMenuType current = GameMenuType.GAME_MENU;
+    private final Map<Menu, Supplier<Table>> panelFactories = new EnumMap<>(Menu.class);
+    private Menu current = Menu.GAME_MENU;
 
     public GameMenuController(Table modalLayer) {
         this.modalLayer = modalLayer;
     }
 
-    public void register(GameMenuType type, Supplier<Table> panelFactory) {
+    public void register(Menu type, Supplier<Table> panelFactory) {
         panelFactories.put(type, panelFactory);
     }
 
-    public void open(GameMenuType target) {
-        if (target != current && !current.reachableMenus().contains(target)) {
+    public void open(Menu target) {
+        System.out.println("current: " + current + " target: " + target);
+        if (target != current && !current.getAllowedEntryTargets().contains(target)) {
             Gdx.app.error("GameMenuController", "Cannot navigate from " + current + " to " + target);
             return;
         }
@@ -30,17 +32,17 @@ public class GameMenuController {
     }
 
     public void goBack() {
-        GameMenuType exitTarget = current.getExitTarget();
+        Menu exitTarget = current.getExitTarget();
         if (exitTarget != null) {
             showPanel(exitTarget);
         }
     }
 
-    private void showPanel(GameMenuType target) {
+    private void showPanel(Menu target) {
         modalLayer.clearChildren();
         current = target;
 
-        if (target == GameMenuType.GAME_MENU) {
+        if (target == Menu.GAME_MENU) {
             return;
         }
 
@@ -52,7 +54,7 @@ public class GameMenuController {
         modalLayer.add(factory.get()).grow();
     }
 
-    public GameMenuType getCurrent() {
+    public Menu getCurrent() {
         return current;
     }
 }

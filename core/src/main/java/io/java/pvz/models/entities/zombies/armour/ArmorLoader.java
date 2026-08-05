@@ -27,7 +27,7 @@ public class ArmorLoader {
 
     public static ArmorLoader getInstance() {
         if (instance == null) {
-            instance = new ArmorLoader("core/resources/ArmorTypeData.json");
+            instance = new ArmorLoader("resources/ArmorTypeData.json");
         }
         return instance;
     }

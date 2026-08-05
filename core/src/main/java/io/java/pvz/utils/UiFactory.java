@@ -90,6 +90,22 @@ public final class UiFactory {
             }
         });
         return closeBtn;
+    public static TextButton textButton(String text, Skin skin, String styleName, float hoverScale, float clickScale,
+                                        ButtonAnimator.OnClickListener clickListener) {
+        TextButton button = new TextButton(text, skin, styleName);
+        if (clickListener != null)
+            ButtonAnimator.applyHoverAndClickEffect(button, hoverScale, clickScale, clickListener);
+        return button;
+    }
+
+    public static Image imageButton(Skin skin, String drawableName, float hoverScale, float clickScale,
+                                    ButtonAnimator.OnClickListener clickListener) {
+        Image image = new Image(skin.getDrawable(drawableName));
+        image.setOrigin(Align.center);
+        image.setTouchable(Touchable.enabled);
+        if (clickListener != null)
+            ButtonAnimator.applyHoverAndClickEffect(image, hoverScale, clickScale, clickListener);
+        return image;
     }
 
 }
