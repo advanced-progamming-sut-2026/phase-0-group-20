@@ -62,7 +62,7 @@ public class GameMenuScreen extends BaseScreen {
             () -> System.out.println("Options Clicked"))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.ALMANAC_ICON,100, 100,
-            () -> menuController.open(Menu.COLLECTION_MENU))).padRight(30);
+            () -> ScreenManager.getInstance().pushScreen(new CollectionScreen(game,skin))));
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.GREENHOUSE_ICON,100, 100,
             () -> menuController.open(Menu.GREENHOUSE_MENU))).padRight(30);

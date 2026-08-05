@@ -33,11 +33,11 @@ public class MainMenuScreen extends BaseScreen {
 
         Table topContainer = new Table();
 
-        Stack questBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON,100, 100,
+        Stack questBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON, 100, 100,
             () -> {
-            System.out.println("Quests Menu Opened!");
-            // TODO : push quests menu later
-        });
+                System.out.println("Quests Menu Opened!");
+                // TODO : push quests menu later
+            });
         topContainer.add(questBtn).padLeft(50).padTop(40).top().left();
         topContainer.add().expandX();
 
@@ -102,24 +102,36 @@ public class MainMenuScreen extends BaseScreen {
 
         Stack cloudBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.CLOUD_ICON, 100, 100,
             () -> {
-            System.out.println("Cloud Icon Clicked!");
-            // TODO : push later
-        });
+                System.out.println("Cloud Icon Clicked!");
+                // TODO : push later
+            });
         Stack newsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON, 100, 100,
             () -> {
-            System.out.println("News Icon Clicked!");
-            // TODO : push later
-        });
-        Stack leaderboardBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON,100, 100,
+                System.out.println("News Icon Clicked!");
+
+                NewsModalTable newsModal = new NewsModalTable(skin);
+
+                newsModal.setPosition(
+                    (viewport.getWorldWidth() - newsModal.getWidth()) / 2f,
+                    (viewport.getWorldHeight() - newsModal.getHeight()) / 2f
+                );
+                modalLayer.addActor(newsModal);
+            });
+        Stack leaderboardBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON, 100, 100,
             () -> {
-            System.out.println("Leader Board Clicked!");
-            // TODO : push later
-        });
+                System.out.println("Leader Board Clicked!");
+                // TODO : push later
+            });
         Stack settingsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON, 100, 100,
             () -> {
-            System.out.println("Settings button clicked");
-            // TODO : push later
-        });
+                System.out.println("Settings button clicked");
+                SettingModalTable settingModal = new SettingModalTable(skin);
+                settingModal.setPosition(
+                    (viewport.getWorldWidth() - settingModal.getWidth()) / 2f,
+                    (viewport.getWorldHeight() - settingModal.getHeight()) / 2f
+                );
+                modalLayer.addActor(settingModal);
+            });
 
         bottomContainer.add(cloudBtn).padLeft(50).padRight(50).bottom();
         bottomContainer.add(newsBtn).bottom();
