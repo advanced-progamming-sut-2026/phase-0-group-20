@@ -16,7 +16,7 @@ public final class Ids {
     }
 
     public static final class GameScreen {
-        public static final String ALMANAC_ICON = "IMAGE_UI_HUD_EVENTBUTTON_EVENT_ICON_TRIGGER_UP";
+        public static final String ALMANAC_ICON = "IMAGE_UI_HUD_ALMANACBUTTON_BUTTONS_HUD_ALMANAC_NORMAL";
         public static final String GEM_ICON = "IMAGE_UI_GENERIC_BUTTONS_PREMIUM_NORMAL";
         public static final String COIN_ICON = "IMAGE_UI_GENERIC_BUTTONS_COIN_BUY_NORMAL";
 
