@@ -27,6 +27,7 @@ public class LoginMenuController {
         if (user == null)
             return new Result(false, "incorrect password");
 
+        if (DataBaseManager.getLoggedInUser() != null) DataBaseManager.getLoggedInUser().setStayLoggedIn(false);
         user.setStayLoggedIn(stayLoggedIn);
         DataBaseManager.saveOrUpdateUser(user);
         App.setActiveUser(user);

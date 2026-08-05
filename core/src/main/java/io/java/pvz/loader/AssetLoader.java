@@ -13,7 +13,7 @@ public class AssetLoader {
     private PamPlayer player;
 
     private final Skin skin = PvzSkin.get();
-  
+
     public static AssetLoader getInstance() {
         if (instance == null) {
             instance = new AssetLoader();
