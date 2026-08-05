@@ -1,9 +1,8 @@
 package io.java.pvz.controllers.GameController;
 
-import io.java.pvz.controllers.GameController.NewsController;
 import io.java.pvz.models.App;
-import io.java.pvz.models.Result;
 import io.java.pvz.models.news.Message;
+import io.java.pvz.models.news.MessageType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,187 +24,138 @@ public class NewsControllerUnitTest {
         }
     }
 
+    // ==========================================
+    // Plant News Tests
+    // ==========================================
+
     @Test
-    public void testShowUnreadNewsSingleUnreadMessageReturnsMessageText() {
-        addMessages(new Message("msg1"));
-        Result result = controller.showUnreadNews();
-        assertTrue(result.isSuccessful());
-        assertEquals("msg1", result.message());
+    public void testShowUnreadPlantNewsReturnsOnlyPlantMessages() {
+        Message plantMsg = new Message("plant item", MessageType.PLANT);
+        Message zombieMsg = new Message("zombie item", MessageType.ZOMBIE);
+        addMessages(plantMsg, zombieMsg);
+
+        String result = controller.showUnreadPlantNews();
+
+        assertNotNull(result);
+        assertTrue(result.contains("plant item"));
+        assertFalse(result.contains("zombie item"));
+        assertFalse(plantMsg.isUnread());
     }
 
     @Test
-    public void testShowUnreadNewsMultipleUnreadMessagesReturnsAllTexts() {
-        addMessages(new Message("msg1"), new Message("msg2"), new Message("msg3"));
-        Result result = controller.showUnreadNews();
-        assertTrue(result.isSuccessful());
-        assertTrue(result.message().contains("msg1"));
-        assertTrue(result.message().contains("msg2"));
-        assertTrue(result.message().contains("msg3"));
+    public void testShowUnreadPlantNewsWhenNoPlantNewsReturnsNull() {
+        Message zombieMsg = new Message("zombie item", MessageType.ZOMBIE);
+        addMessages(zombieMsg);
+
+        String result = controller.showUnreadPlantNews();
+
+        assertNull(result);
+    }
+
+    // ==========================================
+    // Zombie News Tests
+    // ==========================================
+
+    @Test
+    public void testShowUnreadZombieNewsReturnsOnlyZombieMessages() {
+        Message zombieMsg = new Message("zombie item", MessageType.ZOMBIE);
+        addMessages(zombieMsg);
+
+        String result = controller.showUnreadZombieNews();
+
+        assertNotNull(result);
+        assertTrue(result.contains("zombie item"));
+        assertFalse(zombieMsg.isUnread());
     }
 
     @Test
-    public void testShowUnreadNewsMarksUnreadMessagesAsRead() {
-        Message msg1 = new Message("msg1");
-        Message msg2 = new Message("msg2");
-        addMessages(msg1, msg2);
+    public void testShowUnreadZombieNewsWhenNoZombieNewsReturnsNull() {
+        String result = controller.showUnreadZombieNews();
+        assertNull(result);
+    }
 
-        controller.showUnreadNews();
+    // ==========================================
+    // Level & Season News Tests
+    // ==========================================
 
-        assertFalse(msg1.isUnread());
-        assertFalse(msg2.isUnread());
+    @Test
+    public void testShowUnreadLevelNewsReturnsOnlyLevelMessages() {
+        Message levelMsg = new Message("level item", MessageType.LEVEL);
+        addMessages(levelMsg);
+
+        String result = controller.showUnreadLevelNews();
+
+        assertNotNull(result);
+        assertTrue(result.contains("level item"));
+        assertFalse(levelMsg.isUnread());
     }
 
     @Test
-    public void testShowUnreadNewsExcludesAlreadyReadMessages() {
-        Message readMsg = new Message("already read");
-        readMsg.setUnread(false);
-        Message unreadMsg = new Message("new message");
-        addMessages(readMsg, unreadMsg);
+    public void testShowUnreadSeasonNewsReturnsOnlySeasonMessages() {
+        Message seasonMsg = new Message("season item", MessageType.SEASON);
+        addMessages(seasonMsg);
 
-        Result result = controller.showUnreadNews();
-        assertFalse(result.message().contains("already read"));
-        assertTrue(result.message().contains("new message"));
+        String result = controller.showUnreadSeasonNews();
+
+        assertNotNull(result);
+        assertTrue(result.contains("season item"));
+        assertFalse(seasonMsg.isUnread());
     }
 
-    @Test
-    public void testShowUnreadNewsNoUnreadMessagesReturnsEmptyText() {
-        Message readMsg = new Message("already read");
-        readMsg.setUnread(false);
-        addMessages(readMsg);
+    // ==========================================
+    // Minigame News Tests
+    // ==========================================
 
-        Result result = controller.showUnreadNews();
-        assertTrue(result.isSuccessful());
-        assertEquals("", result.message());
+    @Test
+    public void testShowUnreadMinigameNewsReturnsOnlyMinigameMessages() {
+        Message minigameMsg = new Message("minigame item", MessageType.MINIGAME);
+        addMessages(minigameMsg);
+
+        String result = controller.showUnreadMinigameNews();
+
+        assertNotNull(result);
+        assertTrue(result.contains("minigame item"));
+        assertFalse(minigameMsg.isUnread());
     }
 
-    @Test
-    public void testShowUnreadNewsNoMessagesReturnsEmptyText() {
-        Result result = controller.showUnreadNews();
-        assertTrue(result.isSuccessful());
-        assertEquals("", result.message());
-    }
+    // ==========================================
+    // General Behavior Tests (Re-read & Formatting)
+    // ==========================================
 
     @Test
-    public void testShowUnreadNewsCalledTwiceSecondCallReturnsEmpty() {
-        addMessages(new Message("msg1"), new Message("msg2"));
+    public void testShowUnreadNewsCalledTwiceSecondCallReturnsNull() {
+        addMessages(new Message("plant item", MessageType.PLANT));
 
-        controller.showUnreadNews();
-        Result secondResult = controller.showUnreadNews();
+        controller.showUnreadPlantNews();
+        String secondCall = controller.showUnreadPlantNews();
 
-        assertTrue(secondResult.isSuccessful());
-        assertEquals("", secondResult.message());
-    }
-
-    @Test
-    public void testShowUnreadNewsMixedMessagesOnlyUnreadInResult() {
-        Message read1 = new Message("first read message");
-        read1.setUnread(false);
-        Message unread1 = new Message("first unread message");
-        Message read2 = new Message("second read message");
-        read2.setUnread(false);
-        Message unread2 = new Message("second unread message");
-        addMessages(read1, unread1, read2, unread2);
-
-        Result result = controller.showUnreadNews();
-        assertFalse(result.message().contains("first read message"));
-        assertFalse(result.message().contains("second read message"));
-        assertTrue(result.message().contains("first unread message"));
-        assertTrue(result.message().contains("second unread message"));
-    }
-
-    @Test
-    public void testShowUnreadNewsDoesNotChangeReadStatusOfAlreadyReadMessages() {
-        Message readMsg = new Message("already read");
-        readMsg.setUnread(false);
-        addMessages(readMsg);
-
-        controller.showUnreadNews();
-        assertFalse(readMsg.isUnread());
+        assertNull(secondCall);
     }
 
     @Test
     public void testShowUnreadNewsMultipleMessagesNoTrailingNewline() {
-        addMessages(new Message("msg1"), new Message("msg2"));
-        Result result = controller.showUnreadNews();
-        assertFalse(result.message().endsWith("\n"));
+        addMessages(
+            new Message("plant1", MessageType.PLANT),
+            new Message("plant2", MessageType.PLANT)
+        );
+
+        String result = controller.showUnreadPlantNews();
+
+        assertNotNull(result);
+        assertFalse(result.endsWith("\n"));
     }
 
     @Test
-    public void testShowAllNewsSingleMessageReturnsMessageText() {
-        addMessages(new Message("msg1"));
-        Result result = controller.showAllNews();
-        assertTrue(result.isSuccessful());
-        assertEquals("msg1", result.message());
-    }
-
-    @Test
-    public void testShowAllNewsMultipleMessagesReturnsAllTexts() {
-        addMessages(new Message("msg1"), new Message("msg2"), new Message("msg3"));
-        Result result = controller.showAllNews();
-        assertTrue(result.isSuccessful());
-        assertTrue(result.message().contains("msg1"));
-        assertTrue(result.message().contains("msg2"));
-        assertTrue(result.message().contains("msg3"));
-    }
-
-    @Test
-    public void testShowAllNewsMarksAllMessagesAsRead() {
-        Message msg1 = new Message("msg1");
-        Message msg2 = new Message("msg2");
-        addMessages(msg1, msg2);
-
-        controller.showAllNews();
-
-        assertFalse(msg1.isUnread());
-        assertFalse(msg2.isUnread());
-    }
-
-    @Test
-    public void testShowAllNewsIncludesAlreadyReadMessages() {
-        Message readMsg = new Message("already read");
+    public void testShowUnreadNewsExcludesAlreadyReadMessages() {
+        Message readMsg = new Message("already read plant", MessageType.PLANT);
         readMsg.setUnread(false);
-        addMessages(readMsg);
-
-        Result result = controller.showAllNews();
-        assertTrue(result.isSuccessful());
-        assertTrue(result.message().contains("already read"));
-    }
-
-    @Test
-    public void testShowAllNewsNoMessagesReturnsEmptyText() {
-        Result result = controller.showAllNews();
-        assertTrue(result.isSuccessful());
-        assertEquals("", result.message());
-    }
-
-    @Test
-    public void testShowAllNewsCalledTwiceSecondCallStillReturnsAllMessages() {
-        addMessages(new Message("msg1"), new Message("msg2"));
-
-        controller.showAllNews();
-        Result secondResult = controller.showAllNews();
-
-        assertTrue(secondResult.isSuccessful());
-        assertTrue(secondResult.message().contains("msg1"));
-        assertTrue(secondResult.message().contains("msg2"));
-    }
-
-    @Test
-    public void testShowAllNewsMixedReadAndUnreadReturnsAll() {
-        Message readMsg = new Message("read");
-        readMsg.setUnread(false);
-        Message unreadMsg = new Message("unread");
+        Message unreadMsg = new Message("unread plant", MessageType.PLANT);
         addMessages(readMsg, unreadMsg);
 
-        Result result = controller.showAllNews();
-        assertTrue(result.message().contains("read"));
-        assertTrue(result.message().contains("unread"));
-    }
+        String result = controller.showUnreadPlantNews();
 
-    @Test
-    public void testShowAllNewsMultipleMessagesNoTrailingNewline() {
-        addMessages(new Message("msg1"), new Message("msg2"));
-        Result result = controller.showAllNews();
-        assertFalse(result.message().endsWith("\n"));
+        assertNotNull(result);
+        assertFalse(result.contains("already read plant"));
+        assertTrue(result.contains("unread plant"));
     }
 }

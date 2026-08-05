@@ -1,23 +1,33 @@
 package io.java.pvz.models;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+
 public class Settings {
     private static Settings instance;
+    private final Preferences prefs;
+
     private float musicVolume;
     private float sfxVolume;
     private int difficulty;
 
+    private boolean isGrid;
+    private boolean isDebug;
+
     private Settings() {
+        prefs = Gdx.app.getPreferences("pvz_settings");
 
-
+        musicVolume = prefs.getFloat("musicVolume", 5f);
+        sfxVolume = prefs.getFloat("sfxVolume", 5f);
+        isGrid = prefs.getBoolean("isGrid", false);
+        isDebug = prefs.getBoolean("isDebug", false);
     }
 
     public static Settings getInstance() {
         if (instance == null) {
             instance = new Settings();
-            instance.musicVolume = 50.0f;
-            instance.sfxVolume = 50.0f;
-            instance.difficulty = 3;
         }
+        instance.setDifficulty((App.getActiveUser()) == null ? 3 : App.getActiveUser().getDifficulty());
         return instance;
     }
 
@@ -27,6 +37,8 @@ public class Settings {
 
     public void setMusicVolume(float musicVolume) {
         this.musicVolume = musicVolume;
+        prefs.putFloat("musicVolume", musicVolume);
+        prefs.flush();
     }
 
     public float getSfxVolume() {
@@ -35,6 +47,8 @@ public class Settings {
 
     public void setSfxVolume(float sfxVolume) {
         this.sfxVolume = sfxVolume;
+        prefs.putFloat("sfxVolume", sfxVolume);
+        prefs.flush();
     }
 
     public int getDifficulty() {
@@ -43,6 +57,29 @@ public class Settings {
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
+        if(App.getActiveUser() != null) {
+            App.getActiveUser().setDifficulty(difficulty);
+        }
+    }
+
+    public boolean isGrid() {
+        return isGrid;
+    }
+
+    public void setGrid(boolean grid) {
+        this.isGrid = grid;
+        prefs.putBoolean("isGrid", grid);
+        prefs.flush();
+    }
+
+    public boolean isDebug() {
+        return isDebug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.isDebug = debug;
+        prefs.putBoolean("isDebug", debug);
+        prefs.flush();
     }
 
     public float getZombieHealthMultiplier() {

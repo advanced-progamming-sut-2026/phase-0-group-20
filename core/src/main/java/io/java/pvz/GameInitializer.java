@@ -1,6 +1,7 @@
 package io.java.pvz;
 
 import io.java.pvz.models.App;
+import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.PlantData;
 import io.java.pvz.models.entities.plants.PlantFactory;
@@ -8,7 +9,10 @@ import io.java.pvz.models.entities.plants.PlantLoader;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieFactory;
 import io.java.pvz.models.entities.zombies.ZombieType;
+import io.java.pvz.models.enums.Menu;
+import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.game.events.DailyResetListener;
+import io.java.pvz.models.users.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +28,17 @@ public class GameInitializer {
         initPlants();
         initZombies();
         DailyResetListener dailyResetListener = new DailyResetListener();
+        User stayedUser = DataBaseManager.getLoggedInUser();
+        if (stayedUser == null) {
+            App.setActiveAdventure(new Adventure());
+        }
+
+        if (stayedUser != null) {
+            App.setActiveUser(stayedUser);
+            App.setActiveAdventure(new Adventure());
+            System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
+            App.setAllUsers(DataBaseManager.getAllUsers());
+        }
     }
 
     private static void initPlants() {

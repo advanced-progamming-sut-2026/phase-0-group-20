@@ -336,8 +336,19 @@ public class User {
         return progress.getUnlockedMinigames();
     }
 
+    @JsonIgnore
+    public void setDifficulty(int difficulty) {
+        progress.setDesiredDifficulty(difficulty);
+    }
+
+    @JsonIgnore
+    public int getDifficulty() {
+        return progress.getDesiredDifficulty();
+    }
+
     public void unlockedPlants(Plant p) {
         getUnlockedPlants().add(p);
+        this.addMessage(Message.plantUnlockedMessage(p));
     }
 
     public int getUnlockedLevelInMinigame(MiniGameType type) {

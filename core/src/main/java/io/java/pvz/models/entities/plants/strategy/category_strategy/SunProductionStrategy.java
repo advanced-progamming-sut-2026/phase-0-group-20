@@ -72,7 +72,7 @@ public class SunProductionStrategy implements IPlantStrategy {
         gameSession.getTimeManager().registerNewTicker(newSun);
     }
 
-    private SunType getSunTypeForPlant(String plantName, int aliveTicks) {
+    public SunType getSunTypeForPlant(String plantName, int aliveTicks) {
         return switch (plantName) {
             case "Sunflower" -> SunType.NORMAL_SUN;
             case "Twin Sunflower" -> SunType.SPECIAL_SUN;

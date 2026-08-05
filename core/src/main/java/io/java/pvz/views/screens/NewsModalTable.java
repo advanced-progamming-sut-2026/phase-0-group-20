@@ -1,16 +1,17 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.NewsController;
-import io.java.pvz.models.Result;
 import io.java.pvz.utils.UiFactory;
 import pvz.skin.BorderedTable;
 
 public class NewsModalTable extends BorderedTable {
     private final NewsController controller = new NewsController();
-
+    private Actor blocker;
     public NewsModalTable(Skin skin) {
         super();
 
@@ -26,7 +27,7 @@ public class NewsModalTable extends BorderedTable {
 
         TextButton closeBtn = UiFactory.getCloseBtn(skin, this::remove);
 
-        Label titleLabel = new Label("News and Updates", skin,"big");
+        Label titleLabel = new Label("News and Updates", skin, "big");
         titleLabel.setColor(Color.valueOf("#4A3018"));
         titleLabel.setFontScale(1.5f);
         titleLabel.setAlignment(Align.center);
@@ -39,10 +40,8 @@ public class NewsModalTable extends BorderedTable {
         Table contentTable = new Table();
         contentTable.top().pad(10);
 
-        Result result = null;
-        String newsText = (result != null) ? result.toString() : "";
+        buildNewsList(skin, contentTable);
 
-        fillTheContent(skin, newsText, contentTable);
         ScrollPane scrollPane = new ScrollPane(contentTable, skin);
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollingDisabled(true, false);
@@ -50,26 +49,78 @@ public class NewsModalTable extends BorderedTable {
         add(scrollPane).grow().row();
     }
 
-    private void fillTheContent(Skin skin, String newsText, Table contentTable) {
-        if (newsText == null || newsText.trim().isEmpty()) {
+    private void buildNewsList(Skin skin, Table contentTable) {
+        String plantNews = controller.showUnreadPlantNews();
+        String zombieNews = controller.showUnreadZombieNews();
+        String seasonNews = controller.showUnreadSeasonNews();
+        String minigameNews = controller.showUnreadMinigameNews();
+        String levelNews = controller.showUnreadLevelNews();
+
+        addNewsCategory(contentTable, skin, "Unlocked Plants", plantNews);
+        addNewsCategory(contentTable, skin, "Unlocked Zombies", zombieNews);
+        addNewsCategory(contentTable, skin, "New Season", seasonNews);
+        addNewsCategory(contentTable, skin, "New Minigame", minigameNews);
+        addNewsCategory(contentTable, skin, "New Level", levelNews);
+
+        if (!contentTable.hasChildren()) {
             Label emptyLabel = new Label("There is no unread message", skin);
             emptyLabel.setColor(Color.BROWN);
-            emptyLabel.setFontScale(3f);
+            emptyLabel.setFontScale(2.5f);
             emptyLabel.setAlignment(Align.center);
             contentTable.add(emptyLabel).expand().center();
-        } else {
-            String[] messages = newsText.split("\n");
-
-            for (String msg : messages) {
-                if (msg.trim().isEmpty()) continue;
-
-                Label msgLabel = new Label(msg, skin);
-                msgLabel.setColor(Color.valueOf("#4A3018"));
-                msgLabel.setWrap(true);
-                msgLabel.setAlignment(Align.topLeft);
-
-                contentTable.add(msgLabel).growX().padBottom(25).row();
-            }
         }
+    }
+
+    private void addNewsCategory(Table table, Skin skin, String headerTitle, String newsText) {
+        if (newsText == null || newsText.trim().isEmpty()) {
+            return;
+        }
+
+        Label headerLabel = new Label(headerTitle, skin);
+        headerLabel.setFontScale(1.2f);
+        headerLabel.setColor(Color.valueOf("#684222"));
+
+        table.add(headerLabel).left().padTop(15).padBottom(5).row();
+
+        Label messageLabel = new Label(newsText, skin);
+        messageLabel.setColor(Color.BROWN);
+        messageLabel.setWrap(true);
+        messageLabel.setAlignment(Align.topLeft);
+
+        table.add(messageLabel).growX().padLeft(25).padBottom(25).row();
+    }
+
+    public void show(Group targetLayer, Viewport viewport) {
+        float width = viewport.getWorldWidth();
+        float height = viewport.getWorldHeight();
+
+        Table blockerTable = new Table();
+        blockerTable.setSize(width, height);
+        blockerTable.setTouchable(Touchable.enabled);
+
+        blockerTable.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+
+        this.blocker = blockerTable;
+        targetLayer.addActor(blocker);
+
+        this.setPosition(
+            Math.round((width - this.getWidth()) / 2f),
+            Math.round((height - this.getHeight()) / 2f)
+        );
+
+        targetLayer.addActor(this);
+    }
+
+    @Override
+    public boolean remove() {
+        if (blocker != null) {
+            blocker.remove();
+        }
+        return super.remove();
     }
 }

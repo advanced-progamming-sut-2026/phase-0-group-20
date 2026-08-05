@@ -115,7 +115,7 @@ public class MainMenuScreen extends BaseScreen {
                     (viewport.getWorldWidth() - newsModal.getWidth()) / 2f,
                     (viewport.getWorldHeight() - newsModal.getHeight()) / 2f
                 );
-                modalLayer.addActor(newsModal);
+                newsModal.show(modalLayer,viewport);
             });
         Stack leaderboardBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON, 100, 100,
             () -> {
@@ -130,7 +130,7 @@ public class MainMenuScreen extends BaseScreen {
                     (viewport.getWorldWidth() - settingModal.getWidth()) / 2f,
                     (viewport.getWorldHeight() - settingModal.getHeight()) / 2f
                 );
-                modalLayer.addActor(settingModal);
+                settingModal.show(modalLayer, viewport);
             });
 
         bottomContainer.add(cloudBtn).padLeft(50).padRight(50).bottom();

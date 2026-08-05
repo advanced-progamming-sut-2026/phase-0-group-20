@@ -3,6 +3,7 @@ package io.java.pvz.controllers;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import io.java.pvz.models.App;
 import io.java.pvz.views.sound.MusicType;
 import io.java.pvz.views.sound.SfxType;
 
@@ -12,8 +13,8 @@ public class AudioManager {
 
     private Music currentTrack;
     private MusicType currentTrackType;
-    private float sfxVolume = 1f;
-    private float musicVolume = 0.6f;
+    private float sfxVolume = App.getSettings().getSfxVolume();
+    private float musicVolume = App.getSettings().getMusicVolume();
 
     public static AudioManager getInstance() {
         if (instance == null) {

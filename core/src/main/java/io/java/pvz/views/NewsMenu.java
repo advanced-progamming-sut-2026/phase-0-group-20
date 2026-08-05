@@ -20,7 +20,7 @@ public class NewsMenu implements AppMenu {
         Matcher matcher;
 
         if ((matcher = NewsCommands.SHOW_UNREAD_NEWS.getMatcher(input)) != null) {
-            System.out.println(controller.showUnreadNews());
+//            System.out.println(controller.showUnreadNews());
         } else if ((matcher = NewsCommands.SHOW_ALL_NEWS.getMatcher(input)) != null) {
             System.out.println(controller.showAllNews());
         } else {
