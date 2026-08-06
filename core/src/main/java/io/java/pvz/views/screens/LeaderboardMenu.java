@@ -52,7 +52,7 @@ public class LeaderboardMenu extends Table {
         header.add(trophyIcon).size(50, 50).padLeft(20).padRight(10);
         header.add(titleLabel).expandX().center().padRight(45);
 
-        card.add(header).growX().padBottom(25).row();
+        card.add(header).growX().padTop(50).padBottom(10).row();
 
         Table tabs = new Table();
         tabs.add(sortTabButton("Score", "score")).padRight(10);
@@ -68,7 +68,7 @@ public class LeaderboardMenu extends Table {
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollingDisabled(true, false);
 
-        card.add(scrollPane).size(750, 520).top().row();
+        card.add(scrollPane).size(750, 520).padBottom(60).top().row();
 
         add(card).width(850).height(700).center();
 
