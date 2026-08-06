@@ -56,7 +56,10 @@ public class GameMenuScreen extends BaseScreen {
             () -> ScreenManager.getInstance().popScreen())).padLeft(20).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.OPTIONS_ICON,100, 100,
-            () -> System.out.println("Options Clicked"))).padRight(30);
+            () -> {
+                System.out.println("Options Clicked");
+                new SettingModalTable(skin).show(modalLayer,viewport);
+            })).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.ALMANAC_ICON,100, 100,
             () -> ScreenManager.getInstance().pushScreen(new CollectionScreen(game,skin))));
@@ -65,7 +68,10 @@ public class GameMenuScreen extends BaseScreen {
             () -> menuController.open(Menu.GREENHOUSE_MENU))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON,100, 100,
-            () -> System.out.println("News Clicked")));
+            () -> {
+                System.out.println("News Clicked");
+                new NewsModalTable(skin).show(modalLayer,viewport);
+            }));
 
 
         Stack shopBtn = UiFactory.iconButton(textures, skin, Ids.GameScreen.SHOP_ICON,120, 120,
