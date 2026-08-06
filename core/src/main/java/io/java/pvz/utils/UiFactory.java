@@ -94,6 +94,7 @@ public final class UiFactory {
         });
         return closeBtn;
     }
+
     public static TextButton textButton(String text, Skin skin, String styleName, float hoverScale, float clickScale,
                                         ButtonAnimator.OnClickListener clickListener) {
         TextButton button = new TextButton(text, skin, styleName);

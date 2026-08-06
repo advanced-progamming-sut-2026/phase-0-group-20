@@ -97,34 +97,41 @@ public class ProfileMenuControllerUnitTest {
 
     @Test
     public void testChangePasswordValidReturnsSuccess() {
-        Result result = controller.changePassword("Secure1!", "NewPass1/");
+        Result result = controller.changePassword("Secure1!", "NewPass1/", "NewPass1/");
         assertTrue(result.isSuccessful());
-        assertEquals("password has been changed successfully", result.message());
+        assertEquals("Password has been changed successfully", result.message());
+    }
+
+    @Test
+    public void testChangePasswordRepeatNotMatchingReturnsFailure() {
+        Result result = controller.changePassword("Secure1!", "NewPass1/", "Different1/");
+        assertFalse(result.isSuccessful());
+        assertEquals("passwords don't match!", result.message());
     }
 
     @Test
     public void testChangePasswordWrongOldPasswordReturnsFailure() {
-        Result result = controller.changePassword("wrongPass", "NewPass1-");
+        Result result = controller.changePassword("wrongPass", "NewPass1-", "NewPass1-");
         assertFalse(result.isSuccessful());
-        assertEquals("password does not match!", result.message());
+        assertEquals("Old password does not match!", result.message());
     }
 
     @Test
     public void testChangePasswordSameAsOldPasswordReturnsFailure() {
-        Result result = controller.changePassword("Secure1!", "Secure1!");
+        Result result = controller.changePassword("Secure1!", "Secure1!", "Secure1!");
         assertFalse(result.isSuccessful());
         assertEquals("Your new password is the same as your old password", result.message());
     }
 
     @Test
     public void testChangePasswordWeakNewPasswordReturnsFailure() {
-        Result result = controller.changePassword("Secure1!", "weak");
+        Result result = controller.changePassword("Secure1!", "weak", "weak");
         assertFalse(result.isSuccessful());
     }
 
     @Test
     public void testChangePasswordValidLoginWithNewPasswordWorks() {
-        Result result = controller.changePassword("Secure1!", "NewPass1/");
+        Result result = controller.changePassword("Secure1!", "NewPass1/", "NewPass1/");
         assertTrue(result.isSuccessful());
         assertNotNull(DataBaseManager.authenticateUser("ali123", "NewPass1/"));
     }
@@ -132,9 +139,9 @@ public class ProfileMenuControllerUnitTest {
     @Test
     public void testChangePasswordNoLoggedInUserReturnsFailure() {
         App.setActiveUser(null);
-        Result result = controller.changePassword("Secure1!", "NewPass1\\");
+        Result result = controller.changePassword("Secure1!", "NewPass1\\", "NewPass1\\");
         assertFalse(result.isSuccessful());
-        assertEquals("no user is currently logged in", result.message());
+        assertEquals("No user is currently logged in", result.message());
     }
 
     @Test

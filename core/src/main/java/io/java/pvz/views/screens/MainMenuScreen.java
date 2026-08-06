@@ -1,17 +1,23 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
+import io.java.pvz.controllers.MenuController.MainMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.App;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
+import pvz.skin.BorderedTable;
 
 public class MainMenuScreen extends BaseScreen {
 
@@ -31,17 +37,9 @@ public class MainMenuScreen extends BaseScreen {
         mainLayer.clear();
         mainLayer.setFillParent(true);
 
-        Table topContainer = new Table();
+        Table center = new Table();
 
-        Stack questBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON, 100, 100,
-            () -> {
-                System.out.println("Quests Menu Opened!");
-                // TODO : push quests menu later
-            });
-        topContainer.add(questBtn).padLeft(50).padTop(40).top().left();
-        topContainer.add().expandX();
-
-        mainLayer.add(topContainer).growX().top().row();
+        mainLayer.add(buildTopButtons(textures, skin, center)).growX().top().row();
 
 
         Table logoTable = new Table();
@@ -53,7 +51,6 @@ public class MainMenuScreen extends BaseScreen {
 
         mainLayer.add().expandY().row();
 
-        Table center = new Table();
 
         Table nameEntryTable = new Table();
         TextureRegion nameBgRegion = textures.region(Ids.MainMenu.NAME_ENTRY_ICON);
@@ -65,8 +62,8 @@ public class MainMenuScreen extends BaseScreen {
         profileIcon.setScaling(Scaling.fit);
         ButtonAnimator.applyHoverAndClickEffect(profileIcon, 1.1f, 0.9f, () -> {
             System.out.println("Profile Icon Clicked!");
-            // TODO: push profile ui later
-            ScreenManager.getInstance().pushScreen(new SignupScreen(game));
+            ProfileModalTable profileModal = new ProfileModalTable(skin);
+            profileModal.show(modalLayer, viewport);
         });
 
         TextField.TextFieldStyle baseStyle = skin.get(TextField.TextFieldStyle.class);
@@ -76,7 +73,7 @@ public class MainMenuScreen extends BaseScreen {
 
         customFieldStyle.font = skin.getFont("FBUSV8C5EI_1");
 
-        TextField nameField = new TextField("eieio", customFieldStyle);
+        TextField nameField = new TextField(App.getActiveUser().getNickname(), customFieldStyle);
         nameField.setAlignment(Align.center);
 
         nameEntryTable.add(nameField).expandX().fillX().padRight(15);
@@ -84,10 +81,46 @@ public class MainMenuScreen extends BaseScreen {
 
         center.add(nameEntryTable).width(360).height(65).padBottom(30).row();
 
-        mainLayer.add(buildButtons(textures, skin, center)).growX().padBottom(60).bottom();
+        mainLayer.add(buildBottomButtons(textures, skin, center)).growX().padBottom(60).bottom();
     }
 
-    private Table buildButtons(TextureBank textures, Skin skin, Table center) {
+    private Table buildTopButtons(TextureBank textures, Skin skin, Table center) {
+        Table topContainer = new Table();
+
+        BorderedTable borderedLogoutBtn = new BorderedTable();
+        borderedLogoutBtn.setTouchable(Touchable.enabled);
+        borderedLogoutBtn.pad(10, 30, 10, 30);
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = skin.getFont("FBUSV8C5EI_1");
+        labelStyle.fontColor = Color.BROWN;
+
+        Label logoutLabel = new Label("Logout", labelStyle);
+        logoutLabel.setFontScale(1.3f);
+
+        borderedLogoutBtn.add(logoutLabel).center();
+
+        ButtonAnimator.applyHoverAndClickEffect(borderedLogoutBtn, 1.1f, 0.9f, () -> {
+            System.out.println("Logout Clicked!");
+            new MainMenuController().logout();
+            ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
+            ScreenManager.getInstance().pushScreen(new LoginScreen(game));
+        });
+
+        Stack questBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON, 100, 100,
+            () -> {
+                System.out.println("Quests Menu Opened!");
+                // TODO : push quests menu later
+            });
+
+        topContainer.add(questBtn).padLeft(50).padTop(40).top().left();
+
+        topContainer.add(center).expandX().padBottom(70).center().bottom();
+        topContainer.add(borderedLogoutBtn).right().padRight(30).padTop(40).width(200).height(100).top();
+
+        return topContainer;
+    }
+
+    private Table buildBottomButtons(TextureBank textures, Skin skin, Table center) {
 
         TextButton playBtn = new TextButton("Play", skin, "purple");
         playBtn.getLabel().setFontScale(1.5f);
@@ -108,14 +141,7 @@ public class MainMenuScreen extends BaseScreen {
         Stack newsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON, 100, 100,
             () -> {
                 System.out.println("News Icon Clicked!");
-
-                NewsModalTable newsModal = new NewsModalTable(skin);
-
-                newsModal.setPosition(
-                    (viewport.getWorldWidth() - newsModal.getWidth()) / 2f,
-                    (viewport.getWorldHeight() - newsModal.getHeight()) / 2f
-                );
-                newsModal.show(modalLayer,viewport);
+                new NewsModalTable(skin).show(modalLayer,viewport);
             });
         Stack leaderboardBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON, 100, 100,
             () -> {
@@ -125,12 +151,7 @@ public class MainMenuScreen extends BaseScreen {
         Stack settingsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON, 100, 100,
             () -> {
                 System.out.println("Settings button clicked");
-                SettingModalTable settingModal = new SettingModalTable(skin);
-                settingModal.setPosition(
-                    (viewport.getWorldWidth() - settingModal.getWidth()) / 2f,
-                    (viewport.getWorldHeight() - settingModal.getHeight()) / 2f
-                );
-                settingModal.show(modalLayer, viewport);
+                new SettingModalTable(skin).show(modalLayer, viewport);
             });
 
         bottomContainer.add(cloudBtn).padLeft(50).padRight(50).bottom();
