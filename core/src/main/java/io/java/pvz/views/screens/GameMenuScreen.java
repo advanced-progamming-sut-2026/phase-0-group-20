@@ -109,7 +109,7 @@ public class GameMenuScreen extends BaseScreen {
 
         ButtonAnimator.applyHoverAndClickEffect(adventureIcon, 1.05f, 0.95f, () -> {
             System.out.println("Adventure Island Clicked!");
-            // TODO: push Level Selection Menu
+            ScreenManager.getInstance().pushScreen(new ChapterSelectionScreen(game));
         });
 
         islandContainer.add(adventureIcon).size(500, 500).center();
