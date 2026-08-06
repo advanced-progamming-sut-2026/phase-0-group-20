@@ -106,7 +106,7 @@ public class ShopModalMenu extends Table {
 
         Stack dailyStack = new Stack();
 
-        Image bg = UiFactory.imageFor(textures, "IMAGE_UI_STORE_MINISTORE_BG");
+        Image bg = UiFactory.imageFor(textures, Ids.Shop.DAILY_DEAL_BACKGROUND);
         bg.setScaling(Scaling.stretch);
         Container<Image> bgContainer = new Container<>(bg);
         bgContainer.size(1470, 220);
@@ -119,8 +119,8 @@ public class ShopModalMenu extends Table {
         content.pad(15, 35, 15, 35);
 
         Image plantIcon = dailyPlant != null
-            ? UiFactory.imageFor(textures, "IMAGE_UI_PACKETS_" + UiFactory.getAtlasName(dailyPlant).toUpperCase())
-            : UiFactory.imageFor(textures, "IMAGE_UI_STOREMULTI_SEEDPACKETICON");
+            ? UiFactory.imageFor(textures, Ids.Shop.PLANT_PACKET_PREFIX + UiFactory.getAtlasName(dailyPlant).toUpperCase())
+            : UiFactory.imageFor(textures, Ids.Shop.SEED_PACKET_ICON);
         plantIcon.setScaling(Scaling.fit);
         content.add(plantIcon).size(150, 150).padRight(30);
 
@@ -128,7 +128,7 @@ public class ShopModalMenu extends Table {
         info.left().defaults().left();
 
         Table clockRow = new Table();
-        Image clock = UiFactory.imageFor(textures, "IMAGE_UI_QUESTS_DAILY_QUEST_CLOCK_ICON_DAILY_QUEST_CLOCK_ICON_21X21");
+        Image clock = UiFactory.imageFor(textures, Ids.Shop.DAILY_DEAL_CLOCK_ICON);
         clock.setScaling(Scaling.fit);
         Label dailyLabel = new Label("DAILY DEAL", skin);
         dailyLabel.setColor(Color.valueOf("#FFD37A"));
@@ -145,7 +145,7 @@ public class ShopModalMenu extends Table {
 
         content.add(info).expandX().left();
 
-        Image ribbon = UiFactory.imageFor(textures, "IMAGE_UI_STORE_EARMARK_SALE_STATIC");
+        Image ribbon = UiFactory.imageFor(textures, Ids.Shop.SALE_RIBBON);
         ribbon.setScaling(Scaling.fit);
         content.add(ribbon).size(85, 85).padRight(25);
 
@@ -186,19 +186,19 @@ public class ShopModalMenu extends Table {
         itemsRow.defaults().padRight(25).top();
 
         itemsRow.add(buildFixedItemCard(
-            "IMAGE_UI_CARDS_STORE_STORE_CARD_GREEN", Ids.GameScreen.GREENHOUSE_ICON,
+            Ids.Shop.CARD_GREEN, Ids.GameScreen.GREENHOUSE_ICON,
             "Pot", "Unlocks a Greenhouse pot (max 20)", 2000, Shop.CurrencyType.COIN,
             () -> { showStatus(controller.buyItem("pot", 1, null)); refreshAll(); }
         )).size(CARD_WIDTH, CARD_HEIGHT);
 
         itemsRow.add(buildFixedItemCard(
-            "IMAGE_UI_CARDS_STORE_STORE_CARD_BLUE", "IMAGE_UI_ALMANAC_PLANT_FOOD_STAT_ICON",
+            Ids.Shop.CARD_BLUE, Ids.Shop.PLANT_FOOD_ICON,
             "Plant Food", "Instantly powers up a plant (max 3 held)", 3, Shop.CurrencyType.DIAMOND,
             () -> { showStatus(controller.buyItem("plant food", 1, null)); refreshAll(); }
         )).size(CARD_WIDTH, CARD_HEIGHT);
 
         itemsRow.add(buildFixedItemCard(
-            "IMAGE_UI_CARDS_STORE_STORE_CARD_YELLOW", "IMAGE_UI_STOREMULTI_SEEDPACKETICON",
+            Ids.Shop.CARD_YELLOW, Ids.Shop.SEED_PACKET_ICON,
             "Random Seed Packet", "5x seed packets of a random unlocked plant", 1000, Shop.CurrencyType.COIN,
             () -> { showStatus(controller.buyItem("random seed packet", 1, null)); refreshAll(); }
         )).size(CARD_WIDTH, CARD_HEIGHT);
@@ -206,7 +206,7 @@ public class ShopModalMenu extends Table {
         itemsRow.add(buildSelectiveSeedPacketCard()).size(CARD_WIDTH, CARD_HEIGHT);
 
         itemsRow.add(buildFixedItemCard(
-            "IMAGE_UI_CARDS_STORE_STORE_COIN_CARD", Ids.Shop.COIN,
+            Ids.Shop.CARD_COIN, Ids.Shop.COIN,
             "Currency Exchange", "Trade 5 diamonds for 500 coins", 5, Shop.CurrencyType.DIAMOND,
             () -> { showStatus(controller.buyItem("currency exchange", 1, null)); refreshAll(); }
         )).size(CARD_WIDTH, CARD_HEIGHT);
@@ -253,9 +253,9 @@ public class ShopModalMenu extends Table {
 
         Table card = new Table();
         card.pad(18);
-        card.setBackground(UiFactory.imageFor(textures, "IMAGE_UI_CARDS_STORE_STORE_CARD_PURPLE").getDrawable());
+        card.setBackground(UiFactory.imageFor(textures, Ids.Shop.CARD_PURPLE).getDrawable());
 
-        Image icon = UiFactory.imageFor(textures, "IMAGE_UI_STOREMULTI_SEEDPACKETMINIICONPREMIUM");
+        Image icon = UiFactory.imageFor(textures, Ids.Shop.SELECTIVE_SEED_PACKET_ICON);
         icon.setScaling(Scaling.fit);
         card.add(icon).size(85, 85).padTop(8).padBottom(10).row();
 
@@ -282,8 +282,8 @@ public class ShopModalMenu extends Table {
         Plant selected = unlocked.get(selectivePlantIndex);
 
         Table pickerRow = new Table();
-        Image leftArrow = UiFactory.imageFor(textures, "IMAGE_UI_GENERIC_ARROW_LEFT_GREEN");
-        Image rightArrow = UiFactory.imageFor(textures, "IMAGE_UI_GENERIC_ARROW_RIGHT_GREEN");
+        Image leftArrow = UiFactory.imageFor(textures, Ids.Shop.ARROW_LEFT);
+        Image rightArrow = UiFactory.imageFor(textures, Ids.Shop.ARROW_RIGHT);
         leftArrow.setScaling(Scaling.fit);
         rightArrow.setScaling(Scaling.fit);
         leftArrow.setTouchable(Touchable.enabled);
@@ -326,11 +326,11 @@ public class ShopModalMenu extends Table {
 
         Table card = new Table();
         card.pad(18);
-        card.setBackground(UiFactory.imageFor(textures, "IMAGE_UI_CARDS_STORE_STORE_PLANT_CARD").getDrawable());
+        card.setBackground(UiFactory.imageFor(textures, Ids.Shop.CARD_PLANT).getDrawable());
 
         Image icon = plant != null
-            ? UiFactory.imageFor(textures, "IMAGE_UI_PACKETS_" + UiFactory.getAtlasName(plant).toUpperCase())
-            : UiFactory.imageFor(textures, "IMAGE_UI_STOREMULTI_SEEDPACKETICON");
+            ? UiFactory.imageFor(textures, Ids.Shop.PLANT_PACKET_PREFIX + UiFactory.getAtlasName(plant).toUpperCase())
+            : UiFactory.imageFor(textures, Ids.Shop.SEED_PACKET_ICON);
         icon.setScaling(Scaling.fit);
         card.add(icon).size(105, 105).padTop(6).padBottom(12).row();
 
