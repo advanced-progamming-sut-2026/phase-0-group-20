@@ -25,8 +25,10 @@ public class Adventure {
         SeasonType[] seasons = SeasonType.values();
 
         User currentUser = App.getActiveUser();
-        int unlockedChapIndex = (currentUser != null) ? currentUser.getHighestUnlockedChapterIndex() : 0;
-        int unlockedLevelIndex = (currentUser != null) ? currentUser.getHighestUnlockedLevelIndex() : 0;
+//        int unlockedChapIndex = (currentUser != null) ? currentUser.getHighestUnlockedChapterIndex() : 0;
+//        int unlockedLevelIndex = (currentUser != null) ? currentUser.getHighestUnlockedLevelIndex() : 0;
+        int unlockedChapIndex = 3;
+        int unlockedLevelIndex = 15;
 
         for (int i = 0; i < GameConstants.CHAPTER_COUNT; i++) {
             Chapter chapter = new Chapter(seasons[i]);

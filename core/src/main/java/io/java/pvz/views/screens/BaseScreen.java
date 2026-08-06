@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.java.pvz.controllers.NotificationManager;
 import io.java.pvz.loader.AssetLoader;
 
 public abstract class BaseScreen implements Screen {
@@ -36,6 +37,7 @@ public abstract class BaseScreen implements Screen {
     protected Table hudLayer;
 
     protected CurrencyBar currencyBar;
+    private NotificationManager notificationManager;
 
     public BaseScreen(Game game) {
         this.game = game;
@@ -64,6 +66,7 @@ public abstract class BaseScreen implements Screen {
             currencyBar = new CurrencyBar(AssetLoader.getInstance().getTextures(), AssetLoader.getInstance().getSkin());
             hudLayer.add(currencyBar).padTop(40).padRight(300);
         }
+        getNotificationManager();
     }
 
     protected boolean showsCurrencyBar() {
@@ -119,6 +122,13 @@ public abstract class BaseScreen implements Screen {
         });
     }
 
+    public NotificationManager getNotificationManager() {
+        if (notificationManager == null && AssetLoader.getInstance().getSkin() != null) {
+            notificationManager = new NotificationManager(stage, AssetLoader.getInstance().getSkin());
+        }
+        return notificationManager;
+    }
+
     @Override
     public void resize(int width, int height) {
         if (stage != null) {
@@ -145,5 +155,7 @@ public abstract class BaseScreen implements Screen {
     public void dispose() {
         if (stage != null) stage.dispose();
         if (batch != null) batch.dispose();
+        if (notificationManager != null) notificationManager.dispose();
+
     }
 }

@@ -51,10 +51,7 @@ public class Chapter {
     }
 
     public Level getCurrentLevel() {
-        if (currentLevelIndex < levels.size()) {
-            return levels.get(currentLevelIndex);
-        }
-        return null;
+        return levels.get(currentLevelIndex % levels.size());
     }
 
     public boolean isNight() {

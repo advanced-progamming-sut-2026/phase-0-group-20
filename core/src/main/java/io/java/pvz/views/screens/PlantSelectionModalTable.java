@@ -148,6 +148,7 @@ public class PlantSelectionModalTable extends BorderedTable {
                     updateUI();
                 } else {
                     showError(res.message());
+
                 }
             } else {
                 Result res = controller.addPlant(plant.getName());

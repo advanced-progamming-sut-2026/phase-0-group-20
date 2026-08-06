@@ -15,6 +15,9 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.Chapter;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
@@ -108,7 +111,10 @@ public class LevelSelectionScreen extends BaseScreen {
                     ScreenManager.getInstance().setRootScreen(new GameFlowScreen(game, mapId));
                 } else {
                     System.out.println(result.message());
-                    //TODO: show error as notification
+                    GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                        new GameEventPayload.Builder(GameEvent.NOTIFY)
+                            .message(result.message())
+                            .build());
                 }
             });
         } else {

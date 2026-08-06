@@ -12,6 +12,9 @@ import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.SecurityQuestion;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
@@ -59,14 +62,17 @@ public class SignupScreen extends BaseScreen {
 
             if (result.isSuccessful())
                 showSecurityQuestionsList();
-            else
+            else {
                 System.out.println("Registration Failed: " + result.message());
-
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Registration Failed: " + result.message())
+                        .build());
+            }
         });
         baseTable.add(registerBtn).height(70).padTop(15).row();
-
-        TextButton backBtn = new TextButton("Already have account? Login", skin);
-        ButtonAnimator.applyHoverAndClickEffect(backBtn, 1.05f, 0.95f, () -> {
+        
+        TextButton backBtn =  UiFactory.textButton("Already have account? Login", skin, "green_small",1.05f, 0.95f, () -> {
             ScreenManager.getInstance().pushScreen(new LoginScreen(game));
         });
         baseTable.add(backBtn).height(50).padTop(5).row();
@@ -190,9 +196,13 @@ public class SignupScreen extends BaseScreen {
             Result result = signupController.pickQuestion(qNumber, answerField.getText(), confirmField.getText());
             if (result.isSuccessful())
                 ScreenManager.getInstance().pushScreen(new LoginScreen(game));
-            else
+            else {
                 System.out.println("Error: " + result.message());
-
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Error: " + result.message())
+                        .build());
+            }
         });
 
         popup.add(answerField).height(50).width(350).padBottom(10).row();
