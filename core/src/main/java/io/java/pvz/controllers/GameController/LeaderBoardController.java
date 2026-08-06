@@ -26,6 +26,20 @@ public class LeaderBoardController {
         }
     }
 
+    public String getCurrentSortType() {
+        return currentSortType;
+    }
+
+    public List<User> getSortedUsers() {
+        List<User> allUsers = App.getAllUsers();
+        return switch (currentSortType) {
+            case "minigame" -> sortedByMinigame(allUsers);
+            case "season" -> sortedBySeason(allUsers);
+            case "quests" -> sortedByQuests(allUsers);
+            default -> sortedByScore(allUsers);
+        };
+    }
+
     public Result showResults() {
         List<User> allUsers = App.getAllUsers();
         for (User user : allUsers) {

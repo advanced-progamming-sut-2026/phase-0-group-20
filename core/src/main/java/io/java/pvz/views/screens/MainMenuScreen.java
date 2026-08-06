@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
+import io.java.pvz.controllers.GameMenuController;
 import io.java.pvz.controllers.MenuController.MainMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
@@ -146,7 +147,20 @@ public class MainMenuScreen extends BaseScreen {
         Stack leaderboardBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON, 100, 100,
             () -> {
                 System.out.println("Leader Board Clicked!");
-                // TODO : push later
+                modalLayer.clear();
+
+                Table leaderboardTable = LeaderboardMenu.build(
+                    new GameMenuController(modalLayer) {
+                        @Override
+                        public void goBack() {
+                            modalLayer.clear();
+                        }
+                    },
+                    textures,
+                    skin
+                );
+
+                modalLayer.addActor(leaderboardTable);
             });
         Stack settingsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON, 100, 100,
             () -> {
