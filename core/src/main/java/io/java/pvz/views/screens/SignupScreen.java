@@ -201,4 +201,9 @@ public class SignupScreen extends BaseScreen {
 
         modalLayer.add(popup).center();
     }
+
+    @Override
+    protected boolean showsCurrencyBar() {
+        return false;
+    }
 }

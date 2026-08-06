@@ -106,4 +106,9 @@ public class AssetLoaderScreen extends BaseScreen {
         stage.act(delta);
         stage.draw();
     }
+
+    @Override
+    protected boolean showsCurrencyBar() {
+        return false;
+    }
 }

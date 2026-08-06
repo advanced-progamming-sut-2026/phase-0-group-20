@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.java.pvz.loader.AssetLoader;
 
 public abstract class BaseScreen implements Screen {
 
@@ -32,6 +33,9 @@ public abstract class BaseScreen implements Screen {
     protected Table mainLayer;
     protected Table modalLayer;
     protected Table toastLayer;
+    protected Table hudLayer;
+
+    protected CurrencyBar currencyBar;
 
     public BaseScreen(Game game) {
         this.game = game;
@@ -45,12 +49,25 @@ public abstract class BaseScreen implements Screen {
         mainLayer = new Table();
         modalLayer = new Table();
         toastLayer = new Table();
+        hudLayer = new Table();
+        hudLayer.setFillParent(true);
+        hudLayer.top().right();
 
         rootStack.add(mainLayer);
         rootStack.add(modalLayer);
         rootStack.add(toastLayer);
+        rootStack.add(hudLayer);
 
         stage.addActor(rootStack);
+
+        if (showsCurrencyBar()) {
+            currencyBar = new CurrencyBar(AssetLoader.getInstance().getTextures(), AssetLoader.getInstance().getSkin());
+            hudLayer.add(currencyBar).padTop(40).padRight(300);
+        }
+    }
+
+    protected boolean showsCurrencyBar() {
+        return true;
     }
 
     @Override
