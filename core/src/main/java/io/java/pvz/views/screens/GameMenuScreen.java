@@ -21,9 +21,6 @@ public class GameMenuScreen extends BaseScreen {
     private final GameMenuController menuController;
     private final TextureRegion backgroundRegion;
 
-    private Label coinLabel;
-    private Label diamondLabel;
-
     public GameMenuScreen(Game game) {
         super(game);
         TextureBank textures = AssetLoader.getInstance().getTextures();
@@ -35,10 +32,12 @@ public class GameMenuScreen extends BaseScreen {
     }
 
     private void registerMenuPanels() {
-//         menuController.register(Menu.SHOP_MENU, () -> ShopMenu.build());
+        TextureBank textures = AssetLoader.getInstance().getTextures();
+        Skin skin = AssetLoader.getInstance().getSkin();
+         menuController.register(Menu.SHOP_MENU, () -> ShopModalMenu.build(menuController, textures, skin));
 //         menuController.register(Menu.COLLECTION_MENU, () -> CollectionMenu.build());
 //         menuController.register(Menu.GREENHOUSE_MENU, () -> GreenHouseMenu.build());
-//         menuController.register(Menu.LEADERBOARD_MENU, () -> LeaderBoard.build());
+         menuController.register(Menu.LEADERBOARD_MENU, () -> LeaderboardMenu.build(menuController, textures, skin));
 //         menuController.register(Menu.PLANTSELECTION_MENU, () -> PlantSelectionMenu.build());
 //         menuController.register(Menu.TRAVELLOG_MENU, () -> TravelLogMenu.build());
 //         menuController.register(Menu.LEVEL_SELECTION_MENU, () -> LevelSelectionMenu.build());
@@ -59,7 +58,10 @@ public class GameMenuScreen extends BaseScreen {
             () -> ScreenManager.getInstance().popScreen())).padLeft(20).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.OPTIONS_ICON,100, 100,
-            () -> System.out.println("Options Clicked"))).padRight(30);
+            () -> {
+                System.out.println("Options Clicked");
+                new SettingModalTable(skin).show(modalLayer,viewport);
+            })).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.ALMANAC_ICON,100, 100,
             () -> ScreenManager.getInstance().pushScreen(new CollectionScreen(game,skin))));
@@ -68,26 +70,18 @@ public class GameMenuScreen extends BaseScreen {
             () -> menuController.open(Menu.GREENHOUSE_MENU))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON,100, 100,
-            () -> System.out.println("News Clicked")));
+            () -> {
+                System.out.println("News Clicked");
+                new NewsModalTable(skin).show(modalLayer,viewport);
+            }));
 
-        Table topRightGroup = new Table();
-
-        Stack diamondDisplay = createResourceDisplay(textures, skin, Ids.GameScreen.GEM_ICON, "100");
-        this.diamondLabel = (Label) diamondDisplay.getUserObject();
-
-        Stack coinDisplay = createResourceDisplay(textures, skin, Ids.GameScreen.COIN_ICON, "2500");
-        this.coinLabel = (Label) coinDisplay.getUserObject();
 
         Stack shopBtn = UiFactory.iconButton(textures, skin, Ids.GameScreen.SHOP_ICON,120, 120,
             () -> menuController.open(Menu.SHOP_MENU));
 
-        topRightGroup.add(diamondDisplay).width(160).height(55).padRight(40);
-        topRightGroup.add(coinDisplay).width(160).height(55).padRight(100);
-        topRightGroup.add(shopBtn);
-
         topRow.add(topLeftGroup).left();
         topRow.add().expandX();
-        topRow.add(topRightGroup).right();
+        topRow.add(shopBtn).padRight(20).right();
 
         mainLayer.add(topRow).growX().padTop(20).padLeft(30).padRight(30).row();
 
@@ -100,16 +94,9 @@ public class GameMenuScreen extends BaseScreen {
         subLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON,90, 90,
             () -> menuController.open(Menu.TRAVELLOG_MENU)));
 
-        Table subRightGroup = new Table();
-        TextButton earnDiamondBtn = createEarnButton(skin, () -> System.out.println("Earn Diamond!"));
-        TextButton earnCoinBtn = createEarnButton(skin, () -> System.out.println("Earn Coin!"));
-
-        subRightGroup.add(earnDiamondBtn).width(200).height(40).padRight(55);
-        subRightGroup.add(earnCoinBtn).width(200).height(40).padRight(115);
 
         subRow.add(subLeftGroup).padTop(30).left();
         subRow.add().expandX();
-        subRow.add(subRightGroup).right();
 
         mainLayer.add(subRow).growX().padTop(5).padLeft(30).padRight(30).row();
 
@@ -122,7 +109,7 @@ public class GameMenuScreen extends BaseScreen {
 
         ButtonAnimator.applyHoverAndClickEffect(adventureIcon, 1.05f, 0.95f, () -> {
             System.out.println("Adventure Island Clicked!");
-            // TODO: push Level Selection Menu
+            ScreenManager.getInstance().pushScreen(new ChapterSelectionScreen(game));
         });
 
         islandContainer.add(adventureIcon).size(500, 500).center();

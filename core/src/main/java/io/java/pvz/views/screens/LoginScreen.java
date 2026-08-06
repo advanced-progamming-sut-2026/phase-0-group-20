@@ -268,4 +268,9 @@ public class LoginScreen extends BaseScreen {
 
         modalLayer.add(popup).center();
     }
+
+    @Override
+    protected boolean showsCurrencyBar() {
+        return false;
+    }
 }

@@ -5,6 +5,7 @@ import io.java.pvz.models.users.User;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -55,6 +56,16 @@ public class Shop {
         for (String mint : mints) {
             PREMIUM_PLANTS.put(mint, new PlantPrice(100, CurrencyType.DIAMOND));
         }
+    }
+
+    public Map<String, PlantPrice> getAvailablePremiumPlants(User user) {
+        Map<String, PlantPrice> available = new LinkedHashMap<>();
+        for (Map.Entry<String, PlantPrice> entry : PREMIUM_PLANTS.entrySet()) {
+            if (!userHasPlant(user, entry.getKey())) {
+                available.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return available;
     }
 
     public String getPurchasablePlantsCatalog(User user) {
@@ -153,6 +164,10 @@ public class Shop {
         long todaySeed = LocalDate.now().toEpochDay();
         Random dailyRandom = new Random(todaySeed);
         return user.getUnlockedPlants().get(dailyRandom.nextInt(user.getUnlockedPlants().size()));
+    }
+
+    public Plant getDailyDealPlant(User user) {
+        return getDailyRandomPlant(user);
     }
 
     public Result buyPot(User user, int count) {
