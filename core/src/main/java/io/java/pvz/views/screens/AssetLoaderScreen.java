@@ -14,6 +14,7 @@ import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.database.DataBaseManager;
+import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
@@ -84,10 +85,8 @@ public class AssetLoaderScreen extends BaseScreen {
             }).start();
         }
 
-        if (!isInitFinished && virtualProgress < 0.9f)
-            virtualProgress += delta * 0.1f;
-        else if (isInitFinished && virtualProgress < 1f)
-            virtualProgress += delta;
+        if (!isInitFinished && virtualProgress < 0.9f) virtualProgress += delta * 0.1f;
+        else if (isInitFinished && virtualProgress < 1f) virtualProgress += delta;
         progressBar.setValue(virtualProgress);
 
         if (isInitFinished && virtualProgress >= 1f) {
@@ -95,8 +94,14 @@ public class AssetLoaderScreen extends BaseScreen {
             if (stayedUser == null) {
                 App.setActiveAdventure(new Adventure());
                 ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
-            } else
+            } else {
+                App.setActiveUser(stayedUser);
+                App.setActiveMenu(Menu.MAIN_MENU);
+                App.setActiveAdventure(new Adventure());
+                System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
+                App.setAllUsers(DataBaseManager.getAllUsers());
                 ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
+            }
         }
         stage.act(delta);
         stage.draw();

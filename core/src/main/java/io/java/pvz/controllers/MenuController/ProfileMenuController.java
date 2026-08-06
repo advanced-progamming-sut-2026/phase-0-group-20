@@ -9,6 +9,10 @@ import io.java.pvz.models.validation.UserValidator;
 
 public class ProfileMenuController {
 
+    public User getUserModel() {
+        return App.getActiveUser();
+    }
+
     public Result changeUsername(String newUsername) {
         User current = App.getActiveUser();
         if (current == null)
@@ -27,10 +31,14 @@ public class ProfileMenuController {
         return new Result(true, "username has been changed successfully");
     }
 
-    public Result changePassword(String oldPassword, String newPassword) {
+    public Result changePassword(String oldPassword, String newPassword, String repeatPassword) {
         User current = App.getActiveUser();
         if (current == null)
-            return new Result(false, "no user is currently logged in");
+            return new Result(false, "No user is currently logged in");
+
+        Result matchResult = UserValidator.validatePasswordsMatch(newPassword, repeatPassword);
+        if (!matchResult.isSuccessful())
+            return matchResult;
 
         String hashOldPassword = PasswordUtils.hashPassword(oldPassword);
         if (!current.getPasswordHash().equals(hashOldPassword))
