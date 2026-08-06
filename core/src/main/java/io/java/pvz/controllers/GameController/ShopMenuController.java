@@ -3,7 +3,10 @@ package io.java.pvz.controllers.GameController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.Shop;
+import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.users.User;
+
+import java.util.Map;
 
 public class ShopMenuController {
     private final Shop shop = new Shop();
@@ -22,6 +25,23 @@ public class ShopMenuController {
         User activeUser = App.getActiveUser();
         if (activeUser == null) return new Result(false, "No active user found!");
         return new Result(true, shop.getPurchasablePlantsCatalog(activeUser));
+    }
+
+    public Map<String, Shop.PlantPrice> getAvailablePlants() {
+        User activeUser = App.getActiveUser();
+        if (activeUser == null) return Map.of();
+        return shop.getAvailablePremiumPlants(activeUser);
+    }
+
+    public Plant getDailyDealPlant() {
+        User activeUser = App.getActiveUser();
+        if (activeUser == null) return null;
+        return shop.getDailyDealPlant(activeUser);
+    }
+
+    public boolean isDailyDealPurchased() {
+        User activeUser = App.getActiveUser();
+        return activeUser == null || activeUser.isPurchasedDailyDealToday();
     }
 
     public Result buyPlant(String plantName) {

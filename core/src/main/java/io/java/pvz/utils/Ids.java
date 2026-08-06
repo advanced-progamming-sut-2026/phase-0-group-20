@@ -35,4 +35,9 @@ public final class Ids {
     public static final class Plants {
 
     }
+
+    public static final class Shop {
+        public static final String COIN = "IMAGE_UI_HUD_INGAME_COIN";
+        public static final String DIAMOND = "IMAGE_UI_HUD_INGAME_GEM";
+    }
 }
