@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -8,25 +9,35 @@ import com.badlogic.gdx.utils.Align;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.enums.Menu;
-import io.java.pvz.utils.Ids;
 import pvz.libpvz.textures.TextureBank;
+
+import static com.badlogic.gdx.Gdx.input;
 
 public class GameFlowScreen extends BaseScreen {
 
-    private TextureRegion backgroundRegion;
+    private TextureRegion mainRegion;
+    private TextureRegion leftRegion;
+    private TextureRegion rightRegion;
 
     public GameFlowScreen(Game game, String mapTextureId) {
         super(game);
         loadMap(mapTextureId);
         buildUI();
+
+        camera.position.x = viewport.getWorldWidth();
+        camera.update();
     }
 
-    private void loadMap(String mapId) {
+    private void loadMap(String mainMapId) {
         TextureBank textures = AssetLoader.getInstance().getTextures();
-        backgroundRegion = textures.region(mapId);
-        if (backgroundRegion == null) {
-            System.err.println("⚠️ Warning: Map texture not found for ID: " + mapId);
-        }
+
+        mainRegion = textures.region(mainMapId);
+        leftRegion = textures.region(mainMapId + "_LEFT");//the address has a _LEFT or a _RIGHT on its last part
+        rightRegion = textures.region(mainMapId + "_RIGHT");
+
+        if (mainRegion == null) System.err.println("⚠️ Warning: Map main texture not found: " + mainMapId);
+        if (leftRegion == null) System.err.println("⚠️ Warning: Map left texture not found: " + mainMapId + "_LEFT");
+        if (rightRegion == null) System.err.println("⚠️ Warning: Map right texture not found: " + mainMapId + "_RIGHT");
     }
 
     private void buildUI() {
@@ -52,14 +63,39 @@ public class GameFlowScreen extends BaseScreen {
 
         AssetLoader.getInstance().updateTextures();
 
+        camera.update();
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        if (backgroundRegion != null) {
-            batch.draw(backgroundRegion, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-        }
+        float screenH = viewport.getWorldHeight();
+        float currentX = 0;
 
-        // TODO: draw entities in for loop
+        float leftScale = screenH / leftRegion.getRegionHeight();
+        float leftDrawW = leftRegion.getRegionWidth() * leftScale;
+        batch.draw(leftRegion, currentX, 0, leftDrawW, screenH);
+        currentX += leftDrawW;
+
+
+        float mainScale = screenH / mainRegion.getRegionHeight();
+        float mainDrawW = mainRegion.getRegionWidth() * mainScale;
+        batch.draw(mainRegion, currentX, 0, mainDrawW, screenH);
+        currentX += mainDrawW;
+
+
+        float rightScale = screenH / rightRegion.getRegionHeight();
+        float rightDrawW = rightRegion.getRegionWidth() * rightScale;
+        batch.draw(rightRegion, currentX, 0, rightDrawW, screenH);
+
+
+        //for debugging and seeing whole map
+        if (input.isKeyPressed(Input.Keys.RIGHT) &&
+            camera.position.x < leftDrawW + rightDrawW + mainDrawW - viewport.getWorldWidth() / 2f)
+            camera.position.x += 300 * delta;
+
+        if (input.isKeyPressed(Input.Keys.LEFT) && camera.position.x > viewport.getWorldWidth() / 2f)
+            camera.position.x -= 300 * delta;
+
 
         batch.end();
 
