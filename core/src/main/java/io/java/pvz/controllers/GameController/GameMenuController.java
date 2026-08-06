@@ -1,5 +1,6 @@
 package io.java.pvz.controllers.GameController;
 
+import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.GameConstants;
@@ -14,6 +15,8 @@ import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.adventure.levels.speciallevels.LockedPlants;
 import io.java.pvz.models.game.minigame.BowlingLevel;
 import io.java.pvz.models.users.User;
+import io.java.pvz.utils.Ids;
+import io.java.pvz.views.screens.GameFlowScreen;
 
 import java.util.List;
 
@@ -205,6 +208,17 @@ public class GameMenuController {
         }
 
         return boxRow.toString() + "\n" + labelRow.toString() + "\n\n";
+    }
+
+    public String getCurrentMapTextureId() {
+        SeasonType type = App.getActiveAdventure().getCurrentChapter().getSeasonType();
+        return switch (type) {
+            case ANCIENT_EGYPT -> Ids.GameMap.ANCIENT_EGYPT;
+            case FROZEN_CAVES -> Ids.GameMap.ICE_CAVE;
+            case DARK_AGES -> Ids.GameMap.DARK_AGES;
+            case BIG_WAVE_BEACH -> Ids.GameMap.BIG_WAVE;
+            case MINI_GAME -> Ids.GameMap.MINI_GAME;
+        };
     }
 
 }

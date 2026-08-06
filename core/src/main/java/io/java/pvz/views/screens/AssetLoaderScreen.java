@@ -85,8 +85,8 @@ public class AssetLoaderScreen extends BaseScreen {
             }).start();
         }
 
-        if (!isInitFinished && virtualProgress < 0.9f) virtualProgress += delta * 0.1f;
-        else if (isInitFinished && virtualProgress < 1f) virtualProgress += delta;
+        if (!isInitFinished && virtualProgress < 0.9f) virtualProgress += delta * 0.2f;
+        else if (isInitFinished && virtualProgress < 1f) virtualProgress += delta/2;
         progressBar.setValue(virtualProgress);
 
         if (isInitFinished && virtualProgress >= 1f) {

@@ -28,6 +28,17 @@ public final class Ids {
         public static final String LOCK_ICON = "IMAGE_UI_CARDS_LOCK_MEDIUM";
     }
 
+    public static final class GameMap {
+        public static final String ICE_CAVE = "IMAGE_BACKGROUNDS_ICEAGE_TEXTURE";
+        public static final String ANCIENT_EGYPT = "IMAGE_BACKGROUNDS_EGYPT_TEXTURE";
+        public static final String DARK_AGES = "IMAGE_BACKGROUNDS_DARK_TEXTURE";
+        public static final String BIG_WAVE = "IMAGE_BACKGROUNDS_BEACH_TEXTURE";
+        public static final String MINI_GAME = "IMAGE_BACKGROUNDS_BACKGROUND_LOD_FALL_TEXTURE";
+
+
+
+    }
+
     public static final class UI {
 
     }
