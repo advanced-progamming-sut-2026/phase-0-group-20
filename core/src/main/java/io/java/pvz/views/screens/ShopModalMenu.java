@@ -3,6 +3,7 @@ package io.java.pvz.views.screens;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
@@ -50,6 +51,8 @@ public class ShopModalMenu extends Table {
         this.textures = textures;
         this.skin = skin;
         setFillParent(true);
+        this.setTouchable(Touchable.enabled);
+        this.addListener(new ClickListener());
         buildUI();
     }
 
