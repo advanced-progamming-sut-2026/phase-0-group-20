@@ -61,6 +61,25 @@ public final class Ids {
     public static final class Shop {
         public static final String COIN = "IMAGE_UI_HUD_INGAME_COIN";
         public static final String DIAMOND = "IMAGE_UI_HUD_INGAME_GEM";
+
+        public static final String DAILY_DEAL_BACKGROUND = "IMAGE_UI_STORE_MINISTORE_BG";
+        public static final String DAILY_DEAL_CLOCK_ICON = "IMAGE_UI_QUESTS_DAILY_QUEST_CLOCK_ICON_DAILY_QUEST_CLOCK_ICON_21X21";
+        public static final String SALE_RIBBON = "IMAGE_UI_STORE_EARMARK_SALE_STATIC";
+
+        public static final String SEED_PACKET_ICON = "IMAGE_UI_STOREMULTI_SEEDPACKETICON";
+        public static final String SELECTIVE_SEED_PACKET_ICON = "IMAGE_UI_STOREMULTI_SEEDPACKETMINIICONPREMIUM";
+        public static final String PLANT_FOOD_ICON = "IMAGE_UI_ALMANAC_PLANT_FOOD_STAT_ICON";
+        public static final String PLANT_PACKET_PREFIX = "IMAGE_UI_PACKETS_";
+
+        public static final String ARROW_LEFT = "IMAGE_UI_GENERIC_ARROW_LEFT_GREEN";
+        public static final String ARROW_RIGHT = "IMAGE_UI_GENERIC_ARROW_RIGHT_GREEN";
+
+        public static final String CARD_GREEN = "IMAGE_UI_CARDS_STORE_STORE_CARD_GREEN";
+        public static final String CARD_BLUE = "IMAGE_UI_CARDS_STORE_STORE_CARD_BLUE";
+        public static final String CARD_YELLOW = "IMAGE_UI_CARDS_STORE_STORE_CARD_YELLOW";
+        public static final String CARD_PURPLE = "IMAGE_UI_CARDS_STORE_STORE_CARD_PURPLE";
+        public static final String CARD_COIN = "IMAGE_UI_CARDS_STORE_STORE_COIN_CARD";
+        public static final String CARD_PLANT = "IMAGE_UI_CARDS_STORE_STORE_PLANT_CARD";
     }
 
     public static final class LevelSelect {
@@ -72,6 +91,8 @@ public final class Ids {
         public static final String BOSS_ICEAGE = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_ZOMBOSSMECH_ICEAGE";
         public static final String BOSS_BEACH = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_ZOMBOSSMECH_BEACH";
         public static final String BOSS_DARK = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_ZOMBOSSMECH_DARK";
+        public static final String CONNECTOR_FILL = "IMAGE_UI_QUESTS_LEVEL_NODE_CONNECTOR_FILL";
+        public static final String CONNECTOR_EMPTY = "IMAGE_UI_QUESTS_LEVEL_NODE_CONNECTOR_EMPTY";
     }
 
     public static final class ChapterSelect {
