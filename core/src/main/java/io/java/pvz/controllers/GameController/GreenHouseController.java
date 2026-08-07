@@ -3,6 +3,9 @@ package io.java.pvz.controllers.GameController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.greenhouse.GreenHouse;
 import io.java.pvz.models.greenhouse.Pot;
 import io.java.pvz.models.greenhouse.PotCondition;
@@ -15,19 +18,11 @@ public class GreenHouseController {
         return new Result(true, greenHouse.showGreenHouse());
     }
 
-    public Result plantPot(String x, String y, GreenHouse greenHouse) {
+    public Result plantPot(int x, int y, GreenHouse greenHouse) {
         user = App.getActiveUser();
-        int posX, posY;
-        try {
-            posX = Integer.parseInt(x);
-            posY = Integer.parseInt(y);
-        } catch (NumberFormatException e) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
-        if (posX > greenHouse.getROW() || posY > greenHouse.getCOL()) {
-            return new Result(false, "You have a 4 * 5 garden. Where are you looking for?");
-        }
-        Pot desiredPot = greenHouse.getSpecificPot(posX - 1, posY - 1);
+        int posX = x;
+        int posY = y;
+        Pot desiredPot = greenHouse.getSpecificPot(posX , posY );
         return switch (desiredPot.getPotCondition()) {
             case LOCKED -> new Result(false, "You haven't unlocked this pot yet.");
             case PLANTED -> new Result(false, "You already planted a plant here.");
@@ -41,47 +36,49 @@ public class GreenHouseController {
 
     }
 
-    public Result collect(String x, String y, GreenHouse greenHouse) {
-        user = App.getActiveUser();
-        int posX, posY;
-        try {
-            posX = Integer.parseInt(x);
-            posY = Integer.parseInt(y);
-        } catch (NumberFormatException e) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
+    public Result collect(int x, int y, GreenHouse greenHouse) {
+        Pot desiredPot = greenHouse.getSpecificPot(x, y);
+        if(desiredPot.getPotCondition() == PotCondition.COLLECTABLE){
+            collectThePot(desiredPot);
+            return new Result(true , "You successfully collected a plant here.");
         }
-        Pot desiredPot = greenHouse.getSpecificPot(posX - 1, posY - 1);
-        return switch (desiredPot.getPotCondition()) {
-            case EMPTY -> new Result(true, "There is nothing to collect here.");
-            case LOCKED -> new Result(false, "You haven't unlocked this pot yet.");
-            case PLANTED -> new Result(false, "It is not ready to collect.Were you born in 6 months?");
-            case COLLECTABLE -> {
-                yield collectThePot(desiredPot);
-            }
+        return new Result(false, "You failed to collect a plant here.");
 
-        };
     }
 
 
-    public Result grow(String x, String y, GreenHouse greenHouse) {
+    public Result grow(int x , int y , GreenHouse greenHouse) {
         user = App.getActiveUser();
-        int posX, posY;
-        try {
-            posX = Integer.parseInt(x);
-            posY = Integer.parseInt(y);
-        } catch (NumberFormatException e) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
-        Pot desiredPot = greenHouse.getSpecificPot(posX - 1, posY - 1);
+        int posX = x;
+        int posY = y;
+        Pot desiredPot = greenHouse.getSpecificPot(posX , posY );
         if (desiredPot.getPotCondition() != PotCondition.PLANTED) {
             return new Result(false, "You have nothing to boost here.");
         }
-        if (user.getDiamond() < 1) {
+        if (user.getDiamond() < 10) {
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("Not Enough Diamond \uD83D\uDC8E")
+                    .build());
             return new Result(false, "Not enough diamond for boost the growing.Get a job!");
         }
-        user.costDiamond(1);
+        user.costDiamond(10);
         desiredPot.setPotCondition(PotCondition.COLLECTABLE);
-        return collectThePot(desiredPot);
+        return new Result(true,"success");
+    }
+
+    public void buyPot(Pot pot , int price){
+        User user = App.getActiveUser();
+        if (user.getDiamond() < 10) {
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("Not Enough Diamond \uD83D\uDC8E")
+                    .build());
+            return;
+
+        }
+        user.costDiamond(10);
+        pot.setPotCondition(PotCondition.EMPTY);
     }
 
 
@@ -89,6 +86,10 @@ public class GreenHouseController {
         if (desiredPot.isItMari()) {
             user.earnCoin(500);
             desiredPot.collectPlant();
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("You collected 500 coins")
+                    .build());
             return new Result(true, "You collected a normal Marigold.");
         } else {
             Plant collectedPlant = desiredPot.getPlantedPlant();
@@ -102,6 +103,10 @@ public class GreenHouseController {
                 userPlant.setBoosted(true);
             }
             desiredPot.collectPlant();
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message(collectedPlant.getName()+" is BOOSTED FOR THE NEXT MATCH")
+                    .build());
             return new Result(true, "You collected an unlocked plant named " + collectedPlant.getName() + ".");
         }
     }

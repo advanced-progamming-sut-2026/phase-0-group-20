@@ -173,9 +173,7 @@ data/*.json
 # OS generated files (Optional but good to have)
 unused.xml
 .idea
-assets/pvz2assets/ATLASES/
-assets/pvz2assets/IMAGES/768/
-assets/pvz2assets/animations.json
-assets/pvz2assets/RESOURCES.json
-assets
+assets/data
+assets/pvz2assets
+assets/resources
 pvz-asset-browser.jar

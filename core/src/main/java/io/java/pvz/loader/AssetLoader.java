@@ -3,6 +3,7 @@ package io.java.pvz.loader;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import pvz.libpvz.pam.PamPlayer;
 import pvz.libpvz.textures.TextureBank;
@@ -31,6 +32,10 @@ public class AssetLoader {
             player = new PamPlayer(textures, assetsFolder);
             assetManager = new AssetManager();
         }
+        assetManager.load("background/zen_garden.png", Texture.class);
+
+
+        assetManager.finishLoading();
     }
 
     //load animation
@@ -53,6 +58,10 @@ public class AssetLoader {
         if (textures != null) {
             textures.dispose();
         }
+    }
+
+    public Texture getTexture(String path) {
+        return assetManager.get(path, Texture.class);
     }
 
     public Skin getSkin() {

@@ -4,8 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -21,7 +19,7 @@ import io.java.pvz.models.entities.plants.strategy.category_strategy.SunProducti
 import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
-import pvz.libpvz.pam.PamPlayer;
+import io.java.pvz.utils.PamAnimatedActor;
 import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
 
@@ -65,13 +63,8 @@ public class PlantInfoScreen extends BaseScreen {
         rootTable.add(titleLabel).padBottom(20).row();
 
         Table contentTable = new Table();
-
-        String pamPath1 = "768/INITIAL/PLANT/" + atlasName + "/" + atlasName + ".PAM";
-        String pamPath2 = "768/FULL/PLANT/" + atlasName + "/" + atlasName + ".PAM";
-
-        PamPlayer player = AssetLoader.getInstance().getPlayer();
-        PamAnimatedActor plantActor = new PamAnimatedActor(player, "idle", pamPath1, pamPath2);
-
+        PamAnimatedActor plantActor = PamAnimatedActor.createPlantIdle(atlasName);
+        plantActor.setScale(1.5f);
         contentTable.add(plantActor).size(200, 200).expand().bottom().padBottom(300).padLeft(350);
 
         BorderedTable statsTable = new BorderedTable();
@@ -100,19 +93,21 @@ public class PlantInfoScreen extends BaseScreen {
 
         statsTable.add(createStatBlock(textures,
             "IMAGE_UI_ALMANAC_PLANTS_TOUGHNESS_ICON",
-            "TOUGHNESS", String.valueOf(plant.getBaseHp()))).width(blockWidth).pad(padY, padX, padY, padX).left();
+            "TOUGHNESS", String.valueOf(plant.getBaseHp()))).width(blockWidth).
+            pad(padY, padX, padY, padX).left();
 
-        if(plant.getCategory() != PlantCategory.SUN_PRODUCER){
+        if (plant.getCategory() != PlantCategory.SUN_PRODUCER) {
             statsTable.add(createStatBlock(textures,
                 "IMAGE_UI_ALMANAC_PLANTS_DAMAGE_ICON",
-                "DAMAGE", String.valueOf(plant.getDamage()))).width(blockWidth).pad(padY, padX, padY, padX).left().row();
-        }else {
+                "DAMAGE", String.valueOf(plant.getDamage()))).width(blockWidth).
+                pad(padY, padX, padY, padX).left().row();
+        } else {
             SunProductionStrategy strategy = plant.getStrategies().stream()
                 .filter(SunProductionStrategy.class::isInstance)
                 .map(SunProductionStrategy.class::cast)
                 .findFirst()
                 .orElse(null);
-            int amount = strategy.getSunTypeForPlant(plant.getName(),0).getValue();
+            int amount = strategy != null ? strategy.getSunTypeForPlant(plant.getName(), 0).getValue() : 0;
             statsTable.add(createStatBlock(textures,
                 "IMAGE_UI_ALMANAC_ALMANAC_STAT_ICON_SUNPRODUCTION",
                 "SUN PRODUCTION", String.valueOf(amount))).width(blockWidth).pad(padY, padX, padY, padX).left().row();
@@ -125,14 +120,15 @@ public class PlantInfoScreen extends BaseScreen {
         statsTable.add(createStatBlock(textures,
             "IMAGE_UI_ALMANAC_ALMANAC_PIERCE",
             "Category", plant.getCategory().getName())).width(blockWidth).pad(padY, padX, padY, padX).left().row();
+
         contentTable.add(statsTable).size(850, 800).expand().top().right().padRight(50).padTop(20);
 
         rootTable.add(contentTable).grow();
         mainLayer.addActor(rootTable);
     }
 
-    private String getRangeString(Plant plant){
-        return switch (plant.getCategory()){
+    private String getRangeString(Plant plant) {
+        return switch (plant.getCategory()) {
             case LOBBER -> "LOBBED";
             case SHOOTER -> "SHOT";
             case MELEE -> "CLOSE";
@@ -153,9 +149,8 @@ public class PlantInfoScreen extends BaseScreen {
         Table textTable = new Table();
         textTable.left();
 
-        Label titleLbl = new Label(title, skin,"big");
-        titleLbl.setFontScale(1f
-        );
+        Label titleLbl = new Label(title, skin, "big");
+        titleLbl.setFontScale(1f);
         titleLbl.setColor(Color.valueOf("#4A3018"));
 
         Label valueLbl = new Label(value, skin, "medium_outline");
@@ -174,76 +169,16 @@ public class PlantInfoScreen extends BaseScreen {
     public void render(float delta) {
         clearScreen(0f, 0f, 0f, 1f);
         AssetLoader.getInstance().updateTextures();
+
         if (backgroundRegion != null) {
             batch.begin();
             batch.draw(backgroundRegion, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.end();
         }
+
         if (stage != null) {
             stage.act(delta);
             stage.draw();
-        }
-    }
-
-    private static class PamAnimatedActor extends Actor {
-        private final PamPlayer player;
-        private final String clipName;
-        private String successfulPath = null;
-        private float stateTime = 0f;
-        private boolean isLoaded = false;
-
-        public PamAnimatedActor(PamPlayer player, String clipName, String... pamPaths) {
-            this.player = player;
-            this.clipName = clipName;
-
-            for (String path : pamPaths) {
-                try {
-                    AssetLoader.getInstance().loadPamSync(path);
-                    this.successfulPath = path;
-                    this.isLoaded = true;
-                    break;
-                } catch (Exception e) {
-                    System.err.println("⚠️ Fallback: Failed to load PAM from: " + path);
-                }
-            }
-
-            if (!isLoaded) {
-                System.err.println("❌ Critical Error: Could not load PAM animation from any of the provided paths.");
-            }
-        }
-
-        @Override
-        public void act(float delta) {
-            super.act(delta);
-            if (isLoaded) {
-                stateTime += delta;
-            }
-        }
-
-        @Override
-        public void draw(Batch batch, float parentAlpha) {
-            if (isLoaded && player != null && successfulPath != null) {
-                float drawX = getX() + (getWidth() / 2f);
-                float drawY = getY();
-
-                Matrix4 originalMatrix = batch.getTransformMatrix().cpy();
-
-                Matrix4 scaledMatrix = originalMatrix.cpy()
-                    .translate(drawX, drawY, 0)
-                    .scale(1.5f, 1.5f, 1f)
-                    .translate(-drawX, -drawY, 0);
-
-                batch.setTransformMatrix(scaledMatrix);
-
-                try {
-                    player.draw(batch, successfulPath, clipName, stateTime, drawX, drawY, true);
-                } catch (Exception e) {
-                    System.err.println("❌ Rendering Error for PAM: " + successfulPath + " - " + e.getMessage());
-                    isLoaded = false;
-                } finally {
-                    batch.setTransformMatrix(originalMatrix);
-                }
-            }
         }
     }
 }
