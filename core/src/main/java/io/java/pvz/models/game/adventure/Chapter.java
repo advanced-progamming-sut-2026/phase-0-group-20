@@ -13,6 +13,7 @@ public class Chapter {
     private final List<Level> levels;
     private int currentLevelIndex;
     private boolean isUnlocked;
+    private int chapterIndex;
 
     public Chapter(SeasonType type) {
         this.levels = new ArrayList<>();
@@ -21,6 +22,13 @@ public class Chapter {
         this.modifier = createModifier(type);
         this.isUnlocked = false;
         createLevels();
+        chapterIndex = switch (type) {
+            case ANCIENT_EGYPT -> 0;
+            case FROZEN_CAVES -> 1;
+            case DARK_AGES -> 2;
+            case BIG_WAVE_BEACH -> 3;
+            case MINI_GAME -> 4;
+        };
     }
 
     public static SeasonModifier createModifier(SeasonType type) {
@@ -101,5 +109,9 @@ public class Chapter {
 
     public void setCurrentLevelIndex(int currentLevelIndex) {
         this.currentLevelIndex = currentLevelIndex;
+    }
+
+    public int getChapterIndex() {
+        return chapterIndex;
     }
 }

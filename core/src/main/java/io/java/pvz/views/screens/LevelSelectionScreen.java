@@ -2,23 +2,16 @@ package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Scaling;
-import io.java.pvz.controllers.ButtonAnimator;
 import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
-import io.java.pvz.models.enums.Menu;
-import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.Chapter;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
@@ -116,13 +109,26 @@ public class LevelSelectionScreen extends BaseScreen {
 
     private Stack buildLevelNode(TextureBank textures, Skin skin, int levelIndex) {
         boolean unlocked = isLevelUnlocked(levelIndex);
+        System.out.println(gameMenuController.printAdventure());
 
         Stack nodeStack;
         if (unlocked) {
             nodeStack = UiFactory.imageHoverStack(textures, iconFor(levelIndex), NODE_SIZE, NODE_SIZE,
                 1.1f, 0.9f, () -> {
                     System.out.println("Start level " + (levelIndex + 1) + " of " + chapter.getDisplayName());
-                    // TODO: start game and plant selection
+                    Result result = gameMenuController.enterLevel(String.valueOf(levelIndex + 1));
+
+                    if (result.isSuccessful()) {
+                        System.out.println(result.message());
+                        String mapId = gameMenuController.getCurrentMapTextureId();
+                        ScreenManager.getInstance().setRootScreen(new GameFlowScreen(game, mapId));
+                    } else {
+                        System.out.println(result.message());
+                        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                                .message(result.message())
+                                .build());
+                    }
                 });
         } else {
             nodeStack = UiFactory.imageHoverStack(textures, iconFor(levelIndex), NODE_SIZE, NODE_SIZE,
@@ -147,6 +153,7 @@ public class LevelSelectionScreen extends BaseScreen {
     }
 
     private boolean isLevelUnlocked(int levelIndex) {
+        if (App.getActiveUser().getHighestUnlockedChapterIndex() > chapter.getChapterIndex()) return true;
         return chapter.isUnlocked() && levelIndex <= chapter.getCurrentLevelIndex();
     }
 
