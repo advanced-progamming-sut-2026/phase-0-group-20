@@ -1,5 +1,9 @@
 package io.java.pvz;
 
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import io.java.pvz.controllers.AudioManager;
+import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.entities.plants.Plant;
@@ -13,6 +17,7 @@ import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.game.events.DailyResetListener;
 import io.java.pvz.models.users.User;
+import io.java.pvz.views.sound.MusicType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +44,14 @@ public class GameInitializer {
             System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
             App.setAllUsers(DataBaseManager.getAllUsers());
         }
+
+        AssetManager am = AssetLoader.getInstance().getAssetManager();
+
+        am.load(MusicType.MENU_BGM.getPath(), Music.class);
+
+        am.finishLoading();
+
+        AudioManager.getInstance().init(am);
     }
 
     private static void initPlants() {

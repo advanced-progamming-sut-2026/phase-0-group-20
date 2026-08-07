@@ -19,8 +19,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.java.pvz.controllers.AudioManager;
 import io.java.pvz.controllers.NotificationManager;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.views.sound.MusicType;
 
 public abstract class BaseScreen implements Screen {
 
@@ -66,6 +68,7 @@ public abstract class BaseScreen implements Screen {
             currencyBar = new CurrencyBar(AssetLoader.getInstance().getTextures(), AssetLoader.getInstance().getSkin());
             hudLayer.add(currencyBar).padTop(40).padRight(300);
         }
+        AudioManager.getInstance().playMusic(MusicType.MENU_BGM);
         getNotificationManager();
     }
 
