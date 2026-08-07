@@ -23,11 +23,11 @@ public class LevelSelectionScreen extends BaseScreen {
 
     private static final int LEVELS_PER_CHAPTER = 4;
     private static final float NODE_SIZE = 180f;
-    private static final float VERTICAL_SPACING = 260f;
-    private static final float PATH_WIDTH_AREA = 900f;
-    private static final float SIDE_MARGIN = 80f;
+    private static final float PATH_AREA_WIDTH = 1700f;
+    private static final float LOWER_Y = 100f;
+    private static final float UPPER_Y = 420f;
+    private static final float GROUP_HEIGHT = UPPER_Y + NODE_SIZE + 40f;
 
-    private static Texture lineTexture;
 
     private final Chapter chapter;
     private TextureRegion backgroundRegion;
@@ -56,31 +56,26 @@ public class LevelSelectionScreen extends BaseScreen {
 
         mainLayer.add(UiFactory.screenTitle(chapter.getDisplayName(), skin, 1.8f)).padTop(10).padBottom(40).row();
 
-        ScrollPane scrollPane = new ScrollPane(buildPathGroup(textures, skin), skin);
-        scrollPane.setFadeScrollBars(false);
-        scrollPane.setScrollingDisabled(true, false);
-        mainLayer.add(scrollPane).grow();
+        mainLayer.add(buildPathGroup(textures, skin)).expand().center();
     }
 
     private Group buildPathGroup(TextureBank textures, Skin skin) {
         Group group = new Group();
-
-        float groupHeight = VERTICAL_SPACING * (LEVELS_PER_CHAPTER - 1) + NODE_SIZE + 60;
-        group.setSize(PATH_WIDTH_AREA, groupHeight);
+        group.setSize(PATH_AREA_WIDTH, GROUP_HEIGHT);
 
         float[] centerX = new float[LEVELS_PER_CHAPTER];
         float[] centerY = new float[LEVELS_PER_CHAPTER];
 
+        float spacingX = (PATH_AREA_WIDTH - NODE_SIZE) / (LEVELS_PER_CHAPTER - 1);
         for (int i = 0; i < LEVELS_PER_CHAPTER; i++) {
-            boolean fromLeft = (i % 2 == 0);
-            float x = fromLeft ? SIDE_MARGIN : (PATH_WIDTH_AREA - SIDE_MARGIN - NODE_SIZE);
-            float y = groupHeight - 30 - NODE_SIZE - i * VERTICAL_SPACING;
-            centerX[i] = x + NODE_SIZE / 2f;
+            centerX[i] = NODE_SIZE / 2f + i * spacingX;
+            float y = (i % 2 == 0) ? LOWER_Y : UPPER_Y;
             centerY[i] = y + NODE_SIZE / 2f;
         }
 
         for (int i = 0; i < LEVELS_PER_CHAPTER - 1; i++) {
-            group.addActor(createPathLine(centerX[i], centerY[i], centerX[i + 1], centerY[i + 1]));
+            boolean pathReached = isLevelUnlocked(i + 1);
+            group.addActor(createConnector(textures, centerX[i], centerY[i], centerX[i + 1], centerY[i + 1], pathReached));
         }
 
         for (int i = 0; i < LEVELS_PER_CHAPTER; i++) {
@@ -92,27 +87,22 @@ public class LevelSelectionScreen extends BaseScreen {
         return group;
     }
 
-    private Image createPathLine(float x1, float y1, float x2, float y2) {
-        if (lineTexture == null) {
-            Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-            pixmap.setColor(Color.valueOf("#D9C08C"));
-            pixmap.fill();
-            lineTexture = new Texture(pixmap);
-            pixmap.dispose();
-        }
+    private Image createConnector(TextureBank textures, float x1, float y1, float x2, float y2, boolean reached) {
+        String connectorId = reached ? Ids.LevelSelect.CONNECTOR_FILL : Ids.LevelSelect.CONNECTOR_EMPTY;
+        TextureRegion region = textures.region(connectorId);
 
         float dx = x2 - x1;
         float dy = y2 - y1;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
         float angleDeg = (float) Math.toDegrees(Math.atan2(dy, dx));
 
-        Image line = new Image(new TextureRegionDrawable(new TextureRegion(lineTexture)));
-        line.setSize(length, 14f);
-        line.setPosition(x1, y1 - 7f);
-        line.setOrigin(0f, 7f);
-        line.setRotation(angleDeg);
+        Image connector = new Image(new TextureRegionDrawable(region));
+        connector.setSize(length, 18f);
+        connector.setPosition(x1, y1 - 9f);
+        connector.setOrigin(0f, 9f);
+        connector.setRotation(angleDeg);
 
-        return line;
+        return connector;
     }
 
     private Stack buildLevelNode(TextureBank textures, Skin skin, int levelIndex) {

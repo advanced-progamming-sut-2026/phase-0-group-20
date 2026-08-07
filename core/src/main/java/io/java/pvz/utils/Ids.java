@@ -69,6 +69,8 @@ public final class Ids {
         public static final String BOSS_ICEAGE = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_ZOMBOSSMECH_ICEAGE";
         public static final String BOSS_BEACH = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_ZOMBOSSMECH_BEACH";
         public static final String BOSS_DARK = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_ZOMBOSSMECH_DARK";
+        public static final String CONNECTOR_FILL = "IMAGE_UI_QUESTS_LEVEL_NODE_CONNECTOR_FILL";
+        public static final String CONNECTOR_EMPTY = "IMAGE_UI_QUESTS_LEVEL_NODE_CONNECTOR_EMPTY";
     }
 
     public static final class ChapterSelect {
