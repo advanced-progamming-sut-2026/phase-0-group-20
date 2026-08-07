@@ -10,6 +10,9 @@ import io.java.pvz.controllers.MenuController.LoginMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
@@ -94,20 +97,28 @@ public class LoginScreen extends BaseScreen {
             Result result = loginController.login(user, pass, stayLoggedIn.isChecked());
             if (result.isSuccessful()) {
                 System.out.println("Login Success: " + result.message());
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Login Success: " + result.message())
+                        .build());
                 ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
             } else {
                 System.out.println("Login Failed: " + result.message());
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Login Failed: " + result.message())
+                        .build());
             }
         });
         loginBtn.getLabel().setFontScale(1.2f);
 
         baseTable.add(loginBtn).width(300).height(70).padTop(10).row();
 
-        TextButton forgotBtn = UiFactory.textButton("Forgot Password?", skin, "default",
+        TextButton forgotBtn = UiFactory.textButton("Forgot Password?", skin, "green_small",
             1.05f, 0.95f, this::showForgotPasswordStep1);
         baseTable.add(forgotBtn).width(300).height(50).padTop(10).row();
 
-        TextButton gotoSignupBtn = UiFactory.textButton("Don't have an account? Sign up", skin, "default",
+        TextButton gotoSignupBtn = UiFactory.textButton("Don't have an account? Sign up", skin, "green_small",
             1.05f, 0.95f, () -> {
                 ScreenManager.getInstance().pushScreen(new SignupScreen(game));
             });
@@ -140,7 +151,7 @@ public class LoginScreen extends BaseScreen {
         popup.pad(40);
         popup.defaults().pad(10);
 
-        TextButton backBtn = UiFactory.textButton("Back", skin, "default", 1.05f, 0.95f, () -> {
+        TextButton backBtn = UiFactory.textButton("Back", skin, "green_small", 1.05f, 0.95f, () -> {
             modalLayer.clearChildren();
             buildUI();
         });
@@ -165,6 +176,10 @@ public class LoginScreen extends BaseScreen {
                 showForgotPasswordStep2(result.message());
             } else {
                 System.out.println("Error: " + result.message());
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Error: " + result.message())
+                        .build());
                 modalLayer.clearChildren();
                 buildUI();
             }
@@ -187,7 +202,7 @@ public class LoginScreen extends BaseScreen {
         popup.pad(40);
         popup.defaults().pad(10);
 
-        TextButton backBtn = UiFactory.textButton("Back", skin, "default",
+        TextButton backBtn = UiFactory.textButton("Back", skin, "green_small",
             1.05f, 0.95f, this::showForgotPasswordStep1);
         popup.add(backBtn).width(100).height(50).left().padBottom(15).row();
 
@@ -211,6 +226,10 @@ public class LoginScreen extends BaseScreen {
                 showForgotPasswordStep3();
             } else {
                 System.out.println("Wrong Answer: " + result.message());
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Wrong Answer: " + result.message())
+                        .build());
                 modalLayer.clearChildren();
                 buildUI();
             }
@@ -232,7 +251,7 @@ public class LoginScreen extends BaseScreen {
         popup.pad(40);
         popup.defaults().pad(10);
 
-        TextButton backBtn = UiFactory.textButton("Back", skin, "default",
+        TextButton backBtn = UiFactory.textButton("Back", skin, "green_small",
             1.05f, 0.95f, this::showForgotPasswordStep1);
         popup.add(backBtn).width(100).height(50).left().padBottom(15).row();
 
@@ -254,8 +273,16 @@ public class LoginScreen extends BaseScreen {
                 modalLayer.clearChildren();
                 buildUI();
                 System.out.println("Password changed successfully!");
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Password changed successfully!")
+                        .build());
             } else {
-                System.out.println("Error: " + result.message());
+                System.out.println("error: " + result.message());
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Error: " + result.message())
+                        .build());
                 modalLayer.clearChildren();
                 buildUI();
             }

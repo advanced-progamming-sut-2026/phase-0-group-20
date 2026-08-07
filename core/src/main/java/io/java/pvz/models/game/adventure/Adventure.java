@@ -60,6 +60,7 @@ public class Adventure {
         if (currentChapterIndex + 1 < chapters.size()) {
             currentChapterIndex++;
             chapters.get(currentChapterIndex).setUnlocked(true);
+            chapters.get(currentChapterIndex).setCurrentLevelIndex(0);
             notify("New Chapter Unlocked: " + chapters.get(currentChapterIndex).getDisplayName());
         }
     }

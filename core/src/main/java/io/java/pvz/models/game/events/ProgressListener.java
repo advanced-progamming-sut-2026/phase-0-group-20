@@ -74,10 +74,10 @@ public class ProgressListener implements GameEventListener {
                 int levelIndex = playedLevel.getLevelNumber() - 1;
 
                 if (chapterIndex == user.getHighestUnlockedChapterIndex() &&
-                        levelIndex == user.getHighestUnlockedLevelIndex()) {
+                    levelIndex == user.getHighestUnlockedLevelIndex()) {
 
                     user.setLevelsCompleted(user.getLevelsCompleted() + 1);
-
+                    user.setHighestUnlockedLevelIndex(Math.min(levelIndex + 1, 3));
                     unlockPlantRewardIfNeeded(user, chapterIndex, levelIndex);
 
                     adventure.onLevelWon();
@@ -105,9 +105,9 @@ public class ProgressListener implements GameEventListener {
             user.unlockedPlants(plant);
 
             GameEventPayload unlockPayload = new GameEventPayload.Builder(GameEvent.PLANT_UNLOCKED)
-                    .plant(plant)
-                    .message("You unlocked new plant: " + plant.getName())
-                    .build();
+                .plant(plant)
+                .message("You unlocked new plant: " + plant.getName())
+                .build();
 
             GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_UNLOCKED, unlockPayload);
         }

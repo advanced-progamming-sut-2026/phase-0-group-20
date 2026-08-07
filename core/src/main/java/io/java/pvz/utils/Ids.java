@@ -28,6 +28,28 @@ public final class Ids {
         public static final String LOCK_ICON = "IMAGE_UI_CARDS_LOCK_MEDIUM";
     }
 
+    public static final class GameMap {
+        public static final String ICE_CAVE_MAIN = "IMAGE_BACKGROUNDS_ICEAGE_TEXTURE";
+//        public static final String ICE_CAVE_LEFT = "IMAGE_BACKGROUNDS_ICEAGE_TEXTURE_LEFT";
+//        public static final String ICE_CAVE_RIGHT = "IMAGE_BACKGROUNDS_ICEAGE_TEXTURE_RIGHT";
+
+        public static final String ANCIENT_EGYPT_MAIN = "IMAGE_BACKGROUNDS_EGYPT_TEXTURE";
+//        public static final String ANCIENT_EGYPT_LEFT = "IMAGE_BACKGROUNDS_EGYPT_TEXTURE_LEFT";
+//        public static final String ANCIENT_EGYPT_RIGHT = "IMAGE_BACKGROUNDS_EGYPT_TEXTURE_RIGHT";
+
+        public static final String DARK_AGES_MAIN = "IMAGE_BACKGROUNDS_DARK_TEXTURE";
+//        public static final String DARK_AGES_LEFT = "IMAGE_BACKGROUNDS_DARK_TEXTURE_LEFT";
+//        public static final String DARK_AGES_RIGHT = "IMAGE_BACKGROUNDS_DARK_TEXTURE_RIGHT";
+
+        public static final String BIG_WAVE_MAIN = "IMAGE_BACKGROUNDS_BEACH_TEXTURE";
+//        public static final String BIG_WAVE_LEFT = "IMAGE_BACKGROUNDS_BEACH_TEXTURE_LEFT";
+//        public static final String BIG_WAVE_RIGHT = "IMAGE_BACKGROUNDS_BEACH_TEXTURE_RIGHT";
+
+        public static final String MINI_GAME_MAIN = "IMAGE_BACKGROUNDS_BACKGROUND_LOD_FALL_TEXTURE";
+//        public static final String MINI_GAME_LEFT = "IMAGE_BACKGROUNDS_BACKGROUND_LOD_FALL_TEXTURE_LEFT";
+//        public static final String MINI_GAME_RIGHT = "IMAGE_BACKGROUNDS_BACKGROUND_LOD_FALL_TEXTURE_RIGHT";
+    }
+
     public static final class UI {
 
     }

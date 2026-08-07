@@ -12,9 +12,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
+import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.App;
+import io.java.pvz.models.Result;
+import io.java.pvz.models.enums.Menu;
+import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.Chapter;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
@@ -31,6 +39,7 @@ public class LevelSelectionScreen extends BaseScreen {
 
     private final Chapter chapter;
     private TextureRegion backgroundRegion;
+    private final GameMenuController gameMenuController = new GameMenuController();
 
     public LevelSelectionScreen(Game game, Chapter chapter) {
         super(game);

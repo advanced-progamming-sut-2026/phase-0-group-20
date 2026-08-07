@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
+import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
@@ -23,6 +24,7 @@ public class ChapterSelectionScreen extends BaseScreen {
 
     private final Adventure adventure;
     private TextureRegion backgroundRegion;
+    private final GameMenuController gameMenuController = new GameMenuController();
 
     public ChapterSelectionScreen(Game game) {
         super(game);
