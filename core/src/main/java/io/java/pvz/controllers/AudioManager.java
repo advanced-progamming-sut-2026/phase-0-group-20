@@ -85,13 +85,13 @@ public class AudioManager {
     }
 
     public void changeSfxVolume(float volume) {
-        sfxVolume = volume;
+        sfxVolume = volume/10f;
     }
 
     public void changeMusicVolume(float volume) {
         musicVolume = volume;
         if (currentTrack != null) {
-            currentTrack.setVolume(musicVolume);
+            currentTrack.setVolume(musicVolume/10);
         }
     }
 

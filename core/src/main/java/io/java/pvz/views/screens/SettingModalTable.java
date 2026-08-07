@@ -59,12 +59,12 @@ public class SettingModalTable extends BorderedTable {
         float textScale = 1.6f;
         Color fontColor = Color.valueOf("#4A3018");
 
-        createSliderRow(contentTable, skin, "Music Volume", 0, 100, currentMusicVolume,
+        createSliderRow(contentTable, skin, "Music Volume", 0, 10, currentMusicVolume,
             textScale, fontColor, 35, val -> {
             currentMusicVolume = val;
             controller.setMusicVolume(val);
         });
-        createSliderRow(contentTable, skin, "SFX Volume", 0, 100, currentSoundVolume,
+        createSliderRow(contentTable, skin, "SFX Volume", 0, 10, currentSoundVolume,
             textScale, fontColor, 35, val -> {
             currentSoundVolume = val;
             controller.setSfxVolume(val);

@@ -64,16 +64,16 @@ public class GameMenuScreen extends BaseScreen {
             })).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.ALMANAC_ICON,100, 100,
-            () -> ScreenManager.getInstance().pushScreen(new CollectionScreen(game,skin))));
+            () -> ScreenManager.getInstance().pushScreen(new CollectionScreen(game,skin)))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.GREENHOUSE_ICON,100, 100,
-            () -> menuController.open(Menu.GREENHOUSE_MENU))).padRight(30);
+            () -> ScreenManager.getInstance().pushScreen(new ZenGarden(game)))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON,100, 100,
             () -> {
                 System.out.println("News Clicked");
                 new NewsModalTable(skin).show(modalLayer,viewport);
-            }));
+            })).padRight(30);
 
 
         Stack shopBtn = UiFactory.iconButton(textures, skin, Ids.GameScreen.SHOP_ICON,120, 120,

@@ -63,7 +63,8 @@ public final class Ids {
         public static final String DIAMOND = "IMAGE_UI_HUD_INGAME_GEM";
 
         public static final String DAILY_DEAL_BACKGROUND = "IMAGE_UI_STORE_MINISTORE_BG";
-        public static final String DAILY_DEAL_CLOCK_ICON = "IMAGE_UI_QUESTS_DAILY_QUEST_CLOCK_ICON_DAILY_QUEST_CLOCK_ICON_21X21";
+        public static final String DAILY_DEAL_CLOCK_ICON =
+            "IMAGE_UI_QUESTS_DAILY_QUEST_CLOCK_ICON_DAILY_QUEST_CLOCK_ICON_21X21";
         public static final String SALE_RIBBON = "IMAGE_UI_STORE_EARMARK_SALE_STATIC";
 
         public static final String SEED_PACKET_ICON = "IMAGE_UI_STOREMULTI_SEEDPACKETICON";
@@ -100,5 +101,16 @@ public final class Ids {
         public static final String FROZEN_CAVES = "IMAGE_UI_UNIVERSE_WORLDS_ICEAGE";
         public static final String BEACH = "IMAGE_UI_UNIVERSE_WORLDS_BEACH";
         public static final String DARK_AGES = "IMAGE_UI_UNIVERSE_WORLDS_DARK";
+    }
+
+    public static final class ZenGarden{
+        public static final String BACKGROUND = "IMAGE_BACKGROUNDS_ZEN_GARDEN";
+        public static final String VASE = "IMAGE_ZEN_GARDEN_GROWING_PLANT_SLOT_GROWING_PLANT_SLOT_184X161";
+        public static final String MARIGOLD = "IMAGE_UI_PACKETS_MARIGOLD";
+        public static final String CLICKED_BUY_LABEL = "IMAGE_ZEN_GARDEN_BUTTON_UNLOCK_ACTIVE";
+        public static final String UNCLICKED_BUY_LABEL = "IMAGE_ZEN_GARDEN_BUTTON_UNLOCK_INACTIVE";
+        public static final String DIAMOND = "IMAGE_ZEN_GARDEN_GEM_LARGE";
+        public static final String LOCK  = "IMAGE_ZEN_GARDEN_LOCKED_POT_ICON";
+
     }
 }

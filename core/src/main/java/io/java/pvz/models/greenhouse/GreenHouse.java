@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GreenHouse {
-    private static int ROW = 4;
-    private static int COL = 5;
+    private static int ROW = 3;
+    private static int COL = 4;
 
     @JsonProperty("pots")
     private Pot[][] pots = new Pot[ROW][COL];

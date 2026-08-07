@@ -1,5 +1,6 @@
 package io.java.pvz.controllers.GameController;
 
+import io.java.pvz.controllers.AudioManager;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.Settings;
 
@@ -35,6 +36,7 @@ public class SettingController {
 
     public void setMusicVolume(float volume) {
         Settings.getInstance().setMusicVolume(volume);
+        AudioManager.getInstance().changeMusicVolume(volume);
     }
 
     public float getSfxVolume() {
@@ -43,6 +45,7 @@ public class SettingController {
 
     public void setSfxVolume(float volume) {
         Settings.getInstance().setSfxVolume(volume);
+        AudioManager.getInstance().changeSfxVolume(volume);
     }
 
     public boolean isGrid() {
