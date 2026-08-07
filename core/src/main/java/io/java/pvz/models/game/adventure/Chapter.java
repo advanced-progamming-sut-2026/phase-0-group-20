@@ -51,10 +51,7 @@ public class Chapter {
     }
 
     public Level getCurrentLevel() {
-        if (currentLevelIndex < levels.size()) {
-            return levels.get(currentLevelIndex);
-        }
-        return null;
+        return levels.get(currentLevelIndex);
     }
 
     public boolean isNight() {
@@ -87,6 +84,7 @@ public class Chapter {
 
     public void setUnlocked(boolean unlocked) {
         this.isUnlocked = unlocked;
+        if (unlocked) for (int i = 0; i < levels.size(); i++) advanceToNextLevel();
     }
 
     public List<Level> getLevels() {
@@ -94,7 +92,7 @@ public class Chapter {
     }
 
     public void advanceToNextLevel() {
-        currentLevelIndex++;
+        if (currentLevelIndex < levels.size()) currentLevelIndex++;
     }
 
     public int getCurrentLevelIndex() {

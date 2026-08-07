@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -12,6 +13,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.MenuController.ProfileMenuController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
@@ -89,7 +93,7 @@ public class ProfileModalTable extends BorderedTable {
         TextField.TextFieldStyle baseStyle = skin.get(TextField.TextFieldStyle.class);
         TextField.TextFieldStyle customFieldStyle = new TextField.TextFieldStyle(baseStyle);
 
-        com.badlogic.gdx.graphics.g2d.BitmapFont font = skin.getFont("FBUSV8C5EI_1");
+        BitmapFont font = skin.getFont("FBUSV8C5EI_1");
         font.getData().setScale(0.9f);
 
         customFieldStyle.font = font;
@@ -255,6 +259,10 @@ public class ProfileModalTable extends BorderedTable {
 
     private void handleResult(Result result) {
         System.out.println(result);
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(result.message())
+                .build());
     }
 
     public void show(Group targetLayer, Viewport viewport) {

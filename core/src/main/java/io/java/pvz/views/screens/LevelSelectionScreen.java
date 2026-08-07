@@ -7,9 +7,17 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
+import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.App;
+import io.java.pvz.models.Result;
+import io.java.pvz.models.enums.Menu;
+import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.Chapter;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
@@ -21,6 +29,7 @@ public class LevelSelectionScreen extends BaseScreen {
 
     private final Chapter chapter;
     private TextureRegion backgroundRegion;
+    private final GameMenuController gameMenuController = new GameMenuController();
 
     public LevelSelectionScreen(Game game, Chapter chapter) {
         super(game);
@@ -94,7 +103,19 @@ public class LevelSelectionScreen extends BaseScreen {
             nodeStack.setTouchable(Touchable.enabled);
             ButtonAnimator.applyHoverAndClickEffect(nodeStack, 1.08f, 0.92f, () -> {
                 System.out.println("Start level " + (levelIndex + 1) + " of " + chapter.getDisplayName());
-                // TODO: start game and plant selection
+                Result result = gameMenuController.enterLevel(String.valueOf(levelIndex + 1));
+
+                if (result.isSuccessful()) {
+                    System.out.println(result.message());
+                    String mapId = gameMenuController.getCurrentMapTextureId();
+                    ScreenManager.getInstance().setRootScreen(new GameFlowScreen(game, mapId));
+                } else {
+                    System.out.println(result.message());
+                    GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                        new GameEventPayload.Builder(GameEvent.NOTIFY)
+                            .message(result.message())
+                            .build());
+                }
             });
         } else {
             icon.setColor(1f, 1f, 1f, 0.5f);

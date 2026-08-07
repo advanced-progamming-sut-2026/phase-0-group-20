@@ -2,9 +2,10 @@ package io.java.pvz.models;
 
 
 import static io.java.pvz.models.enums.PhysicalConstants.TILE_UNIT_LENGTH;
+import static io.java.pvz.models.enums.PhysicalConstants.GRID_OFFSET_X;
+import static io.java.pvz.models.enums.PhysicalConstants.GRID_OFFSET_Y;
 
-public final class
-Position {
+public final class Position {
 
     private float x;
     private float y;
@@ -14,19 +15,25 @@ Position {
     public Position(float x, float y) {
         this.x = x;
         this.y = y;
-        this.col = (int) Math.floor(x / TILE_UNIT_LENGTH);
-
-        this.row = (int) Math.floor(y / TILE_UNIT_LENGTH);
+        updateGridFromPixels();
     }
 
 
     public Position(int col, int row) {
         this.row = row;
         this.col = col;
-        this.y = row * TILE_UNIT_LENGTH + TILE_UNIT_LENGTH / 2f;
-        this.x = col * TILE_UNIT_LENGTH + TILE_UNIT_LENGTH / 2f;
+        updatePixelsFromGrid();
     }
 
+    private void updateGridFromPixels() {
+        this.col = (int) Math.floor((this.x - GRID_OFFSET_X) / TILE_UNIT_LENGTH);
+        this.row = (int) Math.floor((this.y - GRID_OFFSET_Y) / TILE_UNIT_LENGTH);
+    }
+
+    private void updatePixelsFromGrid() {
+        this.x = (this.col * TILE_UNIT_LENGTH) + (TILE_UNIT_LENGTH / 2f) + GRID_OFFSET_X;
+        this.y = (this.row * TILE_UNIT_LENGTH) + (TILE_UNIT_LENGTH / 2f) + GRID_OFFSET_Y;
+    }
 
     public void setPosition(float x, float y) {
         setX(x);
@@ -40,12 +47,12 @@ Position {
 
     public void moveX(float dx) {
         this.x += dx;
-        this.col = (int) Math.floor(this.x / TILE_UNIT_LENGTH);
+        updateGridFromPixels();
     }
 
     public void moveY(float dy) {
         this.y += dy;
-        this.row = (int) Math.floor(this.y / TILE_UNIT_LENGTH);
+        updateGridFromPixels();
     }
 
     public float getX() {
@@ -54,7 +61,7 @@ Position {
 
     public void setX(float x) {
         this.x = x;
-        this.col = (int) Math.floor(this.x / TILE_UNIT_LENGTH);
+        updateGridFromPixels();
     }
 
     public float getY() {
@@ -63,7 +70,7 @@ Position {
 
     public void setY(float y) {
         this.y = y;
-        this.row = (int) Math.floor(this.y / TILE_UNIT_LENGTH);
+        updateGridFromPixels();
     }
 
     public int getRow() {
@@ -72,7 +79,7 @@ Position {
 
     public void setRow(int row) {
         this.row = row;
-        this.y = row * TILE_UNIT_LENGTH + TILE_UNIT_LENGTH / 2f;
+        updatePixelsFromGrid();
     }
 
     public int getCol() {
@@ -81,18 +88,18 @@ Position {
 
     public void setCol(int col) {
         this.col = col;
-        this.x = col * TILE_UNIT_LENGTH + TILE_UNIT_LENGTH / 2f;
+        updatePixelsFromGrid();
     }
 
 
     @Override
     public String toString() {
         return "Position{" +
-                "x=" + x +
-                ", y=" + y +
-                ", row=" + row +
-                ", col=" + col +
-                '}';
+            "x=" + x +
+            ", y=" + y +
+            ", row=" + row +
+            ", col=" + col +
+            '}';
     }
 
 }
