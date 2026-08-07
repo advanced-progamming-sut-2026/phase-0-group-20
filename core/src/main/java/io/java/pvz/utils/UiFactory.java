@@ -229,4 +229,42 @@ public final class UiFactory {
             }
         };
     }
+
+    public static Stack imageHoverStack(TextureBank textures, String imageId, float width, float height,
+                                        float hoverScale, float clickScale,
+                                        ButtonAnimator.OnClickListener clickListener) {
+        Stack stack = new Stack();
+        stack.setTransform(true);
+        stack.setSize(width, height);
+
+        Image image = imageFor(textures, imageId);
+        image.setScaling(Scaling.fit);
+        stack.add(image);
+
+        if (clickListener != null) {
+            stack.setTouchable(Touchable.enabled);
+            ButtonAnimator.applyHoverAndClickEffect(stack, hoverScale, clickScale, clickListener);
+        }
+        return stack;
+    }
+
+    public static Stack screenTitle(String text, Skin skin, float scale) {
+        Stack stack = new Stack();
+
+        Label shadow = new Label(text, skin, "big");
+        shadow.setFontScale(scale);
+        shadow.setColor(Color.valueOf("#2A1A0C"));
+        shadow.setAlignment(Align.center);
+        Container<Label> shadowContainer = new Container<>(shadow);
+        shadowContainer.padTop(5).padLeft(5);
+
+        Label front = new Label(text, skin, "big");
+        front.setFontScale(scale);
+        front.setColor(Color.valueOf("#FFD86B"));
+        front.setAlignment(Align.center);
+
+        stack.add(shadowContainer);
+        stack.add(front);
+        return stack;
+    }
 }

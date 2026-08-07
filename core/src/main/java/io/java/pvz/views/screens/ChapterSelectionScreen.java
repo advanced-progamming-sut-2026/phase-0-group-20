@@ -19,7 +19,7 @@ import pvz.libpvz.textures.TextureBank;
 
 public class ChapterSelectionScreen extends BaseScreen {
 
-    private static final Color BROWN = Color.valueOf("#4A3018");
+    private static final float ISLAND_SIZE = 420f;
 
     private final Adventure adventure;
     private TextureRegion backgroundRegion;
@@ -46,10 +46,7 @@ public class ChapterSelectionScreen extends BaseScreen {
         topBar.add().expandX();
         mainLayer.add(topBar).growX().padTop(20).padLeft(30).row();
 
-        Label title = new Label("Select a Chapter", skin, "big");
-        title.setColor(BROWN);
-        title.setFontScale(1.8f);
-        mainLayer.add(title).padTop(10).padBottom(50).row();
+        mainLayer.add(UiFactory.screenTitle("Select a Chapter", skin, 1.8f)).padTop(10).padBottom(50).row();
 
         Table islandsRow = new Table();
         for (Chapter chapter : adventure.getChapters()) {
@@ -65,34 +62,31 @@ public class ChapterSelectionScreen extends BaseScreen {
     private Table buildIslandCell(TextureBank textures, Skin skin, Chapter chapter) {
         Table cell = new Table();
 
-        Stack islandStack = new Stack();
-
-        Image islandImage = UiFactory.imageFor(textures, worldImageId(chapter.getSeasonType()));
-        islandImage.setScaling(Scaling.fit);
-        islandStack.add(islandImage);
+        Stack islandStack;
 
         if (chapter.isUnlocked()) {
-            islandStack.setTouchable(Touchable.enabled);
-            ButtonAnimator.applyHoverAndClickEffect(islandStack, 1.05f, 0.95f, () -> {
-                System.out.println("Open chapter: " + chapter.getDisplayName());
-                ScreenManager.getInstance().pushScreen(new LevelSelectionScreen(game, chapter));
-            });
+            islandStack = UiFactory.imageHoverStack(textures, worldImageId(chapter.getSeasonType()),
+                ISLAND_SIZE, ISLAND_SIZE, 1.08f, 0.94f, () -> {
+                    System.out.println("Open chapter: " + chapter.getDisplayName());
+                    ScreenManager.getInstance().pushScreen(new LevelSelectionScreen(game, chapter));
+                });
         } else {
-            islandImage.setColor(1f, 1f, 1f, 0.5f);
+            islandStack = UiFactory.imageHoverStack(textures, worldImageId(chapter.getSeasonType()),
+                ISLAND_SIZE, ISLAND_SIZE, 1f, 1f, null);
+            ((Image) islandStack.getChildren().first()).setColor(1f, 1f, 1f, 0.5f);
 
             Image lockImage = UiFactory.imageFor(textures, Ids.GameScreen.LOCK_ICON);
-            lockImage.setScaling(Scaling.fit);
             Container<Image> lockContainer = new Container<>(lockImage);
-            lockContainer.size(80, 80);
+            lockContainer.size(90, 90);
             islandStack.add(lockContainer);
         }
 
-        cell.add(islandStack).size(320, 320).row();
+        cell.add(islandStack).size(ISLAND_SIZE, ISLAND_SIZE).row();
 
         Label nameLabel = new Label(chapter.getDisplayName(), skin);
         nameLabel.setFontScale(1.3f);
-        nameLabel.setColor(chapter.isUnlocked() ? BROWN : Color.GRAY);
-        cell.add(nameLabel).padTop(12);
+        nameLabel.setColor(chapter.isUnlocked() ? Color.valueOf("#FFD86B") : Color.GRAY);
+        cell.add(nameLabel).padTop(15);
 
         return cell;
     }
