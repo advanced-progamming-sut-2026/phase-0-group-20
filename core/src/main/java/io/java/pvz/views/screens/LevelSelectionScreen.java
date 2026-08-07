@@ -109,7 +109,6 @@ public class LevelSelectionScreen extends BaseScreen {
 
     private Stack buildLevelNode(TextureBank textures, Skin skin, int levelIndex) {
         boolean unlocked = isLevelUnlocked(levelIndex);
-        System.out.println(gameMenuController.printAdventure());
 
         Stack nodeStack;
         if (unlocked) {
