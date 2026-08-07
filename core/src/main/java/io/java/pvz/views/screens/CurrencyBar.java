@@ -28,7 +28,7 @@ public class CurrencyBar extends Table {
         this.coinLabel = (Label) coinDisplay.getUserObject();
 
         add(diamondDisplay).width(160).height(60).padRight(40);
-        add(coinDisplay).width(160).height(60);
+        add(coinDisplay).width(160).height(60).padRight(40);
 
         refresh();
     }
@@ -40,7 +40,7 @@ public class CurrencyBar extends Table {
         Image bgImage = UiFactory.imageFor(texture, imageId);
         bgImage.setScaling(Scaling.fit);
         Container<Image> bgContainer = new Container(bgImage);
-        bgContainer.size(300, 60);
+        bgContainer.size(160, 60);
 
         Label.LabelStyle labelStyle = skin.get(Label.LabelStyle.class);
         Label value = new Label("0", labelStyle);
