@@ -45,7 +45,7 @@ public class GameFlowController {
             NavigationController.exitMenu();
             App.getActiveUser().setPlantFoodCount(0);
             App.getActiveUser().getUnlockedPlants().forEach(p -> p.setBoosted(false));
-            if(GameSession.getInstance().getCurrentChapter().getCurrentLevel()!=null){
+            if (GameSession.getInstance().getCurrentChapter().getCurrentLevel() != null) {
                 GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
             }
 
@@ -60,24 +60,24 @@ public class GameFlowController {
         return new Result(true, "You currently have " + amount + " plants food left.");
     }
 
-    public Result collectSun(String colStr, String rowStr) {
-        Integer userCol = parsePositiveInt(colStr);
-        Integer userRow = parsePositiveInt(rowStr);
-
-        if (userCol == null || userRow == null) {
-            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-        }
+    public Result collectSun(int realCol, int realRow) {
+//        Integer userCol = parsePositiveInt(colStr);
+//        Integer userRow = parsePositiveInt(rowStr);
+//
+//        if (userCol == null || userRow == null) {
+//            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
+//        }
 
         Arena arena = GameSession.getInstance().getArena();
-        Sun sun = arena.getSunInCoordinate(userCol - 1, userRow - 1);
+        Sun sun = arena.getSunInCoordinate(realCol, realRow);
         if (sun == null) {
             return new Result(false, "There is no sun in this coordinate.");
         }
 
         sun.collect();
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.SUN_COLLECTED)
-                .amount(sun.getType().getValue())
-                .build();
+            .amount(sun.getType().getValue())
+            .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.SUN_COLLECTED, payload);
 
         return new Result(true, "You collected a " + sun.getType().getLabel().toLowerCase() + " sun.");
@@ -99,11 +99,11 @@ public class GameFlowController {
         for (Zombie zombie : activeZombies) {
             zombie.takeDamage(10000);
             GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
-                    .zombie(zombie)
-                    .coordinate(zombie.getRow(), zombie.getCol())
-                    .arena(arena)
-                    .seasonType(GameSession.getInstance().getCurrentChapter().getSeasonType())
-                    .build();
+                .zombie(zombie)
+                .coordinate(zombie.getRow(), zombie.getCol())
+                .arena(arena)
+                .seasonType(GameSession.getInstance().getCurrentChapter().getSeasonType())
+                .build();
             GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
         }
 
@@ -115,9 +115,9 @@ public class GameFlowController {
         return new Result(true, "You currently have " + sunAmount + " suns in your pocket.");
     }
 
-    public Result plantPlant(String plantName, String x, String y) {
-        Integer spawnX = parsePositiveInt(x);
-        Integer spawnY = parsePositiveInt(y);
+    public Result plantPlant(String plantName, String col, String row) {
+        Integer spawnX = parsePositiveInt(col);
+        Integer spawnY = parsePositiveInt(row);
         if (spawnX == null || spawnY == null) {
             return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
         }
@@ -128,8 +128,8 @@ public class GameFlowController {
         Plant plant = findPlantForPlacement(session, plantName);
         if (plant == null) {
             return new Result(false, (session.getCurrentMode() instanceof ConveyorBelt)
-                    ? "There is no such plant named " + plantName + "in the belt"
-                    : "There no such plant named " + plantName);
+                ? "There is no such plant named " + plantName + "in the belt"
+                : "There no such plant named " + plantName);
         }
 
         Result validationResult = validatePlantPlacement(session, plant);
@@ -141,17 +141,18 @@ public class GameFlowController {
         }
         Plant existingPlant = desiredTile.getStackPlant();
         if (existingPlant != null &&
-                existingPlant.getName().equals(plant.getName()) && existingPlant.getTags().contains(PlantTag.STACK)) {
+            existingPlant.getName().equals(plant.getName()) && existingPlant.getTags().contains(PlantTag.STACK)) {
             if (existingPlant.addStack()) {
-                session.useSun(plant.getCost()); session.setCooldownForPlant(plant);
+                session.useSun(plant.getCost());
+                session.setCooldownForPlant(plant);
                 GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
-                        .plant(existingPlant)
-                        .arena(arena)
-                        .coordinate(existingPlant.getPlacedTile().getRow(), existingPlant.getPlacedTile()
-                                .getCol()).build();
+                    .plant(existingPlant)
+                    .arena(arena)
+                    .coordinate(existingPlant.getPlacedTile().getRow(), existingPlant.getPlacedTile()
+                        .getCol()).build();
                 GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
                 return new Result(true, "You stacked " + plant.getName() + " to level " +
-                        existingPlant.getStackCount() + " in " + spawnX + "," + spawnY);
+                    existingPlant.getStackCount() + " in " + spawnX + "," + spawnY);
             } else return new Result(false, "This " + plant.getName() + " is already fully stacked (Max 5)!");
         }
 
@@ -178,18 +179,18 @@ public class GameFlowController {
         arena.addPlant(newPlant);
         session.useSun(newPlant.getCost());
         session.getTimeManager().registerNewTicker(newPlant);
-        if(plant.isBoosted()) {
+        if (plant.isBoosted()) {
             plant.useFood();
         }
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
-                .plant(newPlant)
-                .arena(arena)
-                .coordinate(newPlant.getPlacedTile().getRow(), newPlant.getPlacedTile().getCol())
-                .build();
+            .plant(newPlant)
+            .arena(arena)
+            .coordinate(newPlant.getPlacedTile().getRow(), newPlant.getPlacedTile().getCol())
+            .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
         session.setCooldownForPlant(plant);
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +
-                " with the name of " + newPlant.getName() + ".");
+            " with the name of " + newPlant.getName() + ".");
     }
 
     private Plant findPlantForPlacement(GameSession session, String plantName) {
@@ -199,9 +200,9 @@ public class GameFlowController {
             return belt.stream().filter(p -> p.getName().equalsIgnoreCase(plantName)).findFirst().orElse(null);
         } else {
             return session.getChosenPlants().stream()
-                    .filter(p -> p.getName().equalsIgnoreCase(plantName))
-                    .findFirst()
-                    .orElse(null);
+                .filter(p -> p.getName().equalsIgnoreCase(plantName))
+                .findFirst()
+                .orElse(null);
         }
     }
 
@@ -302,7 +303,7 @@ public class GameFlowController {
         ZombieType type = null;
         for (ZombieType zombieType : ZombieType.values()) {
             if (zombieType.name().replace("_", "")// look at names we don't need _
-                    .equalsIgnoreCase(zombieTypeStr.replace(" ", ""))) {
+                .equalsIgnoreCase(zombieTypeStr.replace(" ", ""))) {
                 type = zombieType;
                 break;
             }
@@ -317,7 +318,7 @@ public class GameFlowController {
         session.getTimeManager().registerNewTicker(newZombie);
 
         return new Result(true, "Cheat Activated. Spawned " + newZombie.getName() +
-                " at (" + spawnX + ", " + spawnY + ").");
+            " at (" + spawnX + ", " + spawnY + ").");
     }
 
     public Result cheatAddPlantFood() {
@@ -334,8 +335,8 @@ public class GameFlowController {
     private int getPlantLevel(Plant plant) {
         User user = App.getActiveUser();
         return user.getUnlockedPlants().stream()
-                .filter(p -> p.getName().equals(plant.getName()))
-                .findFirst().get().getLevel();
+            .filter(p -> p.getName().equals(plant.getName()))
+            .findFirst().get().getLevel();
     }
 
 }

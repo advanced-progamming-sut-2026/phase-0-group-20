@@ -95,4 +95,8 @@ public class Sun implements Ticker {
     public void setExploded(boolean exploded) {
         this.exploded = exploded;
     }
+
+    public Position getPosition() {
+        return position;
+    }
 }

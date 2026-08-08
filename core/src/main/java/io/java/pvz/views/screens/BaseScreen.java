@@ -55,7 +55,7 @@ public abstract class BaseScreen implements Screen {
         toastLayer = new Table();
         hudLayer = new Table();
         hudLayer.setFillParent(true);
-        hudLayer.top().right();
+        hudLayer.top().left();
 
         rootStack.add(mainLayer);
         rootStack.add(modalLayer);
@@ -66,7 +66,7 @@ public abstract class BaseScreen implements Screen {
 
         if (showsCurrencyBar()) {
             currencyBar = new CurrencyBar(AssetLoader.getInstance().getTextures(), AssetLoader.getInstance().getSkin());
-            hudLayer.add(currencyBar).padTop(40).padRight(300);
+            hudLayer.add(currencyBar).padTop(40).padLeft(1200);
         }
         AudioManager.getInstance().playMusic(MusicType.MENU_BGM);
         getNotificationManager();
@@ -79,7 +79,7 @@ public abstract class BaseScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-
+        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         if (notificationManager != null)
             notificationManager.register();
 
@@ -141,6 +141,9 @@ public abstract class BaseScreen implements Screen {
         if (stage != null) {
             stage.getViewport().update(width, height, true);
         }
+        camera.update();
+        if (batch != null)
+            batch.setProjectionMatrix(camera.combined);
     }
 
     @Override
