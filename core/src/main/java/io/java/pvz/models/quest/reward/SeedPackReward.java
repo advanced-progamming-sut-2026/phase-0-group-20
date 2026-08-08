@@ -60,6 +60,14 @@ public class SeedPackReward implements Reward {
 
     @Override
     public String toString() {
-        return packetCount + " seed packets";
+        return packetCount +" "+ plantTypeName+" seed packets";
+    }
+
+    public String getPlantTypeName() {
+        return plantTypeName;
+    }
+
+    public int getPacketCount() {
+        return packetCount;
     }
 }

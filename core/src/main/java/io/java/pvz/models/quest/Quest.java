@@ -22,6 +22,7 @@ public class Quest {
     private Reward reward;
     private boolean isCompleted;
     private boolean onMission;
+    private boolean readyToClaim = false ;
 
     public Quest(String title, QuestCategory category, QuestPriority priority, boolean onMission, String conditionStr) {
         this.id = UUID.randomUUID().toString();
@@ -62,12 +63,12 @@ public class Quest {
 
         condition.updateProgress(payload);
         if (condition.isHappened()) {
-            complete();
+            readyToClaim = true;
         }
     }
 
     public void complete() {
-        if (!isCompleted) {
+        if (!isCompleted&&readyToClaim) {
             this.isCompleted = true;
 
             User activeUser = App.getActiveUser();
@@ -121,5 +122,9 @@ public class Quest {
 
     public boolean isOnMission() {
         return onMission;
+    }
+
+    public boolean isReadyToClaim() {
+        return readyToClaim;
     }
 }

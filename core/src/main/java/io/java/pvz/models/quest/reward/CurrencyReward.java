@@ -22,7 +22,7 @@ public class CurrencyReward implements Reward {
     @JsonIgnore
     @Override
     public RewardType getRewardType() {
-        return RewardType.CURRENCY;
+        return (isDiamond) ? RewardType.DIAMOND : RewardType.CURRENCY;
     }
 
     @Override

@@ -66,4 +66,8 @@ public class UnlockableReward implements Reward {
     public String toString() {
         return "a random plant";
     }
+
+    public String getPlantToUnlockName() {
+        return plantToUnlockName;
+    }
 }
