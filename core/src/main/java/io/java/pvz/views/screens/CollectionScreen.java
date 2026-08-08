@@ -24,6 +24,7 @@ public class CollectionScreen extends BaseScreen {
     private final Skin skin;
     private boolean isShowingPlants = true;
     private final CollectionController controller = new CollectionController();
+    private final List<PlantCardButton> allPlantCards = new java.util.ArrayList<>();
     public CollectionScreen(Game game, Skin skin) {
         super(game);
         this.skin = skin;
@@ -152,6 +153,14 @@ public class CollectionScreen extends BaseScreen {
         return table;
     }
 
+    @Override
+    public void show() {
+        super.show();
+        for (PlantCardButton card : allPlantCards) {
+            card.updateState();
+        }
+    }
+
     private PlantCardButton createPlantCard(TextureBank textures, Plant plant) {
         String plantName = UiFactory.getAtlasName(plant);
 
@@ -168,6 +177,7 @@ public class CollectionScreen extends BaseScreen {
             }
 
             PlantCardButton card = new PlantCardButton(cardBg, plantImg, familyImg, plant,skin);
+            allPlantCards.add(card);
 
             card.addListener(new ClickListener() {
                 @Override
