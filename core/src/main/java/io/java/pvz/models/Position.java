@@ -1,9 +1,10 @@
 package io.java.pvz.models;
 
 
-import static io.java.pvz.models.enums.PhysicalConstants.TILE_UNIT_LENGTH;
-import static io.java.pvz.models.enums.PhysicalConstants.GRID_OFFSET_X;
-import static io.java.pvz.models.enums.PhysicalConstants.GRID_OFFSET_Y;
+import static io.java.pvz.models.enums.PhysicalConstants.TILE_WIDTH;
+import static io.java.pvz.models.enums.PhysicalConstants.TILE_HEIGHT;
+import static io.java.pvz.models.enums.PhysicalConstants.GRID_START_X;
+import static io.java.pvz.models.enums.PhysicalConstants.GRID_START_Y;
 
 public final class Position {
 
@@ -26,13 +27,13 @@ public final class Position {
     }
 
     private void updateGridFromPixels() {
-        this.col = (int) Math.floor((this.x - GRID_OFFSET_X) / TILE_UNIT_LENGTH);
-        this.row = (int) Math.floor((this.y - GRID_OFFSET_Y) / TILE_UNIT_LENGTH);
+        this.col = (int) Math.floor((this.x - GRID_START_X) / TILE_WIDTH);
+        this.row = (int) Math.floor((this.y - GRID_START_Y) / TILE_HEIGHT);
     }
 
     private void updatePixelsFromGrid() {
-        this.x = (this.col * TILE_UNIT_LENGTH) + (TILE_UNIT_LENGTH / 2f) + GRID_OFFSET_X;
-        this.y = (this.row * TILE_UNIT_LENGTH) + (TILE_UNIT_LENGTH / 2f) + GRID_OFFSET_Y;
+        this.x = (this.col * TILE_WIDTH) + (TILE_WIDTH / 2f) + GRID_START_X;
+        this.y = (this.row * TILE_HEIGHT) + (TILE_HEIGHT / 2f) + GRID_START_Y;
     }
 
     public void setPosition(float x, float y) {

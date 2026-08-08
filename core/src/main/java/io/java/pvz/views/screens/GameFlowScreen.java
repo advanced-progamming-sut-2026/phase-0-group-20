@@ -159,9 +159,6 @@ public class GameFlowScreen extends BaseScreen {
 
         drawDebugLayout();
 
-        if (input.isKeyPressed(Input.Keys.RIGHT)) camera.position.x += 600 * delta;
-        if (input.isKeyPressed(Input.Keys.LEFT)) camera.position.x -= 600 * delta;
-
         if (stage != null) {
             stage.act(delta);
             stage.draw();

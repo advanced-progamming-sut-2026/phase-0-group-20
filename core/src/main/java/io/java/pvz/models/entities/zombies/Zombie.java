@@ -11,6 +11,7 @@ import io.java.pvz.models.entities.zombies.behavior.effect.Effect;
 import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.ZombieEffect;
 import io.java.pvz.models.entities.zombies.behavior.move.MoveBehavior;
+import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
@@ -62,11 +63,11 @@ public class Zombie implements Ticker {
         this.name = type.getJsonAlias();
         this.baseHp = data.getHitpoints();
         this.health = data.getHitpoints();
-        this.baseSpeed = data.getSpeed();
-        this.currentSpeed = data.getSpeed();
+        this.baseSpeed = data.getSpeed() * PhysicalConstants.SPEED_SCALE_RATIO;
+        this.currentSpeed = this.baseSpeed;
         this.eatDPS = data.getEatDps();
         this.waveCost = data.getWaveCost();
-        this.position = new Position(0, row);
+        this.position = new Position(9, row); // we will randomly choose the exact x due to map
         this.position.setX(10.0f);
         this.moveBehavior = moveBehavior;
         this.defenseBehavior = defenseBehavior;
