@@ -30,27 +30,23 @@ public final class Ids {
 
     public static final class GameMap {
         public static final String ICE_CAVE_MAIN = "IMAGE_BACKGROUNDS_ICEAGE_TEXTURE";
-//        public static final String ICE_CAVE_LEFT = "IMAGE_BACKGROUNDS_ICEAGE_TEXTURE_LEFT";
-//        public static final String ICE_CAVE_RIGHT = "IMAGE_BACKGROUNDS_ICEAGE_TEXTURE_RIGHT";
-
         public static final String ANCIENT_EGYPT_MAIN = "IMAGE_BACKGROUNDS_EGYPT_TEXTURE";
-//        public static final String ANCIENT_EGYPT_LEFT = "IMAGE_BACKGROUNDS_EGYPT_TEXTURE_LEFT";
-//        public static final String ANCIENT_EGYPT_RIGHT = "IMAGE_BACKGROUNDS_EGYPT_TEXTURE_RIGHT";
-
         public static final String DARK_AGES_MAIN = "IMAGE_BACKGROUNDS_DARK_TEXTURE";
-//        public static final String DARK_AGES_LEFT = "IMAGE_BACKGROUNDS_DARK_TEXTURE_LEFT";
-//        public static final String DARK_AGES_RIGHT = "IMAGE_BACKGROUNDS_DARK_TEXTURE_RIGHT";
-
         public static final String BIG_WAVE_MAIN = "IMAGE_BACKGROUNDS_BEACH_TEXTURE";
-//        public static final String BIG_WAVE_LEFT = "IMAGE_BACKGROUNDS_BEACH_TEXTURE_LEFT";
-//        public static final String BIG_WAVE_RIGHT = "IMAGE_BACKGROUNDS_BEACH_TEXTURE_RIGHT";
-
-        public static final String MINI_GAME_MAIN = "IMAGE_BACKGROUNDS_BACKGROUND_LOD_FALL_TEXTURE";
-//        public static final String MINI_GAME_LEFT = "IMAGE_BACKGROUNDS_BACKGROUND_LOD_FALL_TEXTURE_LEFT";
-//        public static final String MINI_GAME_RIGHT = "IMAGE_BACKGROUNDS_BACKGROUND_LOD_FALL_TEXTURE_RIGHT";
+        public static final String BIG_WAVE_LINE = "IMAGE_BACKGROUNDS_WATER_TIDE_LINE_WATER_TIDE_LINE_161X397";
+        public static final String MINI_GAME_MAIN = "IMAGE_BACKGROUNDS_DINO_TEXTURE";
     }
 
     public static final class UI {
+        public static final String PAUSE = "IMAGE_UI_HUD_INGAME_PAUSE_BUTTON";
+        public static final String FAST_FORWARD = "IMAGE_UI_HUD_INGAME_2X";
+        public static final String SHOVEL = "IMAGE_UI_HUD_INGAME_SHOVEL_BUTTON";
+        public static final String PLANT_FOOD_HOVERING = "IMAGE_DANGERROOM_CARD_PLANTFOOD";
+        public static final String PLANT_FOOD_ICON = "IMAGE_UI_DANGERROOM_PLANTFOOD_ICON";
+
+        public static final String SUN_ICON = "IMAGE_UI_HUD_INGAME_SUN";
+        public static final String SUN_ADDER = "IMAGE_UI_GENERIC_BUTTON_GENERIC_CURRENCY_NORMAL";
+        public static final String NUKE_BUTTON = "IMAGE_UI_POWERUPS_POWER_FLAMETHROWER";
 
     }
 

@@ -27,6 +27,23 @@ public class NotificationManager implements GameEventListener {
         GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
     }
 
+    public void register() {
+        GameEventMessenger.getInstance().removeListener(GameEvent.NOTIFY, this);
+        GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
+    }
+
+    public void unregister() {
+        GameEventMessenger.getInstance().removeListener(GameEvent.NOTIFY, this);
+    }
+
+    public void clearAllToasts() {
+        for (NotificationToast toast : activeToasts) {
+            toast.clearActions();
+            toast.remove();
+        }
+        activeToasts.clear();
+    }
+
     @Override
     public void onEvent(GameEvent event, GameEventPayload payload) {
         if (event == GameEvent.NOTIFY)

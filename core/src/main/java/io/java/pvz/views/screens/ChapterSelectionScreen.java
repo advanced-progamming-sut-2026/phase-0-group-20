@@ -70,6 +70,7 @@ public class ChapterSelectionScreen extends BaseScreen {
             islandStack = UiFactory.imageHoverStack(textures, worldImageId(chapter.getSeasonType()),
                 ISLAND_SIZE, ISLAND_SIZE, 1.08f, 0.94f, () -> {
                     System.out.println("Open chapter: " + chapter.getDisplayName());
+                    gameMenuController.enterChapter(chapter.getDisplayName());
                     ScreenManager.getInstance().pushScreen(new LevelSelectionScreen(game, chapter));
                 });
         } else {

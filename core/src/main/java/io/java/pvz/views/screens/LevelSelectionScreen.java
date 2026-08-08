@@ -109,7 +109,6 @@ public class LevelSelectionScreen extends BaseScreen {
 
     private Stack buildLevelNode(TextureBank textures, Skin skin, int levelIndex) {
         boolean unlocked = isLevelUnlocked(levelIndex);
-        System.out.println(gameMenuController.printAdventure());
 
         Stack nodeStack;
         if (unlocked) {
@@ -121,7 +120,7 @@ public class LevelSelectionScreen extends BaseScreen {
                     if (result.isSuccessful()) {
                         System.out.println(result.message());
                         String mapId = gameMenuController.getCurrentMapTextureId();
-                        ScreenManager.getInstance().setRootScreen(new GameFlowScreen(game, mapId));
+                        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
                     } else {
                         System.out.println(result.message());
                         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,

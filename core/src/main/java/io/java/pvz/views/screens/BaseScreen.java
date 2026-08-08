@@ -79,6 +79,10 @@ public abstract class BaseScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
+
+        if (notificationManager != null)
+            notificationManager.register();
+
     }
 
     protected void clearScreen(float r, float g, float b, float a) {
@@ -151,6 +155,10 @@ public abstract class BaseScreen implements Screen {
     public void hide() {
         if (Gdx.input.getInputProcessor() == stage) {
             Gdx.input.setInputProcessor(null);
+        }
+        if (notificationManager != null) {
+            notificationManager.clearAllToasts();
+            notificationManager.unregister();
         }
     }
 
