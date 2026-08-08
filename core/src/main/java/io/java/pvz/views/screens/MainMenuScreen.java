@@ -110,7 +110,12 @@ public class MainMenuScreen extends BaseScreen {
         Stack questBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON, 100, 100,
             () -> {
                 System.out.println("Quests Menu Opened!");
-                // TODO : push quests menu later
+                modalLayer.clear();
+
+                TravelLogPanel travelLogPanel = new TravelLogPanel(skin, textures);
+
+                modalLayer.addActor(travelLogPanel);
+
             });
 
         topContainer.add(questBtn).padLeft(50).padTop(40).top().left();
@@ -129,6 +134,7 @@ public class MainMenuScreen extends BaseScreen {
             System.out.println("Play Button clicked!");
             // TODO : push game menu later
             ScreenManager.getInstance().pushScreen(new GameMenuScreen(game));
+
         });
         center.add(playBtn).prefSize(110).width(200).height(90).row();
 
