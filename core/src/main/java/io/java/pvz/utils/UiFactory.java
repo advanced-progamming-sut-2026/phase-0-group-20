@@ -12,17 +12,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
-
 import io.java.pvz.controllers.ButtonAnimator;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
-import io.java.pvz.views.screens.NewsModalTable;
 import pvz.libpvz.textures.TextureBank;
 
 public final class UiFactory {
 
-    private UiFactory() {}
+    private UiFactory() {
+    }
 
     public static Image imageFor(TextureBank textures, String imageId) {
         TextureRegion region = textures.region(imageId);
@@ -34,14 +33,19 @@ public final class UiFactory {
     }
 
     public static Stack iconButton(TextureBank textures, Skin skin, String iconId, float width, float height,
-                                   ButtonAnimator.OnClickListener clickListener) {
+                                    ButtonAnimator.OnClickListener clickListener) {
+        return iconButton(textures, skin, iconId, width, height, clickListener, true);
+    }
+
+    public static Stack iconButton(TextureBank textures, Skin skin, String iconId, float width, float height,
+                                   ButtonAnimator.OnClickListener clickListener, boolean hasBackground) {
         Stack stack = new Stack();
         stack.setTransform(true);
         stack.setSize(width, height);
         stack.setTouchable(Touchable.enabled);
 
         Table bgTable = new Table();
-        if (skin.has("image_ui_generic_brownbutton_10", Drawable.class)) {
+        if (hasBackground && skin.has("image_ui_generic_brownbutton_10", Drawable.class)) {
             bgTable.setBackground(skin.getDrawable("image_ui_generic_brownbutton_10"));
         }
         Container<Table> bgContainer = new Container<>(bgTable);
@@ -61,7 +65,7 @@ public final class UiFactory {
         return stack;
     }
 
-    public static TextButton getCloseBtn(Skin skin,Runnable onClose) {
+    public static TextButton getCloseBtn(Skin skin, Runnable onClose) {
         TextButton closeBtn = new TextButton("X", skin);
         closeBtn.getStyle().up = null;
         closeBtn.getStyle().down = null;
@@ -113,16 +117,16 @@ public final class UiFactory {
         return image;
     }
 
-    public static String getAtlasName(Plant plant){
+    public static String getAtlasName(Plant plant) {
         String name = plant.getName();
-        return switch (name){
+        return switch (name) {
             case "Rotobaga" -> "XSHOT";
             case "Goo Peashooter" -> "POISONPEASHOOTER";
             case "Mega Gatling Pea" -> "MEGAGATLING";
             case "Cherry Bomb" -> "CHERRY_BOMB";
             case "Iceberg Lettuce" -> "ICEBURG";
             case "Pierce-mint" -> "SPEARMINT";
-            default ->name.replace("-","").replace(" ", "");
+            default -> name.replace("-", "").replace(" ", "");
         };
     }
 

@@ -120,7 +120,7 @@ public class LevelSelectionScreen extends BaseScreen {
                     if (result.isSuccessful()) {
                         System.out.println(result.message());
                         String mapId = gameMenuController.getCurrentMapTextureId();
-                        ScreenManager.getInstance().setRootScreen(new GameFlowScreen(game, mapId));
+                        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
                     } else {
                         System.out.println(result.message());
                         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
