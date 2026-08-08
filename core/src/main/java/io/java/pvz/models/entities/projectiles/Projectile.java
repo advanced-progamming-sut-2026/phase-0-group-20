@@ -3,6 +3,7 @@ package io.java.pvz.models.entities.projectiles;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
@@ -51,8 +52,9 @@ public class Projectile implements Ticker {
         this.effect = effect;
         this.damage = damage;
         this.position = position;
-        this.speedX = speedX;
-        this.speedY = speedY;
+        this.speedX = speedX * PhysicalConstants.SPEED_SCALE_RATIO;
+        this.speedY = speedY * PhysicalConstants.SPEED_SCALE_RATIO;
+        ;
         this.piercing = piercing;
         this.canPassObstacles = canPassObstacles;
         this.isDestroyed = false;
@@ -84,20 +86,20 @@ public class Projectile implements Ticker {
                                                 ProjectileType type,
                                                 int damage,
                                                 Position position,
-                                                int speedX,
-                                                int speedY,
+                                                float speedX,
+                                                float speedY,
                                                 boolean piercing,
                                                 boolean canPassObstacles) {
         Projectile projectile = new Projectile(
-                plant,
-                type,
-                projectileEffect(type),
-                damage,
-                position,
-                speedX,
-                speedY,
-                piercing,
-                canPassObstacles
+            plant,
+            type,
+            projectileEffect(type),
+            damage,
+            position,
+            speedX,
+            speedY,
+            piercing,
+            canPassObstacles
         );
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
@@ -108,20 +110,20 @@ public class Projectile implements Ticker {
                                                    ProjectileType type,
                                                    int damage,
                                                    Position position,
-                                                   int speedX,
-                                                   int speedY,
+                                                   float speedX,
+                                                   float speedY,
                                                    boolean piercing,
                                                    boolean canPassObstacles) {
         Projectile projectile = new Projectile(
-                zombie,
-                type,
-                projectileEffect(type),
-                damage,
-                position,
-                speedX,
-                speedY,
-                piercing,
-                canPassObstacles
+            zombie,
+            type,
+            projectileEffect(type),
+            damage,
+            position,
+            speedX,
+            speedY,
+            piercing,
+            canPassObstacles
         );
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
@@ -162,7 +164,7 @@ public class Projectile implements Ticker {
             if (target.isDead()) {
                 target = null;
                 canPassObstacles = false;
-                if (speedX == 0 && speedY == 0) speedX = baseSpeed > 0 ? baseSpeed : 1.5f;
+                speedX = baseSpeed > 0 ? baseSpeed : (1.5f * PhysicalConstants.SPEED_SCALE_RATIO);
             } else {
                 float dx = target.getX() - position.getX();
                 float dy = target.getY() - position.getY();
@@ -202,7 +204,7 @@ public class Projectile implements Ticker {
 
     public void setHomingTarget(Zombie target, float baseSpeed) {
         this.target = target;
-        this.baseSpeed = baseSpeed;
+        this.baseSpeed = baseSpeed * PhysicalConstants.SPEED_SCALE_RATIO;
     }
 
     public void onHit(Zombie z) {
@@ -270,7 +272,7 @@ public class Projectile implements Ticker {
         } else if (type == ProjectileType.EXPLODE_NUT_BOWL) {
             System.out.println("Explode-o-nut bowled and exploded!");
             List<Zombie> targets = GameSession.getInstance().getArena()
-                    .getZombiesInRadius(position.getCol(), position.getRow(), 1.5);
+                .getZombiesInRadius(position.getCol(), position.getRow(), 1.5);
             for (Zombie target : targets)
                 if (!target.isDead()) {
                     target.takeDamage(1800);
@@ -307,7 +309,7 @@ public class Projectile implements Ticker {
     public boolean isOutOfBounds() {
         if (bouncesLeft > 0) return false;
         return position.getCol() < 0 || position.getCol() >= GameSession.getInstance().getArena().getCols()
-                || position.getRow() < 0 || position.getRow() >= GameSession.getInstance().getArena().getRows();
+            || position.getRow() < 0 || position.getRow() >= GameSession.getInstance().getArena().getRows();
     }
 
     public ProjectileType getType() {
