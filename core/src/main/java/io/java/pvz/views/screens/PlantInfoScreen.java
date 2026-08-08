@@ -2,21 +2,20 @@ package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
+import io.java.pvz.controllers.GameController.CollectionController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.App;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.category_strategy.SunProductionStrategy;
 import io.java.pvz.models.enums.plants.PlantCategory;
+import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.utils.PamAnimatedActor;
@@ -28,12 +27,16 @@ public class PlantInfoScreen extends BaseScreen {
     private final Plant plant;
     private TextureRegion backgroundRegion;
     private final String atlasName;
+    private final boolean readyToUpgrade;
+    private final CollectionController controller;
 
-    public PlantInfoScreen(Game game, Skin skin, Plant plant) {
+    public PlantInfoScreen(Game game, Skin skin, Plant plant,boolean upgradable,CollectionController controller) {
         super(game);
         this.skin = skin;
         this.plant = plant;
         this.atlasName = UiFactory.getAtlasName(plant).toUpperCase();
+        this.readyToUpgrade = upgradable;
+        this.controller = controller;
 
         buildUI();
     }
@@ -120,6 +123,27 @@ public class PlantInfoScreen extends BaseScreen {
         statsTable.add(createStatBlock(textures,
             "IMAGE_UI_ALMANAC_ALMANAC_PIERCE",
             "Category", plant.getCategory().getName())).width(blockWidth).pad(padY, padX, padY, padX).left().row();
+        User user = App.getActiveUser();
+        if(readyToUpgrade && user.isItUnlocked(plant) && plant.getLevel()<controller.getMaxLevel()){
+            TextButton upgradeButton = new TextButton("Upgrade", skin, "default");
+            upgradeButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    controller.upgradePlant(plant.getName());
+                }
+            });
+            statsTable.add(upgradeButton).colspan(2).padTop(50).row();
+        }
+        if(!user.isItUnlocked(plant)){
+            TextButton upgradeButton = new TextButton("BUY", skin, "default");
+            upgradeButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    controller.purchasePlant(plant.getName());
+                }
+            });
+            statsTable.add(upgradeButton).colspan(2).padTop(50).row();
+        }
 
         contentTable.add(statsTable).size(850, 800).expand().top().right().padRight(50).padTop(20);
 

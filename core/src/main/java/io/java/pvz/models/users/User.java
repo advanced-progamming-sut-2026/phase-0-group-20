@@ -332,6 +332,12 @@ public class User {
     }
 
     @JsonIgnore
+    public boolean isItUnlocked(Plant plant) {
+        return progress.getUnlockedPlants().stream()
+            .anyMatch(plant1 -> plant1.getName().equals(plant.getName()));
+    }
+
+    @JsonIgnore
     public Map<MiniGameType, Integer> getUnlockedMinigames() {
         return progress.getUnlockedMinigames();
     }

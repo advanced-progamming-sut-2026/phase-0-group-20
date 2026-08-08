@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import io.java.pvz.controllers.GameController.CollectionController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
@@ -22,7 +23,7 @@ import java.util.List;
 public class CollectionScreen extends BaseScreen {
     private final Skin skin;
     private boolean isShowingPlants = true;
-
+    private final CollectionController controller = new CollectionController();
     public CollectionScreen(Game game, Skin skin) {
         super(game);
         this.skin = skin;
@@ -166,14 +167,15 @@ public class CollectionScreen extends BaseScreen {
                 throw new NullPointerException("Image reference is null!");
             }
 
-            PlantCardButton card = new PlantCardButton(cardBg, plantImg, familyImg, plant);
+            PlantCardButton card = new PlantCardButton(cardBg, plantImg, familyImg, plant,skin);
 
             card.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     System.out.println("Plant clicked: " + plantName);
 
-                    PlantInfoScreen infoScreen = new PlantInfoScreen(game, skin, plant);
+                    PlantInfoScreen infoScreen = new PlantInfoScreen(game, skin,
+                        plant,card.isReadyToUpgrade(),controller);
                     ScreenManager.getInstance().pushScreen(infoScreen);
                 }
             });

@@ -5,6 +5,9 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
 
 import java.util.ArrayList;
@@ -113,18 +116,33 @@ public class CollectionController {
         int mathPower = (int) Math.pow(2, foundPlant.getLevel());
         int seedPacketCost = BASE_SEED_PACKETS * mathPower;
         if (!seeds.containsKey(capitalName) || seedPacketCost > seeds.get(capitalName)) {
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("Not Enough Seed Packets")
+                    .build());
             return new Result(false, "You don't have enough seed packets to upgrade this plant.");
         }
         if (cost > activeUser.getCoin()) {
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("Not Enough Coin. COST: " + cost)
+                    .build());
             return new Result(false, "You don't have enough coin to upgrade this plant.");
         }
         if (foundPlant.getLevel() == MAX_LEVEL) {
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("The plant is already at max level")
+                    .build());
             return new Result(false, "The plant is already at max level.");
         }
         foundPlant.upgrade();
         activeUser.costCoin(cost);
         seeds.computeIfPresent(capitalName, (k, v) -> Math.max(0, v - seedPacketCost));
-
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message("Successfully upgraded to LVL " + foundPlant.getLevel())
+                .build());
         return new Result(true, "You successfully upgraded " + foundPlant.getName() +
                 " to level " + foundPlant.getLevel() + ".");
     }
@@ -146,10 +164,18 @@ public class CollectionController {
             }
         }
         if (activeUser.getCoin() < BASE_COST) {
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("Not Enough Coin. COST: " + PURCHASE_COST)
+                    .build());
             return new Result(false, "You don't have enough coin to purchase this plant.");
         }
         activeUser.costCoin(PURCHASE_COST);
         userPlants.add(foundPlant);
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message("Successfully purchased "+foundPlant.getName())
+                .build());
         return new Result(true, "You successfully purchased " + foundPlant.getName() + " .");
 
     }
@@ -194,6 +220,13 @@ public class CollectionController {
         return stringBuilder.toString();
     }
 
+    public int getMaxLevel() {
+        return MAX_LEVEL;
+    }
+
+    public int getBaseCost() {
+        return BASE_COST;
+    }
 }
 
 
