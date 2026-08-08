@@ -8,7 +8,7 @@ import pvz.libpvz.pam.PamPlayer;
 
 public class PamAnimatedActor extends Actor {
     private final PamPlayer player;
-    private final String clipName;
+    private String clipName;
     private String successfulPath = null;
     private float stateTime = 0f;
     private boolean isLoaded = false;
@@ -33,13 +33,40 @@ public class PamAnimatedActor extends Actor {
         }
     }
 
-    public static PamAnimatedActor createPlantIdle(String atlasName) {
+    public static PamAnimatedActor createPlantAnimated(String atlasName, String clipName) {
         String cleanAtlas = atlasName.toUpperCase();
         String pamPath1 = "768/INITIAL/PLANT/" + cleanAtlas + "/" + cleanAtlas + ".PAM";
         String pamPath2 = "768/FULL/PLANT/" + cleanAtlas + "/" + cleanAtlas + ".PAM";
 
         PamPlayer player = AssetLoader.getInstance().getPlayer();
-        return new PamAnimatedActor(player, "idle", pamPath1, pamPath2);
+        return new PamAnimatedActor(player, clipName, pamPath1, pamPath2);
+    }
+
+    public static PamAnimatedActor createPlantIdle(String atlasName) {
+        return createPlantAnimated(atlasName, "idle");
+    }
+
+    public static PamAnimatedActor createZombieAnimated(String zombieAddress, String clipName) {
+        String cleanAddress = "ZOMBIE_" + zombieAddress;
+        String pamPath1 = "768/FULL/ZOMBIE/" + cleanAddress + "/" + cleanAddress + ".PAM";
+        String pamPath2 = "768/INITIAL/ZOMBIE/" + cleanAddress + "/" + cleanAddress + ".PAM";
+
+        PamPlayer player = AssetLoader.getInstance().getPlayer();
+        return new PamAnimatedActor(player, clipName, pamPath1, pamPath2);
+    }
+
+    public void setClip(String clipName) {
+        if (clipName == null || clipName.equals(this.clipName)) return;
+        this.clipName = clipName;
+        this.stateTime = 0f;
+    }
+
+    public String getClip() {
+        return clipName;
+    }
+
+    public boolean isLoaded() {
+        return isLoaded;
     }
 
     @Override

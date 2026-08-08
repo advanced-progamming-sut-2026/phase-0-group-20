@@ -6,12 +6,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
+import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.Menu;
+import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
@@ -33,6 +39,12 @@ public class GameFlowScreen extends BaseScreen {
 
     private String currentMapId;
 
+    private static final float TICK_DURATION = 1f / TimeManager.TICKS_PER_SECOND;
+    private float simulationAccumulator = 0f;
+    private BattlefieldRenderer battlefieldRenderer;
+
+    private final GameFlowController gameFlowController = new GameFlowController();
+
     public GameFlowScreen(Game game, String mapTextureId) {
         super(game);
         loadMap(mapTextureId);
@@ -50,7 +62,7 @@ public class GameFlowScreen extends BaseScreen {
         TextureBank textures = AssetLoader.getInstance().getTextures();
         this.currentMapId = mainMapId;
         mainRegion = textures.region(mainMapId);
-        leftRegion = textures.region(mainMapId + "_LEFT");//the address has a _LEFT or a _RIGHT on its last part
+        leftRegion = textures.region(mainMapId + "_LEFT");
         rightRegion = textures.region(mainMapId + "_RIGHT");
 
         if (mainRegion == null) System.err.println("⚠️ Warning: Map main texture not found: " + mainMapId);
@@ -65,6 +77,9 @@ public class GameFlowScreen extends BaseScreen {
         mainLayer.clear();
         mainLayer.setFillParent(true);
 
+        battlefieldRenderer = new BattlefieldRenderer();
+        mainLayer.addActor(battlefieldRenderer.getGroup());
+
         if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin);
             plantSelectionModal.show(modalLayer, viewport);
@@ -73,6 +88,13 @@ public class GameFlowScreen extends BaseScreen {
         Image sunIcon = UiFactory.imageFor(textures, Ids.UI.SUN_ICON);
         sunIcon.setSize(80, 80);
         sunIcon.setPosition(100, 950);
+        sunIcon.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Result result = gameFlowController.cheatAddSun("50");
+                System.out.println(result.message());
+            }
+        });
         mainLayer.addActor(sunIcon);
 
         Image plantFoodIcon = UiFactory.imageFor(textures, Ids.UI.PLANT_FOOD_ICON);
@@ -146,7 +168,6 @@ public class GameFlowScreen extends BaseScreen {
         batch.draw(rightRegion, currentX, 0, rightDrawW, screenH);
 
 
-        //for debugging and seeing whole map
         if (input.isKeyPressed(Input.Keys.RIGHT) &&
             camera.position.x < leftDrawW + rightDrawW + mainDrawW - viewport.getWorldWidth() / 2f)
             camera.position.x += 300 * delta;
@@ -154,14 +175,44 @@ public class GameFlowScreen extends BaseScreen {
         if (input.isKeyPressed(Input.Keys.LEFT) && camera.position.x > viewport.getWorldWidth() / 2f)
             camera.position.x -= 300 * delta;
 
+        handleDebugSpawnKeys();
 
         batch.end();
 
         drawDebugLayout();
 
+        advanceSimulation(delta);
+
         if (stage != null) {
             stage.act(delta);
             stage.draw();
+        }
+    }
+
+    private void advanceSimulation(float delta) {
+        GameSession session = GameSession.getInstance();
+        if (session == null) return;
+
+        simulationAccumulator += delta;
+        while (simulationAccumulator >= TICK_DURATION) {
+            session.update(1);
+            simulationAccumulator -= TICK_DURATION;
+        }
+
+        battlefieldRenderer.sync(session.getArena());
+    }
+
+    private void handleDebugSpawnKeys() {
+        if (GameSession.getInstance() == null) return;
+
+        if (input.isKeyJustPressed(Input.Keys.P)) {
+            Result result = gameFlowController.plantPlant("Peashooter", "1", "1");
+            System.out.println(result.message());
+        }
+
+        if (input.isKeyJustPressed(Input.Keys.Z)) {
+            Result result = gameFlowController.cheatSpawnZombie("Normal", "9", "1");
+            System.out.println(result.message());
         }
     }
 
