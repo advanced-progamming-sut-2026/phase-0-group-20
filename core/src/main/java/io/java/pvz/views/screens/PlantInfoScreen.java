@@ -125,7 +125,7 @@ public class PlantInfoScreen extends BaseScreen {
             "Category", plant.getCategory().getName())).width(blockWidth).pad(padY, padX, padY, padX).left().row();
         User user = App.getActiveUser();
         if(readyToUpgrade && user.isItUnlocked(plant) && plant.getLevel()<controller.getMaxLevel()){
-            TextButton upgradeButton = new TextButton("Upgrade", skin, "default");
+            TextButton upgradeButton = new TextButton("Upgrade", skin, "purple");
             upgradeButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -135,7 +135,7 @@ public class PlantInfoScreen extends BaseScreen {
             statsTable.add(upgradeButton).colspan(2).padTop(50).row();
         }
         if(!user.isItUnlocked(plant)){
-            TextButton upgradeButton = new TextButton("BUY", skin, "default");
+            TextButton upgradeButton = new TextButton("BUY", skin, "purple");
             upgradeButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {

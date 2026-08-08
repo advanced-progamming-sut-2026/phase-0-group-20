@@ -98,12 +98,36 @@ public class PlantCardButton extends Table {
         familyImage.setPosition(padding, getHeight() - iconSize - padding);
 
         if (!isUnlocked) {
-            darkOverlay.setSize(getWidth(), getHeight());
-            darkOverlay.setPosition(0, 0);
+            if (darkOverlay != null) {
+                darkOverlay.setSize(getWidth(), getHeight());
+                darkOverlay.setPosition(0, 0);
+            }
 
             if (lockIcon != null) {
                 lockIcon.setSize(45, 55);
                 lockIcon.setPosition((getWidth() - lockIcon.getWidth()) / 2, (getHeight() - lockIcon.getHeight()) / 2);
+            }
+        }
+    }
+
+    public void updateState() {
+        User user = App.getActiveUser();
+
+        this.isUnlocked = user.getUnlockedPlants().contains(plant);
+
+        int amount = user.getInventory().getSeedPackets().getOrDefault(plant.getName(), 0);
+        setProgress(amount);
+
+        this.isReadyToUpgrade = progressBar.getMaxValue() <= amount;
+
+        if (this.isUnlocked) {
+            if (darkOverlay != null) {
+                darkOverlay.remove();
+                darkOverlay = null;
+            }
+            if (lockIcon != null) {
+                lockIcon.remove();
+                lockIcon = null;
             }
         }
     }
