@@ -94,6 +94,7 @@ public class PauseMenuTable extends BorderedTable {
                 GameSession.destroyInstance();
                 App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
                 ScreenManager.getInstance().popScreen();
+                ScreenManager.getInstance().popScreen();
             });
         });
         saveExitBtn.getLabel().setFontScale(1.1f);

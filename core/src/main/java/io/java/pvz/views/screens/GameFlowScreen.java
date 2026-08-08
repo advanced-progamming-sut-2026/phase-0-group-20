@@ -132,11 +132,9 @@ public class GameFlowScreen extends BaseScreen {
     @Override
     public void render(float delta) {
         clearScreen(0.1f, 0.1f, 0.1f, 1f);
-
         AssetLoader.getInstance().updateTextures();
 
         camera.update();
-
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
@@ -147,7 +145,6 @@ public class GameFlowScreen extends BaseScreen {
         float leftDrawW = leftRegion.getRegionWidth() * leftScale;
         batch.draw(leftRegion, currentX, 0, leftDrawW, screenH);
         currentX += leftDrawW;
-
 
         float mainScale = screenH / mainRegion.getRegionHeight();
         float mainDrawW = mainRegion.getRegionWidth() * mainScale;
@@ -162,25 +159,19 @@ public class GameFlowScreen extends BaseScreen {
         batch.draw(mainRegion, currentX, mainDrawY, mainDrawW, mainDrawH);
         currentX += mainDrawW;
 
-
         float rightScale = screenH / rightRegion.getRegionHeight();
         float rightDrawW = rightRegion.getRegionWidth() * rightScale;
         batch.draw(rightRegion, currentX, 0, rightDrawW, screenH);
 
-
         if (input.isKeyPressed(Input.Keys.RIGHT) &&
             camera.position.x < leftDrawW + rightDrawW + mainDrawW - viewport.getWorldWidth() / 2f)
             camera.position.x += 300 * delta;
-
         if (input.isKeyPressed(Input.Keys.LEFT) && camera.position.x > viewport.getWorldWidth() / 2f)
             camera.position.x -= 300 * delta;
 
         handleDebugSpawnKeys();
-
         batch.end();
-
         drawDebugLayout();
-
         advanceSimulation(delta);
 
         if (stage != null) {

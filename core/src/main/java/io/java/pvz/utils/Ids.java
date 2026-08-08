@@ -54,6 +54,22 @@ public final class Ids {
 
     }
 
+    public static final class Suns {
+        public static final String NORMAL = "IMAGE_UI_SUN_NORMAL";
+        public static final String TINY = "IMAGE_UI_SUN_TINY";
+        public static final String LARGE = "IMAGE_UI_SUN_LARGE";
+        public static final String HUGE = "IMAGE_UI_SUN_HUGE";
+        public static final String RADIOACTIVE = "IMAGE_UI_SUN_RADIOACTIVE";
+    }
+
+    public static final class Projectiles {
+        public static final String PEA = "IMAGE_PROJECTILE_PEA";
+        public static final String SNOW_PEA = "IMAGE_PROJECTILE_SNOWPEA";
+        public static final String CABBAGE = "IMAGE_PROJECTILE_CABBAGE";
+        public static final String FIRE_PEA = "IMAGE_PROJECTILE_FIREPEA";
+        public static final String MELON = "IMAGE_PROJECTILE_MELON";
+    }
+
     public static final class Shop {
         public static final String COIN = "IMAGE_UI_HUD_INGAME_COIN";
         public static final String DIAMOND = "IMAGE_UI_HUD_INGAME_GEM";
