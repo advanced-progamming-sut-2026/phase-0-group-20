@@ -136,4 +136,8 @@ public final class Ids {
         public static final String VASE_ZOMBIE = "768/FULL/VASEBREAKER/VASE_GARGANTUAR/VASE_GARGANTUAR.PAM";
         public static final String VASE_PLANTS = "768/FULL/VASEBREAKER/VASE_GREEN/VASE_GREEN.PAM";
     }
+
+    public static final class PlantCards{
+        public static final String BG_CARD = "IMAGE_UI_PACKETS_MODERNDAY";
+    }
 }
