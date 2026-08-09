@@ -17,6 +17,7 @@ import io.java.pvz.models.entities.plants.strategy.category_strategy.SunProducti
 import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
+import io.java.pvz.utils.PlantCardButton;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.utils.PamAnimatedActor;
 import pvz.libpvz.textures.TextureBank;
@@ -27,15 +28,16 @@ public class PlantInfoScreen extends BaseScreen {
     private final Plant plant;
     private TextureRegion backgroundRegion;
     private final String atlasName;
-    private final boolean readyToUpgrade;
+    private final PlantCardButton cardButton;
     private final CollectionController controller;
 
-    public PlantInfoScreen(Game game, Skin skin, Plant plant,boolean upgradable,CollectionController controller) {
+
+    public PlantInfoScreen(Game game, Skin skin, Plant plant, PlantCardButton card, CollectionController controller) {
         super(game);
         this.skin = skin;
         this.plant = plant;
         this.atlasName = UiFactory.getAtlasName(plant).toUpperCase();
-        this.readyToUpgrade = upgradable;
+        this.cardButton = card;
         this.controller = controller;
 
         buildUI();
@@ -48,6 +50,24 @@ public class PlantInfoScreen extends BaseScreen {
         Table rootTable = new Table();
         rootTable.setFillParent(true);
 
+        rootTable.add(buildTopBar()).growX().row();
+
+        rootTable.add(buildTitleLabel()).padBottom(20).row();
+
+        Table contentTable = new Table();
+
+        Table previewTable = buildPlantPreviewTable(textures);
+        contentTable.add(previewTable).size(450, 550).expand().center().padLeft(50);
+
+        Table statsTable = buildStatsTable(textures);
+        contentTable.add(statsTable).size(850, 800).expand().top().right().padRight(50).padTop(20);
+
+        rootTable.add(contentTable).grow();
+        mainLayer.addActor(rootTable);
+    }
+
+    private Table buildTopBar() {
+        Table topBar = new Table();
         Label closeBtn = new Label("X", skin, "big");
         closeBtn.setColor(Color.WHITE);
         closeBtn.addListener(new ClickListener() {
@@ -57,53 +77,106 @@ public class PlantInfoScreen extends BaseScreen {
             }
         });
 
-        Table topBar = new Table();
         topBar.add(closeBtn).expandX().right().pad(20);
-        rootTable.add(topBar).growX().row();
+        return topBar;
+    }
 
+    private Label buildTitleLabel() {
         Label titleLabel = new Label(plant.getName(), skin, "big");
         titleLabel.setAlignment(Align.center);
-        rootTable.add(titleLabel).padBottom(20).row();
+        return titleLabel;
+    }
 
-        Table contentTable = new Table();
+    private Table buildPlantPreviewTable(TextureBank textures) {
+        Table previewTable = new Table();
+
+        // تنظیم بک‌گراند برای جدول پیش‌نمایش گیاه
+        Image bground = UiFactory.imageFor(textures, "IMAGE_BACKGROUNDS_FRONTLAWN_ROW_05");
+        if (bground != null) {
+            previewTable.setBackground(bground.getDrawable());
+        }
+
         PamAnimatedActor plantActor = PamAnimatedActor.createPlantIdle(atlasName);
         plantActor.setScale(1.5f);
-        contentTable.add(plantActor).size(200, 200).expand().bottom().padBottom(300).padLeft(350);
 
+        // ۱. اضافه کردن انیمیشن گیاه به مرکز (expand باعث می‌شود فضای بالا را پر کند)
+        previewTable.add(plantActor).size(200, 200).expand().center().row();
+
+        // ۲. ساخت نوار پیشرفت و لیبل متنی با قابلیت آپدیت در لحظه
+        Stack progressStack = new Stack();
+        final int BASE_SEED_PACKETS = 10; // همان بیسِ محاسبه کارت‌ها
+
+        // نوار پیشرفت
+        ProgressBar progressBar = new ProgressBar(0, 10, 1, false, skin, "xp_yellow") {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                // محاسبه آنلاین ظرفیت و مقدار فعلی در هر فریم
+                int mathPower = (int) Math.pow(2, plant.getLevel());
+                int maxCost = BASE_SEED_PACKETS * mathPower;
+                setRange(0, maxCost);
+
+                int currentAmount = App.getActiveUser().getInventory().getSeedPackets()
+                    .getOrDefault(plant.getName(), 0);
+                setValue(currentAmount);
+            }
+        };
+
+        // لیبل متن روی نوار (مثلا 5/20)
+        Label progressLabel = new Label("0/0", skin) {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                int mathPower = (int) Math.pow(2, plant.getLevel());
+                int maxCost = BASE_SEED_PACKETS * mathPower;
+
+                int currentAmount = App.getActiveUser().getInventory().getSeedPackets()
+                    .getOrDefault(plant.getName(), 0);
+                setText(currentAmount + "/" + maxCost);
+            }
+        };
+        progressLabel.setAlignment(Align.center);
+        progressLabel.setFontScale(0.8f);
+
+        progressStack.add(progressBar);
+        progressStack.add(progressLabel);
+
+        // ۳. اضافه کردن Stack به پایین جدول
+        // از fillX برای کشیده شدن در کل عرض و ارتفاع 25 برای دیده شدن استفاده کردیم
+        previewTable.add(progressStack).fillX().height(25).bottom().padBottom(10);
+
+        return previewTable;
+    }
+
+
+    private Table buildStatsTable(TextureBank textures) {
         BorderedTable statsTable = new BorderedTable();
         statsTable.top();
 
         float cellPadding = 35f;
         float blockWidth = 250f;
+        float padX = 35f;
+        float padY = 15f;
 
         Label informationLabel = new Label("Description", skin, "big");
         informationLabel.setColor(Color.valueOf("#4A3018"));
         informationLabel.setFontScale(1.8f);
         informationLabel.setAlignment(Align.center);
-
         statsTable.add(informationLabel).colspan(2).padTop(50).padBottom(cellPadding * 2).row();
-
-        float padX = 35f;
-        float padY = 15f;
-
-        statsTable.add(createStatBlock(textures,
-            "IMAGE_UI_ALMANAC_ALMANAC_STAT_ICON_SUNCOST",
-            "SUN COST", String.valueOf(plant.getCost()))).width(blockWidth).pad(padY, padX, padY, padX).left();
-
-        statsTable.add(createStatBlock(textures,
-            "IMAGE_UI_ALMANAC_PLANTS_RECHARGE_ICON",
-            "RECHARGE", String.valueOf(plant.getRecharge()))).width(blockWidth).pad(padY, padX, padY, padX).left().row();
-
-        statsTable.add(createStatBlock(textures,
-            "IMAGE_UI_ALMANAC_PLANTS_TOUGHNESS_ICON",
-            "TOUGHNESS", String.valueOf(plant.getBaseHp()))).width(blockWidth).
-            pad(padY, padX, padY, padX).left();
+        statsTable.add(createStatBlock(textures, "IMAGE_UI_ALMANAC_ALMANAC_STAT_ICON_SUNCOST",
+                "SUN COST", String.valueOf(plant.getCost())))
+            .width(blockWidth).pad(padY, padX, padY, padX).left();
+        statsTable.add(createStatBlock(textures, "IMAGE_UI_ALMANAC_PLANTS_RECHARGE_ICON",
+                "RECHARGE", String.valueOf(plant.getRecharge())))
+            .width(blockWidth).pad(padY, padX, padY, padX).left().row();
+        statsTable.add(createStatBlock(textures, "IMAGE_UI_ALMANAC_PLANTS_TOUGHNESS_ICON",
+                "TOUGHNESS", String.valueOf(plant.getBaseHp())))
+            .width(blockWidth).pad(padY, padX, padY, padX).left();
 
         if (plant.getCategory() != PlantCategory.SUN_PRODUCER) {
-            statsTable.add(createStatBlock(textures,
-                "IMAGE_UI_ALMANAC_PLANTS_DAMAGE_ICON",
-                "DAMAGE", String.valueOf(plant.getDamage()))).width(blockWidth).
-                pad(padY, padX, padY, padX).left().row();
+            statsTable.add(createStatBlock(textures, "IMAGE_UI_ALMANAC_PLANTS_DAMAGE_ICON",
+                    "DAMAGE", String.valueOf(plant.getDamage())))
+                .width(blockWidth).pad(padY, padX, padY, padX).left().row();
         } else {
             SunProductionStrategy strategy = plant.getStrategies().stream()
                 .filter(SunProductionStrategy.class::isInstance)
@@ -111,20 +184,24 @@ public class PlantInfoScreen extends BaseScreen {
                 .findFirst()
                 .orElse(null);
             int amount = strategy != null ? strategy.getSunTypeForPlant(plant.getName(), 0).getValue() : 0;
-            statsTable.add(createStatBlock(textures,
-                "IMAGE_UI_ALMANAC_ALMANAC_STAT_ICON_SUNPRODUCTION",
-                "SUN PRODUCTION", String.valueOf(amount))).width(blockWidth).pad(padY, padX, padY, padX).left().row();
+            statsTable.add(createStatBlock(textures, "IMAGE_UI_ALMANAC_ALMANAC_STAT_ICON_SUNPRODUCTION",
+                    "SUN PRODUCTION", String.valueOf(amount)))
+                .width(blockWidth).pad(padY, padX, padY, padX).left().row();
         }
+        statsTable.add(createStatBlock(textures, "IMAGE_UI_ALMANAC_PLANTS_RANGE_ICON", "RANGE", getRangeString(plant)))
+            .width(blockWidth).pad(padY, padX, padY, padX).left();
+        statsTable.add(createStatBlock(textures, "IMAGE_UI_ALMANAC_ALMANAC_PIERCE",
+                "Category", plant.getCategory().getName()))
+            .width(blockWidth).pad(padY, padX, padY, padX).left().row();
+        buildActionButtons(statsTable);
 
-        statsTable.add(createStatBlock(textures,
-            "IMAGE_UI_ALMANAC_PLANTS_RANGE_ICON",
-            "RANGE", getRangeString(plant))).width(blockWidth).pad(padY, padX, padY, padX).left();
+        return statsTable;
+    }
 
-        statsTable.add(createStatBlock(textures,
-            "IMAGE_UI_ALMANAC_ALMANAC_PIERCE",
-            "Category", plant.getCategory().getName())).width(blockWidth).pad(padY, padX, padY, padX).left().row();
+    private void buildActionButtons(Table statsTable) {
         User user = App.getActiveUser();
-        if(readyToUpgrade && user.isItUnlocked(plant) && plant.getLevel()<controller.getMaxLevel()){
+
+        if (cardButton.isReadyToUpgrade() && user.isItUnlocked(plant) && plant.getLevel() < controller.getMaxLevel()) {
             TextButton upgradeButton = new TextButton("Upgrade", skin, "purple");
             upgradeButton.addListener(new ClickListener() {
                 @Override
@@ -132,23 +209,19 @@ public class PlantInfoScreen extends BaseScreen {
                     controller.upgradePlant(plant.getName());
                 }
             });
-            statsTable.add(upgradeButton).colspan(2).padTop(50).row();
+            statsTable.add(upgradeButton).colspan(2).padTop(30).row();
         }
-        if(!user.isItUnlocked(plant)){
-            TextButton upgradeButton = new TextButton("BUY", skin, "purple");
-            upgradeButton.addListener(new ClickListener() {
+
+        if (!user.isItUnlocked(plant)) {
+            TextButton buyButton = new TextButton("BUY", skin, "purple");
+            buyButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     controller.purchasePlant(plant.getName());
                 }
             });
-            statsTable.add(upgradeButton).colspan(2).padTop(50).row();
+            statsTable.add(buyButton).colspan(2).padTop(30).row();
         }
-
-        contentTable.add(statsTable).size(850, 800).expand().top().right().padRight(50).padTop(20);
-
-        rootTable.add(contentTable).grow();
-        mainLayer.addActor(rootTable);
     }
 
     private String getRangeString(Plant plant) {

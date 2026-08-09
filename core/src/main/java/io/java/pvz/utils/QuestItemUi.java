@@ -21,7 +21,7 @@ public class QuestItemUi extends Table {
 
         Stack stack = new Stack();
 
-        Image cardBg = UiFactory.imageFor(textures, "IMAGE_UI_QUESTS_QUEST_PANEL_DEFAULT");
+        Image cardBg = UiFactory.imageFor(textures, "IMAGE_UI_JOUST_MATCHLOADING_PLAYERPANEL_BG");
         cardBg.setScaling(Scaling.stretch);
         stack.add(cardBg);
 

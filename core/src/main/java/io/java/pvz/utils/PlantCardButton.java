@@ -216,4 +216,8 @@ public class PlantCardButton extends Table {
             return new PlantCardButton(this);
         }
     }
+
+    public Plant getPlant() {
+        return plant;
+    }
 }
