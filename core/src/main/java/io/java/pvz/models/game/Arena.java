@@ -65,12 +65,14 @@ public class Arena {
 
     public List<Zombie> getZombiesInRadius(int column, int lane, double radius) {
         List<Zombie> result = new ArrayList<>();
+        double tileCenterX = column * PhysicalConstants.TILE_WIDTH + PhysicalConstants.GRID_START_X;
+        double tileCenterY = lane * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y;
+        double actualRadius = radius * PhysicalConstants.TILE_WIDTH;
         for (Zombie zombie : activeZombies) {
             if (zombie.isDead()) continue;
-            radius *= PhysicalConstants.TILE_UNIT_LENGTH;
-            double dx = zombie.getX() - column * PhysicalConstants.TILE_UNIT_LENGTH;
-            double dy = zombie.getY() - lane * PhysicalConstants.TILE_UNIT_LENGTH;
-            if (Math.sqrt(dx * dx + dy * dy) <= radius) result.add(zombie);
+            double dx = zombie.getX() - tileCenterX;
+            double dy = zombie.getY() - tileCenterY;
+            if (Math.sqrt(dx * dx + dy * dy) <= actualRadius) result.add(zombie);
         }
         return result;
     }
@@ -78,7 +80,7 @@ public class Arena {
 
     public Zombie getNearestZombie(int column, int lane) {
         if (activeZombies.isEmpty()) return null;
-        for (float i = 0; i < PhysicalConstants.TILE_UNIT_LENGTH * COLS; i += 0.05f) {
+        for (float i = 0; i < PhysicalConstants.TILE_WIDTH * COLS; i += 0.05f) {
             List<Zombie> zombies = getZombiesInRadius(column, lane, i);
             if (!zombies.isEmpty()) return zombies.get(0);
         }

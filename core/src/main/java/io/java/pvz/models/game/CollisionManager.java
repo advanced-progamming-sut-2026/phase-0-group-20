@@ -133,13 +133,16 @@ public class CollisionManager {
         }
 
         if (hitObstacle) return;
-        int tileLength = PhysicalConstants.TILE_UNIT_LENGTH;
+
         float projectileHitRadius = 0.25f;
         float zombieHitRadius = 0.25f;
-        float physProjectileRadius = projectileHitRadius * tileLength;
-        float physZombieRadius = zombieHitRadius * tileLength;
-        int bottomRow = (int) Math.floor((projectile.getY() - physProjectileRadius) / tileLength);
-        int topRow = (int) Math.floor((projectile.getY() + physProjectileRadius) / tileLength);
+        float physProjectileRadius = projectileHitRadius * PhysicalConstants.TILE_WIDTH;
+        float physZombieRadius = zombieHitRadius * PhysicalConstants.TILE_WIDTH;
+
+        int bottomRow = (int) Math.floor((projectile.getY() - physProjectileRadius - PhysicalConstants.GRID_START_Y)
+            / PhysicalConstants.TILE_HEIGHT);
+        int topRow = (int) Math.floor((projectile.getY() + physProjectileRadius - PhysicalConstants.GRID_START_Y)
+            / PhysicalConstants.TILE_HEIGHT);
 
         bottomRow = Math.max(0, bottomRow);
         topRow = Math.min(arena.getRows() - 1, topRow);
@@ -172,7 +175,7 @@ public class CollisionManager {
         if (proj.canPassObstacles()) return false;
 
         int projectileRow = proj.getPosition().getRow();
-        int projectileCol = (int) (proj.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
+        int projectileCol = (int) ((proj.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH);
         Tile currentTile = arena.getTile(projectileRow, projectileCol);
 
         if (currentTile == null) return false;
@@ -195,8 +198,7 @@ public class CollisionManager {
         if (z.isDead()) return;
 
         int row = z.getRow();
-        int targetCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH + 0.2);
-
+        int targetCol = (int) ((z.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH + 0.2f);
         if (targetCol >= arena.getCols()) return;
 
         Tile targetTile = arena.getTile(row, targetCol);
@@ -247,7 +249,8 @@ public class CollisionManager {
                     targetBrain.takeDamage(z.getEatDPS() / 10);
                 } else {
                     if (z.isAttacking()) z.setAttacking(false);
-                    if (z.getX() < -PhysicalConstants.TILE_UNIT_LENGTH) session.setZombieBreached(true);
+                    if (z.getX() < PhysicalConstants.GRID_START_X - PhysicalConstants.TILE_WIDTH)
+                        session.setZombieBreached(true);
                 }
             }
         }
