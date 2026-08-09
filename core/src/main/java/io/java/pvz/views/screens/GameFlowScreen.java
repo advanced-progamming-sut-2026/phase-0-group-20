@@ -17,6 +17,7 @@ import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
+import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
@@ -50,6 +51,8 @@ public class GameFlowScreen extends BaseScreen {
     private static final int ROWS = 5;
 
     private String currentMapId;
+
+    private boolean levelResultShown = false;
 
     private static final float TICK_DURATION = 1f / TimeManager.TICKS_PER_SECOND;
     private float simulationAccumulator = 0f;
@@ -361,6 +364,13 @@ public class GameFlowScreen extends BaseScreen {
         }
 
         battlefieldRenderer.sync(session.getArena());
+
+        GameState state = session.getState();
+        if (!levelResultShown && (state == GameState.WON || state == GameState.LOST)) {
+            levelResultShown = true;
+            Skin skin = AssetLoader.getInstance().getSkin();
+            new LevelResultTable(skin, state).show(modalLayer, viewport);
+        }
     }
 
     private void handleDebugSpawnKeys() {

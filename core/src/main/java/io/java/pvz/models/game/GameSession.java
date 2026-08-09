@@ -427,4 +427,6 @@ public class GameSession {
     public int getImitaterTargetId() {
         return imitaterTargetId;
     }
+
+    public GameState getState() {return state;}
 }
