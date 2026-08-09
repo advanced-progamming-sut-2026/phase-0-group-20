@@ -16,6 +16,7 @@ import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.game.Arena;
+import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.UiFactory;
 
@@ -25,12 +26,8 @@ import static io.java.pvz.models.enums.PhysicalConstants.TILE_HEIGHT;
 import static io.java.pvz.models.enums.PhysicalConstants.TILE_WIDTH;
 
 public class BattlefieldRenderer {
-
     private static final String CLIP_IDLE = "idle";
     private static final String CLIP_WALK = "walk";
-    private static final String CLIP_EAT = "eat";
-    private static final String CLIP_STUNNED = "stunned";
-    private static final String CLIP_DEATH = "death";
 
     private static final float DESPAWN_LINGER_SECONDS = 0.5f;
     private static final float DESPAWN_FADE_SECONDS = 0.25f;
@@ -107,8 +104,13 @@ public class BattlefieldRenderer {
     }
 
     private PamAnimatedActor spawnPlant(Plant plant) {
-        String atlasName = UiFactory.getAtlasName(plant);
-        PamAnimatedActor actor = PamAnimatedActor.createPlantAnimated(atlasName, resolvePlantClip(plant));
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
+        String clip = resolvePlantClip(plant);
+
+        PamAnimatedActor actor = anim != null
+            ? PamAnimatedActor.createEffectAnimated(anim.path, clip)
+            : PamAnimatedActor.createPlantAnimated(UiFactory.getAtlasName(plant), clip);
+
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
         plantLayer.addActor(actor);
@@ -121,7 +123,12 @@ public class BattlefieldRenderer {
     }
 
     private String resolvePlantClip(Plant plant) {
-        return CLIP_IDLE;
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
+        if (anim == null) return CLIP_IDLE;
+        if (anim.hasClip("idle")) return "idle";
+        if (anim.hasClip("loop")) return "loop"; // Empowermint-style plants: intro/loop/outro, no "idle"
+        Iterator<String> anyClip = anim.getClipNames().iterator();
+        return anyClip.hasNext() ? anyClip.next() : CLIP_IDLE;
     }
 
     private void syncZombies(List<Zombie> liveZombies) {
@@ -139,7 +146,7 @@ public class BattlefieldRenderer {
         while (it.hasNext()) {
             Map.Entry<Zombie, PamAnimatedActor> entry = it.next();
             if (!stillAlive.contains(entry.getKey())) {
-                entry.getValue().setClip(CLIP_DEATH);
+                entry.getValue().setClip(resolveZombieClip(entry.getKey())); // will resolve to "die" if the model already flagged it dead
                 despawn(entry.getValue());
                 it.remove();
             }
@@ -147,8 +154,13 @@ public class BattlefieldRenderer {
     }
 
     private PamAnimatedActor spawnZombie(Zombie zombie) {
-        String address = UiFactory.getZombieAddress(zombie);
-        PamAnimatedActor actor = PamAnimatedActor.createZombieAnimated(address, resolveZombieClip(zombie));
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
+        String clip = resolveZombieClip(zombie);
+
+        PamAnimatedActor actor = anim != null
+            ? PamAnimatedActor.createEffectAnimated(anim.path, clip)
+            : PamAnimatedActor.createZombieAnimated(UiFactory.getZombieAddress(zombie), clip);
+
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
         actor.setScale(1f, 1f);
@@ -162,10 +174,21 @@ public class BattlefieldRenderer {
     }
 
     private String resolveZombieClip(Zombie zombie) {
-        if (zombie.isDead()) return CLIP_DEATH;
-        if (zombie.isAttacking()) return CLIP_EAT;
-        if (zombie.getState() == ZombieState.STUNNED) return CLIP_STUNNED;
-        return CLIP_WALK;
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
+
+        if (zombie.isDead()) return pickClip(anim, CLIP_WALK, "die");
+        if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
+        if (zombie.getState() == ZombieState.STUNNED) return pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop");
+        return pickClip(anim, CLIP_IDLE, "walk");
+    }
+
+    private String pickClip(AnimationCatalog.EntityAnimation anim, String fallback, String... preferredClips) {
+        if (anim != null) {
+            for (String clip : preferredClips) {
+                if (anim.hasClip(clip)) return clip;
+            }
+        }
+        return fallback;
     }
 
     private void centerOnPoint(PamAnimatedActor actor, float pixelX, float pixelY) {
