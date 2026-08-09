@@ -176,7 +176,13 @@ public class CollectionScreen extends BaseScreen {
                 throw new NullPointerException("Image reference is null!");
             }
 
-            PlantCardButton card = new PlantCardButton(cardBg, plantImg, familyImg, plant,skin);
+            PlantCardButton card = new PlantCardButton.Builder()
+                .setBgImage(cardBg)
+                .setPlantImage(plantImg)
+                .setFamilyImage(familyImg)
+                .setPlant(plant)
+                .setSkin(skin)
+                .build();
             allPlantCards.add(card);
 
             card.addListener(new ClickListener() {
