@@ -195,7 +195,7 @@ public class GameFlowScreen extends BaseScreen {
 
         battlefieldRenderer.sync(session.getArena());
 
-      GameState state = session.getState();
+        GameState state = session.getState();
         if (!levelResultShown && (state == GameState.WON || state == GameState.LOST)) {
             levelResultShown = true;
             Skin skin = AssetLoader.getInstance().getSkin();

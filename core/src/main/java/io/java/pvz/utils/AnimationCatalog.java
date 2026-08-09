@@ -2,6 +2,7 @@ package io.java.pvz.utils;
 
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.zombies.ZombieType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +45,7 @@ public final class AnimationCatalog {
     }
 
     private static final Map<String, EntityAnimation> PLANTS = new HashMap<>();
-    private static final Map<String, EntityAnimation> ZOMBIES = new HashMap<>();
+    private static final Map<ZombieType, EntityAnimation> ZOMBIES = new HashMap<>();
 
     static {
         registerPlants(PLANTS);
@@ -124,47 +125,45 @@ public final class AnimationCatalog {
         register(table, "WINTERMELON", "768/FULL/PLANT/WINTERMELON/WINTERMELON.PAM", "idle", 1.3667f, "attack", 2.1667f, "plantfood", 2.9333f, "water", 1.7667f);
     }
 
-    private static void registerZombies(Map<String, EntityAnimation> table) {
-        register(table, "GARGANTUAR", "768/FULL/ZOMBIE/GARGANTUAR/GARGANTUAR.PAM", "idle", 2.0333f, "walk", 2.3667f, "eat", 1.1333f, "smash_left", 1.5f, "smash_right", 0.4f, "fire", 0.6667f, "cannon_fire", 0.8667f, "stun_start", 1.2333f, "stun_idle", 2.7333f, "stun_end", 0.7333f, "die", 2.0333f, "laser_start", 1.7667f, "laser_idle", 0.9f, "laser_end", 1.3f);
-        register(table, "GARGANTUAR_IMP", "768/FULL/ZOMBIE/GARGANTUAR_IMP/GARGANTUAR_IMP.PAM", "fall", 0.1333f, "drop", 0.1333f, "impact", 1.0667f, "Idle_Ball", 0.0333f, "idle_ball2", 1.5333f, "transition", 1.2333f, "idle", 2.6333f, "walk", 3.0f, "eat", 1.1333f, "stun_start", 1.1333f, "stun_idle", 1.0667f, "stun_end", 1.2667f, "die", 2.6667f);
-        register(table, "PIANO", "768/FULL/ZOMBIE/PIANO/PIANO.PAM", "idle", 2.0f, "play", 1.0f, "damage", 1.0f, "play2", 1.0f, "die", 3.0f, "particles", 0.0333f);
-        register(table, "ZOMBIE_80S_ARCADE", "768/FULL/ZOMBIE/ZOMBIE_80S_ARCADE/ZOMBIE_80S_ARCADE.PAM", "idle", 3.3333f, "walk", 4.0333f, "eat", 8.4667f, "push", 4.0333f, "die", 3.5f, "particles", 0.0333f);
-        register(table, "ZOMBIE_BEACH_BASIC", "768/FULL/ZOMBIE/ZOMBIE_BEACH_BASIC/ZOMBIE_BEACH_BASIC.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_BEACH_FISHERMAN", "768/FULL/ZOMBIE/ZOMBIE_BEACH_FISHERMAN/ZOMBIE_BEACH_FISHERMAN.PAM", "intro", 1.6333f, "idle", 2.1f, "cast", 1.2667f, "cast_loop", 0.0333f, "reel", 1.4667f, "toss", 2.4333f, "die", 3.4f, "die2", 7.8f, "particles", 0.0333f);
-        register(table, "ZOMBIE_BEACH_OCTOPUS", "768/FULL/ZOMBIE/ZOMBIE_BEACH_OCTOPUS/ZOMBIE_BEACH_OCTOPUS.PAM", "idle", 3.3333f, "idle2", 3.3333f, "idle3", 3.3333f, "idle4", 3.3333f, "idle5", 3.3333f, "walk", 4.0333f, "toss", 3.0667f, "eat", 8.4667f, "die", 3.5f, "particles", 0.0333f);
-        register(table, "ZOMBIE_BEACH_SNORKELER", "768/FULL/ZOMBIE/ZOMBIE_BEACH_SNORKELER/ZOMBIE_BEACH_SNORKELER.PAM", "idle", 2.3667f, "walk", 1.9667f, "eat", 6.8f, "die", 2.2667f, "particles", 0.0333f);
-        register(table, "ZOMBIE_DARK_BASIC", "768/FULL/ZOMBIE/ZOMBIE_DARK_BASIC/ZOMBIE_DARK_BASIC.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_DARK_BASIC_BRICK", "768/FULL/ZOMBIE/ZOMBIE_DARK_BASIC_BRICK/ZOMBIE_DARK_BASIC_BRICK.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_DARK_IMP_DRAGON", "768/FULL/ZOMBIE/ZOMBIE_DARK_IMP_DRAGON/ZOMBIE_DARK_IMP_DRAGON.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.2667f, "die", 1.2f, "particles", 0.0333f, "land", 1.0f, "fly", 0.0333f, "transition", 1.4f);
-        register(table, "ZOMBIE_DARK_JESTER", "768/FULL/ZOMBIE/ZOMBIE_DARK_JESTER/ZOMBIE_DARK_JESTER.PAM", "idle", 2.0333f, "walk", 2.0333f, "spinup", 0.8667f, "spin", 1.2f, "spindown", 0.5f, "spin_walk", 1.4667f, "eat", 8.3667f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_DARK_KING", "768/FULL/ZOMBIE/ZOMBIE_DARK_KING/ZOMBIE_DARK_KING.PAM", "intro", 3.2333f, "idle", 4.0f, "idle2", 2.9333f, "special", 4.0f, "die", 3.1667f, "particles", 0.0333f);
-        register(table, "ZOMBIE_DARK_WIZARD", "768/FULL/ZOMBIE/ZOMBIE_DARK_WIZARD/ZOMBIE_DARK_WIZARD.PAM", "idle", 2.8667f, "walk", 3.0f, "eat", 8.6333f, "sheep", 2.3f, "die", 2.1667f, "particles", 0.0333f);
-        register(table, "ZOMBIE_EGYPT_BASIC", "768/INITIAL/ZOMBIE/ZOMBIE_EGYPT_BASIC/ZOMBIE_EGYPT_BASIC.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_EGYPT_RA", "768/INITIAL/ZOMBIE/ZOMBIE_EGYPT_RA/ZOMBIE_EGYPT_RA.PAM", "idle", 2.8667f, "walk", 4.0f, "eat", 3.3333f, "power_up", 0.6667f, "power", 1.0f, "power_down", 1.2667f, "die", 2.1667f, "particles", 0.0333f);
-        register(table, "ZOMBIE_EGYPT_TOMBRAISER", "768/INITIAL/ZOMBIE/ZOMBIE_EGYPT_TOMBRAISER/ZOMBIE_EGYPT_TOMBRAISER.PAM", "idle", 2.0f, "walk", 2.0f, "power", 3.0f, "eat", 4.1f, "die", 1.8f, "particles", 0.0333f);
-        register(table, "ZOMBIE_EXPLORER", "768/INITIAL/ZOMBIE/ZOMBIE_EXPLORER/ZOMBIE_EXPLORER.PAM", "idle", 2.1333f, "walk", 2.0f, "eat", 6.3333f, "die", 3.7333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_FUTURE_BASIC", "768/FULL/ZOMBIE/ZOMBIE_FUTURE_BASIC/ZOMBIE_FUTURE_BASIC.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 1.8f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_FUTURE_BASIC_BRICK", "768/FULL/ZOMBIE/ZOMBIE_FUTURE_BASIC_BRICK/ZOMBIE_FUTURE_BASIC_BRICK.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 1.8f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_ICEAGE_BASIC", "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_BASIC/ZOMBIE_ICEAGE_BASIC.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_ICEAGE_BASIC_BRICK", "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_BASIC_BRICK/ZOMBIE_ICEAGE_BASIC_BRICK.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_ICEAGE_DODORIDER", "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_DODORIDER/ZOMBIE_ICEAGE_DODORIDER.PAM", "idle", 1.6667f, "idle2", 1.6667f, "idle3", 2.8667f, "walk", 3.0f, "eat", 3.3667f, "fly_start", 0.9667f, "fly_loop", 2.6667f, "fly_end", 1.5f, "die", 5.7f);
-        register(table, "ZOMBIE_ICEAGE_HUNTER", "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_HUNTER/ZOMBIE_ICEAGE_HUNTER.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 4.0333f, "die", 2.1667f, "throw", 2.1f, "particles", 0.0333f);
-        register(table, "ZOMBIE_ICEAGE_TROGLOBITE", "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_TROGLOBITE/ZOMBIE_ICEAGE_TROGLOBITE.PAM", "idle", 3.3333f, "walk", 4.0333f, "eat", 8.4667f, "push", 4.0333f, "die", 3.5f, "particles", 0.0333f);
-        register(table, "ZOMBIE_IMP_BARE", "768/INITIAL/ZOMBIE/ZOMBIE_IMP_BARE/ZOMBIE_IMP_BARE.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.2667f, "die", 1.2f, "particles", 0.0333f, "land", 1.0f, "fly", 0.0333f);
-        register(table, "ZOMBIE_LOSTCITY_BASIC", "768/FULL/ZOMBIE/ZOMBIE_LOSTCITY_BASIC/ZOMBIE_LOSTCITY_BASIC.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f, "tent", 1.3667f);
-        register(table, "ZOMBIE_LOSTCITY_CRYSTALSKULL", "768/FULL/ZOMBIE/ZOMBIE_LOSTCITY_CRYSTALSKULL/ZOMBIE_LOSTCITY_CRYSTALSKULL.PAM", "idle", 3.3333f, "walk", 4.0f, "eat", 3.3333f, "power_up", 0.6667f, "power", 1.0f, "power_down", 1.2667f, "attack", 1.9667f, "die", 2.1667f, "particles", 0.0333f);
-        register(table, "ZOMBIE_LOSTCITY_JANE", "768/FULL/ZOMBIE/ZOMBIE_LOSTCITY_JANE/ZOMBIE_LOSTCITY_JANE.PAM", "idle", 3.3333f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_MODERN_ALLSTAR", "768/FULL/ZOMBIE/ZOMBIE_MODERN_ALLSTAR/ZOMBIE_MODERN_ALLSTAR.PAM", "idle", 3.3333f, "walk", 3.0f, "eat", 8.6333f, "run", 0.6667f, "tackle", 1.3f, "kick", 1.6f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_MODERN_NEWSPAPER", "768/FULL/ZOMBIE/ZOMBIE_MODERN_NEWSPAPER/ZOMBIE_MODERN_NEWSPAPER.PAM", "idle_newspaper", 2.1333f, "walk_newspaper", 3.0f, "walk", 3.0f, "eat_newspaper", 8.6333f, "newspaper_defeat", 1.4f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_PIANO", "768/FULL/ZOMBIE/ZOMBIE_PIANO/ZOMBIE_PIANO.PAM", "idle", 2.0f, "play", 1.0f, "die", 1.0f, "particles", 0.0333f);
-        register(table, "ZOMBIE_PIRATE_BARREL_PUSHER", "768/FULL/ZOMBIE/ZOMBIE_PIRATE_BARREL_PUSHER/ZOMBIE_PIRATE_BARREL_PUSHER.PAM", "walk", 2.9667f, "idle", 3.6f, "eat", 4.1f, "die", 2.0f, "particles", 0.0333f, "walk2", 2.9667f, "idle2", 2.2667f, "eat2", 4.1f, "die2", 2.0f);
-        register(table, "ZOMBIE_PIRATE_BARREL_PUSHER_BARREL", "768/FULL/ZOMBIE/ZOMBIE_PIRATE_BARREL_PUSHER_BARREL/ZOMBIE_PIRATE_BARREL_PUSHER_BARREL.PAM", "roll", 12.0f, "die", 1.3333f);
-        register(table, "ZOMBIE_PIRATE_BASIC", "768/FULL/ZOMBIE/ZOMBIE_PIRATE_BASIC/ZOMBIE_PIRATE_BASIC.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.1f, "die", 1.8f, "particles", 0.0333f);
-        register(table, "ZOMBIE_PIRATE_BASIC_BRICK", "768/FULL/ZOMBIE/ZOMBIE_PIRATE_BASIC_BRICK/ZOMBIE_PIRATE_BASIC_BRICK.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.1f, "die", 1.8f, "particles", 0.0333f);
-        register(table, "ZOMBIE_PROSPECTOR", "768/FULL/ZOMBIE/ZOMBIE_PROSPECTOR/ZOMBIE_PROSPECTOR.PAM", "idle", 2.3667f, "walk", 1.9667f, "eat", 6.8f, "die", 2.2667f, "particles", 0.0333f, "blastoff", 0.2667f, "fly", 0.7f, "land", 0.3333f);
-        register(table, "ZOMBIE_TUTORIAL", "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        register(table, "ZOMBIE_WEST_BASIC", "768/FULL/ZOMBIE/ZOMBIE_WEST_BASIC/ZOMBIE_WEST_BASIC.PAM", "idle", 2.8667f, "walk", 2.0f, "eat", 3.3333f, "die", 1.6667f, "particles", 0.0333f, "dance start", 0.5333f, "dance loop", 0.8333f, "dance stop", 1.0f);
-        register(table, "ZOMBIE_WEST_BASIC_BRICK", "768/FULL/ZOMBIE/ZOMBIE_WEST_BASIC_BRICK/ZOMBIE_WEST_BASIC_BRICK.PAM", "idle", 2.8667f, "walk", 2.0f, "eat", 3.3333f, "die", 1.6667f, "particles", 0.0333f, "dance start", 0.5333f, "dance loop", 0.8333f, "dance stop", 1.0f);
+    private static void registerZombies(Map<ZombieType, EntityAnimation> table) {
+        registerZombie(table, ZombieType.NORMAL, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.CONE, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.BUCKET, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
+
+        registerZombie(table, ZombieType.BRICK, "768/FULL/ZOMBIE/ZOMBIE_PIRATE_BASIC_BRICK/ZOMBIE_PIRATE_BASIC_BRICK.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.1f, "die", 1.8f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.DARK_ARMOR, "768/FULL/ZOMBIE/ZOMBIE_DARK_BASIC/ZOMBIE_DARK_BASIC.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
+
+        registerZombie(table, ZombieType.GARGANTUAR, "768/FULL/ZOMBIE/GARGANTUAR/GARGANTUAR.PAM", "idle", 2.0333f, "walk", 2.3667f, "eat", 1.1333f, "smash_left", 1.5f, "smash_right", 0.4f, "fire", 0.6667f, "cannon_fire", 0.8667f, "stun_start", 1.2333f, "stun_idle", 2.7333f, "stun_end", 0.7333f, "die", 2.0333f, "laser_start", 1.7667f, "laser_idle", 0.9f, "laser_end", 1.3f);
+        registerZombie(table, ZombieType.IMP, "768/INITIAL/ZOMBIE/ZOMBIE_IMP_BARE/ZOMBIE_IMP_BARE.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.2667f, "die", 1.2f, "particles", 0.0333f, "land", 1.0f, "fly", 0.0333f);
+        registerZombie(table, ZombieType.ALL_STAR, "768/FULL/ZOMBIE/ZOMBIE_MODERN_ALLSTAR/ZOMBIE_MODERN_ALLSTAR.PAM", "idle", 3.3333f, "walk", 3.0f, "eat", 8.6333f, "run", 0.6667f, "tackle", 1.3f, "kick", 1.6f, "die", 1.8333f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.ARCADE, "768/FULL/ZOMBIE/ZOMBIE_80S_ARCADE/ZOMBIE_80S_ARCADE.PAM", "idle", 3.3333f, "walk", 4.0333f, "eat", 8.4667f, "push", 4.0333f, "die", 3.5f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.JANE, "768/FULL/ZOMBIE/ZOMBIE_LOSTCITY_JANE/ZOMBIE_LOSTCITY_JANE.PAM", "idle", 3.3333f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.CRYSTAL_SKULL, "768/FULL/ZOMBIE/ZOMBIE_LOSTCITY_CRYSTALSKULL/ZOMBIE_LOSTCITY_CRYSTALSKULL.PAM", "idle", 3.3333f, "walk", 4.0f, "eat", 3.3333f, "power_up", 0.6667f, "power", 1.0f, "power_down", 1.2667f, "attack", 1.9667f, "die", 2.1667f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.PROSPECTOR, "768/FULL/ZOMBIE/ZOMBIE_PROSPECTOR/ZOMBIE_PROSPECTOR.PAM", "idle", 2.3667f, "walk", 1.9667f, "eat", 6.8f, "die", 2.2667f, "particles", 0.0333f, "blastoff", 0.2667f, "fly", 0.7f, "land", 0.3333f);
+        registerZombie(table, ZombieType.PIANIST, "768/FULL/ZOMBIE/PIANO/PIANO.PAM", "idle", 2.0f, "play", 1.0f, "damage", 1.0f, "play2", 1.0f, "die", 3.0f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.NEWSPAPER, "768/FULL/ZOMBIE/ZOMBIE_MODERN_NEWSPAPER/ZOMBIE_MODERN_NEWSPAPER.PAM", "idle_newspaper", 2.1333f, "walk_newspaper", 3.0f, "walk", 3.0f, "eat_newspaper", 8.6333f, "newspaper_defeat", 1.4f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.BARREL_ROLLER, "768/FULL/ZOMBIE/ZOMBIE_PIRATE_BARREL_PUSHER/ZOMBIE_PIRATE_BARREL_PUSHER.PAM", "walk", 2.9667f, "idle", 3.6f, "eat", 4.1f, "die", 2.0f, "particles", 0.0333f, "walk2", 2.9667f, "idle2", 2.2667f, "eat2", 4.1f, "die2", 2.0f);
+
+        //Egypt
+        registerZombie(table, ZombieType.RA, "768/INITIAL/ZOMBIE/ZOMBIE_EGYPT_RA/ZOMBIE_EGYPT_RA.PAM", "idle", 2.8667f, "walk", 4.0f, "eat", 3.3333f, "power_up", 0.6667f, "power", 1.0f, "power_down", 1.2667f, "die", 2.1667f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.EXPLORER, "768/INITIAL/ZOMBIE/ZOMBIE_EXPLORER/ZOMBIE_EXPLORER.PAM", "idle", 2.1333f, "walk", 2.0f, "eat", 6.3333f, "die", 3.7333f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.TOMB_RAISER, "768/INITIAL/ZOMBIE/ZOMBIE_EGYPT_TOMBRAISER/ZOMBIE_EGYPT_TOMBRAISER.PAM", "idle", 2.0f, "walk", 2.0f, "power", 3.0f, "eat", 4.1f, "die", 1.8f, "particles", 0.0333f);
+
+        //Frozen Caves
+        registerZombie(table, ZombieType.DODO, "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_DODORIDER/ZOMBIE_ICEAGE_DODORIDER.PAM", "idle", 1.6667f, "idle2", 1.6667f, "idle3", 2.8667f, "walk", 3.0f, "eat", 3.3667f, "fly_start", 0.9667f, "fly_loop", 2.6667f, "fly_end", 1.5f, "die", 5.7f);
+        registerZombie(table, ZombieType.HUNTER, "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_HUNTER/ZOMBIE_ICEAGE_HUNTER.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 4.0333f, "die", 2.1667f, "throw", 2.1f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.TROGLOBITE, "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_TROGLOBITE/ZOMBIE_ICEAGE_TROGLOBITE.PAM", "idle", 3.3333f, "walk", 4.0333f, "eat", 8.4667f, "push", 4.0333f, "die", 3.5f, "particles", 0.0333f);
+
+        //Big Wave Beach
+        registerZombie(table, ZombieType.FISHERMAN, "768/FULL/ZOMBIE/ZOMBIE_BEACH_FISHERMAN/ZOMBIE_BEACH_FISHERMAN.PAM", "intro", 1.6333f, "idle", 2.1f, "cast", 1.2667f, "cast_loop", 0.0333f, "reel", 1.4667f, "toss", 2.4333f, "die", 3.4f, "die2", 7.8f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.OCTOPUS, "768/FULL/ZOMBIE/ZOMBIE_BEACH_OCTOPUS/ZOMBIE_BEACH_OCTOPUS.PAM", "idle", 3.3333f, "idle2", 3.3333f, "idle3", 3.3333f, "idle4", 3.3333f, "idle5", 3.3333f, "walk", 4.0333f, "toss", 3.0667f, "eat", 8.4667f, "die", 3.5f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.SNORKEL, "768/FULL/ZOMBIE/ZOMBIE_BEACH_SNORKELER/ZOMBIE_BEACH_SNORKELER.PAM", "idle", 2.3667f, "walk", 1.9667f, "eat", 6.8f, "die", 2.2667f, "particles", 0.0333f);
+
+        //Dark Ages
+        registerZombie(table, ZombieType.JUGGLER, "768/FULL/ZOMBIE/ZOMBIE_DARK_JESTER/ZOMBIE_DARK_JESTER.PAM", "idle", 2.0333f, "walk", 2.0333f, "spinup", 0.8667f, "spin", 1.2f, "spindown", 0.5f, "spin_walk", 1.4667f, "eat", 8.3667f, "die", 1.8333f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.WIZARD, "768/FULL/ZOMBIE/ZOMBIE_DARK_WIZARD/ZOMBIE_DARK_WIZARD.PAM", "idle", 2.8667f, "walk", 3.0f, "eat", 8.6333f, "sheep", 2.3f, "die", 2.1667f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.KING, "768/FULL/ZOMBIE/ZOMBIE_DARK_KING/ZOMBIE_DARK_KING.PAM", "intro", 3.2333f, "idle", 4.0f, "idle2", 2.9333f, "special", 4.0f, "die", 3.1667f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.IMP_DRAGON, "768/FULL/ZOMBIE/ZOMBIE_DARK_IMP_DRAGON/ZOMBIE_DARK_IMP_DRAGON.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.2667f, "die", 1.2f, "particles", 0.0333f, "land", 1.0f, "fly", 0.0333f, "transition", 1.4f);
     }
 
     private static void register(Map<String, EntityAnimation> table, String name, String path, Object... clipPairs) {
@@ -173,6 +172,15 @@ public final class AnimationCatalog {
             clips.put((String) clipPairs[i], (Float) clipPairs[i + 1]);
         }
         table.put(name, new EntityAnimation(name, path, clips));
+    }
+
+    private static void registerZombie(Map<ZombieType, EntityAnimation> table, ZombieType type, String path, Object... clipPairs) {
+        if (type == null) return;
+        Map<String, Float> clips = new LinkedHashMap<>();
+        for (int i = 0; i < clipPairs.length; i += 2) {
+            clips.put((String) clipPairs[i], (Float) clipPairs[i + 1]);
+        }
+        table.put(type, new EntityAnimation(type.name(), path, clips));
     }
 
     public static EntityAnimation getPlantAnimation(String exactName) {
@@ -187,16 +195,17 @@ public final class AnimationCatalog {
         return getPlantAnimation(exactName) != null;
     }
 
-    public static EntityAnimation getZombieAnimation(String exactName) {
-        return exactName == null ? null : ZOMBIES.get(exactName.toUpperCase());
+    public static EntityAnimation getZombieAnimation(ZombieType type) {
+        return type == null ? null : ZOMBIES.get(type);
     }
 
     public static EntityAnimation getZombieAnimation(Zombie zombie) {
-        return getZombieAnimation(UiFactory.getZombieAddress(zombie));
+        if (zombie == null) return null;
+        return getZombieAnimation(zombie.getType());
     }
 
-    public static boolean hasZombieAnimation(String exactName) {
-        return getZombieAnimation(exactName) != null;
+    public static boolean hasZombieAnimation(ZombieType type) {
+        return getZombieAnimation(type) != null;
     }
 
     public static Collection<EntityAnimation> allPlantAnimations() {

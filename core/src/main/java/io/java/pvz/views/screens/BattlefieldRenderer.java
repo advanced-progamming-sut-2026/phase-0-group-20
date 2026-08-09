@@ -15,6 +15,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
+import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.PamAnimatedActor;
@@ -174,7 +175,7 @@ public class BattlefieldRenderer {
     }
 
     private String resolveZombieClip(Zombie zombie) {
-        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie.getType());
 
         if (zombie.isDead()) return pickClip(anim, CLIP_WALK, "die");
         if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
