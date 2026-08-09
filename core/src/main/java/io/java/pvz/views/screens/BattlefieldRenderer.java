@@ -35,30 +35,50 @@ public class BattlefieldRenderer {
     private static final float DESPAWN_LINGER_SECONDS = 0.5f;
     private static final float DESPAWN_FADE_SECONDS = 0.25f;
 
-    private final Group group = new Group();
-
     private final Map<Plant, PamAnimatedActor> plantActors = new HashMap<>();
     private final Map<Zombie, PamAnimatedActor> zombieActors = new HashMap<>();
     private final Map<Projectile, PamAnimatedActor> projectileActors = new HashMap<>();
     private final Map<Sun, PamAnimatedActor> sunActors = new HashMap<>();
     private final GameFlowController  gameFlowController = new GameFlowController();
+    private final EnvironmentRenderer environmentRenderer;
+
+    private final Group masterGroup = new Group();
+    private final Group environmentLayer = new Group();
+    private final Group plantLayer = new Group();
+    private final Group zombieLayer = new Group();
+    private final Group effectLayer = new Group();
+
+    public BattlefieldRenderer() {
+        masterGroup.addActor(environmentLayer);
+        masterGroup.addActor(plantLayer);
+        masterGroup.addActor(zombieLayer);
+        masterGroup.addActor(effectLayer);
+
+        environmentRenderer = new EnvironmentRenderer(environmentLayer);
+    }
 
     public Group getGroup() {
-        return group;
+        return masterGroup;
     }
+
 
     public void sync(Arena arena) {
         if (arena == null) return;
 
+        environmentRenderer.sync(arena);
+
         syncPlants(arena.getActivePlants());
         syncZombies(arena.getActiveZombies());
-
         syncProjectiles(arena.getActiveProjectiles());
         syncSuns(arena.getActiveSuns());
     }
 
     public void clear() {
-        group.clearChildren();
+        environmentRenderer.clear();
+        plantLayer.clearChildren();
+        zombieLayer.clearChildren();
+        effectLayer.clearChildren();
+
         plantActors.clear();
         zombieActors.clear();
         projectileActors.clear();
@@ -91,7 +111,7 @@ public class BattlefieldRenderer {
         PamAnimatedActor actor = PamAnimatedActor.createPlantAnimated(atlasName, resolvePlantClip(plant));
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
-        group.addActor(actor);
+        plantLayer.addActor(actor);
         return actor;
     }
 
@@ -132,7 +152,7 @@ public class BattlefieldRenderer {
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
         actor.setScale(1f, 1f);
-        group.addActor(actor);
+        zombieLayer.addActor(actor);
         return actor;
     }
 
@@ -242,7 +262,7 @@ public class BattlefieldRenderer {
             }
         });
 
-        group.addActor(actor);
+        effectLayer.addActor(actor);
         return actor;
     }
 
@@ -279,14 +299,12 @@ public class BattlefieldRenderer {
         String[] pamPaths = getProjectilePamPaths(proj);
 
         PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
-            "animation", pamPaths[0], pamPaths[1]);
+            "tier1", pamPaths[0], pamPaths[1]);
 
 
         actor.setSize(30, 30);
         actor.setOrigin(Align.center);
-
-        actor.setScale(0.25f, 0.25f);
-        group.addActor(actor);
+        effectLayer.addActor(actor);
         return actor;
     }
 
@@ -300,12 +318,12 @@ public class BattlefieldRenderer {
         );
     }
 
-    private String[] getProjectilePamPaths(Projectile proj) { // just for now you can use switch case Elyas
+    private String[] getProjectilePamPaths(Projectile proj) { // just for now you can use switch case agha Elyas
         String baseName;
-        baseName = "PEAPOD_PLANTFOOD_GIANTPEA";
+        baseName = "SLINGPEA_PROJECTILE";
 
         return new String[]{
-            "768/FULL/EFFECTS/" + baseName + "/" + baseName + ".PAM",
+            "768/INITIAL/EFFECTS/" + baseName + "/" + baseName + ".PAM",
             "768/INITIAL/EFFECTS/" + baseName + "/" + baseName + ".PAM"
         };
     }

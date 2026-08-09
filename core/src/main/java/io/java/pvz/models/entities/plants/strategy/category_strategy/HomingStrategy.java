@@ -52,7 +52,7 @@ public class HomingStrategy implements IPlantStrategy {
                 Zombie nearest = null;
 
                 for (Zombie z : validTargets) {
-                    float dx = (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH) - plantCol;
+                    float dx = (z.getX() - PhysicalConstants.GRID_START_X / PhysicalConstants.TILE_WIDTH) - plantCol;
                     float dy = z.getRow() - plantRow;
                     float distance = (float) Math.sqrt(dx * dx + dy * dy);
                     if (distance < minDistance) {

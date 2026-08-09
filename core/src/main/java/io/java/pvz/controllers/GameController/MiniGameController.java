@@ -226,7 +226,7 @@ public class MiniGameController {
                 List<Zombie> zombiesInTile = new ArrayList<>();
                 if (arena.zombieInRow(row) != null) {
                     for (Zombie z : arena.zombieInRow(row)) {
-                        int zombieCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
+                        int zombieCol = (int) (z.getX() - PhysicalConstants.GRID_START_X / PhysicalConstants.TILE_WIDTH);
                         if (!z.isDead() && zombieCol == col) {
                             zombiesInTile.add(z);
                         }
