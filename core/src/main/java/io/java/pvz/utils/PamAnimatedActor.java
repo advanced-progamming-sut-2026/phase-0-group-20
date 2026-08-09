@@ -102,4 +102,9 @@ public class PamAnimatedActor extends Actor {
             }
         }
     }
+
+    public static PamAnimatedActor createEffectAnimated(String pamPath, String clipName) {
+        PamPlayer player = AssetLoader.getInstance().getPlayer();
+        return new PamAnimatedActor(player, clipName, pamPath);
+    }
 }

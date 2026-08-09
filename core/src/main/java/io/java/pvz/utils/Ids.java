@@ -125,4 +125,15 @@ public final class Ids {
         public static final String LOCK  = "IMAGE_ZEN_GARDEN_LOCKED_POT_ICON";
 
     }
+
+    public static final class ArenaEffects {
+        public static final String GRAVE = "768/INITIAL/GRAVESTONES/EGYPT_HIEROGLYPH/EGYPT_HIEROGLYPH.PAM";
+        public static final String TILESLIDER_DOWN = "768/FULL/EFFECTS/TILESLIDER_ICEAGE_DOWN/TILESLIDER_ICEAGE_DOWN.PAM";
+        public static final String TILESLIDER_UP = "768/FULL/EFFECTS/TILESLIDER_ICEAGE_UP/TILESLIDER_ICEAGE_UP.PAM";
+        public static final String WATER_BACK_GROUND = "768/FULL/BACKGROUNDS/WATER_UNDERLAYER/WATER_UNDERLAYER.PAM";
+        public static final String WATER_FOR_GROUND = "768/FULL/BACKGROUNDS/WAVE_UPPERLAYER/WAVE_UPPERLAYER.PAM";
+        public static final String VASE_RANDOM = "768/FULL/VASEBREAKER/VASE_BROWN/VASE_BROWN.PAM";
+        public static final String VASE_ZOMBIE = "768/FULL/VASEBREAKER/VASE_GARGANTUAR/VASE_GARGANTUAR.PAM";
+        public static final String VASE_PLANTS = "768/FULL/VASEBREAKER/VASE_GREEN/VASE_GREEN.PAM";
+    }
 }
