@@ -139,10 +139,26 @@ public class GameFlowScreen extends BaseScreen {
 
         mainLayer.addActor(sunStack);
 
+        Table plantFoodTable = new Table();
+        plantFoodTable.setPosition(100, 850);
+        plantFoodTable.left();
+
         Image plantFoodIcon = UiFactory.imageFor(textures, Ids.UI.PLANT_FOOD_ICON);
-        plantFoodIcon.setSize(100, 80);
-        plantFoodIcon.setPosition(100, 850);
-        mainLayer.addActor(plantFoodIcon);
+
+        Label plantFoodLabel = new Label("0", skin , "medium_outline") {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                if (App.getActiveUser() != null) {
+                    setText("Count: "+String.valueOf(App.getActiveUser().getPlantFoodCount()));
+                }
+            }
+        };
+        plantFoodLabel.setFontScale(1f);
+        plantFoodTable.add(plantFoodIcon).size(50, 40);
+        plantFoodTable.add(plantFoodLabel).padLeft(15);
+
+        mainLayer.addActor(plantFoodTable);
     }
 
     private void setupActionButtons(Skin skin, TextureBank textures) {
@@ -367,7 +383,6 @@ public class GameFlowScreen extends BaseScreen {
     private void drawDebugShapes() {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
         shapeRenderer.setColor(Color.GREEN);
         for (int i = 0; i <= COLS; i++) {
             float vx = GRID_START_X + (i * TILE_WIDTH);
@@ -377,7 +392,6 @@ public class GameFlowScreen extends BaseScreen {
             float hy = GRID_START_Y + (i * TILE_HEIGHT);
             shapeRenderer.line(GRID_START_X, hy, GRID_START_X + (COLS * TILE_WIDTH), hy);
         }
-
         shapeRenderer.setColor(Color.RED);
         float mowerWidth = 100f;
         float mowerX = GRID_START_X - mowerWidth - 30;
@@ -385,7 +399,6 @@ public class GameFlowScreen extends BaseScreen {
             float mowerY = GRID_START_Y + (i * TILE_HEIGHT) + 20;
             shapeRenderer.rect(mowerX, mowerY, mowerWidth, TILE_HEIGHT - 40);
         }
-
         shapeRenderer.setColor(Color.PURPLE);
         float zombieSpawnX = GRID_START_X + (COLS * TILE_WIDTH) + 100;
         shapeRenderer.rect(zombieSpawnX, GRID_START_Y, 700, ROWS * TILE_HEIGHT);
@@ -394,7 +407,6 @@ public class GameFlowScreen extends BaseScreen {
             float firstColY = GRID_START_Y + (i * TILE_HEIGHT) + TILE_HEIGHT / 2f;
             shapeRenderer.line(zombieSpawnX + 50, firstColY, zombieSpawnX + 600, firstColY);
         }
-
         shapeRenderer.setColor(Color.YELLOW);
         shapeRenderer.rect(30, 950, 180, 80);
         shapeRenderer.setColor(Color.CYAN);
@@ -411,15 +423,11 @@ public class GameFlowScreen extends BaseScreen {
 
         shapeRenderer.setColor(Color.ORANGE);
         shapeRenderer.rect(1400f, 30f, 400, 45);
-
         shapeRenderer.rect(150, 150, 150, 150);
-
         shapeRenderer.setColor(Color.BLUE);
         shapeRenderer.rect(1350f, 855f, 110, 110);
-
         shapeRenderer.setColor(Color.MAGENTA);
         shapeRenderer.rect(1620f, 950f, 250, 90);
-
         shapeRenderer.end();
     }
 
@@ -438,7 +446,8 @@ public class GameFlowScreen extends BaseScreen {
             debugFont.draw(batch, "Y:" + (int) hy, GRID_START_X - 60, hy + 5);
             float firstColY = GRID_START_Y + (i * TILE_HEIGHT) + TILE_HEIGHT / 2f;
             if (i < ROWS) {
-                debugFont.draw(batch, "Zombie Rows Y\n(Y:" + (int) firstColY + ")" + "\n from x = " + (zombieSpawnX + 20)
+                debugFont.draw(batch, "Zombie Rows Y\n(Y:" + (int) firstColY + ")" +
+                    "\n from x = " + (zombieSpawnX + 20)
                     + " to x = " + (zombieSpawnX + 620), zombieSpawnX + 20, firstColY);
             }
         }
@@ -479,7 +488,8 @@ public class GameFlowScreen extends BaseScreen {
                 int col = (int) ((x - GRID_START_X) / TILE_WIDTH) + 1;
                 int row = (int) ((y - GRID_START_Y) / TILE_HEIGHT) + 1;
 
-                Result result = gameFlowController.plantPlant(selectedPlantToPlace.getName(), String.valueOf(col), String.valueOf(row));
+                Result result = gameFlowController.plantPlant(selectedPlantToPlace.getName(),
+                    String.valueOf(col), String.valueOf(row));
 
                 if (result.isSuccessful()) {
                     floatingPlantImage.remove();

@@ -2,7 +2,10 @@ package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import io.java.pvz.controllers.GameController.CollectionController;
@@ -13,6 +16,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PlantCardButton;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.utils.ZombieCardButton;
@@ -25,6 +29,18 @@ public class CollectionScreen extends BaseScreen {
     private boolean isShowingPlants = true;
     private final CollectionController controller = new CollectionController();
     private final List<PlantCardButton> allPlantCards = new java.util.ArrayList<>();
+
+    private enum FilterState {
+        ALL("Show All Plants"),
+        UNLOCKED("Show Unlocked Plants"),
+        UPGRADABLE("Show Upgradable Plants");
+
+        final String text;
+        FilterState(String text) { this.text = text; }
+    }
+
+    private FilterState currentFilterState = FilterState.ALL;
+
     public CollectionScreen(Game game, Skin skin) {
         super(game);
         this.skin = skin;
@@ -49,12 +65,70 @@ public class CollectionScreen extends BaseScreen {
         Table bottomTable = new Table();
         bottomTable.setBackground(skin.getDrawable("image_ui_quests_panel_edge_to_edge_ten"));
 
-        Table plantsTable = buildPlantsTable(textures);
-        Table zombiesTable = buildZombiesTable(textures);
+        final Table plantsTable = buildPlantsTable(textures);
+        final Table zombiesTable = buildZombiesTable(textures);
 
         ScrollPane scrollPane = new ScrollPane(plantsTable);
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.setFadeScrollBars(false);
+
+        Table sortBar = new Table();
+
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.valueOf("#F4F0DD"));
+        pixmap.fill();
+        sortBar.setBackground(new Image(new Texture(pixmap)).getDrawable());
+        pixmap.dispose();
+
+        sortBar.pad(12, 25, 12, 25);
+
+        Table filterTable = new Table();
+
+        ImageButton filterButton = new ImageButton(
+            UiFactory.imageFor(textures, Ids.PlantCards.FILTER_UNCLICKED).getDrawable(),
+            UiFactory.imageFor(textures, Ids.PlantCards.FILTER_CLICKED).getDrawable()
+        );
+
+        Label filterLabel = new Label(currentFilterState.text, skin);
+        filterLabel.setColor(Color.valueOf("#2B7A0B"));
+        filterLabel.setFontScale(1.3f);
+
+        filterButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                FilterState[] states = FilterState.values();
+                int nextIndex = (currentFilterState.ordinal() + 1) % states.length;
+                currentFilterState = states[nextIndex];
+
+                filterLabel.setText(currentFilterState.text);
+                applyFilterToTable(plantsTable);
+
+                System.out.println("Filter changed to: " + currentFilterState.text);
+            }
+        });
+
+        filterTable.add(filterButton).padRight(8f);
+        filterTable.add(filterLabel);
+        filterTable.setTouchable(Touchable.enabled);
+
+        int collected = App.getActiveUser().getUnlockedPlants().size();
+        int total = App.getAllPlants().size();
+        Label collectionLabel = new Label("Plants Collected: " + collected + " of " + total, skin, "medium");
+        collectionLabel.setColor(Color.valueOf("#4A3018"));
+        collectionLabel.setFontScale(1.1f);
+
+        sortBar.add(filterTable).left().expandX();
+        sortBar.add(collectionLabel).right();
+
+        Stack contentStack = new Stack();
+        contentStack.add(scrollPane);
+
+        Table barContainer = new Table();
+        barContainer.bottom();
+        barContainer.add(sortBar).fillX().size(600, 80).padBottom(30);
+
+        barContainer.setVisible(isShowingPlants);
+        contentStack.add(barContainer);
 
         toggleBtn.addListener(new ClickListener() {
             @Override
@@ -64,9 +138,11 @@ public class CollectionScreen extends BaseScreen {
                 if (isShowingPlants) {
                     scrollPane.setActor(plantsTable);
                     toggleBtn.setText("Zombies");
+                    barContainer.setVisible(true);
                 } else {
                     scrollPane.setActor(zombiesTable);
                     toggleBtn.setText("Plants");
+                    barContainer.setVisible(false);
                 }
             }
         });
@@ -79,23 +155,30 @@ public class CollectionScreen extends BaseScreen {
             }
         });
 
-        bottomTable.add(scrollPane).expand().fill().pad(30);
+        bottomTable.add(contentStack).expand().fill().pad(30);
 
         mainLayer.add(topTable).growX().height(Value.percentHeight(0.1f, mainLayer)).row();
         mainLayer.add(bottomTable).grow().height(Value.percentHeight(0.9f, mainLayer));
     }
 
-    private Table buildPlantsTable(TextureBank textures) {
-        Table table = new Table();
-        table.top();
-
+    private void applyFilterToTable(Table table) {
+        table.clearChildren();
         int columns = 8;
         int count = 0;
 
-        for (Plant plant : App.getAllPlants()) {
-            PlantCardButton card = createPlantCard(textures, plant);
+        for (PlantCardButton card : allPlantCards) {
+            boolean shouldShow = false;
 
-            if (card != null) {
+            if (currentFilterState == FilterState.ALL) {
+                shouldShow = true;
+            } else if (currentFilterState == FilterState.UNLOCKED) {
+                Plant plant = card.getPlant();
+                shouldShow = App.getActiveUser().isItUnlocked(plant);
+            } else if (currentFilterState == FilterState.UPGRADABLE) {
+                shouldShow = card.isReadyToUpgrade();
+            }
+
+            if (shouldShow) {
                 table.add(card).size(150, 115).expandX().padBottom(20);
                 count++;
 
@@ -104,12 +187,24 @@ public class CollectionScreen extends BaseScreen {
                 }
             }
         }
+    }
+
+    private Table buildPlantsTable(TextureBank textures) {
+        Table table = new Table();
+        table.top();
+
+        if (allPlantCards.isEmpty()) {
+            for (Plant plant : App.getAllPlants()) {
+                createPlantCard(textures, plant);
+            }
+        }
+
+        applyFilterToTable(table);
         return table;
     }
 
     private Table buildZombiesTable(TextureBank textures) {
         Table table = new Table();
-
         table.top().padTop(30).padBottom(30);
 
         int columns = 6;
@@ -135,8 +230,7 @@ public class CollectionScreen extends BaseScreen {
                 card.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        System.out.println("Plant clicked: " + zombie.getName());
-
+                        System.out.println("Zombie clicked: " + zombie.getName());
                         ZombieInfoScreen infoScreen = new ZombieInfoScreen(game, skin, zombie);
                         ScreenManager.getInstance().pushScreen(infoScreen);
                     }
@@ -163,7 +257,6 @@ public class CollectionScreen extends BaseScreen {
 
     private PlantCardButton createPlantCard(TextureBank textures, Plant plant) {
         String plantName = UiFactory.getAtlasName(plant);
-
         String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
         String familyTextureKey = "IMAGE_UI_PACKETS_MINTFAM_MELEE";
 
@@ -183,15 +276,14 @@ public class CollectionScreen extends BaseScreen {
                 .setPlant(plant)
                 .setSkin(skin)
                 .build();
+
             allPlantCards.add(card);
 
             card.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     System.out.println("Plant clicked: " + plantName);
-
-                    PlantInfoScreen infoScreen = new PlantInfoScreen(game, skin,
-                        plant,card.isReadyToUpgrade(),controller);
+                    PlantInfoScreen infoScreen = new PlantInfoScreen(game, skin, plant, card, controller);
                     ScreenManager.getInstance().pushScreen(infoScreen);
                 }
             });
@@ -205,7 +297,6 @@ public class CollectionScreen extends BaseScreen {
             System.err.println("Attempted Family Texture: " + familyTextureKey);
             System.err.println("Reason: " + e.getMessage());
             System.err.println("=========================================");
-
             return null;
         }
     }
