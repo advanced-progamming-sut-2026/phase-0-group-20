@@ -33,6 +33,7 @@ public class PlantSelectionModalTable extends BorderedTable {
     private final PlantSelectionController controller;
     private final Skin skin;
     private Table blocker;
+    private final Runnable onGameStarted;
 
     private Table selectedPlantsTable;
     private Table collectionTable;
@@ -40,10 +41,11 @@ public class PlantSelectionModalTable extends BorderedTable {
 
     private final List<Plant> selectedPlantsLocal = new ArrayList<>();
 
-    public PlantSelectionModalTable(Skin skin) {
+    public PlantSelectionModalTable(Skin skin, Runnable onGameStarted) {
         super();
         this.skin = skin;
         this.controller = new PlantSelectionController();
+        this.onGameStarted = onGameStarted;
 
         pad(30);
         setSize(1100, 850);
@@ -70,6 +72,9 @@ public class PlantSelectionModalTable extends BorderedTable {
             if (result.isSuccessful()) {
                 System.out.println(result.message());
                 this.remove();
+                if (onGameStarted != null) {
+                    onGameStarted.run();
+                }
             } else {
                 showError(result.message());
             }
