@@ -41,6 +41,7 @@ public final class Ids {
         public static final String PAUSE = "IMAGE_UI_HUD_INGAME_PAUSE_BUTTON";
         public static final String FAST_FORWARD = "IMAGE_UI_HUD_INGAME_2X";
         public static final String SHOVEL = "IMAGE_UI_HUD_INGAME_SHOVEL_BUTTON";
+        public static final String FLOATING_SHOVEL = "IMAGE_UI_HUD_INGAME_SHOVEL_ICON";
         public static final String PLANT_FOOD_HOVERING = "IMAGE_DANGERROOM_CARD_PLANTFOOD";
         public static final String PLANT_FOOD_ICON = "IMAGE_UI_DANGERROOM_PLANTFOOD_ICON";
 

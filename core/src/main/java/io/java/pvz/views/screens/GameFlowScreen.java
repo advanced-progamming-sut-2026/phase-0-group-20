@@ -40,6 +40,9 @@ public class GameFlowScreen extends BaseScreen {
     private Plant selectedPlantToPlace = null;
     private Image floatingPlantImage = null;
 
+    private boolean isShovelSelected = false;
+    private Image floatingShovelImage = null;
+
     private ShapeRenderer shapeRenderer;
     private BitmapFont debugFont;
 
@@ -89,32 +92,34 @@ public class GameFlowScreen extends BaseScreen {
         battlefieldRenderer = new BattlefieldRenderer();
         mainLayer.addActor(battlefieldRenderer.getGroup());
 
+        setupPlantSelectionMenu(skin, textures);
+        setupIndicators(skin, textures);
+        setupActionButtons(skin, textures);
+    }
 
+    private void setupPlantSelectionMenu(Skin skin, TextureBank textures) {
         if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
-
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin, () -> {
                 buildSeedBank(skin, textures);
             });
             plantSelectionModal.show(modalLayer, viewport);
         } else {
-
             buildSeedBank(skin, textures);
         }
+    }
 
+    private void setupIndicators(Skin skin, TextureBank textures) {
         Stack sunStack = new Stack();
         sunStack.setSize(80, 80);
         sunStack.setPosition(100, 950);
 
-
         Image sunIcon = UiFactory.imageFor(textures, Ids.UI.SUN_ICON);
         sunStack.add(sunIcon);
-
 
         Label sunLabel = new Label("0", skin) {
             @Override
             public void act(float delta) {
                 super.act(delta);
-
                 if (GameSession.getInstance() != null) {
                     setText(String.valueOf(GameSession.getInstance().getCurrentSun()));
                 }
@@ -125,48 +130,68 @@ public class GameFlowScreen extends BaseScreen {
         sunLabel.setColor(Color.BLACK);
         sunStack.add(sunLabel);
 
-
         sunStack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Result result = gameFlowController.cheatAddSun("50");
-                System.out.println(result.message());
+                gameFlowController.cheatAddSun("50");
             }
         });
 
         mainLayer.addActor(sunStack);
+
         Image plantFoodIcon = UiFactory.imageFor(textures, Ids.UI.PLANT_FOOD_ICON);
         plantFoodIcon.setSize(100, 80);
         plantFoodIcon.setPosition(100, 850);
         mainLayer.addActor(plantFoodIcon);
+    }
 
-        Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 150, 150, () -> {
-            System.out.println("Nuke launched!");
-        }, false);
+    private void setupActionButtons(Skin skin, TextureBank textures) {
+        Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 150, 150, () -> {}, false);
         nukeBtn.setPosition(150, 150);
         mainLayer.addActor(nukeBtn);
 
         Stack shovelBtn = UiFactory.iconButton(textures, skin, Ids.UI.SHOVEL, 110, 110, () -> {
-            System.out.println("Shovel picked up!");
+            if (floatingPlantImage != null) {
+                floatingPlantImage.remove();
+                floatingPlantImage = null;
+                selectedPlantToPlace = null;
+            }
+
+            if (isShovelSelected) {
+                isShovelSelected = false;
+                if (floatingShovelImage != null) {
+                    floatingShovelImage.remove();
+                    floatingShovelImage = null;
+                }
+            } else {
+                isShovelSelected = true;
+                floatingShovelImage = new Image(UiFactory.imageFor(textures, Ids.UI.FLOATING_SHOVEL).getDrawable()) {
+                    @Override
+                    public void act(float delta) {
+                        super.act(delta);
+                        Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                        viewport.unproject(mousePos);
+                        setPosition(mousePos.x - getWidth() / 2f, mousePos.y - getHeight() / 2f);
+                    }
+                };
+                floatingShovelImage.setSize(80, 80);
+                floatingShovelImage.setTouchable(Touchable.disabled);
+                mainLayer.addActor(floatingShovelImage);
+            }
         }, false);
         shovelBtn.setPosition(1350, 855);
         mainLayer.addActor(shovelBtn);
 
         Stack pauseBtn = UiFactory.iconButton(textures, skin, Ids.UI.PAUSE, 90, 90, () -> {
-            System.out.println("Game Paused");
             new PauseMenuTable(skin).show(modalLayer, viewport);
         });
         pauseBtn.setPosition(1730, 950);
         mainLayer.addActor(pauseBtn);
 
-        Stack fastForwardBtn = UiFactory.iconButton(textures, skin, Ids.UI.FAST_FORWARD, 90, 90, () -> {
-            System.out.println("Speed toggled!");
-        });
+        Stack fastForwardBtn = UiFactory.iconButton(textures, skin, Ids.UI.FAST_FORWARD, 90, 90, () -> {});
         fastForwardBtn.setPosition(1620, 950);
         mainLayer.addActor(fastForwardBtn);
-
     }
-
 
     private void buildSeedBank(Skin skin, TextureBank textures) {
         Table seedBankTable = new Table();
@@ -175,76 +200,113 @@ public class GameFlowScreen extends BaseScreen {
         seedBankTable.top().left();
         seedBankTable.pad(20f);
 
-        int columns = 4;
-
-
         List<Plant> selectedPlants = GameSession.getInstance().getChosenPlants();
         int count = 0;
 
         for (Plant plant : selectedPlants) {
             count++;
-            Image bgCard = UiFactory.imageFor(textures, Ids.PlantCards.BG_CARD);
-            String plantName = UiFactory.getAtlasName(plant);
-            String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
-            Image plantIcon = UiFactory.imageFor(textures, plantTextureKey);
-
-            PlantCardButton plantButton = new PlantCardButton.Builder()
-                .setBgImage(bgCard)
-                .setPlant(plant)
-                .setPlantImage(plantIcon)
-                .setSkin(skin)
-                .setShowProgressBar(false)
-                .build();
-
-            plantButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (floatingPlantImage != null) {
-                        floatingPlantImage.remove();
-                    }
-
-                    selectedPlantToPlace = plant;
-
-
-                    floatingPlantImage = new Image(plantIcon.getDrawable()) {
-                        @Override
-                        public void act(float delta) {
-                            super.act(delta);
-
-                            Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-                            viewport.unproject(mousePos);
-
-                            setPosition(mousePos.x - getWidth() / 2f, mousePos.y - getHeight() / 2f);
-                        }
-                    };
-
-                    floatingPlantImage.setSize(80, 80);
-                    floatingPlantImage.setTouchable(Touchable.disabled);
-                    mainLayer.addActor(floatingPlantImage);
-
-                    System.out.println("Selected for placement: " + plant.getName());
-                }
-            });
-
+            PlantCardButton plantButton = createSeedPacket(plant, skin, textures);
             seedBankTable.add(plantButton).size(170f, 100f).padRight(15f).padBottom(20f);
 
-            if (count % columns == 0) {
+            if (count % 4 == 0) {
                 seedBankTable.row();
             }
         }
-
         mainLayer.addActor(seedBankTable);
+    }
+
+    private PlantCardButton createSeedPacket(Plant plant, Skin skin, TextureBank textures) {
+        Image bgCard = UiFactory.imageFor(textures, Ids.PlantCards.BG_CARD);
+        String plantName = UiFactory.getAtlasName(plant);
+        String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
+        Image plantIcon = UiFactory.imageFor(textures, plantTextureKey);
+
+        PlantCardButton plantButton = new PlantCardButton.Builder()
+            .setBgImage(bgCard)
+            .setPlant(plant)
+            .setPlantImage(plantIcon)
+            .setSkin(skin)
+            .setShowProgressBar(false)
+            .build();
+
+        plantButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (isShovelSelected) {
+                    isShovelSelected = false;
+                    if (floatingShovelImage != null) {
+                        floatingShovelImage.remove();
+                        floatingShovelImage = null;
+                    }
+                }
+                if (floatingPlantImage != null) {
+                    floatingPlantImage.remove();
+                }
+
+                selectedPlantToPlace = plant;
+
+                floatingPlantImage = new Image(plantIcon.getDrawable()) {
+                    @Override
+                    public void act(float delta) {
+                        super.act(delta);
+                        Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                        viewport.unproject(mousePos);
+                        setPosition(mousePos.x - getWidth() / 2f, mousePos.y - getHeight() / 2f);
+                    }
+                };
+
+                floatingPlantImage.setSize(80, 80);
+                floatingPlantImage.setTouchable(Touchable.disabled);
+                mainLayer.addActor(floatingPlantImage);
+            }
+        });
+
+        return plantButton;
     }
 
     @Override
     public void render(float delta) {
         clearScreen(0.1f, 0.1f, 0.1f, 1f);
         AssetLoader.getInstance().updateTextures();
+
         handlePlantPlacement();
-        camera.update();
+        handleShovelAction();
+        handleCameraMovement(delta);
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        drawBackground();
+        handleDebugSpawnKeys();
+        batch.end();
 
+        drawDebugLayout();
+        advanceSimulation(delta);
+
+        if (stage != null) {
+            stage.act(delta);
+            stage.draw();
+        }
+    }
+
+    private void handleCameraMovement(float delta) {
+        camera.update();
+        float screenH = viewport.getWorldHeight();
+        float leftDrawW = leftRegion.getRegionWidth() * (screenH / leftRegion.getRegionHeight());
+        float mainDrawW = mainRegion.getRegionWidth() * (screenH / mainRegion.getRegionHeight());
+        float rightDrawW = rightRegion.getRegionWidth() * (screenH / rightRegion.getRegionHeight());
+
+        if (currentMapId != null && currentMapId.toLowerCase().contains("ice")) {
+            mainDrawW += 25;
+        }
+
+        if (input.isKeyPressed(Input.Keys.RIGHT) &&
+            camera.position.x < leftDrawW + rightDrawW + mainDrawW - viewport.getWorldWidth() / 2f)
+            camera.position.x += 300 * delta;
+        if (input.isKeyPressed(Input.Keys.LEFT) && camera.position.x > viewport.getWorldWidth() / 2f)
+            camera.position.x -= 300 * delta;
+    }
+
+    private void drawBackground() {
         float screenH = viewport.getWorldHeight();
         float currentX = 0;
 
@@ -255,36 +317,21 @@ public class GameFlowScreen extends BaseScreen {
 
         float mainScale = screenH / mainRegion.getRegionHeight();
         float mainDrawW = mainRegion.getRegionWidth() * mainScale;
-
         float mainDrawY = 0f;
         float mainDrawH = screenH;
+
         if (currentMapId != null && currentMapId.toLowerCase().contains("ice")) {
             mainDrawY = -25;
             mainDrawH = screenH + 25;
             mainDrawW += 25;
         }
+
         batch.draw(mainRegion, currentX, mainDrawY, mainDrawW, mainDrawH);
         currentX += mainDrawW;
 
         float rightScale = screenH / rightRegion.getRegionHeight();
         float rightDrawW = rightRegion.getRegionWidth() * rightScale;
         batch.draw(rightRegion, currentX, 0, rightDrawW, screenH);
-
-        if (input.isKeyPressed(Input.Keys.RIGHT) &&
-            camera.position.x < leftDrawW + rightDrawW + mainDrawW - viewport.getWorldWidth() / 2f)
-            camera.position.x += 300 * delta;
-        if (input.isKeyPressed(Input.Keys.LEFT) && camera.position.x > viewport.getWorldWidth() / 2f)
-            camera.position.x -= 300 * delta;
-
-        handleDebugSpawnKeys();
-        batch.end();
-        drawDebugLayout();
-        advanceSimulation(delta);
-
-        if (stage != null) {
-            stage.act(delta);
-            stage.draw();
-        }
     }
 
     private void advanceSimulation(float delta) {
@@ -304,17 +351,20 @@ public class GameFlowScreen extends BaseScreen {
         if (GameSession.getInstance() == null) return;
 
         if (input.isKeyJustPressed(Input.Keys.P)) {
-            Result result = gameFlowController.plantPlant("Peashooter", "1", "1");
-            System.out.println(result.message());
+            gameFlowController.plantPlant("Peashooter", "1", "1");
         }
 
         if (input.isKeyJustPressed(Input.Keys.Z)) {
-            Result result = gameFlowController.cheatSpawnZombie("Normal", "9", "1");
-            System.out.println(result.message());
+            gameFlowController.cheatSpawnZombie("Normal", "9", "1");
         }
     }
 
     private void drawDebugLayout() {
+        drawDebugShapes();
+        drawDebugText();
+    }
+
+    private void drawDebugShapes() {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
@@ -353,27 +403,27 @@ public class GameFlowScreen extends BaseScreen {
         shapeRenderer.setColor(Color.BROWN);
         float bankX = 310f, bankY = 820;
         shapeRenderer.rect(bankX, bankY, 790, 250);
-        for (int r = 0; r < 2; r++)
-            for (int c = 0; c < 4; c++)
+        for (int r = 0; r < 2; r++) {
+            for (int c = 0; c < 4; c++) {
                 shapeRenderer.rect(bankX + 20 + (c * 185), bankY + 20 + (r * 120), 170, 100);
+            }
+        }
 
         shapeRenderer.setColor(Color.ORANGE);
-        float progX = 1400f, progY = 30f;
-        shapeRenderer.rect(progX, progY, 400, 45);
+        shapeRenderer.rect(1400f, 30f, 400, 45);
 
-        float nukX = 150;
-        shapeRenderer.rect(nukX, nukX, nukX, nukX);
+        shapeRenderer.rect(150, 150, 150, 150);
 
         shapeRenderer.setColor(Color.BLUE);
-        float shovelX = 1350f, shovelY = 855f;
-        shapeRenderer.rect(shovelX, shovelY, 110, 110);
+        shapeRenderer.rect(1350f, 855f, 110, 110);
 
         shapeRenderer.setColor(Color.MAGENTA);
-        float controlsX = 1620f, controlsY = 950f;
-        shapeRenderer.rect(controlsX, controlsY, 250, 90);
+        shapeRenderer.rect(1620f, 950f, 250, 90);
 
         shapeRenderer.end();
+    }
 
+    private void drawDebugText() {
         batch.begin();
         debugFont.setColor(Color.WHITE);
 
@@ -382,26 +432,26 @@ public class GameFlowScreen extends BaseScreen {
             debugFont.draw(batch, "X:" + (int) vx, vx - 15, GRID_START_Y + (ROWS * TILE_HEIGHT) + 30);
         }
 
+        float zombieSpawnX = GRID_START_X + (COLS * TILE_WIDTH) + 100;
         for (int i = 0; i <= ROWS; i++) {
             float hy = GRID_START_Y + (i * TILE_HEIGHT);
             debugFont.draw(batch, "Y:" + (int) hy, GRID_START_X - 60, hy + 5);
             float firstColY = GRID_START_Y + (i * TILE_HEIGHT) + TILE_HEIGHT / 2f;
-            if (i < ROWS)
+            if (i < ROWS) {
                 debugFont.draw(batch, "Zombie Rows Y\n(Y:" + (int) firstColY + ")" + "\n from x = " + (zombieSpawnX + 20)
                     + " to x = " + (zombieSpawnX + 620), zombieSpawnX + 20, firstColY);
+            }
         }
 
+        float mowerX = GRID_START_X - 100f - 30;
         debugFont.draw(batch, "Mowers\nX:" + (int) mowerX, mowerX, GRID_START_Y - 20);
-
         debugFont.draw(batch, "Sun\n(30, 950)", 40, 1010);
         debugFont.draw(batch, "PlantFood\n(30, 850)", 40, 910);
-        debugFont.draw(batch, "Seed Bank (X:" + (int) bankX + " , Y:" + (int) bankY + ")", bankX, bankY - 10);
-        debugFont.draw(batch, "Wave Progress\n(X:" + (int) progX + " , Y:" + (int) progY + ")", progX, progY + 80);
-        debugFont.draw(batch, "release the nuke\n(X:" + (int) nukX + ", Y:" + (int) nukX + ")", nukX, nukX - 15);
-
-        debugFont.draw(batch, "Shovel\n(X:" + (int) shovelX + ", Y:" + (int) shovelY + ")", shovelX, shovelY - 15);
-        debugFont.draw(batch, "Controls (Pause/FF)\n(X:" + (int) controlsX + ", Y:" + (int) controlsY + ")",
-            controlsX, controlsY - 15);
+        debugFont.draw(batch, "Seed Bank (X:310 , Y:820)", 310f, 810f);
+        debugFont.draw(batch, "Wave Progress\n(X:1400 , Y:30)", 1400f, 110f);
+        debugFont.draw(batch, "release the nuke\n(X:150, Y:150)", 150f, 135f);
+        debugFont.draw(batch, "Shovel\n(X:1350, Y:855)", 1350f, 840f);
+        debugFont.draw(batch, "Controls (Pause/FF)\n(X:1620, Y:950)", 1620f, 935f);
 
         batch.end();
     }
@@ -409,14 +459,12 @@ public class GameFlowScreen extends BaseScreen {
     private void handlePlantPlacement() {
         if (selectedPlantToPlace == null || floatingPlantImage == null) return;
 
-
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
             floatingPlantImage.remove();
             floatingPlantImage = null;
             selectedPlantToPlace = null;
             return;
         }
-
 
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -432,12 +480,45 @@ public class GameFlowScreen extends BaseScreen {
                 int row = (int) ((y - GRID_START_Y) / TILE_HEIGHT) + 1;
 
                 Result result = gameFlowController.plantPlant(selectedPlantToPlace.getName(), String.valueOf(col), String.valueOf(row));
-                System.out.println(result.message());
 
                 if (result.isSuccessful()) {
                     floatingPlantImage.remove();
                     floatingPlantImage = null;
                     selectedPlantToPlace = null;
+                }
+            }
+        }
+    }
+
+    private void handleShovelAction() {
+        if (!isShovelSelected || floatingShovelImage == null) return;
+
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+            floatingShovelImage.remove();
+            floatingShovelImage = null;
+            isShovelSelected = false;
+            return;
+        }
+
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            viewport.unproject(mousePos);
+
+            float x = mousePos.x;
+            float y = mousePos.y;
+
+            if (x >= GRID_START_X && x <= GRID_START_X + (COLS * TILE_WIDTH) &&
+                y >= GRID_START_Y && y <= GRID_START_Y + (ROWS * TILE_HEIGHT)) {
+
+                int col = (int) ((x - GRID_START_X) / TILE_WIDTH) + 1;
+                int row = (int) ((y - GRID_START_Y) / TILE_HEIGHT) + 1;
+
+                Result result = gameFlowController.pluckPlant(String.valueOf(col), String.valueOf(row));
+
+                if (result.isSuccessful()) {
+                    floatingShovelImage.remove();
+                    floatingShovelImage = null;
+                    isShovelSelected = false;
                 }
             }
         }
