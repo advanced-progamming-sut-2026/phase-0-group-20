@@ -209,10 +209,18 @@ public class GameFlowController {
     private Result validatePlantPlacement(GameSession session, Plant plant) {
         if (!(session.getCurrentMode() instanceof ConveyorBelt)) {
             if (session.getCurrentSun() < plant.getCost()) {
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Not enough sun to plant " + plant.getName() + "!")
+                        .build());
                 return new Result(false, "Not enough sun to plant " + plant.getName() + "!");
             }
             Float cd = session.getPlantsCooldown().get(plant);
             if (cd != null && cd > 0) {
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(plant.getName() + " is still recharging!")
+                        .build());
                 return new Result(false, plant.getName() + " is still recharging!");
             }
         }

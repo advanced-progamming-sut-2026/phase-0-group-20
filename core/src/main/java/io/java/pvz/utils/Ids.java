@@ -41,6 +41,7 @@ public final class Ids {
         public static final String PAUSE = "IMAGE_UI_HUD_INGAME_PAUSE_BUTTON";
         public static final String FAST_FORWARD = "IMAGE_UI_HUD_INGAME_2X";
         public static final String SHOVEL = "IMAGE_UI_HUD_INGAME_SHOVEL_BUTTON";
+        public static final String FLOATING_SHOVEL = "IMAGE_UI_HUD_INGAME_SHOVEL_ICON";
         public static final String PLANT_FOOD_HOVERING = "IMAGE_DANGERROOM_CARD_PLANTFOOD";
         public static final String PLANT_FOOD_ICON = "IMAGE_UI_DANGERROOM_PLANTFOOD_ICON";
 
@@ -135,5 +136,11 @@ public final class Ids {
         public static final String VASE_RANDOM = "768/FULL/VASEBREAKER/VASE_BROWN/VASE_BROWN.PAM";
         public static final String VASE_ZOMBIE = "768/FULL/VASEBREAKER/VASE_GARGANTUAR/VASE_GARGANTUAR.PAM";
         public static final String VASE_PLANTS = "768/FULL/VASEBREAKER/VASE_GREEN/VASE_GREEN.PAM";
+    }
+
+    public static final class PlantCards{
+        public static final String BG_CARD = "IMAGE_UI_PACKETS_MODERNDAY";
+        public static final String FILTER_UNCLICKED = "IMAGE_UI_ALMANAC_FILTER_BUTTON_UP";
+        public static final String FILTER_CLICKED = "IMAGE_UI_ALMANAC_FILTER_BUTTON_DOWN";
     }
 }
