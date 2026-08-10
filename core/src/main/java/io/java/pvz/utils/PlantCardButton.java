@@ -24,6 +24,8 @@ public class PlantCardButton extends Table {
     private final Label progressLabel;
     private final Stack progressStack;
 
+    private final Container<Label> levelContainer;
+
     private boolean isReadyToUpgrade;
     private boolean isUnlocked;
     private boolean boosted = false;
@@ -31,15 +33,16 @@ public class PlantCardButton extends Table {
     private Image lockIcon;
 
     private PlantCardButton(Builder builder) {
-        this.boostedBgImage = UiFactory.imageFor(AssetLoader.getInstance().getTextures(),
-            "IMAGE_UI_PACKETS_BOOST");
-        this.bgImage =(boosted)? boostedBgImage :  builder.bgImage;
+        this.boostedBgImage = UiFactory.imageFor(AssetLoader.getInstance().getTextures(), "IMAGE_UI_PACKETS_BOOST");
+        this.bgImage = (boosted) ? boostedBgImage : builder.bgImage;
         this.plantImage = builder.plantImage;
         this.familyImage = builder.familyImage;
         this.plant = builder.plant;
 
         User user = App.getActiveUser();
         this.isUnlocked = user.isItUnlocked(plant);
+        if(builder.showLevel)
+            builder.showLevel = isUnlocked;
 
         if (builder.showProgressBar) {
             Skin skin = builder.skin;
@@ -64,6 +67,19 @@ public class PlantCardButton extends Table {
             this.progressLabel = null;
             this.progressStack = null;
             this.isReadyToUpgrade = false;
+        }
+
+        if (builder.showLevel && builder.skin != null) {
+            Label lbl = new Label("LVL " + plant.getLevel(), builder.skin,"medium_outline");
+            lbl.setFontScale(1f);
+            lbl.setAlignment(Align.center);
+
+            this.levelContainer = new Container<>(lbl);
+            this.levelContainer.setTransform(true);
+            this.levelContainer.setOrigin(Align.center);
+            this.levelContainer.setRotation(-40);
+        } else {
+            this.levelContainer = null;
         }
 
         if (!isUnlocked) {
@@ -99,6 +115,10 @@ public class PlantCardButton extends Table {
             addActor(familyImage);
         }
 
+        if (levelContainer != null) {
+            addActor(levelContainer);
+        }
+
         if (!isUnlocked) {
             addActor(darkOverlay);
             if (lockIcon != null) {
@@ -117,6 +137,13 @@ public class PlantCardButton extends Table {
         if (familyImage != null) {
             familyImage.setSize(iconSize, iconSize);
             familyImage.setPosition(padding, getHeight() - iconSize - padding);
+        }
+
+        if (levelContainer != null) {
+            levelContainer.pack();
+            float padX = 8f;
+            float padY = 8f;
+            levelContainer.setPosition(getWidth() - levelContainer.getWidth() , getHeight() - levelContainer.getHeight() +30f);
         }
 
         if (!isUnlocked) {
@@ -140,6 +167,11 @@ public class PlantCardButton extends Table {
             int amount = user.getInventory().getSeedPackets().getOrDefault(plant.getName(), 0);
             setProgress(amount);
             this.isReadyToUpgrade = progressBar.getMaxValue() <= amount;
+        }
+
+        if (levelContainer != null) {
+            levelContainer.getActor().setText("LVL " + plant.getLevel());
+            levelContainer.pack();
         }
 
         if (this.isUnlocked) {
@@ -183,6 +215,8 @@ public class PlantCardButton extends Table {
         private Skin skin;
         private boolean showProgressBar = true;
 
+        private boolean showLevel = true;
+
         public Builder setBgImage(Image bgImage) {
             this.bgImage = bgImage;
             return this;
@@ -213,12 +247,17 @@ public class PlantCardButton extends Table {
             return this;
         }
 
+        public Builder setShowLevel(boolean showLevel) {
+            this.showLevel = showLevel;
+            return this;
+        }
+
         public PlantCardButton build() {
             if (bgImage == null || plantImage == null || plant == null) {
                 throw new IllegalStateException("Not all the necessary arguments are set!");
             }
 
-            if (showProgressBar && skin == null) {
+            if ((showProgressBar || showLevel) && skin == null) {
                 throw new IllegalStateException("Skin is not set!");
             }
             return new PlantCardButton(this);

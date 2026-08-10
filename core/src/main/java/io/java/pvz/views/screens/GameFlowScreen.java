@@ -249,6 +249,7 @@ public class GameFlowScreen extends BaseScreen {
             .setPlantImage(plantIcon)
             .setSkin(skin)
             .setShowProgressBar(false)
+            .setShowLevel(false)
             .build();
 
         plantButton.addListener(new ClickListener() {
