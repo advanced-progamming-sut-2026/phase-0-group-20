@@ -19,61 +19,65 @@ public class ProjectileMechanism {
         int plantRow = plant.getPlacedTile().getRow();
         int plantCol = plant.getPlacedTile().getCol();
 
-        if (damage != -1 && type != null) {
-            List<float[]> shotConfigs = getShotConfigurations(plant);
+        if (damage == -1 || type == null) return;
 
-            for (float[] config : shotConfigs) {
+        float speed = ProjectileTuning.speedFor(type);
+        List<float[]> shotConfigs = getShotConfigurations(plant);
 
+        for (float[] config : shotConfigs) {
+            int spawnCol = plantCol + (int) config[0];
+            int spawnRow = plantRow + (int) config[1];
+            float speedX = config[2] * speed;
+            float speedY = config[3] * speed;
 
-                int spawnCol = plantCol + (int) config[0];
-                int spawnRow = plantRow + (int) config[1];
-                int speedX = (int) config[2];
-                int speedY = (int) config[3];
+            if (speedX > 0 && !shootForward) continue;
+            if (speedX < 0 && !shootBackward) continue;
+            if (spawnRow < 0 || spawnRow >= GameSession.getInstance().getArena().getRows()) continue;
 
-                if (speedX > 0 && !shootForward) continue;
-                if (speedX < 0 && !shootBackward) continue;
-                if (spawnRow >= 0 && spawnRow < GameSession.getInstance().getArena().getRows()) {
-
-                    Projectile.spawnNewProjectile(
-                        plant,
-                        type,
-                        damage,
-                        new Position(spawnCol, spawnRow),
-                        speedX,
-                        speedY,
-                        isPiercingProjectile(type),
-                        canPassObstacles(plant)
-                    );
-                }
-            }
-        }
-    }
-
-    public static void executeTargetedProjectile(Plant plant, Zombie target, int burstIndex) {
-        int damage = plant.getDamage();
-        ProjectileType type = getProjectileType(plant.getName());
-
-        ProjectileEffect effect = getProjectileEffect(plant.getName());
-
-        if (damage != -1 && type != null) {
-            int spawnCol = plant.getPlacedTile().getCol();
-            int spawnRow = plant.getPlacedTile().getRow();
-            int spawnX = spawnCol - burstIndex;
-
-            Projectile projectile = Projectile.spawnNewProjectile(
+            Projectile.spawnNewProjectile(
                 plant,
                 type,
                 damage,
-                new Position(spawnX, spawnRow),
-                0,
-                0,
+                new Position(spawnCol, spawnRow),
+                speedX,
+                speedY,
                 isPiercingProjectile(type),
                 canPassObstacles(plant)
             );
-
-            projectile.setEffect(effect);
-            projectile.setHomingTarget(target, 1.5f);
         }
+    }
+
+    public static int getVolleyCount(String plantName) {
+        return switch (plantName) {
+            case "Repeater" -> 2;
+            case "Mega Gatling Pea" -> 4;
+            default -> 1;
+        };
+    }
+
+    public static void executeTargetedProjectile(Plant plant, Zombie target) {
+        int damage = plant.getDamage();
+        ProjectileType type = getProjectileType(plant.getName());
+        ProjectileEffect effect = getProjectileEffect(plant.getName());
+
+        if (damage == -1 || type == null) return;
+
+        int spawnCol = plant.getPlacedTile().getCol();
+        int spawnRow = plant.getPlacedTile().getRow();
+
+        Projectile projectile = Projectile.spawnNewProjectile(
+            plant,
+            type,
+            damage,
+            new Position(spawnCol, spawnRow),
+            0,
+            0,
+            isPiercingProjectile(type),
+            canPassObstacles(plant)
+        );
+
+        projectile.setEffect(effect);
+        projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
     }
 
     public static ProjectileEffect getProjectileEffect(String name) {
@@ -102,21 +106,13 @@ public class ProjectileMechanism {
 
 
     public static List<float[]> getShotConfigurations(Plant plant) {
-        List<float[]> configs = new ArrayList<>(); // [offsetCol - offsetRow - speedX - speedY]
+        List<float[]> configs = new ArrayList<>();
         String name = plant.getName();
 
         switch (name) {
-            case "Peashooter", "Snow Pea", "Fire Peashooter", "Goo Peashooter", "Sea-shroom", "Puff-shroom" ->
+            case "Peashooter", "Snow Pea", "Fire Peashooter", "Goo Peashooter", "Sea-shroom", "Puff-shroom",
+                 "Repeater", "Mega Gatling Pea", "Pea Pod" ->
                 configs.add(new float[]{0, 0, 1, 0});
-            case "Repeater" -> {
-                configs.add(new float[]{0, 0, 1, 0});
-                configs.add(new float[]{-1, 0, 1, 0});
-            }
-            case "Pea Pod" -> {
-                for (int i = 0; i < plant.getStackCount(); i++) {
-                    configs.add(new float[]{-i, 0, 1, 0});
-                }
-            }
             case "Threepeater" -> {
                 configs.add(new float[]{0, -1, 1, 0}); // top line
                 configs.add(new float[]{0, 0, 1, 0});  // middle line
@@ -129,9 +125,8 @@ public class ProjectileMechanism {
                 configs.add(new float[]{0, 0, -1, 1});  // bottom-left
             }
             case "Split Pea" -> {
-                configs.add(new float[]{0, 0, 1, 0}); // forward
-                configs.add(new float[]{0, 0, -1, 0}); // one backward
-                configs.add(new float[]{1, 0, -1, 0}); // two backward
+                configs.add(new float[]{0, 0, 1, 0});  // forward
+                configs.add(new float[]{0, 0, -1, 0}); // backward
             }
             case "Starfruit" -> {
                 configs.add(new float[]{0, 0, -1, 0});  // backward
@@ -140,22 +135,9 @@ public class ProjectileMechanism {
                 configs.add(new float[]{0, 0, 1, -1});  // up-right
                 configs.add(new float[]{0, 0, 1, 1});   // down-right
             }
-            case "Mega Gatling Pea" -> {
-                configs.add(new float[]{0, 0, 1, 0});
-                configs.add(new float[]{-1, 0, 1, 0});
-                configs.add(new float[]{-2, 0, 1, 0});
-                configs.add(new float[]{-3, 0, 1, 0});
-            }
         }
         return configs;
     }
-
-    public static int parseDamage(String damage) {
-        if (damage.matches("(-)?\\d+"))
-            return Integer.parseInt(damage);
-        return -1;
-    }
-
 
     private static boolean isPiercingProjectile(ProjectileType type) {
         return type == ProjectileType.SPIKE;
@@ -164,6 +146,4 @@ public class ProjectileMechanism {
     private static boolean canPassObstacles(Plant plant) {
         return plant.getCategory() == PlantCategory.LOBBER;
     }
-
-
 }

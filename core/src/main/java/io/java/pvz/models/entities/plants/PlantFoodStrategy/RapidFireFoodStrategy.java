@@ -4,17 +4,9 @@ import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
+import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.enums.plants.ProjectileType;
 
-
-/**
- * Fires a fast barrage of shots down this plant's lane for a few seconds.
- * Used by: Peashooter, Repeater (+1 giant pea), Threepeater's single-lane
- * cousins, Goo Peashooter (poison), Fire Peashooter (fire), Mega Gatling Pea
- * (+4 giant peas), Pea Pod (+1 giant pea per stacked head), Cat-tail (homing).
- * `extraGiantShots` represents the bonus giant/empowered projectiles some
- * plants also launch alongside the barrage (0 = none).
- */
 
 public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
@@ -63,14 +55,14 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
                 int row = plant.getPlacedTile().getRow();
 
                 Projectile projectile = Projectile.spawnNewProjectile(
-                        plant,
-                        type,
-                        giantDamage,
-                        new Position(col, row),
-                        1,
-                        0,
-                        false,
-                        false
+                    plant,
+                    type,
+                    giantDamage,
+                    new Position(col, row),
+                    ProjectileTuning.speedFor(type),
+                    0,
+                    false,
+                    false
                 );
                 projectile.setSize(2);
 

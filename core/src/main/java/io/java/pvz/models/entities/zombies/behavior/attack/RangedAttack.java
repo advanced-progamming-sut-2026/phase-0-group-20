@@ -2,13 +2,12 @@ package io.java.pvz.models.entities.zombies.behavior.attack;
 
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.projectiles.Projectile;
+import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.plants.ProjectileType;
 
 public class RangedAttack implements AttackBehavior {
 
-    private final static int SPEED_X = -1;
-    private final static int SPEED_Y = 0;
     private final static boolean DEF_PIER = false;
     private final static boolean DEF_C_P_O = false; //can pass obstacles
 
@@ -30,16 +29,17 @@ public class RangedAttack implements AttackBehavior {
         if (zombie.isDead()) return;
 
         Position spawnPosition = new Position(zombie.getCol(), zombie.getRow());
+        float speed = ProjectileTuning.speedFor(projectileType);
 
         Projectile.spawnZombieProjectile(
-                zombie,
-                projectileType,
-                damage,
-                spawnPosition,
-                SPEED_X,
-                SPEED_Y,
-                DEF_PIER,
-                DEF_C_P_O
+            zombie,
+            projectileType,
+            damage,
+            spawnPosition,
+            -speed, // zombies are on the right, firing leftward at the plants
+            0,
+            DEF_PIER,
+            DEF_C_P_O
         );
     }
 }

@@ -4,16 +4,11 @@ import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.projectiles.Projectile;
+import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
-
-/**
- * Strike-Through Strategy:
- * Generates a projectile or laser beam that does not disappear upon hitting the first target.
- * It penetrates and deals damage to all enemies in a single line or specific range.
- */
 
 public class StrikeThroughStrategy implements IPlantStrategy {
     private int lastShotTick = 0;
@@ -71,15 +66,16 @@ public class StrikeThroughStrategy implements IPlantStrategy {
         }
 
         if (type != null) {
+            float speed = ProjectileTuning.speedFor(type);
             Projectile projectile = Projectile.spawnNewProjectile(
-                    context,
-                    type,
-                    damage,
-                    new Position(plantCol, plantRow),
-                    1,
-                    0,
-                    true,
-                    false
+                context,
+                type,
+                damage,
+                new Position(plantCol, plantRow),
+                speed,
+                0,
+                true,
+                false
             );
 
             projectile.setPierceCount(pierceLimit);
