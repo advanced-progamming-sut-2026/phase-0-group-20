@@ -14,6 +14,7 @@ import java.util.Random;
 
 public class Projectile implements Ticker {
 
+    private static final int SPEED_COEFF = 3;
 
     private final Plant plant;
     private final Zombie zombie;
@@ -54,6 +55,7 @@ public class Projectile implements Ticker {
         this.position = position;
         this.speedX = speedX * PhysicalConstants.SPEED_SCALE_RATIO;
         this.speedY = speedY * PhysicalConstants.SPEED_SCALE_RATIO;
+
         this.piercing = piercing;
         this.canPassObstacles = canPassObstacles;
         this.isDestroyed = false;

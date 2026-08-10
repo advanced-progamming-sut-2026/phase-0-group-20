@@ -83,6 +83,7 @@ public class GreenHouseController {
 
 
     private Result collectThePot(Pot desiredPot) {
+        user =  App.getActiveUser();
         if (desiredPot.isItMari()) {
             user.earnCoin(500);
             desiredPot.collectPlant();

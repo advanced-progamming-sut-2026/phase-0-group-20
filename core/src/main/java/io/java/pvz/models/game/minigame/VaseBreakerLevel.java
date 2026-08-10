@@ -15,8 +15,10 @@ public class VaseBreakerLevel extends Level implements IMinigame {
 
     private final Random random = new Random();
 
-    private static final int ZOMBIE_CHANCE = 30; // badan mitonim arzyabi konim taghir bedim
-    private static final int PLANT_CHANCE = 30;
+    private static final int ZOMBIE_CHANCE = 5; // badan mitonim arzyabi konim taghir bedim
+    private static final int PLANT_CHANCE = 15;
+    private int zombieCount = 0;
+    private int plantCount = 0;
 
     public VaseBreakerLevel(String name, SeasonType seasonType, int waveCount, int levelNumber) {
         super(name, seasonType, waveCount, -1, levelNumber);
@@ -30,19 +32,21 @@ public class VaseBreakerLevel extends Level implements IMinigame {
         int rows = session.getArena().getRows();
         int cols = session.getArena().getCols();
 
-        int currentZombieChance = ZOMBIE_CHANCE + (5 * levelNumber);
-        int currentPlantChance = Math.max(0, PLANT_CHANCE - (5 * levelNumber));
+        int currentZombieChance = ZOMBIE_CHANCE + (2 * levelNumber);
+        int currentPlantChance = Math.max(5, PLANT_CHANCE - levelNumber);
 
         for (int row = 0; row < rows; row++) {
             for (int col = cols - 5; col < cols; col++) {
 
                 int rnd = random.nextInt(100);
 
-                if (rnd < currentZombieChance)
+                if (rnd < currentZombieChance && zombieCount < 4) {
                     session.getArena().changeTile(row, col, new ZombieVaseTile(row, col));
-                else if (rnd < currentPlantChance + currentZombieChance)
+                    zombieCount++;
+                } else if (rnd < currentPlantChance + currentZombieChance && plantCount < 4) {
                     session.getArena().changeTile(row, col, new PlantVaseTile(row, col));
-                else
+                    plantCount++;
+                } else
                     session.getArena().changeTile(row, col, new RandomVaseTile(row, col));
 
             }

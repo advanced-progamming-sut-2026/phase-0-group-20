@@ -52,9 +52,11 @@ public class BattlefieldRenderer {
     private final Group zombieLayer = new Group();
     private final Group effectLayer = new Group();
     private final Group mowerLayer = new Group();
+    private final Group highlightLayer = new Group();
 
     public BattlefieldRenderer() {
         masterGroup.addActor(environmentLayer);
+        masterGroup.addActor(highlightLayer);
         masterGroup.addActor(mowerLayer);
         masterGroup.addActor(plantLayer);
         masterGroup.addActor(zombieLayer);
@@ -477,5 +479,9 @@ public class BattlefieldRenderer {
             default -> "MOWER_WILDWEST";
 
         };
+    }
+
+    public Group getHighlightLayer() {
+        return highlightLayer;
     }
 }
