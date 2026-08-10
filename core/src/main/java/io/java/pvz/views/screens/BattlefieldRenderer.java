@@ -17,7 +17,10 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.fields.LawnMower;
 import io.java.pvz.models.game.Arena;
+import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
@@ -39,6 +42,7 @@ public class BattlefieldRenderer {
     private final Map<Zombie, PamAnimatedActor> zombieActors = new HashMap<>();
     private final Map<Projectile, PamAnimatedActor> projectileActors = new HashMap<>();
     private final Map<Sun, PamAnimatedActor> sunActors = new HashMap<>();
+    private final Map<LawnMower, PamAnimatedActor> lawnMowerActors = new HashMap<>();
     private final GameFlowController  gameFlowController = new GameFlowController();
     private final EnvironmentRenderer environmentRenderer;
 
@@ -47,9 +51,11 @@ public class BattlefieldRenderer {
     private final Group plantLayer = new Group();
     private final Group zombieLayer = new Group();
     private final Group effectLayer = new Group();
+    private final Group mowerLayer = new Group();
 
     public BattlefieldRenderer() {
         masterGroup.addActor(environmentLayer);
+        masterGroup.addActor(mowerLayer);
         masterGroup.addActor(plantLayer);
         masterGroup.addActor(zombieLayer);
         masterGroup.addActor(effectLayer);
@@ -66,7 +72,7 @@ public class BattlefieldRenderer {
         if (arena == null) return;
 
         environmentRenderer.sync(arena);
-
+        syncLawnMowers(arena.getLawnMowers());
         syncPlants(arena.getActivePlants());
         syncZombies(arena.getActiveZombies());
         syncProjectiles(arena.getActiveProjectiles());
@@ -75,14 +81,44 @@ public class BattlefieldRenderer {
 
     public void clear() {
         environmentRenderer.clear();
+        mowerLayer.clearChildren();
         plantLayer.clearChildren();
         zombieLayer.clearChildren();
         effectLayer.clearChildren();
 
+        lawnMowerActors.clear();
         plantActors.clear();
         zombieActors.clear();
         projectileActors.clear();
         sunActors.clear();
+    }
+
+    private void syncLawnMowers(LawnMower[] mowers) {
+        if (mowers == null) return;
+
+        Set<LawnMower> liveMowers = new HashSet<>();
+
+        for (LawnMower mower : mowers) {
+            if (mower != null && !mower.isDestroyed()) {
+                liveMowers.add(mower);
+
+                PamAnimatedActor actor = lawnMowerActors.get(mower);
+                if (actor == null) {
+                    actor = spawnLawnMower(mower);
+                    lawnMowerActors.put(mower, actor);
+                }
+                updateLawnMowerActor(mower, actor);
+            }
+        }
+
+        Iterator<Map.Entry<LawnMower, PamAnimatedActor>> it = lawnMowerActors.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<LawnMower, PamAnimatedActor> entry = it.next();
+            if (!liveMowers.contains(entry.getKey())) {
+                entry.getValue().remove();
+                it.remove();
+            }
+        }
     }
 
     private void syncPlants(List<Plant> livePlants) {
@@ -162,7 +198,7 @@ public class BattlefieldRenderer {
 
         PamAnimatedActor actor = anim != null
             ? PamAnimatedActor.createEffectAnimated(anim.path, clip)
-            : PamAnimatedActor.createZombieAnimated(UiFactory.getZombieAddress(zombie), clip);
+            : PamAnimatedActor.createZombieAnimated(zombie.getType(), clip);
 
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
@@ -375,5 +411,60 @@ public class BattlefieldRenderer {
     private ProjectileAnim resolveProjectileAnim(Projectile proj) {
         ProjectileAnim anim = PROJECTILE_ANIMS.get(proj.getType());
         return anim != null ? anim : PROJECTILE_ANIMS.get(ProjectileType.PEA);
+    }
+
+    private PamAnimatedActor spawnLawnMower(LawnMower mower) {
+        String mowerKey = resolveMowerKey();
+
+        AnimationCatalog.EntityAnimation anim =
+            AnimationCatalog.getMowerAnimation(mowerKey);
+
+        PamAnimatedActor actor;
+        if (anim != null) {
+            actor = PamAnimatedActor.createEffectAnimated(anim.path, "idle");
+        } else {
+            actor = new PamAnimatedActor(
+                AssetLoader.getInstance().getPlayer(),
+                "idle",
+                "768/INITIAL/MOWERS/MOWER_EGYPT/MOWER_EGYPT.PAM"
+            );
+        }
+
+        actor.setSize(TILE_WIDTH, TILE_HEIGHT);
+        actor.setOrigin(Align.center);
+        mowerLayer.addActor(actor);
+
+        return actor;
+    }
+
+    private void updateLawnMowerActor(LawnMower mower, PamAnimatedActor actor) {
+        if (mower.isActivate()) {
+            actor.setClip("attack");
+        } else {
+            actor.setClip("idle");
+        }
+
+        float offsetX = -20f;
+
+        centerOnPoint(actor, mower.getPosition().getX() + offsetX, mower.getPosition().getY() +100f);
+    }
+
+    private String resolveMowerKey() {
+        GameSession session = GameSession.getInstance();
+        if (session == null || session.getCurrentChapter() == null) {
+            return "MOWER_EGYPT";
+        }
+
+        SeasonType season = session.getCurrentChapter().getSeasonType();
+        if (season == null) return "MOWER_EGYPT";
+
+        return switch (season) {
+            case ANCIENT_EGYPT -> "MOWER_EGYPT";
+            case DARK_AGES -> "MOWER_DARK";
+            case BIG_WAVE_BEACH -> "MOWER_BEACH";
+            case FROZEN_CAVES -> "MOWER_ICEAGE";
+            default -> "MOWER_WILDWEST";
+
+        };
     }
 }

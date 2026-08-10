@@ -1,5 +1,6 @@
 package io.java.pvz.models.fields;
 
+import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
@@ -12,75 +13,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LawnMower implements Ticker {
+    private static final float HORIZONTAL_SPEED = 30f;
     private final int row;
     private final Arena arena;
     private boolean activate;
-
+    private boolean isDestroyed =false ;
+    private final Position position;
     public LawnMower(int row, Arena arena) {
         this.row = row;
         this.arena = arena;
         this.activate = false;
+        this.position = new Position(-1,row);
     }
 
     @Override
     public void onTick(int currentTick) {
-        if (this.activate) {
-            for (Zombie zombie : arena.getActiveZombies()) {
-                if (!zombie.isDead() && zombie.getRow() == row && zombie.getX() <= 0) {
-                    GameSession.getInstance().setZombieBreached(true);
-                    GameEventMessenger.getInstance().dispatch(
-                            GameEvent.GAME_OVER,
-                            new GameEventPayload.Builder(GameEvent.GAME_OVER)
-                                    .message("The zombie ate your brain; LOSER!!!")
-                                    .build()
-                    );
-                    return;
-                }
-            }
-            return;
-        }
+        if (isDestroyed) return;
 
-        for (Zombie zombie : arena.getActiveZombies()) {
-            if (!zombie.isDead() && zombie.getRow() == row && zombie.getX() <= 0) {
-                this.activate = true;
-                GameSession.getInstance().setEvent(GameEvent.LAWNMOWER_TRIGGERED);
-                destroyZombies();
-                return;
+        if (this.activate) {
+            position.moveX(HORIZONTAL_SPEED);
+
+            if (position.getCol() >= arena.getCols()) {
+                this.isDestroyed = true;
             }
         }
     }
 
-    public void destroyZombies() {
-        List<String> killedZombiesNames = new ArrayList<>();
+    public void trigger(){
+        this.activate = true;
+    }
 
-        for (Zombie z : arena.getActiveZombies()) {
-            if (!z.isDead() && z.getRow() == this.row) {
-                z.takeDamage(10000, null);
-                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED_LAWN_MOWER)
-                        .zombie(z)
-                        .coordinate(this.row, z.getCol())
-                        .build();
-                GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, payload);
-                killedZombiesNames.add(z.getName());
-            }
-        }
-        if (killedZombiesNames.isEmpty()) return;
+    public Position getPosition() {
+        return position;
+    }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("The lawn mower in the row " + (this.row + 1) + " is triggered and killed these zombies:\n");
-        for (String zombieName : killedZombiesNames) {
-            sb.append(zombieName + "\n");
-        }
-
-        sb.deleteCharAt(sb.length() - 1);
-
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(sb.toString())
-                        .build()); // not done
+    public boolean isDestroyed() {
+        return isDestroyed;
     }
 
     public boolean isActivate() {
         return activate;
+    }
+
+    public int getRow() {
+        return row;
     }
 }

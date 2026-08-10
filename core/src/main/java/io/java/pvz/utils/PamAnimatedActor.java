@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.entities.zombies.ZombieType;
 import pvz.libpvz.pam.PamPlayer;
 
 public class PamAnimatedActor extends Actor {
@@ -34,25 +35,76 @@ public class PamAnimatedActor extends Actor {
     }
 
     public static PamAnimatedActor createPlantAnimated(String atlasName, String clipName) {
+        PamPlayer player = AssetLoader.getInstance().getPlayer();
+
+        AnimationCatalog.EntityAnimation animData = AnimationCatalog.getPlantAnimation(atlasName);
+
+        if (animData != null) {
+            return new PamAnimatedActor(player, clipName, animData.path);
+        }
+
+        System.err.println("⚠️ " + atlasName + " not found in Catalog. Guessing paths...");
         String cleanAtlas = atlasName.toUpperCase();
         String pamPath1 = "768/INITIAL/PLANT/" + cleanAtlas + "/" + cleanAtlas + ".PAM";
         String pamPath2 = "768/FULL/PLANT/" + cleanAtlas + "/" + cleanAtlas + ".PAM";
 
-        PamPlayer player = AssetLoader.getInstance().getPlayer();
         return new PamAnimatedActor(player, clipName, pamPath1, pamPath2);
     }
 
     public static PamAnimatedActor createPlantIdle(String atlasName) {
-        return createPlantAnimated(atlasName, "idle");
+        AnimationCatalog.EntityAnimation animData = AnimationCatalog.getPlantAnimation(atlasName);
+
+        String clipName = "idle";
+
+        if (animData != null) {
+            if (!animData.hasClip("idle")) {
+                if (animData.hasClip("idle_stage1")) {
+                    clipName = "idle_stage1";
+                } else if (animData.hasClip("idle1_1")) {
+                    clipName = "idle1_1";
+                } else if (!animData.getClipNames().isEmpty()) {
+                    clipName = animData.getClipNames().iterator().next();
+                }
+            }
+        }
+
+        return createPlantAnimated(atlasName, clipName);
     }
 
-    public static PamAnimatedActor createZombieAnimated(String zombieAddress, String clipName) {
-        String cleanAddress = "ZOMBIE_" + zombieAddress;
+    public static PamAnimatedActor createZombieAnimated(ZombieType type, String clipName) {
+        PamPlayer player = AssetLoader.getInstance().getPlayer();
+
+        AnimationCatalog.EntityAnimation animData = AnimationCatalog.getZombieAnimation(type);
+
+        if (animData != null) {
+            return new PamAnimatedActor(player, clipName, animData.path);
+        }
+
+        System.err.println("⚠️ Zombie " + type + " not found in Catalog. Guessing paths...");
+        String cleanAddress = "ZOMBIE_" + type.name();
         String pamPath1 = "768/FULL/ZOMBIE/" + cleanAddress + "/" + cleanAddress + ".PAM";
         String pamPath2 = "768/INITIAL/ZOMBIE/" + cleanAddress + "/" + cleanAddress + ".PAM";
 
-        PamPlayer player = AssetLoader.getInstance().getPlayer();
         return new PamAnimatedActor(player, clipName, pamPath1, pamPath2);
+    }
+
+    public static PamAnimatedActor createZombieIdle(ZombieType type) {
+        AnimationCatalog.EntityAnimation animData = AnimationCatalog.getZombieAnimation(type);
+
+        String clipName = "idle";
+        if (animData != null) {
+            if (!animData.hasClip("idle")) {
+                if (animData.hasClip("idle_newspaper")) {
+                    clipName = "idle_newspaper";
+                } else if (animData.hasClip("walk")) {
+                    clipName = "walk";
+                } else if (!animData.getClipNames().isEmpty()) {
+                    clipName = animData.getClipNames().iterator().next();
+                }
+            }
+        }
+
+        return createZombieAnimated(type, clipName);
     }
 
     public void setClip(String clipName) {

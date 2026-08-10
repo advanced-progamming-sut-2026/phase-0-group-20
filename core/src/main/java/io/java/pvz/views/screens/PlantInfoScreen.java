@@ -36,7 +36,7 @@ public class PlantInfoScreen extends BaseScreen {
         super(game);
         this.skin = skin;
         this.plant = plant;
-        this.atlasName = UiFactory.getAtlasName(plant).toUpperCase();
+        this.atlasName = UiFactory.getAnimationName(plant).toUpperCase();
         this.cardButton = card;
         this.controller = controller;
 
@@ -90,7 +90,6 @@ public class PlantInfoScreen extends BaseScreen {
     private Table buildPlantPreviewTable(TextureBank textures) {
         Table previewTable = new Table();
 
-        // تنظیم بک‌گراند برای جدول پیش‌نمایش گیاه
         Image bground = UiFactory.imageFor(textures, "IMAGE_BACKGROUNDS_FRONTLAWN_ROW_05");
         if (bground != null) {
             previewTable.setBackground(bground.getDrawable());
@@ -99,19 +98,16 @@ public class PlantInfoScreen extends BaseScreen {
         PamAnimatedActor plantActor = PamAnimatedActor.createPlantIdle(atlasName);
         plantActor.setScale(1.5f);
 
-        // ۱. اضافه کردن انیمیشن گیاه به مرکز (expand باعث می‌شود فضای بالا را پر کند)
         previewTable.add(plantActor).size(200, 200).expand().center().row();
 
-        // ۲. ساخت نوار پیشرفت و لیبل متنی با قابلیت آپدیت در لحظه
         Stack progressStack = new Stack();
-        final int BASE_SEED_PACKETS = 10; // همان بیسِ محاسبه کارت‌ها
+        final int BASE_SEED_PACKETS = 10;
 
-        // نوار پیشرفت
+
         ProgressBar progressBar = new ProgressBar(0, 10, 1, false, skin, "xp_yellow") {
             @Override
             public void act(float delta) {
                 super.act(delta);
-                // محاسبه آنلاین ظرفیت و مقدار فعلی در هر فریم
                 int mathPower = (int) Math.pow(2, plant.getLevel());
                 int maxCost = BASE_SEED_PACKETS * mathPower;
                 setRange(0, maxCost);
@@ -122,7 +118,6 @@ public class PlantInfoScreen extends BaseScreen {
             }
         };
 
-        // لیبل متن روی نوار (مثلا 5/20)
         Label progressLabel = new Label("0/0", skin) {
             @Override
             public void act(float delta) {
@@ -141,8 +136,7 @@ public class PlantInfoScreen extends BaseScreen {
         progressStack.add(progressBar);
         progressStack.add(progressLabel);
 
-        // ۳. اضافه کردن Stack به پایین جدول
-        // از fillX برای کشیده شدن در کل عرض و ارتفاع 25 برای دیده شدن استفاده کردیم
+
         previewTable.add(progressStack).fillX().height(25).bottom().padBottom(10);
 
         return previewTable;
