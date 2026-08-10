@@ -22,9 +22,12 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.zombies.Wave;
+import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.minigame.DroppedSeedPacket;
 import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.models.timeManager.TimeManager;
@@ -73,6 +76,9 @@ public class GameFlowScreen extends BaseScreen {
     private final MiniGameController miniGameController = new MiniGameController();
     private DroppedSeedPacket selectedPacketToPlace = null;
     private final Map<DroppedSeedPacket, PlantCardButton> droppedPacketActors = new HashMap<>();
+    private float visualWaveProgress = 0f;
+    private ProgressBar waveProgressBar;
+    private Image progressHeadIcon;
 
     public GameFlowScreen(Game game, String mapTextureId) {
         super(game);
@@ -125,6 +131,15 @@ public class GameFlowScreen extends BaseScreen {
         if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) setupPlantSelectionMenu(skin, textures);
         setupIndicators(skin, textures);
         setupActionButtons(skin, textures);
+        waveProgressBar = new ProgressBar(0f, 1f, 0.001f, false, skin, "xp_green");
+        waveProgressBar.setSize(400, 45);
+        waveProgressBar.setPosition(1400f, 30f);
+        waveProgressBar.setValue(0f);
+        mainLayer.addActor(waveProgressBar);
+        setupWaveMarkers(textures);
+        progressHeadIcon = UiFactory.imageFor(textures, "IMAGE_UI_PERKS_RIFT_ICON_SAPMPLE_5");
+        progressHeadIcon.setSize(55f, 55f);
+        mainLayer.addActor(progressHeadIcon);
     }
 
     private void setupPlantSelectionMenu(Skin skin, TextureBank textures) {
@@ -319,6 +334,8 @@ public class GameFlowScreen extends BaseScreen {
     public void render(float delta) {
         clearScreen(0.1f, 0.1f, 0.1f, 1f);
         AssetLoader.getInstance().updateTextures();
+
+        calculateProgressBar(delta);
 
         handleTileClick();
         handleShovelAction();
@@ -724,10 +741,77 @@ public class GameFlowScreen extends BaseScreen {
         colHighlight.setVisible(false);
     }
 
+    private void setupWaveMarkers(TextureBank textures) {
+        if (waveProgressBar == null || GameSession.getInstance() == null) return;
+
+        if (GameSession.getInstance().getCurrentMode() instanceof Level level) {
+            int waveCount = level.getWaveCount();
+
+            for (int i = 1; i <= waveCount; i++) {
+                float fraction = (float) i / waveCount;
+                Image flagImage = UiFactory.imageFor(textures,
+                    "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143"); //khabam miad bezar inja bashe baad dorosteshs mikonim
+
+                flagImage.setSize(40f, 45f);
+                float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction) - (flagImage.getWidth() / 2f);
+                float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (flagImage.getHeight() / 2f);
+
+                flagImage.setPosition(x, y);
+                mainLayer.addActor(flagImage);
+            }
+        }
+    }
+
     @Override
     public void dispose() {
         super.dispose();
         if (shapeRenderer != null) shapeRenderer.dispose();
         if (debugFont != null) debugFont.dispose();
     }
+
+    private void calculateProgressBar(float delta) {
+        if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof Level level) {
+            float targetProgress = 0f;
+            int waveCount = level.getWaveCount();
+
+            if (waveCount > 0) {
+                float waveSlice = 1f / waveCount;
+                float baseProgress = (level.getCurrentWave() - 1) * waveSlice;
+                float currentWaveProgress = 0f;
+               Wave activeWave = GameSession.getInstance().getArena().getCurrentActiveWave();
+
+                if (activeWave != null && activeWave.getTotalBaseHp() > 0) {
+                    int currentHp = 0;
+                    for (Zombie z : activeWave.getZombies())
+                        if (!z.isDead())
+                            currentHp += z.getHealth();
+
+                    float destroyedFraction = 1f - ((float) currentHp / activeWave.getTotalBaseHp());
+
+                    if (activeWave.isLastWave())
+                        currentWaveProgress = destroyedFraction;
+                    else
+                        currentWaveProgress = Math.min(1f, destroyedFraction / 0.75f);
+
+                }
+
+                targetProgress = baseProgress + (currentWaveProgress * waveSlice);
+                targetProgress = Math.max(0f, Math.min(1f, targetProgress));
+            }
+
+            visualWaveProgress += (targetProgress - visualWaveProgress) * delta * 1.5f;
+
+            if (waveProgressBar != null)
+                waveProgressBar.setValue(visualWaveProgress);
+
+
+            if (progressHeadIcon != null && waveProgressBar != null) {
+                float targetX = waveProgressBar.getX() + (waveProgressBar.getWidth() *
+                    visualWaveProgress) - (progressHeadIcon.getWidth() / 2f);
+                float targetY = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (progressHeadIcon.getHeight() / 2f);
+                progressHeadIcon.setPosition(targetX, targetY);
+            }
+        }
+    }
+
 }
