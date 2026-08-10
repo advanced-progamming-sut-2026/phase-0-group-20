@@ -53,6 +53,7 @@ public class LevelResultTable extends BorderedTable {
                 GameSession.destroyInstance();
                 remove();
                 ScreenManager.getInstance().popScreen();
+                ScreenManager.getInstance().popScreen();
             }
         );
         continueBtn.getLabel().setFontScale(1.3f);

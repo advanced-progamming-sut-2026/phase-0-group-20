@@ -140,6 +140,12 @@ public class BattlefieldRenderer {
                 it.remove();
             }
         }
+
+        plantLayer.getChildren().sort((a, b) -> {
+            float ay = a.getY();
+            float by = b.getY();
+            return Float.compare(by, ay);
+        });
     }
 
     private PamAnimatedActor spawnPlant(Plant plant) {
@@ -190,6 +196,11 @@ public class BattlefieldRenderer {
                 it.remove();
             }
         }
+        zombieLayer.getChildren().sort((a, b) -> {
+            float ay = a.getY();
+            float by = b.getY();
+            return Float.compare(by, ay);
+        });
     }
 
     private PamAnimatedActor spawnZombie(Zombie zombie) {
@@ -261,7 +272,7 @@ public class BattlefieldRenderer {
             Sun sun = entry.getKey();
             if (!stillAlive.contains(sun) || sun.isCollected()) {
                 entry.getValue().addAction(Actions.sequence(
-                    Actions.fadeOut(0.2f),
+                    Actions.fadeOut(0.4f),
                     Actions.removeActor()
                 ));
                 it.remove();

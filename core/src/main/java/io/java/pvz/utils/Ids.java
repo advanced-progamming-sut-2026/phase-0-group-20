@@ -33,7 +33,6 @@ public final class Ids {
         public static final String ANCIENT_EGYPT_MAIN = "IMAGE_BACKGROUNDS_EGYPT_TEXTURE";
         public static final String DARK_AGES_MAIN = "IMAGE_BACKGROUNDS_DARK_TEXTURE";
         public static final String BIG_WAVE_MAIN = "IMAGE_BACKGROUNDS_BEACH_TEXTURE";
-        public static final String BIG_WAVE_LINE = "IMAGE_BACKGROUNDS_WATER_TIDE_LINE_WATER_TIDE_LINE_161X397";
         public static final String MINI_GAME_MAIN = "IMAGE_BACKGROUNDS_DINO_TEXTURE";
     }
 
@@ -147,10 +146,12 @@ public final class Ids {
         public static final String TILESLIDER_DOWN = "768/FULL/EFFECTS/TILESLIDER_ICEAGE_DOWN/TILESLIDER_ICEAGE_DOWN.PAM";
         public static final String TILESLIDER_UP = "768/FULL/EFFECTS/TILESLIDER_ICEAGE_UP/TILESLIDER_ICEAGE_UP.PAM";
         public static final String WATER_BACK_GROUND = "768/FULL/BACKGROUNDS/WATER_UNDERLAYER/WATER_UNDERLAYER.PAM";
-        public static final String WATER_FOR_GROUND = "768/FULL/BACKGROUNDS/WAVE_UPPERLAYER/WAVE_UPPERLAYER.PAM";
+        public static final String WATER_FORE_GROUND = "768/FULL/BACKGROUNDS/WAVE_UPPERLAYER/WAVE_UPPERLAYER.PAM";
         public static final String VASE_RANDOM = "768/FULL/VASEBREAKER/VASE_BROWN/VASE_BROWN.PAM";
         public static final String VASE_ZOMBIE = "768/FULL/VASEBREAKER/VASE_GARGANTUAR/VASE_GARGANTUAR.PAM";
         public static final String VASE_PLANTS = "768/FULL/VASEBREAKER/VASE_GREEN/VASE_GREEN.PAM";
+        public static final String WATER_MAX_LINE = "768/FULL/BACKGROUNDS/WATER_TIDE_LINE/WATER_TIDE_LINE.PAM";
+
     }
 
     public static final class PlantCards{
