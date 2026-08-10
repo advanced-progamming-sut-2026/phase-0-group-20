@@ -22,6 +22,7 @@ import io.java.pvz.utils.UiFactory;
 import io.java.pvz.utils.ZombieCardButton;
 import pvz.libpvz.textures.TextureBank;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class CollectionScreen extends BaseScreen {
@@ -33,7 +34,8 @@ public class CollectionScreen extends BaseScreen {
     private enum FilterState {
         ALL("Show All Plants"),
         UNLOCKED("Show Unlocked Plants"),
-        UPGRADABLE("Show Upgradable Plants");
+        UPGRADABLE("Show Upgradable Plants"),
+        CATEGORY("Based on Categories");
 
         final String text;
         FilterState(String text) { this.text = text; }
@@ -103,7 +105,6 @@ public class CollectionScreen extends BaseScreen {
                 filterLabel.setText(currentFilterState.text);
                 applyFilterToTable(plantsTable);
 
-                System.out.println("Filter changed to: " + currentFilterState.text);
             }
         });
 
@@ -165,6 +166,18 @@ public class CollectionScreen extends BaseScreen {
         table.clearChildren();
         int columns = 8;
         int count = 0;
+        if(currentFilterState == FilterState.CATEGORY){
+            allPlantCards.sort(Comparator.comparing(card -> card.getPlant().getCategory()));
+            for(PlantCardButton card : allPlantCards){
+                table.add(card).size(150, 115).expandX().padBottom(20);
+                count++;
+
+                if (count % columns == 0) {
+                    table.row();
+                }
+            }
+            return;
+        }
 
         for (PlantCardButton card : allPlantCards) {
             boolean shouldShow = false;
