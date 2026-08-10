@@ -2,6 +2,8 @@ package io.java.pvz.models.entities.plants.strategy.category_strategy;
 
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
+import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
+import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
@@ -41,7 +43,7 @@ public class ShootingStrategy implements IPlantStrategy {
             } else {
                 executeNewProjectile(context, currentShootForward, currentShootBackward);
                 pendingShots--;
-                burstCooldownTicks = 2;
+                burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
             }
             return;
         }
@@ -111,7 +113,7 @@ public class ShootingStrategy implements IPlantStrategy {
                 if (z.isDead()) continue;
 
                 int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom"))
-                        ? (3 + rangeExtension) : 999;
+                    ? (3 + rangeExtension) : 999;
 
                 if (z.getCol() >= plantCol && z.getCol() <= plantCol + maxRange) shootForward = true;
 
@@ -124,18 +126,24 @@ public class ShootingStrategy implements IPlantStrategy {
     private void handleFiring(Plant context, boolean shootForward, boolean shootBackward, int currentTick) {
         if (autoPlantFoodChance > 0 && Math.random() < autoPlantFoodChance) {
             context.useFood();
-        } else {
-            int stacks = context.getStackCount();
-            executeNewProjectile(context, shootForward, shootBackward);
-            notify(context.getName() + " fired a projectile!");
-
-            if (stacks > 1) {
-                this.pendingShots = stacks - 1;
-                this.burstCooldownTicks = 5;
-                this.currentShootForward = shootForward;
-                this.currentShootBackward = shootBackward;
-            }
+            lastShotTick = currentTick;
+            return;
         }
+
+        executeNewProjectile(context, shootForward, shootBackward);
+        notify(context.getName() + " fired a projectile!");
+
+        int baseVolley = ProjectileMechanism.getVolleyCount(context.getName());
+        int stackBonus = Math.max(0, context.getStackCount() - 1);
+        int totalExtraShots = (baseVolley - 1) + stackBonus;
+
+        if (totalExtraShots > 0) {
+            this.pendingShots = totalExtraShots;
+            this.burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
+            this.currentShootForward = shootForward;
+            this.currentShootBackward = shootBackward;
+        }
+
         lastShotTick = currentTick;
     }
     public void increaseRange(int range) {

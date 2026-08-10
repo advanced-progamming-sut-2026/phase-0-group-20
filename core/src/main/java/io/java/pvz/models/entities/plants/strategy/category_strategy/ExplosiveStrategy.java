@@ -5,6 +5,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.projectiles.NormalEffect;
 import io.java.pvz.models.entities.projectiles.Projectile;
+import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.obstacle.IceHolder;
@@ -14,13 +15,6 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
-
-/**
- * Explosive Strategy:
- * Used for instant-kill plants like Cherry Bomb.
- * Triggers a massive explosion in a specific area shortly after being planted,
- * then instantly kills the plant itself.
- */
 
 public class ExplosiveStrategy implements IPlantStrategy {
 
@@ -73,34 +67,29 @@ public class ExplosiveStrategy implements IPlantStrategy {
 
     private void spawnGrapeshotProjectiles(Plant context, int plantCol, int plantRow) {
         float[][] directions = {
-                {1.0f, 0.0f}, {-1.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, -1.0f},
-                {0.707f, 0.707f}, {-0.707f, 0.707f}, {0.707f, -0.707f}, {-0.707f, -0.707f}
+            {1.0f, 0.0f}, {-1.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, -1.0f},
+            {0.707f, 0.707f}, {-0.707f, 0.707f}, {0.707f, -0.707f}, {-0.707f, -0.707f}
         };
-
-        GameSession session = GameSession.getInstance();
-        TimeManager timeManager = session.getTimeManager();
-        Arena arena = session.getArena();
 
         int finalBounceLimit = 3 + extraBounces;
 
         for (float[] dir : directions) {
             Projectile grape = new Projectile(
-                    context,
-                    ProjectileType.GRAPE,
-                    new NormalEffect(),
-                    60,
-                    new Position(plantCol, plantRow),
-                    dir[0] * 2.5f,
-                    dir[1] * 2.5f,
-                    false,
-                    false
+                context,
+                ProjectileType.GRAPE,
+                new NormalEffect(),
+                60,
+                new Position(plantCol, plantRow),
+                dir[0] * ProjectileTuning.GRAPE_SPEED_TILES_PER_SEC,
+                dir[1] * ProjectileTuning.GRAPE_SPEED_TILES_PER_SEC,
+                false,
+                false
             );
 
             grape.setLifespanTicks(5 * TimeManager.TICKS_PER_SECOND);
             grape.setBouncesLeft(finalBounceLimit);
 
-            timeManager.registerNewTicker(grape);
-            arena.addProjectile(grape);
+            Projectile.spawnCustom(grape);
         }
     }
 

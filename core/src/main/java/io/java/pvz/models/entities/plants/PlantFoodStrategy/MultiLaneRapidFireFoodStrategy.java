@@ -4,13 +4,9 @@ import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
+import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.game.GameSession;
-
-/**
- * Fires a fan-shaped rapid barrage across all of this plant's lanes at once.
- * Used by: Threepeater (5 lanes bad bezan tor).
- */
 
 public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
 
@@ -30,14 +26,14 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
         int plantCol = plant.getPlacedTile().getCol();
 
         Projectile.spawnNewProjectile(
-                plant,
-                type,
-                damage,
-                new Position(plantCol, currentRow),
-                1,
-                0,
-                false,
-                false);
+            plant,
+            type,
+            damage,
+            new Position(plantCol, currentRow),
+            ProjectileTuning.speedFor(type),
+            0,
+            false,
+            false);
 
         if (currentRow >= session.getArena().getRows() - 1) directionCoeff = -1;
         else if (currentRow <= 0) directionCoeff = 1;

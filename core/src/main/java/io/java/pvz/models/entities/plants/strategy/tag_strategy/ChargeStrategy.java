@@ -83,12 +83,12 @@ public class ChargeStrategy implements IPlantStrategy {
             Zombie target = selectTarget(plantRow, plantCol, homingAttack);
             if (target != null) {
                 if (homingAttack) {
-                    ProjectileMechanism.executeTargetedProjectile(context, target, 0);
+                    ProjectileMechanism.executeTargetedProjectile(context, target);
                     notify("🔮 " + context.getName() + " fired a fully charged homing attack at "
                             + target.getName() + "!");
                 } else {
                     notify("🔋 " + context.getName() + " fired a charged attack! (Damage: " + currentDamage + ")");
-                    ProjectileMechanism.executeTargetedProjectile(context, target, 0);
+                    ProjectileMechanism.executeTargetedProjectile(context, target);
                     if (bounceCount > 0) {
 //                        projectile.setBouncesLeft(bounceCount);
                         notify("🎳 " + context.getName() + " fired a bouncing bulb!");

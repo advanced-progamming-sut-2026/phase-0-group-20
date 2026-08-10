@@ -89,16 +89,15 @@ public class LobberStrategy implements IPlantStrategy {
 
         if (type != null) {
             Projectile projectile = new Projectile(
-                    context,
-                    type, effect, damage,
-                    new Position(spawnX, spawnY),
-                    0, 0,
-                    false,
-                    true // canPassObstacles
+                context,
+                type, effect, damage,
+                new Position(spawnX, spawnY),
+                0, 0,
+                false,
+                true // canPassObstacles
             );
-            projectile.setHomingTarget(targetZombie, 1.5f);
-            GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
-            GameSession.getInstance().getArena().addProjectile(projectile);
+            projectile.setHomingTarget(targetZombie, ProjectileTuning.LOB_SPEED_TILES_PER_SEC);
+            Projectile.spawnCustom(projectile);
             notify("🥔 " + name + " lobbed a " + type.name() + "!");
         }
     }

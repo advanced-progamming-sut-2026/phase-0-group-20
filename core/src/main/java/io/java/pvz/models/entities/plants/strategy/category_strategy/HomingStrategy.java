@@ -3,6 +3,7 @@ package io.java.pvz.models.entities.plants.strategy.category_strategy;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
+import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
@@ -18,6 +19,10 @@ public class HomingStrategy implements IPlantStrategy {
     private TargetMode targetMode;
     private int burstCount;
 
+    private int pendingBurstShots = 0;
+    private int burstCooldownTicks = 0;
+    private Zombie pendingTarget;
+
     public HomingStrategy(TargetMode targetMode, int burstCount) {
         this.targetMode = targetMode;
         this.burstCount = burstCount;
@@ -25,6 +30,19 @@ public class HomingStrategy implements IPlantStrategy {
 
     @Override
     public void execute(Plant context, int currentTick) {
+        if (pendingBurstShots > 0) {
+            if (burstCooldownTicks > 0) {
+                burstCooldownTicks--;
+            } else {
+                if (pendingTarget != null && !pendingTarget.isDead()) {
+                    ProjectileMechanism.executeTargetedProjectile(context, pendingTarget);
+                }
+                pendingBurstShots--;
+                burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
+            }
+            return;
+        }
+
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
             List<Zombie> activeZombies = GameSession.getInstance().getArena().getActiveZombies();
@@ -32,10 +50,15 @@ public class HomingStrategy implements IPlantStrategy {
             if (!validTargets.isEmpty()) {
                 Zombie target = selectTarget(context, validTargets);
                 if (target != null) {
-                    for (int i = 0; i < burstCount; i++) {
-                        ProjectileMechanism.executeTargetedProjectile(context, target, i);
-                    }
+                    ProjectileMechanism.executeTargetedProjectile(context, target);
                     notify(context.getName() + " locked onto " + target.getName() + "!");
+
+                    if (burstCount > 1) {
+                        pendingBurstShots = burstCount - 1;
+                        burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
+                        pendingTarget = target;
+                    }
+
                     lastShotTick = currentTick;
                 }
             }
@@ -64,7 +87,7 @@ public class HomingStrategy implements IPlantStrategy {
             }
             case GARGANTUAR_FIRST -> {
                 List<Zombie> gargantuars = validTargets.stream()
-                        .filter(z -> z.getName().toLowerCase().contains("gargantuar")).toList();
+                    .filter(z -> z.getName().toLowerCase().contains("gargantuar")).toList();
                 if (!gargantuars.isEmpty()) return gargantuars.get(random.nextInt(gargantuars.size()));
                 return validTargets.get(random.nextInt(validTargets.size()));
             }

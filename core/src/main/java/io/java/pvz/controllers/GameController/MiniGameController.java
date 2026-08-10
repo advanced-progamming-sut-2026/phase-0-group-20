@@ -6,7 +6,7 @@ import io.java.pvz.models.Position;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.projectiles.Projectile;
-import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.projectiles.ProjectileTuning;import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.ProjectileType;
@@ -106,14 +106,14 @@ public class MiniGameController {
 
 
         Projectile bowl = Projectile.spawnNewProjectile(
-                nut,
-                type,
-                damage,
-                new Position(col, row),
-                1,
-                0,
-                false,
-                true
+            nut,
+            type,
+            damage,
+            new Position(col, row),
+            ProjectileTuning.BOWLING_SPEED_TILES_PER_SEC,
+            0,
+            false,
+            true
         );
 
         bowl.setBouncesLeft(Integer.MAX_VALUE); //can collide infinitely
@@ -134,7 +134,7 @@ public class MiniGameController {
 
         if (!level.isValidZombiePlacement(col - 1))
             return new Result(false, "Invalid placement! You must place zombies behind the red line" +
-                    " (Col " + (level.getRedLineCol() + 1)+ " or greater).");
+                " (Col " + (level.getRedLineCol() + 1)+ " or greater).");
 
         ZombieType type = ZombieType.fromAlias(zombieAlias);
 
@@ -150,7 +150,7 @@ public class MiniGameController {
 
         if (session.getCurrentSun() < cost)
             return new Result(false, "Not enough sun! " +
-                    "You need " + cost + " but have " + session.getCurrentSun());
+                "You need " + cost + " but have " + session.getCurrentSun());
 
         session.addSun(-cost);
         newZombie.setCol(col - 1);
@@ -176,7 +176,7 @@ public class MiniGameController {
                 Brain brain = arena.getBrainInRow(i);
                 boolean isBrainSafe = (brain != null && !brain.isEaten());
                 mapDisplay.append("Brain row ").append(i).append(": ")
-                        .append(isBrainSafe ? "safe" : "eaten").append("\n");
+                    .append(isBrainSafe ? "safe" : "eaten").append("\n");
             }
 
         } else if (currentMode instanceof BowlingLevel level) {
@@ -188,7 +188,7 @@ public class MiniGameController {
             } else {
                 for (int i = 0; i < level.getBelt().size(); i++) {
                     mapDisplay.append("[").append(i).append("] ")
-                            .append(level.getBelt().get(i).getName()).append("  ");
+                        .append(level.getBelt().get(i).getName()).append("  ");
                 }
                 mapDisplay.append("\n");
             }
@@ -199,7 +199,7 @@ public class MiniGameController {
             mapDisplay.append("Minigame: Beghouled\n");
             mapDisplay.append("Sun: ").append(session.getCurrentSun()).append("\n");
             mapDisplay.append("Matches Progress: ").append(level.getSuccessfulMatches())
-                    .append(" / ").append(level.getTargetMatches()).append("\n");
+                .append(" / ").append(level.getTargetMatches()).append("\n");
         }
 
         mapDisplay.append("----------------------------\n");
@@ -267,8 +267,8 @@ public class MiniGameController {
             for (int k = 0; k < zombiesInTile.size(); k++) {
                 Zombie z = zombiesInTile.get(k);
                 mapDisplay.append(z.getName()).append(":")
-                        .append(z.getCol() + 1).append(" , ")
-                        .append(z.getRow() + 1);
+                    .append(z.getCol() + 1).append(" , ")
+                    .append(z.getRow() + 1);
 
                 if (k < zombiesInTile.size() - 1) {
                     mapDisplay.append(", ");
@@ -336,9 +336,9 @@ public class MiniGameController {
         sb.append(horizontalBorder);
 
         List<String> activePlants = arena.getActivePlants().stream()
-                .map(Plant::getName)
-                .distinct()
-                .toList();
+            .map(Plant::getName)
+            .distinct()
+            .toList();
 
         String plantNames = activePlants.isEmpty() ? "None" : String.join(", ", activePlants);
 
@@ -382,7 +382,7 @@ public class MiniGameController {
             case "LowShoreTile" -> "L/";
             case "SlipperyTile" -> {
                 String arrow = (tile instanceof SlipperyTile s && s.getDirection()
-                        == SlipperyTile.SlideDirection.UP) ? "^" : "v";
+                    == SlipperyTile.SlideDirection.UP) ? "^" : "v";
                 yield "S" + arrow;
             }
             case "GraveStone" -> "G ";
@@ -439,19 +439,19 @@ public class MiniGameController {
             return new Result(false, "Invalid coordinates");
 
         GameSession session = GameSession.getInstance();
-       Arena arena = session.getArena();
+        Arena arena = session.getArena();
 
         DroppedSeedPacket packet = arena.getDroppedSeedPackets().stream()
-                .filter(p -> p.getCol() == srcX - 1 && p.getRow() == srcY - 1 && !p.isExpired())
-                .findFirst().orElse(null);
+            .filter(p -> p.getCol() == srcX - 1 && p.getRow() == srcY - 1 && !p.isExpired())
+            .findFirst().orElse(null);
 
         if (packet == null) return new Result(false, "No active seed packet found at this location.");
 
-       Tile destTile = arena.getTile(dstY - 1, dstX - 1);
+        Tile destTile = arena.getTile(dstY - 1, dstX - 1);
         if (!destTile.isPlantable(packet.getPlant()))
             return new Result(false, "Cannot plant here.");
 
-       Plant plant = packet.getPlant();
+        Plant plant = packet.getPlant();
         destTile.addPlant(plant);
         arena.addPlant(plant);
         session.getTimeManager().registerNewTicker(plant);

@@ -54,7 +54,6 @@ public class Projectile implements Ticker {
         this.position = position;
         this.speedX = speedX * PhysicalConstants.SPEED_SCALE_RATIO;
         this.speedY = speedY * PhysicalConstants.SPEED_SCALE_RATIO;
-        ;
         this.piercing = piercing;
         this.canPassObstacles = canPassObstacles;
         this.isDestroyed = false;
@@ -75,8 +74,8 @@ public class Projectile implements Ticker {
         this.effect = effect;
         this.damage = damage;
         this.position = position;
-        this.speedX = speedX;
-        this.speedY = speedY;
+        this.speedX = speedX * PhysicalConstants.SPEED_SCALE_RATIO;
+        this.speedY = speedY * PhysicalConstants.SPEED_SCALE_RATIO;
         this.piercing = piercing;
         this.canPassObstacles = canPassObstacles;
         this.isDestroyed = false;
@@ -125,6 +124,12 @@ public class Projectile implements Ticker {
             piercing,
             canPassObstacles
         );
+        GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
+        GameSession.getInstance().getArena().addProjectile(projectile);
+        return projectile;
+    }
+
+    public static Projectile spawnCustom(Projectile projectile) {
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
