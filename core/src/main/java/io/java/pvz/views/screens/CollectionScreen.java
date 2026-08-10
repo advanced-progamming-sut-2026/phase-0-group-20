@@ -258,7 +258,7 @@ public class CollectionScreen extends BaseScreen {
     private PlantCardButton createPlantCard(TextureBank textures, Plant plant) {
         String plantName = UiFactory.getAtlasName(plant);
         String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
-        String familyTextureKey = "IMAGE_UI_PACKETS_MINTFAM_MELEE";
+        String familyTextureKey = getFamilyImageAddress(plant.getCategory());
 
         try {
             Image cardBg = UiFactory.imageFor(textures, getCardAddress(plant));
@@ -337,5 +337,19 @@ public class CollectionScreen extends BaseScreen {
             stage.act(delta);
             stage.draw();
         }
+    }
+
+    private String getFamilyImageAddress(PlantCategory category) {
+        return switch (category) {
+            case SUN_PRODUCER -> "IMAGE_UI_PACKETS_MINTFAM_SUN";
+            case MELEE -> "IMAGE_UI_PACKETS_MINTFAM_MELEE";
+            case STRIKE_THROUGH -> "IMAGE_UI_PACKETS_MINTFAM_ELECTRICITY";
+            case HOMING -> "IMAGE_UI_PACKETS_MINTFAM_SHADOW";
+            case LOBBER -> "IMAGE_UI_PACKETS_MINTFAM_LOBBER";
+            case SHOOTER -> "IMAGE_UI_PACKETS_MINTFAM_PEASHOOTER";
+            case MODIFIER -> "IMAGE_UI_PACKETS_MINTFAM_MAGIC";
+            case WALL_NUT -> "IMAGE_UI_PACKETS_MINTFAM_DEFENSE";
+            case EXPLOSIVE ->  "IMAGE_UI_PACKETS_MINTFAM_EXPLOSIVE";
+        };
     }
 }
