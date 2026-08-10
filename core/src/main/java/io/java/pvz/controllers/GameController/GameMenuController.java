@@ -209,7 +209,11 @@ public class GameMenuController {
     }
 
     public String getCurrentMapTextureId() {
-        SeasonType type = GameSession.getPendingChapter().getSeasonType();
+        SeasonType type;
+        if (GameSession.getPendingChapter() != null)
+            type = GameSession.getPendingChapter().getSeasonType();
+        else
+            type = SeasonType.MINI_GAME;
         return switch (type) {
             case ANCIENT_EGYPT -> Ids.GameMap.ANCIENT_EGYPT_MAIN;
             case FROZEN_CAVES -> Ids.GameMap.ICE_CAVE_MAIN;

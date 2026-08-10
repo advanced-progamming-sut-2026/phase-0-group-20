@@ -153,7 +153,7 @@ public class GameFlowScreen extends BaseScreen {
             public void act(float delta) {
                 super.act(delta);
                 if (App.getActiveUser() != null) {
-                    setText("Count: "+String.valueOf(App.getActiveUser().getPlantFoodCount()));
+                    setText("Count: " + String.valueOf(App.getActiveUser().getPlantFoodCount()));
                 }
             }
         };
@@ -165,7 +165,10 @@ public class GameFlowScreen extends BaseScreen {
     }
 
     private void setupActionButtons(Skin skin, TextureBank textures) {
-        Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 150, 150, () -> {}, false);
+        Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 150, 150, () -> {
+            Result res = gameFlowController.releaseNuke();
+            System.out.println(res);
+        }, false);
         nukeBtn.setPosition(150, 150);
         mainLayer.addActor(nukeBtn);
 

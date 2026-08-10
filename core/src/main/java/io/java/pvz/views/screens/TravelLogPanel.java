@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import io.java.pvz.controllers.GameController.TravelLogController;
 import io.java.pvz.models.App;
+import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.minigame.MiniGameType;
 import io.java.pvz.models.quest.Quest;
 import io.java.pvz.models.quest.QuestCategory;
@@ -25,10 +27,13 @@ public class TravelLogPanel extends Table {
     private final TextureBank textures;
     private Container<ScrollPane> listContainer;
     private ButtonGroup<TextButton> tabGroup;
+    private TravelLogController travelLogController;
 
     public TravelLogPanel(Skin skin, TextureBank textures) {
         this.skin = skin;
         this.textures = textures;
+
+        travelLogController = new TravelLogController();
 
         this.setFillParent(true);
         this.bottom();
@@ -137,6 +142,7 @@ public class TravelLogPanel extends Table {
             public void clicked(InputEvent event, float x, float y) {
                 if (tabBtn.isChecked()) {
                     loadMinigames();
+                    System.out.println(travelLogController.changePage("Minigame"));
                 }
             }
         });
@@ -165,7 +171,7 @@ public class TravelLogPanel extends Table {
         itemsTable.top();
 
         for (MiniGameType type : MiniGameType.values()) {
-            MinigameItemUi item = new MinigameItemUi(type, skin, textures);
+            MinigameItemUi item = new MinigameItemUi(type, skin, textures, travelLogController);
             itemsTable.add(item).center().padBottom(30).fillX().width(700).height(200).row();
         }
 

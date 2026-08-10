@@ -93,7 +93,7 @@ public class Projectile implements Ticker {
         Projectile projectile = new Projectile(
             plant,
             type,
-            projectileEffect(type),
+            projectileEffect(type, damage),
             damage,
             position,
             speedX,
@@ -117,7 +117,7 @@ public class Projectile implements Ticker {
         Projectile projectile = new Projectile(
             zombie,
             type,
-            projectileEffect(type),
+            projectileEffect(type, damage),
             damage,
             position,
             speedX,
@@ -130,13 +130,21 @@ public class Projectile implements Ticker {
         return projectile;
     }
 
-    private static ProjectileEffect projectileEffect(ProjectileType projectileType) {
+    private static ProjectileEffect projectileEffect(ProjectileType projectileType, int damage) {
         return switch (projectileType) {
-            case PEA, ROTOBAGA_SEED -> new NormalEffect();
+            case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE -> new NormalEffect();
             case ICE_PEA -> new IceEffect();
             case FIRE_PEA -> new FireEffect();
-            case GOO_PEA -> new PoisonProjectileEffect();
-            default -> new NormalEffect();
+            case GOO_PEA, FUME -> new PoisonProjectileEffect();
+            case MAGIC_BEAM -> new HypnotizeEffect();
+            case LIGHTNING_CLOUD -> new LightningEffect();
+            case BUTTER -> new ButterEffect();
+            case MELON -> new SplashEffect(damage / 2);
+            case WINTER_MELON -> new IceSplashEffect(damage / 2);
+            case PEPPER -> new FireSplashEffect(1.5);
+            case GRAPE -> new AreaOfEffect(new NormalEffect(), damage / 2, 1.0);
+            case PLASMA_BALL -> new AreaOfEffect(new NormalEffect(), damage / 2, 1.5);
+            case WALLNUT_BOWL, EXPLODE_NUT_BOWL, GIANT_NUT_BOWL -> new NormalEffect();
         };
     }
 

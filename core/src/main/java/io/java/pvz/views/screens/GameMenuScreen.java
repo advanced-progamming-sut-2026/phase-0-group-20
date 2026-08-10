@@ -92,7 +92,11 @@ public class GameMenuScreen extends BaseScreen {
             () -> System.out.println("Event Clicked"))).padRight(30).padLeft(20);
 
         subLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON,90, 90,
-            () -> menuController.open(Menu.TRAVELLOG_MENU)));
+            () ->  {
+                menuController.open(Menu.TRAVELLOG_MENU);
+                TravelLogPanel travelLogPanel = new TravelLogPanel(skin, textures);
+                modalLayer.addActor(travelLogPanel);
+            }));
 
 
         subRow.add(subLeftGroup).padTop(30).left();

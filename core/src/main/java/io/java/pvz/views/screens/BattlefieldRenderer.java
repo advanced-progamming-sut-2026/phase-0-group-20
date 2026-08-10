@@ -16,8 +16,10 @@ import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
+import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.utils.AnimationCatalog;
+import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.UiFactory;
 
@@ -320,11 +322,10 @@ public class BattlefieldRenderer {
     }
 
     private PamAnimatedActor spawnProjectile(Projectile proj) {
-        String[] pamPaths = getProjectilePamPaths(proj);
+        ProjectileAnim anim = resolveProjectileAnim(proj);
 
         PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
-            "tier1", pamPaths[0], pamPaths[1]);
-
+            anim.clip(), anim.path());
 
         actor.setSize(30, 30);
         actor.setOrigin(Align.center);
@@ -342,13 +343,37 @@ public class BattlefieldRenderer {
         );
     }
 
-    private String[] getProjectilePamPaths(Projectile proj) { // just for now you can use switch case agha Elyas
-        String baseName;
-        baseName = "SLINGPEA_PROJECTILE";
+    private record ProjectileAnim(String path, String clip) {}
 
-        return new String[]{
-            "768/INITIAL/EFFECTS/" + baseName + "/" + baseName + ".PAM",
-            "768/INITIAL/EFFECTS/" + baseName + "/" + baseName + ".PAM"
-        };
+    private static final Map<ProjectileType, ProjectileAnim> PROJECTILE_ANIMS = buildProjectileAnimMap();
+
+    private static Map<ProjectileType, ProjectileAnim> buildProjectileAnimMap() {
+        Map<ProjectileType, ProjectileAnim> map = new EnumMap<>(ProjectileType.class);
+        map.put(ProjectileType.PEA, new ProjectileAnim(Ids.Projectiles.PEA, "animation"));
+        map.put(ProjectileType.ICE_PEA, new ProjectileAnim(Ids.Projectiles.ICE_PEA, "animation"));
+        map.put(ProjectileType.ROTOBAGA_SEED, new ProjectileAnim(Ids.Projectiles.ROTOBAGA_SEED, "animation"));
+        map.put(ProjectileType.FIRE_PEA, new ProjectileAnim(Ids.Projectiles.FIRE_PEA, "animation"));
+        map.put(ProjectileType.GOO_PEA, new ProjectileAnim(Ids.Projectiles.GOO_PEA, "projectile_t1"));
+        map.put(ProjectileType.MAGIC_BEAM, new ProjectileAnim(Ids.Projectiles.MAGIC_BEAM, "animation"));
+        map.put(ProjectileType.LIGHTNING_CLOUD, new ProjectileAnim(Ids.Projectiles.LIGHTNING_CLOUD, "idle"));
+        map.put(ProjectileType.CABBAGE, new ProjectileAnim(Ids.Projectiles.CABBAGE, "animation"));
+        map.put(ProjectileType.CORN, new ProjectileAnim(Ids.Projectiles.CORN, "animation"));
+        map.put(ProjectileType.BUTTER, new ProjectileAnim(Ids.Projectiles.BUTTER, "animation"));
+        map.put(ProjectileType.MELON, new ProjectileAnim(Ids.Projectiles.MELON, "animation"));
+        map.put(ProjectileType.WINTER_MELON, new ProjectileAnim(Ids.Projectiles.WINTER_MELON, "animation"));
+        map.put(ProjectileType.PEPPER, new ProjectileAnim(Ids.Projectiles.PEPPER, "animation"));
+        map.put(ProjectileType.GRAPE, new ProjectileAnim(Ids.Projectiles.GRAPE, "animation_forward"));
+        map.put(ProjectileType.FUME, new ProjectileAnim(Ids.Projectiles.FUME, "special"));
+        map.put(ProjectileType.SPIKE, new ProjectileAnim(Ids.Projectiles.SPIKE, "idle"));
+        map.put(ProjectileType.PLASMA_BALL, new ProjectileAnim(Ids.Projectiles.PLASMA_BALL, "Citron_Citrus_Orb"));
+        map.put(ProjectileType.WALLNUT_BOWL, new ProjectileAnim(Ids.Projectiles.WALLNUT_BOWL, "animation"));
+        map.put(ProjectileType.EXPLODE_NUT_BOWL, new ProjectileAnim(Ids.Projectiles.EXPLODE_NUT_BOWL, "animation"));
+        map.put(ProjectileType.GIANT_NUT_BOWL, new ProjectileAnim(Ids.Projectiles.GIANT_NUT_BOWL, "animation"));
+        return map;
+    }
+
+    private ProjectileAnim resolveProjectileAnim(Projectile proj) {
+        ProjectileAnim anim = PROJECTILE_ANIMS.get(proj.getType());
+        return anim != null ? anim : PROJECTILE_ANIMS.get(ProjectileType.PEA);
     }
 }
