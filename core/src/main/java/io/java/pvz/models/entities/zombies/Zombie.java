@@ -57,8 +57,8 @@ public class Zombie implements Ticker {
     private final Position position;
 
     public Zombie(
-            ZombieType type, ZombieData data, int row,
-            MoveBehavior moveBehavior, AttackBehavior attackBehavior, DefenseBehavior defenseBehavior) {
+        ZombieType type, ZombieData data, int row,
+        MoveBehavior moveBehavior, AttackBehavior attackBehavior, DefenseBehavior defenseBehavior) {
         this.type = type;
         this.name = type.getJsonAlias();
         this.baseHp = data.getHitpoints();
@@ -89,7 +89,7 @@ public class Zombie implements Ticker {
         }
 
         if (attacking) {
-            attackBehavior.execute();
+            if (currentTick % 2 == 0) attackBehavior.execute();
         } else {
             moveBehavior.execute();
         }
@@ -128,7 +128,7 @@ public class Zombie implements Ticker {
         for (Armor a : armorPieces) {
             if (!a.isDestroyed()) {
                 notify(type.toString() + "'s armor(" + a.getData().getAlias() + ") take " + remaining +
-                        " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
+                    " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
                 remaining = a.takeDamage(remaining);
                 if (remaining <= 0) {
                     return;
@@ -156,7 +156,7 @@ public class Zombie implements Ticker {
     private void applyHealthDamage(int remaining) {
         this.health -= remaining;
         notify(type.toString() + " take " + remaining + " in "
-                + (position.getCol() + 1) + " " + (position.getRow() + 1));
+            + (position.getCol() + 1) + " " + (position.getRow() + 1));
         if (health <= 0) {
             health = 0;
             dead = true;
@@ -204,9 +204,9 @@ public class Zombie implements Ticker {
 
     public void notify(String message) {
         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(message)
+                .build());
     }
 
     public String getInGameDetails() {
@@ -222,10 +222,10 @@ public class Zombie implements Ticker {
         if (armorPieces != null && !armorPieces.isEmpty()) {
             for (int i = 0; i < armorPieces.size(); i++) {
                 info.append("        ")
-                        .append(armorPieces.get(i).getData().getAlias())
-                        .append(": ")
-                        .append(armorPieces.get(i).getCurrentHealth())
-                        .append("\n");
+                    .append(armorPieces.get(i).getData().getAlias())
+                    .append(": ")
+                    .append(armorPieces.get(i).getCurrentHealth())
+                    .append("\n");
             }
         }
         info.append("\n");

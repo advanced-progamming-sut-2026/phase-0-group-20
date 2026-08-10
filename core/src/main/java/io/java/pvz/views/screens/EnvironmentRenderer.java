@@ -4,6 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import io.java.pvz.models.fields.obstacle.GraveHolder;
 import io.java.pvz.models.fields.tiles.*;
 import io.java.pvz.models.game.Arena;
+import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
 
@@ -20,6 +22,9 @@ public class EnvironmentRenderer {
     private final Map<Tile, PamAnimatedActor> waterActors = new HashMap<>();
     private final Map<Tile, PamAnimatedActor> vaseActors = new HashMap<>();
 
+    private PamAnimatedActor bigWaveForeground;
+    PamAnimatedActor maxLineAnimation;
+
     public EnvironmentRenderer(Group layerGroup) {
         this.layerGroup = layerGroup;
     }
@@ -32,24 +37,26 @@ public class EnvironmentRenderer {
         Set<Tile> activeWater = new HashSet<>();
         Set<Tile> activeVases = new HashSet<>();
 
+        List<Tile> allTiles = new ArrayList<>();
+
         for (Tile[] row : arena.getTiles()) {
             for (Tile tile : row) {
+                allTiles.add(tile);
                 float pixelX = tile.getCol() * TILE_WIDTH + GRID_START_X;
                 float pixelY = tile.getRow() * TILE_HEIGHT + GRID_START_Y;
 
                 if (tile instanceof SlipperyTile st) {
                     activeSlippery.add(tile);
                     PamAnimatedActor actor = slipperyActors.computeIfAbsent(tile, t -> {
-                        String dir = st.getDirection() == SlipperyTile.SlideDirection.DOWN ?
+                        String dir = st.getDirection() != SlipperyTile.SlideDirection.DOWN ?
                             Ids.ArenaEffects.TILESLIDER_DOWN :
                             Ids.ArenaEffects.TILESLIDER_UP;
-                        PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(dir, "active_idle");
-                        animatedActor.setSize(TILE_WIDTH, TILE_HEIGHT);
+                        PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(dir, "idle");
                         layerGroup.addActor(animatedActor);
                         animatedActor.toBack();
                         return animatedActor;
                     });
-                    centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f);
+                    centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2);
                 }
 
                 if (tile instanceof GraveHolder gh && gh.getGraveStone() != null) {
@@ -57,11 +64,12 @@ public class EnvironmentRenderer {
                     PamAnimatedActor actor = graveActors.computeIfAbsent(tile, t -> {
                         PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
                             Ids.ArenaEffects.GRAVE, "undamaged");
+                        animatedActor.setScale(0.85f);
                         layerGroup.addActor(animatedActor);
                         return animatedActor;
                     });
                     actor.setClip(resolveGraveClip(gh.getGraveStone().getHp()));
-                    centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT/2);
+                    centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2);
                 }
 
                 // for minigame vase breaker
@@ -94,6 +102,45 @@ public class EnvironmentRenderer {
                     }
                 }
             }
+        }
+
+        if (GameSession.getInstance() != null &&
+            GameSession.getInstance().getCurrentChapter().getSeasonType() == SeasonType.BIG_WAVE_BEACH) {
+            float gridCenterY = GRID_START_Y + (arena.getRows() * TILE_HEIGHT) / 2f;
+
+            int maxCol = allTiles.stream()
+                .filter(t -> t instanceof LowShoreTile)
+                .mapToInt(Tile::getCol)
+                .min()
+                .orElse(arena.getCols());
+
+            if (maxLineAnimation == null) {
+                maxLineAnimation = PamAnimatedActor.createEffectAnimated(Ids.ArenaEffects.WATER_MAX_LINE, "idle");
+                layerGroup.addActor(maxLineAnimation);
+            }
+
+            maxLineAnimation.setScale(0.75f);
+            maxLineAnimation.setPosition((maxCol+1) * TILE_WIDTH + GRID_START_X - TILE_WIDTH / 2f, gridCenterY);
+
+            int minWaterCol = allTiles.stream()
+                .filter(t -> t instanceof WaterTile || (t instanceof LowShoreTile lt && lt.isFlooded()))
+                .mapToInt(Tile::getCol)
+                .min()
+                .orElse(arena.getCols());
+
+            if (bigWaveForeground == null) {
+                bigWaveForeground = PamAnimatedActor.createEffectAnimated(Ids.ArenaEffects.WATER_FORE_GROUND, "water");
+                layerGroup.addActor(bigWaveForeground);
+                layerGroup.addActor(bigWaveForeground);
+                layerGroup.addActor(bigWaveForeground);
+                layerGroup.addActor(bigWaveForeground);
+                layerGroup.addActor(bigWaveForeground);
+                layerGroup.addActor(bigWaveForeground);
+            }
+
+            bigWaveForeground.setScaleY(0.75f);
+
+            bigWaveForeground.setPosition((minWaterCol+5) * TILE_WIDTH + GRID_START_X, gridCenterY);
         }
 
         despawnMissingTiles(graveActors, activeGraves);
