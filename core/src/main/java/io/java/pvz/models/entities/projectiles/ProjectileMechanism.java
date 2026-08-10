@@ -35,14 +35,14 @@ public class ProjectileMechanism {
                 if (spawnRow >= 0 && spawnRow < GameSession.getInstance().getArena().getRows()) {
 
                     Projectile.spawnNewProjectile(
-                            plant,
-                            type,
-                            damage,
-                            new Position(spawnCol, spawnRow),
-                            speedX,
-                            speedY,
-                            isPiercingProjectile(type),
-                            canPassObstacles(plant)
+                        plant,
+                        type,
+                        damage,
+                        new Position(spawnCol, spawnRow),
+                        speedX,
+                        speedY,
+                        isPiercingProjectile(type),
+                        canPassObstacles(plant)
                     );
                 }
             }
@@ -61,14 +61,14 @@ public class ProjectileMechanism {
             int spawnX = spawnCol - burstIndex;
 
             Projectile projectile = Projectile.spawnNewProjectile(
-                    plant,
-                    type,
-                    damage,
-                    new Position(spawnX, spawnRow),
-                    0,
-                    0,
-                    isPiercingProjectile(type),
-                    canPassObstacles(plant)
+                plant,
+                type,
+                damage,
+                new Position(spawnX, spawnRow),
+                0,
+                0,
+                isPiercingProjectile(type),
+                canPassObstacles(plant)
             );
 
             projectile.setEffect(effect);
@@ -80,6 +80,7 @@ public class ProjectileMechanism {
         return switch (name) {
             case "Caulipower" -> new HypnotizeEffect();
             case "Electric Blueberry" -> new LightningEffect();
+            case "citron" -> new AreaOfEffect(new NormalEffect(), 0, 1.5);
             default -> new NormalEffect();
         };
     }
@@ -106,7 +107,7 @@ public class ProjectileMechanism {
 
         switch (name) {
             case "Peashooter", "Snow Pea", "Fire Peashooter", "Goo Peashooter", "Sea-shroom", "Puff-shroom" ->
-                    configs.add(new float[]{0, 0, 1, 0});
+                configs.add(new float[]{0, 0, 1, 0});
             case "Repeater" -> {
                 configs.add(new float[]{0, 0, 1, 0});
                 configs.add(new float[]{-1, 0, 1, 0});
