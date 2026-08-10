@@ -1,6 +1,9 @@
 package io.java.pvz.views.screens;
 
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import io.java.pvz.models.fields.obstacle.GraveHolder;
 import io.java.pvz.models.fields.tiles.*;
 import io.java.pvz.models.game.Arena;
@@ -24,9 +27,17 @@ public class EnvironmentRenderer {
 
     private PamAnimatedActor bigWaveForeground;
     PamAnimatedActor maxLineAnimation;
+    private final Map<Tile, Image> darkOverlayActors = new HashMap<>();
+    private final Texture darkTexture;
 
     public EnvironmentRenderer(Group layerGroup) {
         this.layerGroup = layerGroup;
+
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(0, 0, 0, 0.35f);
+        pixmap.fill();
+        darkTexture = new Texture(pixmap);
+        pixmap.dispose();
     }
 
     public void sync(Arena arena) {
@@ -36,6 +47,7 @@ public class EnvironmentRenderer {
         Set<Tile> activeSlippery = new HashSet<>();
         Set<Tile> activeWater = new HashSet<>();
         Set<Tile> activeVases = new HashSet<>();
+        Set<Tile> activeDarkTiles = new HashSet<>();
 
         List<Tile> allTiles = new ArrayList<>();
 
@@ -44,6 +56,30 @@ public class EnvironmentRenderer {
                 allTiles.add(tile);
                 float pixelX = tile.getCol() * TILE_WIDTH + GRID_START_X;
                 float pixelY = tile.getRow() * TILE_HEIGHT + GRID_START_Y;
+
+                boolean shouldBeDark = tile instanceof NecromanceTile ||
+                    (tile instanceof LowShoreTile lt && !lt.isFlooded());
+
+                if (shouldBeDark) {
+                    activeDarkTiles.add(tile);
+                    Image overlay = darkOverlayActors.computeIfAbsent(tile, t -> {
+                        Image img = new Image(darkTexture);
+                        img.setSize(TILE_WIDTH, TILE_HEIGHT);
+                        layerGroup.addActor(img);
+                        img.toBack();
+                        return img;
+                    });
+                    overlay.setPosition(pixelX, pixelY);
+                }
+
+                Iterator<Map.Entry<Tile, Image>> darkIt = darkOverlayActors.entrySet().iterator();
+                while (darkIt.hasNext()) {
+                    Map.Entry<Tile, Image> entry = darkIt.next();
+                    if (!activeDarkTiles.contains(entry.getKey())) {
+                        entry.getValue().remove();
+                        darkIt.remove();
+                    }
+                }
 
                 if (tile instanceof SlipperyTile st) {
                     activeSlippery.add(tile);
@@ -122,8 +158,8 @@ public class EnvironmentRenderer {
                 layerGroup.addActor(maxLineAnimation);
             }
 
-            maxLineAnimation.setScale(0.75f);
-            maxLineAnimation.setPosition((maxCol+1) * TILE_WIDTH + GRID_START_X - TILE_WIDTH / 2f, gridCenterY);
+            maxLineAnimation.setScale(0.7f);
+            maxLineAnimation.setPosition((maxCol + 1) * TILE_WIDTH + GRID_START_X - TILE_WIDTH / 2f - 15, gridCenterY + 40);
 
             int minWaterCol = allTiles.stream()
                 .filter(t -> t instanceof WaterTile || (t instanceof LowShoreTile lt && lt.isFlooded()))
@@ -143,7 +179,7 @@ public class EnvironmentRenderer {
 
             bigWaveForeground.setScaleY(0.75f);
 
-            bigWaveForeground.setPosition((minWaterCol+5) * TILE_WIDTH + GRID_START_X, gridCenterY);
+            bigWaveForeground.setPosition((minWaterCol + 5) * TILE_WIDTH + GRID_START_X, gridCenterY);
         }
 
         despawnMissingTiles(graveActors, activeGraves);

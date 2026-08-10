@@ -4,6 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -48,6 +50,9 @@ public class GameFlowScreen extends BaseScreen {
 
     private boolean isShovelSelected = false;
     private Image floatingShovelImage = null;
+
+    private Image rowHighlight;
+    private Image colHighlight;
 
     private ShapeRenderer shapeRenderer;
     private BitmapFont debugFont;
@@ -102,6 +107,19 @@ public class GameFlowScreen extends BaseScreen {
         mainLayer.setFillParent(true);
 
         battlefieldRenderer = new BattlefieldRenderer();
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(0, 0, 0, 0.35f);
+        pixmap.fill();
+        Texture highlightTex = new Texture(pixmap);
+        pixmap.dispose();
+
+        rowHighlight = new Image(highlightTex);
+        colHighlight = new Image(highlightTex);
+        rowHighlight.setVisible(false);
+        colHighlight.setVisible(false);
+        battlefieldRenderer.getHighlightLayer().addActor(rowHighlight);
+        battlefieldRenderer.getHighlightLayer().addActor(colHighlight);
+
         mainLayer.addActor(battlefieldRenderer.getGroup());
 
         if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) setupPlantSelectionMenu(skin, textures);
@@ -305,6 +323,7 @@ public class GameFlowScreen extends BaseScreen {
         handleTileClick();
         handleShovelAction();
         handleCameraMovement(delta);
+        updatePlantingHighlights();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -663,7 +682,7 @@ public class GameFlowScreen extends BaseScreen {
                     @Override
                     public void act(float delta) {
                         super.act(delta);
-                       Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                        Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
                         viewport.unproject(mousePos);
                         setPosition(mousePos.x - getWidth() / 2f, mousePos.y - getHeight() / 2f);
                     }
@@ -675,6 +694,34 @@ public class GameFlowScreen extends BaseScreen {
         });
 
         return plantButton;
+    }
+
+    private void updatePlantingHighlights() {
+        if (isShovelSelected || ((selectedPlantToPlace != null || selectedPacketToPlace != null) && floatingPlantImage != null)) {
+            Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            viewport.unproject(mousePos);
+            float x = mousePos.x;
+            float y = mousePos.y;
+
+            if (x >= GRID_START_X && x <= GRID_START_X + (COLS * TILE_WIDTH) &&
+                y >= GRID_START_Y && y <= GRID_START_Y + (ROWS * TILE_HEIGHT)) {
+
+                int col = (int) ((x - GRID_START_X) / TILE_WIDTH);
+                int row = (int) ((y - GRID_START_Y) / TILE_HEIGHT);
+
+                rowHighlight.setSize(COLS * TILE_WIDTH, TILE_HEIGHT);
+                rowHighlight.setPosition(GRID_START_X, GRID_START_Y + (row * TILE_HEIGHT));
+                rowHighlight.setVisible(true);
+
+                colHighlight.setSize(TILE_WIDTH, ROWS * TILE_HEIGHT);
+                colHighlight.setPosition(GRID_START_X + (col * TILE_WIDTH), GRID_START_Y);
+                colHighlight.setVisible(true);
+                return;
+            }
+        }
+
+        rowHighlight.setVisible(false);
+        colHighlight.setVisible(false);
     }
 
     @Override
