@@ -14,6 +14,7 @@ import pvz.libpvz.textures.TextureBank;
 public class PlantCardButton extends Table {
     private static final int BASE_SEED_PACKETS = 10;
     private final Image bgImage;
+    private final Image boostedBgImage;
     private final Image plantImage;
 
     private final Image familyImage;
@@ -25,12 +26,14 @@ public class PlantCardButton extends Table {
 
     private boolean isReadyToUpgrade;
     private boolean isUnlocked;
-
+    private boolean boosted = false;
     private Image darkOverlay;
     private Image lockIcon;
 
     private PlantCardButton(Builder builder) {
-        this.bgImage = builder.bgImage;
+        this.boostedBgImage = UiFactory.imageFor(AssetLoader.getInstance().getTextures(),
+            "IMAGE_UI_PACKETS_BOOST");
+        this.bgImage =(boosted)? boostedBgImage :  builder.bgImage;
         this.plantImage = builder.plantImage;
         this.familyImage = builder.familyImage;
         this.plant = builder.plant;
@@ -165,6 +168,11 @@ public class PlantCardButton extends Table {
 
     public boolean isUnlocked() {
         return isUnlocked;
+    }
+
+    public void setBoosted(boolean boosted) {
+        this.boosted = boosted;
+        setBackground(boostedBgImage.getDrawable());
     }
 
     public static class Builder {
