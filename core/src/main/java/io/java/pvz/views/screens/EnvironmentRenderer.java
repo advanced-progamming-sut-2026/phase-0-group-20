@@ -79,6 +79,7 @@ public class EnvironmentRenderer {
                         PamAnimatedActor actor = vaseActors.computeIfAbsent(tile, t -> {
                             PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
                                 Ids.ArenaEffects.VASE_RANDOM, "idle");
+                            animatedActor.setScale(0.8f);
                             layerGroup.addActor(animatedActor);
                             return animatedActor;
                         });
@@ -88,6 +89,7 @@ public class EnvironmentRenderer {
                             PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
                                 Ids.ArenaEffects.VASE_PLANTS, "idle");
                             layerGroup.addActor(animatedActor);
+                            animatedActor.setScale(0.8f);
                             return animatedActor;
                         });
                         centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f);
@@ -96,6 +98,7 @@ public class EnvironmentRenderer {
                             PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
                                 Ids.ArenaEffects.VASE_ZOMBIE, "idle");
                             layerGroup.addActor(animatedActor);
+                            animatedActor.setScale(0.8f);
                             return animatedActor;
                         });
                         centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f);

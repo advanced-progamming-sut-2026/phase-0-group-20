@@ -22,7 +22,7 @@ public enum ProjectileType {
     EXPLODE_NUT_BOWL,
     GIANT_NUT_BOWL;
 
-    public static final int NORMAL_PEA_DAMAGE = 20;
+    public static final int NORMAL_PEA_DAMAGE = 40;
 
     public static boolean isLobbed(ProjectileType p) {
         return p == CABBAGE || p == BUTTER || p == CORN || p == MELON || p == WINTER_MELON || p == PEPPER;

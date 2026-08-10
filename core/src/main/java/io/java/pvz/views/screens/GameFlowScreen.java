@@ -1,32 +1,37 @@
 package io.java.pvz.views.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.controllers.GameController.MiniGameController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
-import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.minigame.DroppedSeedPacket;
+import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PlantCardButton;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
 
+import java.util.*;
 import java.util.List;
 
 import static com.badlogic.gdx.Gdx.input;
@@ -59,6 +64,10 @@ public class GameFlowScreen extends BaseScreen {
     private BattlefieldRenderer battlefieldRenderer;
 
     private final GameFlowController gameFlowController = new GameFlowController();
+
+    private final MiniGameController miniGameController = new MiniGameController();
+    private DroppedSeedPacket selectedPacketToPlace = null;
+    private final Map<DroppedSeedPacket, PlantCardButton> droppedPacketActors = new HashMap<>();
 
     public GameFlowScreen(Game game, String mapTextureId) {
         super(game);
@@ -95,7 +104,7 @@ public class GameFlowScreen extends BaseScreen {
         battlefieldRenderer = new BattlefieldRenderer();
         mainLayer.addActor(battlefieldRenderer.getGroup());
 
-        setupPlantSelectionMenu(skin, textures);
+        if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) setupPlantSelectionMenu(skin, textures);
         setupIndicators(skin, textures);
         setupActionButtons(skin, textures);
     }
@@ -148,7 +157,7 @@ public class GameFlowScreen extends BaseScreen {
 
         Image plantFoodIcon = UiFactory.imageFor(textures, Ids.UI.PLANT_FOOD_ICON);
 
-        Label plantFoodLabel = new Label("0", skin , "medium_outline") {
+        Label plantFoodLabel = new Label("0", skin, "medium_outline") {
             @Override
             public void act(float delta) {
                 super.act(delta);
@@ -210,7 +219,8 @@ public class GameFlowScreen extends BaseScreen {
         pauseBtn.setPosition(1730, 950);
         mainLayer.addActor(pauseBtn);
 
-        Stack fastForwardBtn = UiFactory.iconButton(textures, skin, Ids.UI.FAST_FORWARD, 90, 90, () -> {});
+        Stack fastForwardBtn = UiFactory.iconButton(textures, skin, Ids.UI.FAST_FORWARD, 90, 90, () -> {
+        });
         fastForwardBtn.setPosition(1620, 950);
         mainLayer.addActor(fastForwardBtn);
     }
@@ -292,7 +302,7 @@ public class GameFlowScreen extends BaseScreen {
         clearScreen(0.1f, 0.1f, 0.1f, 1f);
         AssetLoader.getInstance().updateTextures();
 
-        handlePlantPlacement();
+        handleTileClick();
         handleShovelAction();
         handleCameraMovement(delta);
 
@@ -304,6 +314,7 @@ public class GameFlowScreen extends BaseScreen {
 
         drawDebugLayout();
         advanceSimulation(delta);
+        syncDroppedPackets();
 
         if (stage != null) {
             stage.act(delta);
@@ -371,6 +382,7 @@ public class GameFlowScreen extends BaseScreen {
 
         GameState state = session.getState();
         if (!levelResultShown && (state == GameState.WON || state == GameState.LOST)) {
+            gameFlowController.gameOver();
             levelResultShown = true;
             Skin skin = AssetLoader.getInstance().getSkin();
             new LevelResultTable(skin, state).show(modalLayer, viewport);
@@ -479,13 +491,21 @@ public class GameFlowScreen extends BaseScreen {
         batch.end();
     }
 
-    private void handlePlantPlacement() {
-        if (selectedPlantToPlace == null || floatingPlantImage == null) return;
-
+    private void handleTileClick() {
+        if (GameSession.getInstance() == null) return;
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
-            floatingPlantImage.remove();
-            floatingPlantImage = null;
+            if (floatingPlantImage != null) {
+                floatingPlantImage.remove();
+                floatingPlantImage = null;
+            }
             selectedPlantToPlace = null;
+            selectedPacketToPlace = null;
+
+            if (isShovelSelected && floatingShovelImage != null) {
+                floatingShovelImage.remove();
+                floatingShovelImage = null;
+                isShovelSelected = false;
+            }
             return;
         }
 
@@ -502,14 +522,40 @@ public class GameFlowScreen extends BaseScreen {
                 int col = (int) ((x - GRID_START_X) / TILE_WIDTH) + 1;
                 int row = (int) ((y - GRID_START_Y) / TILE_HEIGHT) + 1;
 
-                Result result = gameFlowController.plantPlant(selectedPlantToPlace.getName(),
-                    String.valueOf(col), String.valueOf(row));
-
-                if (result.isSuccessful()) {
-                    floatingPlantImage.remove();
-                    floatingPlantImage = null;
-                    selectedPlantToPlace = null;
+                if (isShovelSelected) {
+                    Result result = gameFlowController.pluckPlant(String.valueOf(col), String.valueOf(row));
+                    if (result.isSuccessful()) {
+                        floatingShovelImage.remove();
+                        floatingShovelImage = null;
+                        isShovelSelected = false;
+                    }
+                    return;
                 }
+
+                if (selectedPlantToPlace != null && floatingPlantImage != null) {
+                    Result result;
+                    if (selectedPacketToPlace != null) {
+                        result = miniGameController.plantFromVase(
+                            String.valueOf(selectedPacketToPlace.getCol() + 1),
+                            String.valueOf(selectedPacketToPlace.getRow() + 1),
+                            String.valueOf(col), String.valueOf(row)
+                        );
+                    } else {
+                        result = gameFlowController.plantPlant(selectedPlantToPlace.getName(),
+                            String.valueOf(col), String.valueOf(row));
+                    }
+
+                    if (result.isSuccessful()) {
+                        floatingPlantImage.remove();
+                        floatingPlantImage = null;
+                        selectedPlantToPlace = null;
+                        selectedPacketToPlace = null;
+                    }
+                    return;
+                }
+
+                if (GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel)
+                    miniGameController.breakVase(String.valueOf(col), String.valueOf(row));
             }
         }
     }
@@ -546,6 +592,89 @@ public class GameFlowScreen extends BaseScreen {
                 }
             }
         }
+    }
+
+    private void syncDroppedPackets() {
+        if (GameSession.getInstance() == null || GameSession.getInstance().getArena() == null) return;
+
+        Skin skin = AssetLoader.getInstance().getSkin();
+        TextureBank textures = AssetLoader.getInstance().getTextures();
+        List<DroppedSeedPacket> packets = GameSession.getInstance().getArena().getDroppedSeedPackets();
+        Set<DroppedSeedPacket> alivePackets = new HashSet<>(packets);
+
+        for (DroppedSeedPacket packet : packets) {
+            if (!droppedPacketActors.containsKey(packet) && !packet.isExpired()) {
+                PlantCardButton card = createDroppedSeedPacket(packet, skin, textures);
+
+                float targetW = 100f;
+                float targetH = 65f;
+                float x = GRID_START_X + (packet.getCol() * TILE_WIDTH) + (TILE_WIDTH / 2f) - (targetW / 2f);
+                float y = GRID_START_Y + (packet.getRow() * TILE_HEIGHT) + (TILE_HEIGHT / 2f) - (targetH / 2f);
+
+                card.setSize(targetW, targetH);
+                card.setPosition(x, y);
+                mainLayer.addActor(card);
+                droppedPacketActors.put(packet, card);
+            }
+        }
+
+        Iterator<Map.Entry<DroppedSeedPacket, PlantCardButton>> it = droppedPacketActors.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<DroppedSeedPacket, PlantCardButton> entry = it.next();
+            if (!alivePackets.contains(entry.getKey()) || entry.getKey().isExpired()) {
+                entry.getValue().remove();
+                it.remove();
+            }
+        }
+    }
+
+    private PlantCardButton createDroppedSeedPacket(DroppedSeedPacket packet, Skin skin, TextureBank textures) {
+        Plant plant = packet.getPlant();
+        Image bgCard = UiFactory.imageFor(textures, Ids.PlantCards.BG_CARD);
+        String plantTextureKey = "IMAGE_UI_PACKETS_" + UiFactory.getAtlasName(plant).toUpperCase();
+        Image plantIcon = UiFactory.imageFor(textures, plantTextureKey);
+
+        PlantCardButton plantButton = new PlantCardButton.Builder()
+            .setBgImage(bgCard)
+            .setPlant(plant)
+            .setPlantImage(plantIcon)
+            .setSkin(skin)
+            .setShowProgressBar(false)
+            .setShowLevel(false)
+            .build();
+
+        plantButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float clickX, float clickY) {
+                if (isShovelSelected) {
+                    isShovelSelected = false;
+                    if (floatingShovelImage != null) {
+                        floatingShovelImage.remove();
+                        floatingShovelImage = null;
+                    }
+                }
+
+                if (floatingPlantImage != null) floatingPlantImage.remove();
+
+                selectedPlantToPlace = plant;
+                selectedPacketToPlace = packet;
+
+                floatingPlantImage = new Image(plantIcon.getDrawable()) {
+                    @Override
+                    public void act(float delta) {
+                        super.act(delta);
+                       Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                        viewport.unproject(mousePos);
+                        setPosition(mousePos.x - getWidth() / 2f, mousePos.y - getHeight() / 2f);
+                    }
+                };
+                floatingPlantImage.setSize(80, 80);
+                floatingPlantImage.setTouchable(Touchable.disabled);
+                mainLayer.addActor(floatingPlantImage);
+            }
+        });
+
+        return plantButton;
     }
 
     @Override

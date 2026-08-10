@@ -38,7 +38,7 @@ public class GameFlowMenu implements AppMenu {
     private boolean handleGameFlowCommands(String input) {
         Matcher matcher;
         if ((matcher = GameFlowCommands.ADVANCE_TIME.getMatcher(input)) != null) {
-            System.out.println(gameFlowcontroller.advanceTime(matcher.group("count")));
+//            System.out.println(gameFlowcontroller.advanceTime(matcher.group("count")));
         } else if ((matcher = GameFlowCommands.COLLECT_SUN.getMatcher(input)) != null) {
 //            System.out.println(gameFlowcontroller.collectSun(matcher.group("x"), matcher.group("y")));
         }else if ((matcher = GameFlowCommands.SHOW_SUN_AMOUNT.getMatcher(input)) != null) {

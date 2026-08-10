@@ -55,6 +55,16 @@ public class GameFlowController {
         return new Result(true, "Successfully advanced time for " + timeAmount + " ticks.");
     }
 
+    public void gameOver() {
+        if (GameSession.getInstance().isGameOver()) {
+            NavigationController.exitMenu();
+            App.getActiveUser().setPlantFoodCount(0);
+            App.getActiveUser().getUnlockedPlants().forEach(p -> p.setBoosted(false));
+            if (GameSession.getInstance().getCurrentChapter().getCurrentLevel() != null)
+                GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
+        }
+    }
+
     public Result showPlantFoodAmount() {
         int amount = App.getActiveUser().getPlantFoodCount();
         return new Result(true, "You currently have " + amount + " plants food left.");

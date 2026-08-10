@@ -1,5 +1,6 @@
 package io.java.pvz.controllers.GameController;
 
+import io.java.pvz.models.App;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.Position;
@@ -73,7 +74,8 @@ public class MiniGameController {
 
                 return new Result(true, "A " + freshPlant.getName() + " seed packet dropped! Plant it quickly.");
             }
-            return new Result(true, "The vase was empty.");
+            App.getActiveUser().addPlantFoodCount(1);
+            return new Result(true, "New PlantFood added");
         }
         return new Result(false, "There is no vase here.");
     }
