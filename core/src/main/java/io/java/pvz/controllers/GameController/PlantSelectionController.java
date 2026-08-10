@@ -8,6 +8,9 @@ import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.LockedPlants;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
 
 import java.util.ArrayList;
@@ -131,7 +134,6 @@ public class PlantSelectionController {
         for (Plant p : selectedPlants) {
             if (p.getName().equalsIgnoreCase(name.trim())) {
                 selectedPlants.remove(p);
-                boostedPlantNames.remove(p.getName().toLowerCase());
 
                 if (p.getName().equalsIgnoreCase("Imitater")) {
                     imitaterTargetId = -1;
@@ -146,28 +148,21 @@ public class PlantSelectionController {
     public Result boostPlant(String name) {
         User activeUser = App.getActiveUser();
 
-        boolean found = false;
-        for (Plant p : selectedPlants) {
-            if (p.getName().equalsIgnoreCase(name.trim())&&
-                    !(p.getPlantFoodStrategy()==null || p.getPlantFoodStrategy().isEmpty())) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            return new Result(false, "This plant is not in your selection or doesn't have boost effect");
-        }
-
         if (boostedPlantNames.contains(name.trim().toLowerCase())) {
+
             return new Result(false, "This plant is already boosted for this level!");
         }
 
         if (activeUser.getDiamond() >= 2) { // cost for boost (it can be different)
             activeUser.costDiamond(2);
             boostedPlantNames.add(name.trim().toLowerCase());
+
             return new Result(true, name + " is BOOSTED for the upcoming level! (-2 Diamonds)");
         } else {
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("Not Enough Diamond \uD83D\uDC8E")
+                    .build());
             return new Result(false, "Not enough diamonds to boost this plant! (Requires 2)");
         }
     }
@@ -218,4 +213,11 @@ public class PlantSelectionController {
         return null;
     }
 
+    public List<Plant> getSelectedPlants() {
+        return selectedPlants;
+    }
+
+    public List<String> getBoostedPlantNames() {
+        return boostedPlantNames;
+    }
 }

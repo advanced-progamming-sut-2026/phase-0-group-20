@@ -3,6 +3,7 @@ package io.java.pvz.views.screens;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.java.pvz.controllers.GameController.CollectionController;
 import io.java.pvz.controllers.GameController.PlantSelectionController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
@@ -19,6 +21,9 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.PlantCardButton;
@@ -86,6 +91,13 @@ public class PlantSelectionModalTable extends Table {
         startGameBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                if(controller.getSelectedPlants().isEmpty()) {
+                    GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                        new GameEventPayload.Builder(GameEvent.NOTIFY)
+                            .message("You need to choose at least one plant!")
+                            .build());
+                    return;
+                }
                 controller.startGame();
                 remove();
                 if (onComplete != null) {
@@ -164,17 +176,18 @@ public class PlantSelectionModalTable extends Table {
             upgradeBtn.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    Result result = new CollectionController().upgradePlant(clickedPlant.getName());
+                    if(result.isSuccessful()){
+                        cardMap.get(clickedPlant).updateState();
+                    }
                 }
             });
             buttonsTable.add(upgradeBtn).size(130, 50).padRight(10);
         }
 
-        TextButton boostBtn = new TextButton("BOOST", skin, "green");
-        boostBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-            }
-        });
+        TextButton boostBtn = generateBoostBtn(textures);
+
+        buttonsTable.add(boostBtn).size(110, 50).padRight(10);
         buttonsTable.add(boostBtn).size(110, 50).padRight(10);
 
         boolean isSelected = activeCard != null && activeCard.getColor().equals(Color.DARK_GRAY);
@@ -203,6 +216,41 @@ public class PlantSelectionModalTable extends Table {
         });
         buttonsTable.add(selectBtn).size(110, 50);
         return buttonsTable;
+    }
+
+    private @NonNull TextButton generateBoostBtn(TextureBank textures) {
+        List<String> boostedPlants = controller.getBoostedPlantNames();
+        boolean isAlreadyBoosted = boostedPlants != null && boostedPlants.contains(clickedPlant.getName());
+        TextButton boostBtn;
+        if (isAlreadyBoosted) {
+            boostBtn = new TextButton("BOOSTED", skin, "green");
+            boostBtn.setDisabled(true);
+            boostBtn.setTouchable(Touchable.disabled);
+        } else {
+            boostBtn = new TextButton("x2 BOOST", skin, "green");
+            Image diamondIcon = UiFactory.imageFor(textures, "IMAGE_EFFECTS_COIN_DIAMOND_COIN_DIAMOND_141X146");
+
+            if (diamondIcon != null) {
+                boostBtn.add(diamondIcon).size(25, 25).padLeft(5);
+            }
+
+            boostBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Result result = controller.boostPlant(clickedPlant.getName());
+                    if (result != null && result.isSuccessful()) {
+                        PlantCardButton card = cardMap.get(clickedPlant);
+                        if (card != null) {
+                            card.setBoosted(true);
+                        }
+                        boostBtn.setDisabled(true);
+                        boostBtn.setTouchable(Touchable.disabled);
+                        boostBtn.setText("BOOSTED");
+                    }
+                }
+            });
+        }
+        return boostBtn;
     }
 
     private PlantCardButton createPlantCard(TextureBank textures, Plant plant) {
