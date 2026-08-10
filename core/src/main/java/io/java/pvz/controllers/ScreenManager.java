@@ -69,4 +69,8 @@ public class ScreenManager {
         if (screenStack.isEmpty()) return null;
         return screenStack.peek();
     }
+
+    public Game getGame() {
+        return game;
+    }
 }

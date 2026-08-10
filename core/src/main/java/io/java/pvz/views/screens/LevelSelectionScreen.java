@@ -8,14 +8,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import io.java.pvz.controllers.GameController.GameMenuController;
+import io.java.pvz.controllers.GameController.TravelLogController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.game.adventure.Chapter;
+import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.game.minigame.MiniGameType;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
@@ -23,20 +26,31 @@ import pvz.libpvz.textures.TextureBank;
 public class LevelSelectionScreen extends BaseScreen {
 
     private static final int LEVELS_PER_CHAPTER = 4;
+    private static final int MINI_GAME_LEVELS = 3;
     private static final float NODE_SIZE = 180f;
     private static final float PATH_AREA_WIDTH = 1700f;
     private static final float LOWER_Y = 100f;
     private static final float UPPER_Y = 420f;
     private static final float GROUP_HEIGHT = UPPER_Y + NODE_SIZE + 40f;
+    private MiniGameType MINIGAME_TYPE;
 
 
     private final Chapter chapter;
     private TextureRegion backgroundRegion;
     private final GameMenuController gameMenuController = new GameMenuController();
+    private TravelLogController travelLogController;
 
     public LevelSelectionScreen(Game game, Chapter chapter) {
         super(game);
         this.chapter = chapter;
+        buildUi();
+    }
+
+    public LevelSelectionScreen(Game game, MiniGameType miniGameType, TravelLogController travellog) {
+        super(game);
+        this.chapter = null;
+        MINIGAME_TYPE = miniGameType;
+        this.travelLogController = travellog;
         buildUi();
     }
 
@@ -56,7 +70,12 @@ public class LevelSelectionScreen extends BaseScreen {
         topBar.add().expandX();
         mainLayer.add(topBar).growX().padTop(20).padLeft(30).row();
 
-        mainLayer.add(UiFactory.screenTitle(chapter.getDisplayName(), skin, 1.8f)).padTop(10).padBottom(40).row();
+        if (chapter != null) {
+            mainLayer.add(UiFactory.screenTitle(chapter.getDisplayName(), skin, 1.8f)).padTop(10).padBottom(40).row();
+        } else {
+            mainLayer.add(UiFactory.screenTitle(MINIGAME_TYPE.getName(), skin, 1.8f)).padTop(10).padBottom(40).row();
+        }
+
 
         mainLayer.add(buildPathGroup(textures, skin)).expand().center();
     }
@@ -65,27 +84,54 @@ public class LevelSelectionScreen extends BaseScreen {
         Group group = new Group();
         group.setSize(PATH_AREA_WIDTH, GROUP_HEIGHT);
 
-        float[] centerX = new float[LEVELS_PER_CHAPTER];
-        float[] centerY = new float[LEVELS_PER_CHAPTER];
+        float[] centerX;
+        float[] centerY;
+        float spacingX;
 
-        float spacingX = (PATH_AREA_WIDTH - NODE_SIZE) / (LEVELS_PER_CHAPTER - 1);
-        for (int i = 0; i < LEVELS_PER_CHAPTER; i++) {
-            centerX[i] = NODE_SIZE / 2f + i * spacingX;
-            float y = (i % 2 == 0) ? LOWER_Y : UPPER_Y;
-            centerY[i] = y + NODE_SIZE / 2f;
+        if (chapter != null) {
+            centerX = new float[LEVELS_PER_CHAPTER];
+            centerY = new float[LEVELS_PER_CHAPTER];
+            spacingX = (PATH_AREA_WIDTH - NODE_SIZE) / (LEVELS_PER_CHAPTER - 1);
+
+            for (int i = 0; i < LEVELS_PER_CHAPTER; i++) {
+                centerX[i] = NODE_SIZE / 2f + i * spacingX;
+                float y = (i % 2 == 0) ? LOWER_Y : UPPER_Y;
+                centerY[i] = y + NODE_SIZE / 2f;
+            }
+
+            for (int i = 0; i < LEVELS_PER_CHAPTER - 1; i++) {
+                boolean pathReached = isLevelUnlocked(i + 1);
+                group.addActor(createConnector(textures, centerX[i], centerY[i], centerX[i + 1], centerY[i + 1], pathReached));
+            }
+
+            for (int i = 0; i < LEVELS_PER_CHAPTER; i++) {
+                Stack node = buildLevelNode(textures, skin, i);
+                node.setPosition(centerX[i] - NODE_SIZE / 2f, centerY[i] - NODE_SIZE / 2f);
+                group.addActor(node);
+            }
+
+        } else {
+            centerX = new float[MINI_GAME_LEVELS];
+            centerY = new float[MINI_GAME_LEVELS];
+            spacingX = (PATH_AREA_WIDTH - NODE_SIZE) / (MINI_GAME_LEVELS - 1);
+
+            for (int i = 0; i < MINI_GAME_LEVELS; i++) {
+                centerX[i] = NODE_SIZE / 2f + i * spacingX;
+                float y = (i % 2 == 0) ? LOWER_Y : UPPER_Y;
+                centerY[i] = y + NODE_SIZE / 2f;
+            }
+
+            for (int i = 0; i < MINI_GAME_LEVELS - 1; i++) {
+                boolean pathReached = isLevelUnlocked(i + 1);
+                group.addActor(createConnector(textures, centerX[i], centerY[i], centerX[i + 1], centerY[i + 1], pathReached));
+            }
+
+            for (int i = 0; i < MINI_GAME_LEVELS; i++) {
+                Stack node = buildLevelNode(textures, skin, i);
+                node.setPosition(centerX[i] - NODE_SIZE / 2f, centerY[i] - NODE_SIZE / 2f);
+                group.addActor(node);
+            }
         }
-
-        for (int i = 0; i < LEVELS_PER_CHAPTER - 1; i++) {
-            boolean pathReached = isLevelUnlocked(i + 1);
-            group.addActor(createConnector(textures, centerX[i], centerY[i], centerX[i + 1], centerY[i + 1], pathReached));
-        }
-
-        for (int i = 0; i < LEVELS_PER_CHAPTER; i++) {
-            Stack node = buildLevelNode(textures, skin, i);
-            node.setPosition(centerX[i] - NODE_SIZE / 2f, centerY[i] - NODE_SIZE / 2f);
-            group.addActor(node);
-        }
-
         return group;
     }
 
@@ -114,12 +160,18 @@ public class LevelSelectionScreen extends BaseScreen {
         if (unlocked) {
             nodeStack = UiFactory.imageHoverStack(textures, iconFor(levelIndex), NODE_SIZE, NODE_SIZE,
                 1.1f, 0.9f, () -> {
-                    System.out.println("Start level " + (levelIndex + 1) + " of " + chapter.getDisplayName());
-                    Result result = gameMenuController.enterLevel(String.valueOf(levelIndex + 1));
+                    Result result;
+
+                    if (chapter == null) {
+                        result = travelLogController.startMiniGame(MINIGAME_TYPE.getName(), String.valueOf(levelIndex + 1));
+                    } else {
+                        result = gameMenuController.enterLevel(String.valueOf(levelIndex + 1));
+                    }
 
                     if (result.isSuccessful()) {
                         System.out.println(result.message());
                         String mapId = gameMenuController.getCurrentMapTextureId();
+
                         ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
                     } else {
                         System.out.println(result.message());
@@ -152,12 +204,27 @@ public class LevelSelectionScreen extends BaseScreen {
     }
 
     private boolean isLevelUnlocked(int levelIndex) {
-        if (App.getActiveUser().getHighestUnlockedChapterIndex() > chapter.getChapterIndex()) return true;
-        return chapter.isUnlocked() && levelIndex <= chapter.getCurrentLevelIndex();
+        if (chapter == null) {
+            try {
+                int maxUnlocked = App.getActiveUser().getUnlockedLevelInMinigame(MINIGAME_TYPE);
+                return (levelIndex) <= maxUnlocked;
+            } catch (Exception e) {
+                return false;
+            }
+        } else {
+            if (App.getActiveUser().getHighestUnlockedChapterIndex() > chapter.getChapterIndex()) return true;
+            return chapter.isUnlocked() && levelIndex <= chapter.getCurrentLevelIndex();
+        }
     }
 
     private String iconFor(int levelIndex) {
-        if (levelIndex == 3) {
+        if (chapter == null) {
+            return Ids.LevelSelect.NORMAL_ICON;
+        }
+
+        int lastIndex = chapter.getLevels().size() - 1;
+
+        if (levelIndex == lastIndex) {
             return switch (chapter.getSeasonType()) {
                 case ANCIENT_EGYPT -> Ids.LevelSelect.BOSS_EGYPT;
                 case FROZEN_CAVES -> Ids.LevelSelect.BOSS_ICEAGE;
@@ -166,13 +233,15 @@ public class LevelSelectionScreen extends BaseScreen {
                 case MINI_GAME -> Ids.LevelSelect.NORMAL_ICON;
             };
         }
-        if (levelIndex == 2) {
+
+        if (levelIndex == lastIndex - 1 && lastIndex > 0) {
             return switch (chapter.getSeasonType()) {
                 case ANCIENT_EGYPT -> Ids.LevelSelect.CONVEYOR_ICON;
                 case FROZEN_CAVES -> Ids.LevelSelect.TIMED_ICON;
                 default -> Ids.LevelSelect.SPECIAL_ICON;
             };
         }
+
         return Ids.LevelSelect.NORMAL_ICON;
     }
 

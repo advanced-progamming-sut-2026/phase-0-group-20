@@ -1,5 +1,6 @@
 package io.java.pvz.utils;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,14 +8,24 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
+import io.java.pvz.controllers.ButtonAnimator;
+import io.java.pvz.controllers.GameController.TravelLogController;
+import io.java.pvz.controllers.ScreenManager;
+import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.Chapter;
+import io.java.pvz.models.game.adventure.SeasonType;
+import io.java.pvz.models.game.adventure.levels.Level;
+import io.java.pvz.models.game.minigame.MiniGameFactory;
 import io.java.pvz.models.game.minigame.MiniGameType;
+import io.java.pvz.views.screens.ChapterSelectionScreen;
+import io.java.pvz.views.screens.LevelSelectionScreen;
 import pvz.libpvz.textures.TextureBank;
 
 public class MinigameItemUi extends Table {
 
     private Texture frameTexture;
 
-    public MinigameItemUi(MiniGameType type, Skin skin, TextureBank textures) {
+    public MinigameItemUi(MiniGameType type, Skin skin, TextureBank textures, TravelLogController travelLogController) {
 
         Stack stack = new Stack();
 
@@ -36,12 +47,11 @@ public class MinigameItemUi extends Table {
         nameLabel.setFontScale(1.8f);
 
         TextButton playBtn = new TextButton("PLAY", skin, "purple");
-        playBtn.getLabel().setFontScale(1.1f);
         playBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Starting Minigame: " + type.getName());
-            }
+           @Override
+           public void clicked(InputEvent event, float x, float y) {
+               ScreenManager.getInstance().pushScreen(new LevelSelectionScreen(ScreenManager.getInstance().getGame(), type, travelLogController));
+           }
         });
 
         contentTable.add(nameLabel).left().expandX();
