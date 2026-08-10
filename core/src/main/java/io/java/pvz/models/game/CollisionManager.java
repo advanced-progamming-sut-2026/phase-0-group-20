@@ -26,7 +26,7 @@ import java.util.List;
 public class CollisionManager {
     private final GameSession session;
     private final Arena arena;
-
+    private static final int LAWN_MOWER_THRESHOLD = 30;
     public CollisionManager(GameSession session) {
         this.session = session;
         this.arena = session.getArena();
@@ -34,6 +34,8 @@ public class CollisionManager {
 
     public void checkAllCollisions() {
         List<Zombie> activeZombies = arena.getActiveZombies();
+
+        handleLawnMowers(activeZombies);
 
         // for projectiles
         handleProjectiles();
@@ -50,6 +52,36 @@ public class CollisionManager {
         for (Sun sun : arena.getActiveSuns()) {
             checkSunCollision(sun);
         }
+    }
+
+    private void handleLawnMowers(List<Zombie> activeZombies) {
+        LawnMower[] mowers = arena.getLawnMowers();
+        if (mowers == null) return;
+
+        for (LawnMower mower : mowers) {
+            if (mower == null || mower.isDestroyed()) continue;
+
+            for (Zombie z : activeZombies) {
+                if (z.isDead() || z.getRow() != mower.getRow()) continue;
+
+                if (!mower.isActivate() && z.getX() <= mower.getPosition().getX() + LAWN_MOWER_THRESHOLD) {
+                    mower.trigger();
+                    killZombieByMower(z, mower);
+                }
+                else if (mower.isActivate() && z.getX() <= mower.getPosition().getX() + LAWN_MOWER_THRESHOLD) {
+                    killZombieByMower(z, mower);
+                }
+            }
+        }
+    }
+
+    private void killZombieByMower(Zombie z, LawnMower mower) {
+        z.takeDamage(10000, null);
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED_LAWN_MOWER)
+            .zombie(z)
+            .coordinate(mower.getRow(), z.getCol())
+            .build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED_LAWN_MOWER, payload);
     }
 
     private void handleProjectiles() {
@@ -88,7 +120,7 @@ public class CollisionManager {
                     break;
                 }
             }
-            if (octopusPlantInTile != null &&  !ProjectileType.isLobbed(proj.getType())) {
+            if (octopusPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {
                 octopusPlantInTile.damageOctopus(proj.getDamage());
                 proj.setDestroyed(true);
                 continue;
@@ -322,10 +354,11 @@ public class CollisionManager {
                 z.takeDamage(150);
                 if (z.isDead()) {
                     GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
-                            .zombie(z)
-                            .seasonType(session.getCurrentChapter().getSeasonType())
-                            .coordinate(z.getRow(), z.getCol())
-                            .build();
+                        .zombie(z)
+                        .seasonType(session.getCurrentChapter().getSeasonType())
+                        .coordinate(z.getRow(), z.getCol())
+                        .arena(arena)
+                        .build();
                     GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
                 }
             }

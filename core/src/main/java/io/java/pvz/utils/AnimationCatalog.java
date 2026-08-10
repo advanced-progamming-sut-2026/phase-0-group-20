@@ -46,10 +46,12 @@ public final class AnimationCatalog {
 
     private static final Map<String, EntityAnimation> PLANTS = new HashMap<>();
     private static final Map<ZombieType, EntityAnimation> ZOMBIES = new HashMap<>();
+    private static final Map<String, EntityAnimation> MOWERS = new HashMap<>();
 
     static {
         registerPlants(PLANTS);
         registerZombies(ZOMBIES);
+        registerMowers(MOWERS);
     }
 
     private static void registerPlants(Map<String, EntityAnimation> table) {
@@ -165,7 +167,28 @@ public final class AnimationCatalog {
         registerZombie(table, ZombieType.KING, "768/FULL/ZOMBIE/ZOMBIE_DARK_KING/ZOMBIE_DARK_KING.PAM", "intro", 3.2333f, "idle", 4.0f, "idle2", 2.9333f, "special", 4.0f, "die", 3.1667f, "particles", 0.0333f);
         registerZombie(table, ZombieType.IMP_DRAGON, "768/FULL/ZOMBIE/ZOMBIE_DARK_IMP_DRAGON/ZOMBIE_DARK_IMP_DRAGON.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.2667f, "die", 1.2f, "particles", 0.0333f, "land", 1.0f, "fly", 0.0333f, "transition", 1.4f);
     }
-
+    private static void registerMowers(Map<String, EntityAnimation> table) {
+        register(table, "MOWER_BEACH", "768/FULL/MOWERS/MOWER_BEACH/MOWER_BEACH.PAM",
+            "idle", 0.33f,
+            "transition", 0.33f,
+            "attack", 0.37f);
+        register(table, "MOWER_DARK", "768/FULL/MOWERS/MOWER_DARK/MOWER_DARK.PAM",
+            "idle", 0.30f,
+            "transition", 0.37f,
+            "attack", 0.60f);
+        register(table, "MOWER_EGYPT", "768/INITIAL/MOWERS/MOWER_EGYPT/MOWER_EGYPT.PAM",
+            "idle", 0.3f,
+            "transition", 0.27f,
+            "attack", 0.4f);
+        register(table, "MOWER_ICEAGE", "768/FULL/MOWERS/MOWER_ICEAGE/MOWER_ICEAGE.PAM",
+            "idle", 2.0f,
+            "transition", 0.40f,
+            "attack", 0.37f);
+        register(table, "MOWER_WILDWEST", "768/FULL/MOWERS/MOWER_WILDWEST/MOWER_WILDWEST.PAM",
+            "idle", 0.3f,
+            "transition", 0.3f,
+            "attack", 0.4f);
+    }
     private static void register(Map<String, EntityAnimation> table, String name, String path, Object... clipPairs) {
         Map<String, Float> clips = new LinkedHashMap<>();
         for (int i = 0; i < clipPairs.length; i += 2) {
@@ -202,6 +225,10 @@ public final class AnimationCatalog {
     public static EntityAnimation getZombieAnimation(Zombie zombie) {
         if (zombie == null) return null;
         return getZombieAnimation(zombie.getType());
+    }
+
+    public static EntityAnimation getMowerAnimation(String animationName) {
+        return animationName == null ? null : MOWERS.get(animationName.toUpperCase());
     }
 
     public static boolean hasZombieAnimation(ZombieType type) {

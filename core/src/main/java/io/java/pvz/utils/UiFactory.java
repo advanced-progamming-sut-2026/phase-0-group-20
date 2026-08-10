@@ -130,6 +130,24 @@ public final class UiFactory {
         };
     }
 
+    public static String getAnimationName(Plant plant) {
+        String name = plant.getName();
+        return switch (name) {
+            case "Rotobaga" -> "ROTORUTABAGA";
+            case "Mega Gatling Pea" -> "MEGAGATLING";
+            case "Iceberg Lettuce" -> "ICEBURG";
+            case "Twin Sunflower" -> "SUNFLOWER_TWIN";
+            case "Primal Sunflower" -> "PRIMAL_SUNFLOWER";
+            case "Primal Potato Mine" -> "PRIMAL_POTATOMINE";
+            case "Primal Peashooter" -> "PRIMAL_PEASHOOTER";
+            case "Kernel-pult" -> "KERNALPULT";
+            case "Phat Beet" -> "PHATBEETS";
+            case "Pierce-mint" -> "SPEARMINT";
+
+            default -> name.replace("-", "").replace(" ", "").toUpperCase();
+        };
+    }
+
     public static String getZombieAddress(Zombie zombie) {
         ZombieType zombieType = zombie.getType();
         return switch (zombieType) {

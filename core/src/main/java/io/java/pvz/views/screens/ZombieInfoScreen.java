@@ -18,6 +18,7 @@ import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.utils.Ids;
+import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.pam.PamPlayer;
 import pvz.libpvz.textures.TextureBank;
@@ -61,14 +62,7 @@ public class ZombieInfoScreen extends BaseScreen {
         rootTable.add(titleLabel).padBottom(20).row();
 
         Table contentTable = new Table();
-
-        String zombieName = "ZOMBIE_" + UiFactory.getZombieAddress(zombie);
-
-        String pamPath1 = "768/FULL/ZOMBIE/" + zombieName + "/" + zombieName + ".PAM";
-        String pamPath2 = "768/INITIAL/ZOMBIE/" + zombieName + "/" + zombieName + ".PAM";
-
-        PamPlayer player = AssetLoader.getInstance().getPlayer();
-        PamAnimatedActor zombieActor = new PamAnimatedActor(player, "idle", pamPath1, pamPath2);
+        PamAnimatedActor zombieActor = PamAnimatedActor.createZombieIdle(zombie.getType());
 
         contentTable.add(zombieActor).size(200, 200).expand().bottom().padBottom(300).padLeft(350);
 
@@ -143,66 +137,5 @@ public class ZombieInfoScreen extends BaseScreen {
         }
     }
 
-    private static class PamAnimatedActor extends Actor {
-        private final PamPlayer player;
-        private final String clipName;
-        private String successfulPath = null;
-        private float stateTime = 0f;
-        private boolean isLoaded = false;
 
-        public PamAnimatedActor(PamPlayer player, String clipName, String... pamPaths) {
-            this.player = player;
-            this.clipName = clipName;
-
-            for (String path : pamPaths) {
-                try {
-                    AssetLoader.getInstance().loadPamSync(path);
-                    this.successfulPath = path;
-                    this.isLoaded = true;
-                    break;
-                } catch (Exception e) {
-                    System.err.println("⚠️ Fallback: Failed to load Zombie PAM from: " + path);
-                }
-            }
-
-            if (!isLoaded) {
-                System.err.println
-                    ("❌ Critical Error: Could not load Zombie PAM animation from any of the provided paths.");
-            }
-        }
-
-        @Override
-        public void act(float delta) {
-            super.act(delta);
-            if (isLoaded) {
-                stateTime += delta;
-            }
-        }
-
-        @Override
-        public void draw(Batch batch, float parentAlpha) {
-            if (isLoaded && player != null && successfulPath != null) {
-                float drawX = getX() + (getWidth() / 2f);
-                float drawY = getY();
-
-                Matrix4 originalMatrix = batch.getTransformMatrix().cpy();
-
-                Matrix4 scaledMatrix = originalMatrix.cpy()
-                    .translate(drawX, drawY, 0)
-                    .scale(1.5f, 1.5f, 1f)
-                    .translate(-drawX, -drawY, 0);
-
-                batch.setTransformMatrix(scaledMatrix);
-
-                try {
-                    player.draw(batch, successfulPath, clipName, stateTime, drawX, drawY, true);
-                } catch (Exception e) {
-                    System.err.println("❌ Rendering Error for Zombie PAM: " + successfulPath + " - " + e.getMessage());
-                    isLoaded = false;
-                } finally {
-                    batch.setTransformMatrix(originalMatrix);
-                }
-            }
-        }
-    }
 }
