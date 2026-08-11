@@ -5,6 +5,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.projectiles.*;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
@@ -26,9 +27,10 @@ public class LobberStrategy implements IPlantStrategy {
 
             Zombie targetZombie = null;
             float minDistance = Float.MAX_VALUE;
-
+            boolean canShootBackward = context.getTags().contains(PlantTag.AOE);
             for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                 if (!z.isDead()) {
+                    if (z.getCol() < plantCol && !canShootBackward) continue;
                     float distance = Math.abs(z.getCol() - plantCol);
                     if (distance < minDistance) {
                         minDistance = distance;
@@ -98,6 +100,7 @@ public class LobberStrategy implements IPlantStrategy {
             );
             projectile.setArcTrajectory(targetZombie, ProjectileTuning.LOB_SPEED_TILES_PER_SEC, ProjectileTuning.LOB_ARC_HEIGHT_TILES);
             Projectile.spawnCustom(projectile);
+            context.triggerAction("attack", 10);
             notify("🥔 " + name + " lobbed a " + type.name() + "!");
         }
     }

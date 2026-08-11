@@ -59,6 +59,9 @@ public class Plant implements IPlant, Ticker {
     protected boolean boosted = false;
     protected int boostTimer = 0;
 
+    protected int actionTimer = 0;
+    protected String currentAction = null;
+
 
     public Plant(PlantData data) {
         this.data = data;
@@ -126,6 +129,8 @@ public class Plant implements IPlant, Ticker {
 
     @Override
     public void onTick(int currentTick) {
+        if (actionTimer > 0) actionTimer--;
+
         if (stunned || isFrozen() || hasOctopus()) {
             return;
         }
@@ -553,6 +558,22 @@ public class Plant implements IPlant, Ticker {
                 return effectClass.cast(effect);
             }
         }
+        return null;
+    }
+
+    public void triggerAction(String action, int durationTicks) {
+        this.currentAction = action;
+        this.actionTimer = durationTicks;
+    }
+
+    public String getCurrentAction() {
+        return actionTimer > 0 ? currentAction : null;
+    }
+
+    public <T extends IPlantStrategy> T getStrategy(Class<T> strategyClass) {
+        for (IPlantStrategy s : strategies)
+            if (strategyClass.isInstance(s))
+                return strategyClass.cast(s);
         return null;
     }
 }

@@ -31,7 +31,7 @@ public class PlantSelectionController {
             } else {
                 currentLevel = GameSession.getPendingLevel();
             }
-            if (currentLevel == null && GameSession.getInstance() != null) 
+            if (currentLevel == null && GameSession.getInstance() != null)
                 currentLevel = (Level) GameSession.getInstance().getCurrentMode();
 
         } catch (Exception e) {
