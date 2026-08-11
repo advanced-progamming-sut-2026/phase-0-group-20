@@ -99,7 +99,7 @@ public class GameSession {
         Arena arena = new Arena();
 
         List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(
-                App.getActiveAdventure().getCurrentChapter().getSeasonType(),
+                pendingChapter.getSeasonType(),
                 currentLevel.getLevelNumber()
         );
 

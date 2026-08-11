@@ -18,6 +18,9 @@ public class Sun implements Ticker {
     private boolean isFalling = true;
     private boolean isCollected = false;
     private boolean exploded = false;
+    private boolean isBeingAbsorbed = false;
+    private int absorbedTicksCounter = 0;
+    private boolean producedByPlant = false;
 
     public Sun(SunType type, int col, int row) {
         this.type = type;
@@ -33,7 +36,14 @@ public class Sun implements Ticker {
 
     @Override
     public void onTick(int currentTick) {
-        if (isCollected || !isFalling) return;
+        if (isCollected) return;
+
+        if (isBeingAbsorbed) {
+            absorbedTicksCounter++;
+            return;
+        }
+
+        if (!isFalling) return;
 
         fallTicksLeft--;
         if (fallTicksLeft <= 0) {
@@ -98,5 +108,35 @@ public class Sun implements Ticker {
 
     public Position getPosition() {
         return position;
+    }
+
+    public boolean isBeingAbsorbed() {
+        return isBeingAbsorbed;
+    }
+
+    public void setBeingAbsorbed(boolean beingAbsorbed) {
+        this.isBeingAbsorbed = beingAbsorbed;
+        if (!beingAbsorbed) {
+            this.absorbedTicksCounter = 0;
+        }
+    }
+
+    public int getAbsorbedTicksCounter() {
+        return absorbedTicksCounter;
+    }
+
+    public void setFalling(boolean falling) {
+        this.isFalling = falling;
+    }
+
+    public boolean isProducedByPlant() {
+        return producedByPlant;
+    }
+
+    public void setProducedByPlant(boolean producedByPlant) {
+        this.producedByPlant = producedByPlant;
+        if (producedByPlant) {
+            this.isFalling = false;
+        }
     }
 }

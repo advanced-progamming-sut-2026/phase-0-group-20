@@ -32,7 +32,6 @@ public class InGameEntityGenerator {
             case BIG_WAVE_BEACH -> allowedTypes = getBeachZombies(level - 1);
             case MINI_GAME -> allowedTypes = getMiniGameZombies(level - 1);
         }
-        ;
 
         List<Zombie> levelZombies = new ArrayList<>();
         for (ZombieType type : allowedTypes) {

@@ -11,11 +11,13 @@ import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
+import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
+import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.LawnMower;
 import io.java.pvz.models.game.Arena;
@@ -25,6 +27,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventListener;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
@@ -232,14 +235,28 @@ public class BattlefieldRenderer implements GameEventListener {
 
         Set<Zombie> stillAlive = new HashSet<>(liveZombies);
         Iterator<Map.Entry<Zombie, PamAnimatedActor>> it = zombieActors.entrySet().iterator();
+
         while (it.hasNext()) {
             Map.Entry<Zombie, PamAnimatedActor> entry = it.next();
-            if (!stillAlive.contains(entry.getKey())) {
-                entry.getValue().setClip(resolveZombieClip(entry.getKey())); // will resolve to "die" if the model already flagged it dead
-                despawn(entry.getValue());
+            Zombie zombie = entry.getKey();
+            PamAnimatedActor actor = entry.getValue();
+
+            if (!stillAlive.contains(zombie)) {
+                String deathClip = resolveZombieClip(zombie);
+                actor.setClip(deathClip);
+
+                float lingerTime = DESPAWN_LINGER_SECONDS;
+                AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
+
+                if (anim != null && anim.hasClip(deathClip)) {
+                    lingerTime = anim.getDuration(deathClip);
+                }
+
+                despawn(actor, lingerTime - 0.5f);
                 it.remove();
             }
         }
+
         zombieLayer.getChildren().sort((a, b) -> {
             float ay = a.getY();
             float by = b.getY();
@@ -265,6 +282,12 @@ public class BattlefieldRenderer implements GameEventListener {
     private void updateZombieActor(Zombie zombie, PamAnimatedActor actor) {
         actor.setClip(resolveZombieClip(zombie));
         centerOnPoint(actor, zombie.getPosition().getX(), zombie.getPosition().getY() + actor.getHeight() / 2f + 30);
+
+        if (!zombie.isDead()) {
+            updateZombieArmorVisuals(zombie, actor);
+        } else {
+            actor.setVisibilityMap(null);
+        }
     }
 
     private String resolveZombieClip(Zombie zombie) {
@@ -272,6 +295,9 @@ public class BattlefieldRenderer implements GameEventListener {
 
         if (zombie.isDead()) return pickClip(anim, CLIP_WALK, "die");
         if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
+        if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
+        if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
+        if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
         if (zombie.getState() == ZombieState.STUNNED) return pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop");
         return pickClip(anim, CLIP_IDLE, "walk");
     }
@@ -287,6 +313,14 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private void centerOnPoint(PamAnimatedActor actor, float pixelX, float pixelY) {
         actor.setPosition(pixelX - actor.getWidth() / 2f, pixelY - actor.getHeight() / 2f);
+    }
+
+    private void despawn(PamAnimatedActor actor, float lingerTime) {
+        actor.addAction(Actions.sequence(
+            Actions.delay(lingerTime),
+            Actions.fadeOut(DESPAWN_FADE_SECONDS),
+            Actions.removeActor()
+        ));
     }
 
     private void despawn(PamAnimatedActor actor) {
@@ -325,8 +359,10 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private PamAnimatedActor spawnSun(Sun sun) {
-        String pamPath1 = "768/FULL/EFFECTS/SUN/SUN.PAM"; //add a method to find all sun type animation
-        String pamPath2 = "768/INITIAL/EFFECTS/SUN/SUN.PAM";
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getSunAnimation(sun.getType());
+
+        String pamPath1 = anim != null ? anim.path : "768/FULL/EFFECTS/SUN/SUN.PAM";
+        String pamPath2 = anim != null ? anim.path.replace("FULL", "INITIAL") : "768/INITIAL/EFFECTS/SUN/SUN.PAM";
 
         PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
             "animation", pamPath1, pamPath2);
@@ -345,17 +381,25 @@ public class BattlefieldRenderer implements GameEventListener {
         }
         actor.setScale(scale, scale);
 
-        float targetX = sun.getPosition().getX() - actor.getWidth() / 2f;
+        float baseX = sun.getPosition().getX() - actor.getWidth() / 2f;
         float targetY = sun.getPosition().getY() - actor.getHeight() / 2f + 15f;
 
-        boolean isFromSky = (sun.getType() != null);
+        if (sun.isProducedByPlant()) {
+            float offsetX = (float) ((Math.random() - 0.5) * 40.0);
+            float targetX = baseX + offsetX;
 
-        if (isFromSky) {
-            actor.setPosition(targetX, 1180f);
-            actor.addAction(Actions.moveTo(targetX, targetY, 2.5f, Interpolation.linear));
+            actor.setPosition(targetX, targetY + 10f);
+
+            actor.addAction(Actions.sequence(
+                Actions.moveTo(targetX, targetY + 60f, 0.35f, Interpolation.sineOut),
+                Actions.moveTo(targetX, targetY, 0.35f, Interpolation.bounceOut)
+            ));
+
+            sun.getPosition().setX(baseX + offsetX + actor.getWidth() / 2f);
+
         } else {
-            actor.setPosition(targetX, targetY + 40f);
-            actor.addAction(Actions.moveTo(targetX, targetY, 1.0f, Interpolation.bounceOut));
+            actor.setPosition(baseX, 1180f);
+            actor.addAction(Actions.moveTo(baseX, targetY, 4.0f, Interpolation.linear));
         }
 
         float finalScale = scale;
@@ -363,7 +407,6 @@ public class BattlefieldRenderer implements GameEventListener {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 if (!sun.isCollected() && pointer == -1) {
-
                     Result result = gameFlowController.collectSun(sun.getCol(), sun.getRow());
 
                     if (result.isSuccessful()) {
@@ -384,11 +427,39 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private void updateSunActor(Sun sun, PamAnimatedActor actor) {
-        if (!sun.isFalling()) {
+        if (sun.isBeingAbsorbed()) {
+            actor.clearActions();
+
+            AnimationCatalog.EntityAnimation anim = AnimationCatalog.getSunAnimation(sun.getType());
+            float transitionDuration = (anim != null && anim.hasClip("transition_red"))
+                ? anim.getDuration("transition_red") : 0.33f;
+
+            float currentAbsorbTime = sun.getAbsorbedTicksCounter() / (float) TimeManager.TICKS_PER_SECOND;
+
+            if (currentAbsorbTime < transitionDuration) {
+                if (!actor.getClip().equals("transition_red")) {
+                    actor.setClip("transition_red");
+                }
+            }
+
+            else {
+                if (!actor.getClip().equals("red")) {
+                    actor.setClip("red");
+                }
+            }
+        }
+        else {
+            if (!actor.getClip().equals("animation")) {
+                actor.setClip("animation");
+            }
+        }
+
+        if (!sun.isFalling() || sun.isBeingAbsorbed()) {
             float targetX = sun.getPosition().getX() - actor.getWidth() / 2f;
             float targetY = sun.getPosition().getY() - actor.getHeight() / 2f + 15f;
             actor.setPosition(targetX, targetY);
-        }    }
+        }
+    }
 
     private void syncProjectiles(List<Projectile> liveProjectiles) {
         for (Projectile proj : liveProjectiles) {
@@ -557,5 +628,28 @@ public class BattlefieldRenderer implements GameEventListener {
 
     public Group getHighlightLayer() {
         return highlightLayer;
+    }
+
+    private void updateZombieArmorVisuals(Zombie zombie, PamAnimatedActor zombieActor) {
+        Armor activeArmor = null;
+        if (zombie.getArmorPieces() != null) {
+            for (Armor armor : zombie.getArmorPieces()) {
+                if (!armor.isDestroyed()) {
+                    activeArmor = armor;
+                    break;
+                }
+            }
+        }
+
+        Map<String, Boolean> visibilityMap = new HashMap<>();
+
+        if (activeArmor != null) {
+            int damageLayer = activeArmor.getDamageLayer();
+            String state = activeArmor.getData().getArmorLayer(damageLayer);
+            visibilityMap.put(state, true);
+        }
+
+        zombieActor.setVisibilityMap(visibilityMap);
+
     }
 }

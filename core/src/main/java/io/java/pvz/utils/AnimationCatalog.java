@@ -1,5 +1,6 @@
 package io.java.pvz.utils;
 
+import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
@@ -47,11 +48,13 @@ public final class AnimationCatalog {
     private static final Map<String, EntityAnimation> PLANTS = new HashMap<>();
     private static final Map<ZombieType, EntityAnimation> ZOMBIES = new HashMap<>();
     private static final Map<String, EntityAnimation> MOWERS = new HashMap<>();
+    private static final Map<SunType, EntityAnimation> SUNS = new HashMap<>();
 
     static {
         registerPlants(PLANTS);
         registerZombies(ZOMBIES);
         registerMowers(MOWERS);
+        registerSuns(SUNS);
     }
 
     private static void registerPlants(Map<String, EntityAnimation> table) {
@@ -128,9 +131,9 @@ public final class AnimationCatalog {
     }
 
     private static void registerZombies(Map<ZombieType, EntityAnimation> table) {
-        registerZombie(table, ZombieType.NORMAL, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        registerZombie(table, ZombieType.CONE, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        registerZombie(table, ZombieType.BUCKET, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.NORMAL, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.6f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.CONE, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.6f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.BUCKET, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.6f, "particles", 0.0333f);
 
         registerZombie(table, ZombieType.BRICK, "768/FULL/ZOMBIE/ZOMBIE_PIRATE_BASIC_BRICK/ZOMBIE_PIRATE_BASIC_BRICK.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.1f, "die", 1.8f, "particles", 0.0333f);
         registerZombie(table, ZombieType.DARK_ARMOR, "768/FULL/ZOMBIE/ZOMBIE_DARK_BASIC/ZOMBIE_DARK_BASIC.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
@@ -189,12 +192,38 @@ public final class AnimationCatalog {
             "transition", 0.3f,
             "attack", 0.4f);
     }
+
     private static void register(Map<String, EntityAnimation> table, String name, String path, Object... clipPairs) {
         Map<String, Float> clips = new LinkedHashMap<>();
         for (int i = 0; i < clipPairs.length; i += 2) {
             clips.put((String) clipPairs[i], (Float) clipPairs[i + 1]);
         }
         table.put(name, new EntityAnimation(name, path, clips));
+    }
+
+    private static void registerSuns(Map<SunType, EntityAnimation> table) {
+        String defaultSunPath = "768/FULL/EFFECTS/SUN/SUN.PAM";
+
+        registerSun(table, SunType.NORMAL_SUN, defaultSunPath, "animation", 1.0f, "transition_red", 0.5333f, "red", 1.0f);
+        registerSun(table, SunType.TINY_SUN, defaultSunPath, "animation", 1.0f, "transition_red", 0.5333f, "red", 1.0f);
+        registerSun(table, SunType.LARGE_SUN, defaultSunPath, "animation", 1.0f, "transition_red", 0.5333f, "red", 1.0f);
+        registerSun(table, SunType.HUGE_SUN, defaultSunPath, "animation", 1.0f, "transition_red", 0.5333f, "red", 1.0f);
+        registerSun(table, SunType.SPECIAL_SUN, defaultSunPath, "animation", 1.0f, "transition_red", 0.5333f, "red", 1.0f);
+
+        registerSun(table, SunType.RADIOACTIVE_SUN, defaultSunPath, "animation", 1.0f);
+    }
+
+    private static void registerSun(Map<SunType, EntityAnimation> table, SunType type, String path, Object... clipPairs) {
+        if (type == null) return;
+        Map<String, Float> clips = new LinkedHashMap<>();
+        for (int i = 0; i < clipPairs.length; i += 2) {
+            clips.put((String) clipPairs[i], (Float) clipPairs[i + 1]);
+        }
+        table.put(type, new EntityAnimation(type.name(), path, clips));
+    }
+
+    public static EntityAnimation getSunAnimation(SunType type) {
+        return type == null ? null : SUNS.get(type);
     }
 
     private static void registerZombie(Map<ZombieType, EntityAnimation> table, ZombieType type, String path, Object... clipPairs) {

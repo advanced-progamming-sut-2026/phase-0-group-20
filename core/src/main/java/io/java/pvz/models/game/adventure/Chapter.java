@@ -58,8 +58,11 @@ public class Chapter {
         }
     }
 
-    public Level getMaxLevelInThisChapter() {
-        return levels.get(maxLevelIndexInThisChapter);
+    public Level getCurrentLevel() {
+        if (currentLevelIndex == 4) {
+            currentLevelIndex = 3;
+        }
+        return levels.get(currentLevelIndex);
     }
 
     public boolean isNight() {
