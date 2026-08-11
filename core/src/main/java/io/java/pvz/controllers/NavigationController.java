@@ -5,6 +5,7 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.levels.Level;
 
 
 public final class NavigationController {
@@ -29,8 +30,8 @@ public final class NavigationController {
 
     public static Result exitMenu() {
         Menu current = App.getActiveMenu();
-        if(current == Menu.GAME_FLOW_MENU&& GameSession.getInstance().getCurrentChapter().getCurrentLevel()!=null){
-            GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
+        if(current == Menu.GAME_FLOW_MENU && GameSession.getInstance().getCurrentMode() != null){
+            ((Level)GameSession.getInstance().getCurrentMode()).destroyLevelFields();
         }
         if (current == Menu.MAIN_MENU)
             return new Result(false, "use the logout command to exit the main menu");
