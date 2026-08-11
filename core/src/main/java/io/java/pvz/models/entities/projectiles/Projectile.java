@@ -7,6 +7,9 @@ import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
 
 import java.util.List;
@@ -297,6 +300,13 @@ public class Projectile implements Ticker {
 
     public void onHit(Zombie z) {
         if (isDestroyed || z == null || z.isDead()) return;
+
+        GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
+            new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
+                .pixelCoordinate(this.getX(), this.getY())
+                .projectileType(this.type)
+                .zombie(z)
+                .build());
 
         if (this.effect != null) {
             this.effect.applyEffect(z, this);
