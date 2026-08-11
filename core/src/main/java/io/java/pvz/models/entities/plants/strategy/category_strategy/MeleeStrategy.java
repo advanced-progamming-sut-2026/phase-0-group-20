@@ -68,6 +68,7 @@ public class MeleeStrategy implements IPlantStrategy {
             int damage = name.equals("Wasabi Whip") ? Math.max(baseDamage, 40) : baseDamage;
 
             target.takeDamage(damage);
+            context.triggerAction("attack", 10);
             if (target.isDead()) {
                 context.onZombieDeath(target);
             }
@@ -115,6 +116,7 @@ public class MeleeStrategy implements IPlantStrategy {
             }
 
             if (attacked) {
+                context.triggerAction("attack", 30);
                 notify("🔊 " + name + " slammed a 3x3 area, hitting " + targets.size() + " zombies!");
             }
         }

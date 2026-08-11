@@ -55,4 +55,8 @@ public class DigestionStrategy implements IPlantStrategy {
             }
         }
     }
+
+    public boolean isDigesting() {
+        return isDigesting;
+    }
 }

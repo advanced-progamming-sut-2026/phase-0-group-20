@@ -12,12 +12,13 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
-import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.strategy.DigestionStrategy;
+import io.java.pvz.models.entities.plants.strategy.category_strategy.SunProductionStrategy;
+import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
-import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.LawnMower;
@@ -48,7 +49,9 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private static final float HIT_SPLASH_SIZE = 70f;
 
-    private record HitAnim(String path, String clip, float duration) {}
+    private record HitAnim(String path, String clip, float duration) {
+    }
+
     private static final Map<ProjectileType, HitAnim> HIT_ANIMS = buildHitAnimMap();
 
     private final Map<Plant, PamAnimatedActor> plantActors = new HashMap<>();
@@ -57,7 +60,7 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Map<Projectile, ProjectileType> projectileActorTypes = new HashMap<>();
     private final Map<Sun, PamAnimatedActor> sunActors = new HashMap<>();
     private final Map<LawnMower, PamAnimatedActor> lawnMowerActors = new HashMap<>();
-    private final GameFlowController  gameFlowController = new GameFlowController();
+    private final GameFlowController gameFlowController = new GameFlowController();
     private final EnvironmentRenderer environmentRenderer;
 
     private final Map<Plant, PamAnimatedActor> plantChillOverlays = new HashMap<>();
@@ -93,9 +96,7 @@ public class BattlefieldRenderer implements GameEventListener {
     public void onEvent(GameEvent event, GameEventPayload payload) {
         if (event == GameEvent.PROJECTILE_HIT) {
             spawnHitSplash(payload);
-        }
-
-        else if (event == GameEvent.SPAWN_EFFECT) {
+        } else if (event == GameEvent.SPAWN_EFFECT) {
             System.out.println("Effect Received! Type: " + payload.getMessage());
 
             if ("BONE_HIT".equals(payload.getMessage())) {
@@ -136,8 +137,7 @@ public class BattlefieldRenderer implements GameEventListener {
             }
             chillActor.setPosition(targetX, targetY);
 
-        }
-        else if (stacks >= 3) {
+        } else if (stacks >= 3) {
             PamAnimatedActor chillActor = plantChillOverlays.remove(plant);
             if (chillActor != null) chillActor.remove();
 
@@ -382,8 +382,49 @@ public class BattlefieldRenderer implements GameEventListener {
     private String resolvePlantClip(Plant plant) {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
         if (anim == null) return CLIP_IDLE;
+
+        if (plant.isBoosted()) {
+            if (anim.hasClip("plantfood")) return "plantfood";
+            if (anim.hasClip("plantfood_idle")) return "plantfood_idle";
+            if (anim.hasClip("plantfood_stage1")) return "plantfood_stage1";
+            if (anim.hasClip("plantfood_on")) return "plantfood_on";
+            if (anim.hasClip("plantfood_start")) return "plantfood_start";
+        }
+
+        TrapStrategy trap =
+            plant.getStrategy(TrapStrategy.class);
+        if (trap != null && !trap.isArmed()) {
+            if (anim.hasClip("plant_idle")) return "plant_idle";
+            if (anim.hasClip("plant")) return "plant";
+        }
+
+        DigestionStrategy digestion =
+            plant.getStrategy(DigestionStrategy.class);
+        if (digestion != null && digestion.isDigesting()) {
+            if (anim.hasClip("special_idle")) return "special_idle";
+            if (anim.hasClip("special")) return "special";
+        }
+
+        SunProductionStrategy sunProductionStrategy = plant.getStrategy(SunProductionStrategy.class);
+        if (sunProductionStrategy!= null && plant.getCurrentAction()!=null && plant.getCurrentAction().equals("special")) {
+            if (anim.hasClip("special_idle")) return "special_idle";
+            if (anim.hasClip("special")) return "special";
+        }
+
+        String action = plant.getCurrentAction();
+        if (action != null && anim.hasClip(action))
+            return action;
+
+
+        if (plant.isAsleep() && anim.hasClip("sleep"))
+            return "sleep";
+
+
         if (anim.hasClip("idle")) return "idle";
-        if (anim.hasClip("loop")) return "loop"; // Empowermint-style plants: intro/loop/outro, no "idle"
+        if (anim.hasClip("loop")) return "loop";
+        if (anim.hasClip("idle_stage1")) return "idle_stage1";
+        if (anim.hasClip("idle1_1")) return "idle1_1";
+
         Iterator<String> anyClip = anim.getClipNames().iterator();
         return anyClip.hasNext() ? anyClip.next() : CLIP_IDLE;
     }
@@ -440,6 +481,7 @@ public class BattlefieldRenderer implements GameEventListener {
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
         actor.setScale(1f, 1f);
+        if (zombie.getCurrentSpeed() < 0) actor.setScale(-1);
         zombieLayer.addActor(actor);
         return actor;
     }
@@ -614,15 +656,12 @@ public class BattlefieldRenderer implements GameEventListener {
                 if (!actor.getClip().equals("transition_red")) {
                     actor.setClip("transition_red");
                 }
-            }
-
-            else {
+            } else {
                 if (!actor.getClip().equals("red")) {
                     actor.setClip("red");
                 }
             }
-        }
-        else {
+        } else {
             if (!actor.getClip().equals("animation")) {
                 actor.setClip("animation");
             }
@@ -672,6 +711,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
         actor.setSize(30, 30);
         actor.setOrigin(Align.center);
+        if (proj.getSpeedX() < 0) actor.setScaleX(-1f);
         effectLayer.addActor(actor);
         return actor;
     }
@@ -688,7 +728,8 @@ public class BattlefieldRenderer implements GameEventListener {
         );
     }
 
-    private record ProjectileAnim(String path, String clip) {}
+    private record ProjectileAnim(String path, String clip) {
+    }
 
     private static final Map<ProjectileType, ProjectileAnim> PROJECTILE_ANIMS = buildProjectileAnimMap();
 
@@ -778,7 +819,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
         float offsetX = -20f;
 
-        centerOnPoint(actor, mower.getPosition().getX() + offsetX, mower.getPosition().getY() +100f);
+        centerOnPoint(actor, mower.getPosition().getX() + offsetX, mower.getPosition().getY() + 100f);
     }
 
     private String resolveMowerKey() {

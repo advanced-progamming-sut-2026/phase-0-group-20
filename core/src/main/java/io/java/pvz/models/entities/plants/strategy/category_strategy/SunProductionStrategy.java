@@ -22,6 +22,7 @@ public class SunProductionStrategy implements IPlantStrategy {
 
         if (plantName.equals("Gold Bloom")) {
             if (!hasProducedInstant) {
+                context.triggerAction("special", 10);
                 spawnSun(context, GameSession.getInstance(), SunType.HUGE_SUN, currentTick);
 
                 if (extraSunAmount > 0) { // FOR UPGRADE

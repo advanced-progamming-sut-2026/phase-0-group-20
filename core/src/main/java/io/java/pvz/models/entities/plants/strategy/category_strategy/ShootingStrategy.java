@@ -117,7 +117,7 @@ public class ShootingStrategy implements IPlantStrategy {
 
                 if (z.getCol() >= plantCol && z.getCol() <= plantCol + maxRange) shootForward = true;
 
-                if (z.getCol() < plantCol) shootBackward = true;
+                if (z.getCol() < plantCol && plantName.equals("Split Pea")) shootBackward = true;
             }
         }
         return new boolean[]{shootForward, shootBackward};
@@ -131,6 +131,7 @@ public class ShootingStrategy implements IPlantStrategy {
         }
 
         executeNewProjectile(context, shootForward, shootBackward);
+        context.triggerAction("attack", 10);
         notify(context.getName() + " fired a projectile!");
 
         int baseVolley = ProjectileMechanism.getVolleyCount(context.getName());

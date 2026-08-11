@@ -20,7 +20,7 @@ public class BidirectionalRapidFireFoodStrategy implements PlantFoodStrategy {
         if (tickTimer <= durationTicks) {
 
             if (tickTimer % 2 == 0)
-                ProjectileMechanism.executeNewProjectile(plant, true, false); //khodesh be aghab ham shelik mikone
+                ProjectileMechanism.executeNewProjectile(plant, true, true);
 
             if (tickTimer == 2)
                 notify(plant.getName() + " fired a rapid barrage forward AND backward!");
