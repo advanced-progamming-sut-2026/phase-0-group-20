@@ -14,6 +14,7 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
+import io.java.pvz.views.screens.modals.*;
 import pvz.libpvz.textures.TextureBank;
 
 public class GameMenuScreen extends BaseScreen {

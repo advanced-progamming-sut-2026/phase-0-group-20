@@ -1,4 +1,4 @@
-package io.java.pvz.views.screens;
+package io.java.pvz.views.screens.modals;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import io.java.pvz.controllers.GameController.TravelLogController;
 import io.java.pvz.models.App;
-import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.minigame.MiniGameType;
 import io.java.pvz.models.quest.Quest;
 import io.java.pvz.models.quest.QuestCategory;

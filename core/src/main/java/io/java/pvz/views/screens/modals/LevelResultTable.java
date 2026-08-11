@@ -1,4 +1,4 @@
-package io.java.pvz.views.screens;
+package io.java.pvz.views.screens.modals;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
