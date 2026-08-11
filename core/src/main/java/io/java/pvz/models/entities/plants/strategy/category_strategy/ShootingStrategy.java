@@ -131,7 +131,7 @@ public class ShootingStrategy implements IPlantStrategy {
         }
 
         executeNewProjectile(context, shootForward, shootBackward);
-        context.triggerAction("attack", 10);
+        context.triggerAction("attack", 15);
         notify(context.getName() + " fired a projectile!");
 
         int baseVolley = ProjectileMechanism.getVolleyCount(context.getName());
