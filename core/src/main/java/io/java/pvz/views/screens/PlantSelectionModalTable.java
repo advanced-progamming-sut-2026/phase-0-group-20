@@ -1,9 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -41,6 +39,7 @@ public class PlantSelectionModalTable extends Table {
     private final Runnable onComplete;
     private final BorderedTable topInfoTable;
     private final Map<Plant, PlantCardButton> cardMap = new HashMap<>();
+    private Actor blocker;
 
     public PlantSelectionModalTable(Skin skin, Runnable onComplete) {
         super();
@@ -302,11 +301,29 @@ public class PlantSelectionModalTable extends Table {
     }
 
     public void show(Group modalLayer, Viewport viewport) {
-        setPosition(
-            (viewport.getWorldWidth() - getWidth()) / 2f,
-            (viewport.getWorldHeight() - getHeight()) / 2f
+        float width = viewport.getWorldWidth();
+        float height = viewport.getWorldHeight();
+
+        Table blockerTable = new Table();
+        blockerTable.setSize(width, height);
+        blockerTable.setTouchable(Touchable.enabled);
+
+        blockerTable.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+
+        this.blocker = blockerTable;
+        modalLayer.addActor(blocker);
+
+        this.setPosition(
+            Math.round((width - this.getWidth()) / 2f),
+            Math.round((height - this.getHeight()) / 2f)
         );
         modalLayer.addActor(this);
+
     }
 
     private String getCardAddress(Plant plant) {
@@ -323,5 +340,12 @@ public class PlantSelectionModalTable extends Table {
         if (plant.getCategory() == PlantCategory.SHOOTER) return "IMAGE_UI_PACKETS_LOSTCITY";
         if (plant.getCategory() == PlantCategory.SUN_PRODUCER) return "IMAGE_UI_PACKETS_BOOST";
         return "IMAGE_UI_PACKETS_HOMELESS";
+    }
+    @Override
+    public boolean remove() {
+        if (blocker != null) {
+            blocker.remove();
+        }
+        return super.remove();
     }
 }
