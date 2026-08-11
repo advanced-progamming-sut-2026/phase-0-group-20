@@ -18,6 +18,7 @@ public class Sun implements Ticker {
     private boolean isFalling = true;
     private boolean isCollected = false;
     private boolean exploded = false;
+    private boolean isBeingAbsorbed = false;
 
     public Sun(SunType type, int col, int row) {
         this.type = type;
@@ -33,7 +34,9 @@ public class Sun implements Ticker {
 
     @Override
     public void onTick(int currentTick) {
-        if (isCollected || !isFalling) return;
+        if (isCollected || isBeingAbsorbed) return;
+
+        if (!isFalling) return;
 
         fallTicksLeft--;
         if (fallTicksLeft <= 0) {
@@ -98,5 +101,17 @@ public class Sun implements Ticker {
 
     public Position getPosition() {
         return position;
+    }
+
+    public boolean isBeingAbsorbed() {
+        return isBeingAbsorbed;
+    }
+
+    public void setBeingAbsorbed(boolean beingAbsorbed) {
+        this.isBeingAbsorbed = beingAbsorbed;
+    }
+
+    public void setFalling(boolean falling) {
+        this.isFalling = falling;
     }
 }

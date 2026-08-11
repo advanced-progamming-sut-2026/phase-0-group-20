@@ -293,6 +293,9 @@ public class BattlefieldRenderer implements GameEventListener {
 
         if (zombie.isDead()) return pickClip(anim, CLIP_WALK, "die");
         if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
+        if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
+        if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
+        if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
         if (zombie.getState() == ZombieState.STUNNED) return pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop");
         return pickClip(anim, CLIP_IDLE, "walk");
     }
@@ -381,7 +384,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
         if (isFromSky) {
             actor.setPosition(targetX, 1180f);
-            actor.addAction(Actions.moveTo(targetX, targetY, 2.5f, Interpolation.linear));
+            actor.addAction(Actions.moveTo(targetX, targetY, 5f, Interpolation.linear));
         } else {
             actor.setPosition(targetX, targetY + 40f);
             actor.addAction(Actions.moveTo(targetX, targetY, 1.0f, Interpolation.bounceOut));
@@ -413,11 +416,16 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private void updateSunActor(Sun sun, PamAnimatedActor actor) {
-        if (!sun.isFalling()) {
+        if (sun.isBeingAbsorbed()) {
+            actor.clearActions();
+        }
+
+        if (!sun.isFalling() || sun.isBeingAbsorbed()) {
             float targetX = sun.getPosition().getX() - actor.getWidth() / 2f;
             float targetY = sun.getPosition().getY() - actor.getHeight() / 2f + 15f;
             actor.setPosition(targetX, targetY);
-        }    }
+        }
+    }
 
     private void syncProjectiles(List<Projectile> liveProjectiles) {
         for (Projectile proj : liveProjectiles) {
@@ -589,12 +597,6 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private void updateZombieArmorVisuals(Zombie zombie, PamAnimatedActor zombieActor) {
-        String baseState = zombie.isAttacking() ? "eat" : "walk";
-
-        if (!zombieActor.getClip().equals(baseState)) {
-            zombieActor.setClip(baseState);
-        }
-
         Armor activeArmor = null;
         if (zombie.getArmorPieces() != null) {
             for (Armor armor : zombie.getArmorPieces()) {
@@ -608,10 +610,6 @@ public class BattlefieldRenderer implements GameEventListener {
         Map<String, Boolean> visibilityMap = new HashMap<>();
 
         if (activeArmor != null) {
-            System.out.println("Armor: " + activeArmor.getData().getArmorType());
-            for (String s : activeArmor.getData().getFlags()) {
-                System.out.println(s + "\n");
-            }
             int damageLayer = activeArmor.getDamageLayer();
             String state = activeArmor.getData().getArmorLayer(damageLayer);
             visibilityMap.put(state, true);

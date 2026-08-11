@@ -2,104 +2,184 @@ package io.java.pvz.models.entities.zombies.behavior.effect;
 
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.utils.AnimationCatalog;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class SunAbsorber extends Effect {
-    private final int stealIntervalTicks; // interval for steal sun
-    private final int sunAmount; // amount of sun
+    private enum AbsorbPhase { IDLE, POWER_UP, POWER, POWER_DOWN }
+
+    private final int stealIntervalTicks;
+    private final int sunAmount;
     private final Random random = new Random();
-    private boolean isAbsorbing;
-    private int absorbingTicksCounter;
+
+    private AbsorbPhase currentPhase;
     private int intervalTicksCounter;
+    private int phaseTicksCounter;
+
+    private Sun targetedSun = null;
+    private float startSunX, startSunY;
+    private float targetZombieX, targetZombieY;
+
+    private int powerUpTicks;
+    private int powerTicks;
+    private int powerDownTicks;
 
     public SunAbsorber(Zombie zombie, int stealIntervalTicks, int sunAmount) {
         super(zombie, -1);
         this.stealIntervalTicks = stealIntervalTicks;
         this.sunAmount = sunAmount;
-        this.isAbsorbing = false;
+        this.currentPhase = AbsorbPhase.IDLE;
         this.intervalTicksCounter = 0;
-        this.absorbingTicksCounter = 0;
+        this.phaseTicksCounter = 0;
+
+        loadAnimationDurations();
+    }
+
+    private void loadAnimationDurations() {
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie.getType());
+
+        float pUp = (anim != null && anim.hasClip("power_up")) ? anim.getDuration("power_up") : 0.6667f;
+        float pLoop = (anim != null && anim.hasClip("power")) ? anim.getDuration("power") : 1.0f;
+        float pDown = (anim != null && anim.hasClip("power_down")) ? anim.getDuration("power_down") : 1.2667f;
+
+        this.powerUpTicks = (int) (pUp * TimeManager.TICKS_PER_SECOND);
+        this.powerTicks = (int) (pLoop * TimeManager.TICKS_PER_SECOND);
+        this.powerDownTicks = (int) (pDown * TimeManager.TICKS_PER_SECOND);
     }
 
     @Override
     public void onApply() {
-        this.isAbsorbing = false;
+        this.currentPhase = AbsorbPhase.IDLE;
         this.intervalTicksCounter = 0;
-        this.absorbingTicksCounter = 0;
+        this.phaseTicksCounter = 0;
+        this.targetedSun = null;
     }
 
     @Override
     public void execute() {
         super.execute();
+        if (isFinished()) return;
 
-        if (isFinished()) {
-            return;
+        switch (currentPhase) {
+            case IDLE:
+                intervalTicksCounter++;
+                if (intervalTicksCounter >= stealIntervalTicks) {
+                    if (canStealSomething()) {
+                        currentPhase = AbsorbPhase.POWER_UP;
+                        phaseTicksCounter = 0;
+                        intervalTicksCounter = 0;
+
+                        zombie.setAttacking(false);
+                        zombie.setState(ZombieState.POWER_UP);
+                        zombie.applySpeedMultiplier(0f);
+                    } else {
+                        intervalTicksCounter = 0;
+                    }
+                }
+                break;
+
+            case POWER_UP:
+                phaseTicksCounter++;
+                if (phaseTicksCounter >= powerUpTicks) {
+                    currentPhase = AbsorbPhase.POWER;
+                    zombie.setState(ZombieState.POWER);
+                    phaseTicksCounter = 0;
+
+                    lockOnTargetSun();
+                }
+                break;
+
+            case POWER:
+                phaseTicksCounter++;
+
+                if (targetedSun != null && !targetedSun.isCollected()) {
+                    float progress = (float) phaseTicksCounter / powerTicks;
+
+                    float newX = startSunX + (targetZombieX - startSunX) * progress;
+                    float newY = startSunY + (targetZombieY - startSunY) * progress;
+
+                    targetedSun.getPosition().setPosition(newX, newY);
+                }
+
+                if (phaseTicksCounter >= powerTicks) {
+                    currentPhase = AbsorbPhase.POWER_DOWN;
+                    zombie.setState(ZombieState.POWER_DOWN);
+                    phaseTicksCounter = 0;
+
+                    executeSteal();
+                }
+                break;
+
+            case POWER_DOWN:
+                phaseTicksCounter++;
+                if (phaseTicksCounter >= powerDownTicks) {
+                    stopAbsorbing();
+                }
+                break;
+        }
+    }
+
+    private boolean canStealSomething() {
+        boolean hasSunInBank = GameSession.getInstance().getCurrentSun() > 0;
+        for (Sun s : GameSession.getInstance().getArena().getActiveSuns()) {
+            if (!s.isCollected() && !s.isBeingAbsorbed()) {
+                return true;
+            }
+        }
+        return hasSunInBank;
+    }
+
+    private void lockOnTargetSun() {
+        List<Sun> activeSuns = GameSession.getInstance().getArena().getActiveSuns();
+        List<Sun> stealableSuns = new ArrayList<>();
+
+        for (Sun s : activeSuns) {
+            if (!s.isCollected() && !s.isBeingAbsorbed()) {
+                stealableSuns.add(s);
+            }
         }
 
-        if (!isAbsorbing) {
-            intervalTicksCounter++;
-            if (intervalTicksCounter >= stealIntervalTicks) {
-                boolean hasSunOnGround = !GameSession.getInstance().getArena().getActiveSuns().isEmpty();
-                boolean hasSunInBank = GameSession.getInstance().getCurrentSun() > 0;
+        if (!stealableSuns.isEmpty()) {
+            targetedSun = stealableSuns.get(random.nextInt(stealableSuns.size()));
 
-                if (hasSunOnGround || hasSunInBank) {
-                    isAbsorbing = true;
-                    absorbingTicksCounter = 0;
-                    intervalTicksCounter = 0;
-                    notify("Ra zombie in (" + zombie.getCol() + ", " + zombie.getRow() + ") started absorbing...");
-                } else {
-                    intervalTicksCounter = 0;
-                }
-            }
+            targetedSun.setBeingAbsorbed(true);
+            targetedSun.setFalling(false);
+
+            startSunX = targetedSun.getPosition().getX();
+            startSunY = targetedSun.getPosition().getY();
+
+            targetZombieX = zombie.getX() - 40f;
+            targetZombieY = zombie.getY() + 110f;
+
+            notify("Ra zombie locked on a sun at (" + (targetedSun.getCol()+1) + "," + (targetedSun.getRow()+1) + ")");
         } else {
-            absorbingTicksCounter++;
+            targetedSun = null;
+        }
+    }
 
-            if (absorbingTicksCounter >= 2 * TimeManager.TICKS_PER_SECOND) {
-                stealSunFromPlayer();
-                isAbsorbing = false;
+    private void executeSteal() {
+        if (targetedSun != null && !targetedSun.isCollected()) {
+            GameSession.getInstance().getArena().getActiveSuns().remove(targetedSun);
+            GameSession.getInstance().getTimeManager().unregisterTicker(targetedSun);
+            targetedSun = null;
+        } else {
+            int currentBank = GameSession.getInstance().getCurrentSun();
+            if (currentBank >= sunAmount) {
+                GameSession.getInstance().useSun(sunAmount);
+            } else if (currentBank > 0) {
+                GameSession.getInstance().useSun(currentBank);
             }
         }
     }
 
     @Override
-    public float getRemainingSeconds() {
-        if (isAbsorbing) {
-            return (2 * TimeManager.TICKS_PER_SECOND - absorbingTicksCounter) / (float) TimeManager.TICKS_PER_SECOND;
-        } else {
-            return (stealIntervalTicks - intervalTicksCounter) / (float) TimeManager.TICKS_PER_SECOND;
-        }
-    }
-
-    private void stealSunFromPlayer() {
-        boolean stoleSomething = false;
-
-        List<Sun> activeSuns = GameSession.getInstance().getArena().getActiveSuns();
-        if (!activeSuns.isEmpty()) {
-            int index = random.nextInt(activeSuns.size());
-            Sun stolenSun = activeSuns.get(index);
-            activeSuns.remove(index);
-
-            GameSession.getInstance().getTimeManager().unregisterTicker(stolenSun);
-            stoleSomething = true;
-        }
-
-        int currentBank = GameSession.getInstance().getCurrentSun();
-        if (currentBank >= sunAmount) {
-            GameSession.getInstance().useSun(sunAmount);
-            stoleSomething = true;
-        } else if (currentBank > 0) {
-            GameSession.getInstance().useSun(currentBank);
-            stoleSomething = true;
-        }
-
-        if (stoleSomething) {
-            notify("Ra zombie in (" + zombie.getCol() + ", " + zombie.getRow() + ") stole a sun!");
-        }
-    }
+    public float getRemainingSeconds() { return 0f; }
 
     @Override
     public void onRemove() {
@@ -108,11 +188,20 @@ public class SunAbsorber extends Effect {
     }
 
     @Override
-    public boolean isFinished() {
-        return zombie.isDead();
-    }
+    public boolean isFinished() { return zombie.isDead(); }
 
     public void stopAbsorbing() {
-        this.isAbsorbing = false;
+        this.currentPhase = AbsorbPhase.IDLE;
+        this.phaseTicksCounter = 0;
+
+        if (targetedSun != null) {
+            targetedSun.setBeingAbsorbed(false);
+            targetedSun = null;
+        }
+
+        if (!zombie.isDead()) {
+            zombie.setState(ZombieState.WALKING);
+            zombie.resetSpeed();
+        }
     }
 }
