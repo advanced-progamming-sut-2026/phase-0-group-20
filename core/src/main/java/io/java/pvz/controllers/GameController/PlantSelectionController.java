@@ -22,6 +22,23 @@ public class PlantSelectionController {
     private Level currentLevel = null;
     private int imitaterTargetId = -1;
 
+    public PlantSelectionController() {
+        try {
+            if (GameSession.getPendingBonusLevel() != null) {
+                currentLevel = GameSession.getPendingBonusLevel();
+            } else if (GameSession.getMinigameLevel() != null) {
+                currentLevel = GameSession.getMinigameLevel();
+            } else {
+                currentLevel = GameSession.getPendingLevel();
+            }
+            if (currentLevel == null && GameSession.getInstance() != null) 
+                currentLevel = (Level) GameSession.getInstance().getCurrentMode();
+
+        } catch (Exception e) {
+
+        }
+    }
+
     public Result showAllPlants() {
         User activeUser = App.getActiveUser();
         if (activeUser == null) return new Result(false, "No active user!");
@@ -84,15 +101,6 @@ public class PlantSelectionController {
 
     public Result addPlant(String name) {
         User activeUser = App.getActiveUser();
-        Level currentLevel;
-        if (GameSession.getPendingBonusLevel() != null) {
-            currentLevel = GameSession.getPendingBonusLevel();
-        } else if (GameSession.getMinigameLevel() != null) {
-            currentLevel = GameSession.getMinigameLevel();
-        } else {
-            currentLevel = GameSession.getPendingLevel() == null ? (Level) GameSession.getInstance().getCurrentMode() : GameSession.getPendingLevel();
-        }
-
 
         if (selectedPlants.size() >= currentLevel.getPlantSlotCount()) {
             return new Result(false, "Your seed slots are full! (" + currentLevel.getPlantSlotCount() + " plants max)");
@@ -115,7 +123,7 @@ public class PlantSelectionController {
                     }
                     if (!lockedLevel.isPlantAllowed(p)) {
                         return new Result(false, p.getName()
-                                + " is banned in this level due to family restrictions!");
+                            + " is banned in this level due to family restrictions!");
                     }
                     int actualMaxSlots = currentLevel.getPlantSlotCount() - lockedLevel.getLockedSlots();
                     if (selectedPlants.size() >= actualMaxSlots) {
