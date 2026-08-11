@@ -219,3 +219,4 @@ public class EnvironmentRenderer {
         actor.setPosition(pixelX - actor.getWidth() / 2f, pixelY - actor.getHeight() / 2f);
     }
 }
+//IMAGE_BACKGROUNDS_WATER_TIDE_LINE_WATER_TIDE_LINE_161X397

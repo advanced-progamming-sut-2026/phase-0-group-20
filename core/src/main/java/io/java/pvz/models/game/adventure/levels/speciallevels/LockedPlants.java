@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class LockedPlants extends SpecialLevel {
-    private static final int NUMBER_OF_LOCKED_PLANTS = 3 ;
+    private static final int NUMBER_OF_LOCKED_PLANTS = 1 ;
     private static final int NUMBER_OF_LOCKED_SLOTS = 2 ;
 
     private  List<PlantCategory> lockedCategories;
