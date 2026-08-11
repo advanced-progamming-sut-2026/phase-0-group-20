@@ -60,6 +60,9 @@ public class BattlefieldRenderer implements GameEventListener {
     private final GameFlowController  gameFlowController = new GameFlowController();
     private final EnvironmentRenderer environmentRenderer;
 
+    private final Map<Plant, PamAnimatedActor> plantChillOverlays = new HashMap<>();
+    private final Map<Plant, PamAnimatedActor> plantFreezeOverlays = new HashMap<>();
+
     private final Group masterGroup = new Group();
     private final Group environmentLayer = new Group();
     private final Group plantLayer = new Group();
@@ -97,8 +100,111 @@ public class BattlefieldRenderer implements GameEventListener {
 
             if ("BONE_HIT".equals(payload.getMessage())) {
                 spawnBoneHitEffect(payload.getCol(), payload.getRow());
+            } else if ("HUNTER_SNOWBALL_HIT".equals(payload.getMessage())) {
+                spawnHunterIceHitEffect(payload.getCol(), payload.getRow());
+            } else if ("UPDATE_ICE_OVERLAY".equals(payload.getMessage())) {
+                updatePlantIceOverlay(payload.getPlant(), payload.getAmount());
+            } else if ("REMOVE_ICE_OVERLAY".equals(payload.getMessage())) {
+                removePlantIceOverlay(payload.getPlant());
+            } else if ("ICE_BLOCK_DAMAGE".equals(payload.getMessage())) {
+                spawnIceBlockDamageEffect(payload.getCol(), payload.getRow());
+            } else if ("UPDATE_ICE_CRACKS".equals(payload.getMessage())) {
+                updateIceCracks(payload.getPlant(), payload.getAmount());
             }
         }
+    }
+
+    private void updatePlantIceOverlay(Plant plant, int stacks) {
+        if (plant == null) return;
+
+        PamAnimatedActor plantActor = plantActors.get(plant);
+        float targetX = plantActor != null ? plantActor.getX() : 0;
+        float targetY = plantActor != null ? plantActor.getY() : 0;
+
+        if (stacks == 1 || stacks == 2) {
+            String clipName = stacks == 1 ? "chill_stage1" : "chill_stage2";
+            PamAnimatedActor chillActor = plantChillOverlays.get(plant);
+
+            if (chillActor == null) {
+                chillActor = PamAnimatedActor.createEffectAnimated("768/FULL/EFFECTS/FROSTBITE_CHILL_PLANT/FROSTBITE_CHILL_PLANT.PAM", clipName);
+                chillActor.setSize(TILE_WIDTH, TILE_HEIGHT);
+                chillActor.setOrigin(Align.center);
+                plantLayer.addActor(chillActor);
+                plantChillOverlays.put(plant, chillActor);
+            } else {
+                chillActor.setClip(clipName);
+            }
+            chillActor.setPosition(targetX, targetY);
+
+        }
+        else if (stacks >= 3) {
+            PamAnimatedActor chillActor = plantChillOverlays.remove(plant);
+            if (chillActor != null) chillActor.remove();
+
+            PamAnimatedActor freezeActor = plantFreezeOverlays.get(plant);
+            if (freezeActor == null) {
+                freezeActor = PamAnimatedActor.createEffectAnimated("768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_PLANT/FROSTBITE_ICE_BLOCK_PLANT.PAM", "freeze_idle");
+                freezeActor.setSize(TILE_WIDTH, TILE_HEIGHT);
+                freezeActor.setOrigin(Align.center);
+                plantLayer.addActor(freezeActor);
+                plantFreezeOverlays.put(plant, freezeActor);
+            }
+            freezeActor.setPosition(targetX, targetY);
+        }
+    }
+
+    private void updateIceCracks(Plant plant, int remainingHp) {
+        PamAnimatedActor freezeActor = plantFreezeOverlays.get(plant);
+        if (freezeActor == null) return;
+
+        Map<String, Boolean> visMap = new HashMap<>();
+
+        if (remainingHp <= 200) {
+            visMap.put("damage2", true);
+            visMap.put("damage1", false);
+            visMap.put("undamaged", false);
+        } else if (remainingHp <= 400) {
+            visMap.put("damage1", true);
+            visMap.put("damage2", false);
+            visMap.put("undamaged", false);
+        } else {
+            visMap.put("undamaged", true);
+            visMap.put("damage1", false);
+            visMap.put("damage2", false);
+        }
+
+        freezeActor.setVisibilityMap(visMap);
+    }
+
+    private void removePlantIceOverlay(Plant plant) {
+        if (plant == null) return;
+        PamAnimatedActor chill = plantChillOverlays.remove(plant);
+        if (chill != null) chill.remove();
+
+        PamAnimatedActor freeze = plantFreezeOverlays.remove(plant);
+        if (freeze != null) freeze.remove();
+    }
+
+    private void spawnIceBlockDamageEffect(int col, int row) {
+        String pamPath1 = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_PARTICLES/FROSTBITE_ICE_BLOCK_PARTICLES.PAM";
+        String pamPath2 = "768/INITIAL/EFFECTS/FROSTBITE_ICE_BLOCK_PARTICLES/FROSTBITE_ICE_BLOCK_PARTICLES.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "animation", pamPath1, pamPath2);
+
+        actor.setSize(80, 80);
+        actor.setOrigin(Align.center);
+
+        io.java.pvz.models.Position pos = new io.java.pvz.models.Position(col, row);
+        float x = pos.getX() - (actor.getWidth() / 2f);
+        float y = pos.getY() - (actor.getHeight() / 2f) + 15f;
+
+        actor.setPosition(x, y);
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.0f),
+            Actions.removeActor()
+        ));
     }
 
     private void spawnBoneHitEffect(int col, int row) {
@@ -119,6 +225,30 @@ public class BattlefieldRenderer implements GameEventListener {
 
         actor.addAction(Actions.sequence(
             Actions.delay(1.5f),
+            Actions.removeActor()
+        ));
+    }
+
+    private void spawnHunterIceHitEffect(int col, int row) {
+        String pamPath1 = "768/FULL/EFFECTS/ZOMBIE_HUNTER_SNOWBALL_SPLAT/ZOMBIE_HUNTER_SNOWBALL_SPLAT.PAM";
+        String pamPath2 = "768/INITIAL/EFFECTS/ZOMBIE_HUNTER_SNOWBALL_SPLAT/ZOMBIE_HUNTER_SNOWBALL_SPLAT.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "animation", pamPath1, pamPath2);
+
+
+        actor.setSize(80, 80);
+        actor.setOrigin(Align.center);
+
+        Position pos = new Position(col, row);
+
+        float x = pos.getX() - (actor.getWidth() / 2f);
+        float y = pos.getY() - (actor.getHeight() / 2f) + 40;
+
+        actor.setPosition(x, y);
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(0.63f),
             Actions.removeActor()
         ));
     }
@@ -170,6 +300,8 @@ public class BattlefieldRenderer implements GameEventListener {
         projectileActors.clear();
         projectileActorTypes.clear();
         sunActors.clear();
+        plantChillOverlays.clear();
+        plantFreezeOverlays.clear();
     }
 
     private void syncLawnMowers(LawnMower[] mowers) {
@@ -216,6 +348,7 @@ public class BattlefieldRenderer implements GameEventListener {
             Map.Entry<Plant, PamAnimatedActor> entry = it.next();
             if (!stillAlive.contains(entry.getKey())) {
                 despawn(entry.getValue());
+                removePlantIceOverlay(entry.getKey());
                 it.remove();
             }
         }
@@ -334,6 +467,8 @@ public class BattlefieldRenderer implements GameEventListener {
         if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
         if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
         if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
+
+        if (zombie.getState() == ZombieState.THROW) return pickClip(anim, CLIP_WALK, "throw");
 
         if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
         if (zombie.getState() == ZombieState.STUNNED) return pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop");

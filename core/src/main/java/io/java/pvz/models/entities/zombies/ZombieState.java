@@ -10,5 +10,6 @@ public enum ZombieState {
     DEAD,
     FLY_START,
     FLYING,
-    FLY_END
+    FLY_END,
+    THROW
 }

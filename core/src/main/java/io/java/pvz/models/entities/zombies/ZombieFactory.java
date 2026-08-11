@@ -13,6 +13,7 @@ import io.java.pvz.models.entities.zombies.armour.ArmorLoader;
 import io.java.pvz.models.entities.zombies.behavior.attack.*;
 import io.java.pvz.models.entities.zombies.behavior.context.*;
 import io.java.pvz.models.entities.zombies.behavior.defense.*;
+import io.java.pvz.models.entities.zombies.behavior.effect.HunterThrowEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.JalapenoTimerEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.SunAbsorber;
 import io.java.pvz.models.entities.zombies.behavior.effect.TombRaiserEffect;
@@ -103,7 +104,7 @@ public class ZombieFactory {
             case DODO -> new DodoMove(zombie);
 
             case TOMB_RAISER -> new NormalMove(zombie);
-            case HUNTER -> createHunterMove(zombie);
+            case HUNTER -> new NormalMove(zombie);
             case OCTOPUS -> createOctopusMove(zombie);
             case WIZARD -> createWizardMove(zombie);
             case PIANIST -> createPianistMove(zombie);
@@ -119,28 +120,6 @@ public class ZombieFactory {
 
             default -> new NormalMove(zombie);
         };
-    }
-
-    private static MoveBehavior createHunterMove(Zombie zombie) {
-        return new PeriodicActionMove(zombie, 3 * TimeManager.TICKS_PER_SECOND, true, () -> {
-            GameSession session = GameSession.getInstance();
-            Plant nearestPlant = null;
-            int closestCol = -1;
-
-            for (Plant p : session.getArena().getActivePlants()) {
-                if (p.getPlacedTile().getRow() == zombie.getRow()
-                        && p.getPlacedTile().getCol() <= zombie.getCol()) {
-                    if (p.getPlacedTile().getCol() > closestCol) {
-                        closestCol = p.getPlacedTile().getCol();
-                        nearestPlant = p;
-                    }
-                }
-            }
-
-            if (nearestPlant != null && !nearestPlant.isFrozen()) {
-                nearestPlant.receiveIceHit();
-            }
-        });
     }
 
     private static MoveBehavior createOctopusMove(Zombie zombie) {
@@ -311,6 +290,10 @@ public class ZombieFactory {
 
         if (type == ZombieType.TOMB_RAISER) {
             zombie.addEffect(new TombRaiserEffect(zombie, 5));
+        }
+
+        if (type == ZombieType.HUNTER) {
+            zombie.addEffect(new HunterThrowEffect(zombie, 3));
         }
 
     }
