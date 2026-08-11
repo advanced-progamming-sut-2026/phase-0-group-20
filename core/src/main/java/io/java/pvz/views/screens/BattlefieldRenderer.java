@@ -50,6 +50,7 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Map<Plant, PamAnimatedActor> plantActors = new HashMap<>();
     private final Map<Zombie, PamAnimatedActor> zombieActors = new HashMap<>();
     private final Map<Projectile, PamAnimatedActor> projectileActors = new HashMap<>();
+    private final Map<Projectile, ProjectileType> projectileActorTypes = new HashMap<>();
     private final Map<Sun, PamAnimatedActor> sunActors = new HashMap<>();
     private final Map<LawnMower, PamAnimatedActor> lawnMowerActors = new HashMap<>();
     private final GameFlowController  gameFlowController = new GameFlowController();
@@ -132,6 +133,7 @@ public class BattlefieldRenderer implements GameEventListener {
         plantActors.clear();
         zombieActors.clear();
         projectileActors.clear();
+        projectileActorTypes.clear();
         sunActors.clear();
     }
 
@@ -391,9 +393,15 @@ public class BattlefieldRenderer implements GameEventListener {
     private void syncProjectiles(List<Projectile> liveProjectiles) {
         for (Projectile proj : liveProjectiles) {
             PamAnimatedActor actor = projectileActors.get(proj);
-            if (actor == null) {
+            ProjectileType lastRenderedType = projectileActorTypes.get(proj);
+
+            if (actor == null || lastRenderedType != proj.getType()) {
+                if (actor != null) {
+                    actor.remove();
+                }
                 actor = spawnProjectile(proj);
                 projectileActors.put(proj, actor);
+                projectileActorTypes.put(proj, proj.getType());
             }
             updateProjectileActor(proj, actor);
         }
@@ -405,6 +413,7 @@ public class BattlefieldRenderer implements GameEventListener {
             Projectile proj = entry.getKey();
             if (!stillAlive.contains(proj) || proj.isDestroyed()) {
                 entry.getValue().remove();
+                projectileActorTypes.remove(proj);
                 it.remove();
             }
         }
