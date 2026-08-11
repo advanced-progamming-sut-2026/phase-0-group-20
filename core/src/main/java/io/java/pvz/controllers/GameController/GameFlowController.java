@@ -14,6 +14,7 @@ import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
@@ -45,9 +46,8 @@ public class GameFlowController {
             NavigationController.exitMenu();
             App.getActiveUser().setPlantFoodCount(0);
             App.getActiveUser().getUnlockedPlants().forEach(p -> p.setBoosted(false));
-            if (GameSession.getInstance().getCurrentChapter().getCurrentLevel() != null) {
-                GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
-            }
+            if (GameSession.getInstance().getCurrentMode() != null)
+                ((Level) GameSession.getInstance().getCurrentMode()).destroyLevelFields();
 
             return new Result(true, "Returned to " + App.getActiveMenu().getName());
         }
@@ -60,8 +60,8 @@ public class GameFlowController {
             NavigationController.exitMenu();
             App.getActiveUser().setPlantFoodCount(0);
             App.getActiveUser().getUnlockedPlants().forEach(p -> p.setBoosted(false));
-            if (GameSession.getInstance().getCurrentChapter().getCurrentLevel() != null)
-                GameSession.getInstance().getCurrentChapter().getCurrentLevel().destroyLevelFields();
+            if (GameSession.getInstance().getCurrentMode() != null)
+                ((Level) GameSession.getInstance().getCurrentMode()).destroyLevelFields();
         }
     }
 
@@ -187,7 +187,7 @@ public class GameFlowController {
 
         desiredTile.addPlant(newPlant);
         arena.addPlant(newPlant);
-        if(session.getCurrentChapter().getCurrentLevel().skipsPlantSelection()){
+        if (!((Level) GameSession.getInstance().getCurrentMode()).skipsPlantSelection()) {
             session.useSun(newPlant.getCost());
         }
         session.getTimeManager().registerNewTicker(newPlant);
@@ -202,7 +202,7 @@ public class GameFlowController {
             .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
         session.setCooldownForPlant(plant);
-        if(session.getCurrentChapter().getCurrentLevel() instanceof ConveyorBelt conveyorBelt){
+        if (session.getCurrentMode() instanceof ConveyorBelt conveyorBelt) {
             conveyorBelt.getBelt().remove(plant);
         }
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +

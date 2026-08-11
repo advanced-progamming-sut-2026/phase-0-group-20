@@ -11,13 +11,13 @@ public class Chapter {
     private final SeasonType type;
     private final SeasonModifier modifier;
     private final List<Level> levels;
-    private int currentLevelIndex;
+    private int maxLevelIndexInThisChapter;
     private boolean isUnlocked;
     private int chapterIndex;
 
     public Chapter(SeasonType type) {
         this.levels = new ArrayList<>();
-        this.currentLevelIndex = 0;
+        this.maxLevelIndexInThisChapter = 0;
         this.type = type;
         this.modifier = createModifier(type);
         this.isUnlocked = false;
@@ -103,15 +103,15 @@ public class Chapter {
     }
 
     public void advanceToNextLevel() {
-        if (currentLevelIndex < levels.size()) currentLevelIndex++;
+        if (maxLevelIndexInThisChapter < levels.size() - 1) maxLevelIndexInThisChapter++;
     }
 
-    public int getCurrentLevelIndex() {
-        return currentLevelIndex;
+    public int getMaxLevelIndexInThisChapter() {
+        return maxLevelIndexInThisChapter;
     }
 
-    public void setCurrentLevelIndex(int currentLevelIndex) {
-        this.currentLevelIndex = currentLevelIndex;
+    public void setMaxLevelIndexInThisChapter(int maxLevelIndexInThisChapter) {
+        this.maxLevelIndexInThisChapter = maxLevelIndexInThisChapter;
     }
 
     public int getChapterIndex() {

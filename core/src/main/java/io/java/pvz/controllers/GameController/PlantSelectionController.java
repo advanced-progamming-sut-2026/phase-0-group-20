@@ -23,7 +23,7 @@ public class PlantSelectionController {
     private int imitaterTargetId = -1;
 
     public PlantSelectionController() {
-        try{
+        try {
             if (GameSession.getPendingBonusLevel() != null) {
                 currentLevel = GameSession.getPendingBonusLevel();
             } else if (GameSession.getMinigameLevel() != null) {
@@ -31,7 +31,10 @@ public class PlantSelectionController {
             } else {
                 currentLevel = GameSession.getPendingLevel();
             }
-        }catch(Exception e){
+            if (currentLevel == null && GameSession.getInstance() != null) 
+                currentLevel = (Level) GameSession.getInstance().getCurrentMode();
+
+        } catch (Exception e) {
 
         }
     }
@@ -99,7 +102,6 @@ public class PlantSelectionController {
     public Result addPlant(String name) {
         User activeUser = App.getActiveUser();
 
-
         if (selectedPlants.size() >= currentLevel.getPlantSlotCount()) {
             return new Result(false, "Your seed slots are full! (" + currentLevel.getPlantSlotCount() + " plants max)");
         }
@@ -114,19 +116,19 @@ public class PlantSelectionController {
             if (p.getName().equalsIgnoreCase(name.trim())) {
                 if (currentLevel instanceof LockedPlants lockedLevel) {
                     Plant forcedPlant = lockedLevel.getForcedToUsePlant();
-                    if(forcedPlant != null &&
-                            !forcedPlant.getName().equalsIgnoreCase(name)&& !selectedPlants.contains(forcedPlant)){
-                        return new Result(false, "You first have to choose the forced plant: "+
-                                forcedPlant.getName()+" ("+forcedPlant.getCost()+")");
+                    if (forcedPlant != null &&
+                        !forcedPlant.getName().equalsIgnoreCase(name) && !selectedPlants.contains(forcedPlant)) {
+                        return new Result(false, "You first have to choose the forced plant: " +
+                            forcedPlant.getName() + " (" + forcedPlant.getCost() + ")");
                     }
                     if (!lockedLevel.isPlantAllowed(p)) {
                         return new Result(false, p.getName()
-                                + " is banned in this level due to family restrictions!");
+                            + " is banned in this level due to family restrictions!");
                     }
                     int actualMaxSlots = currentLevel.getPlantSlotCount() - lockedLevel.getLockedSlots();
                     if (selectedPlants.size() >= actualMaxSlots) {
                         return new Result(false, "Your seed slots are full! (" +
-                                lockedLevel.getLockedSlots() + " slots are permanently locked for this level)");
+                            lockedLevel.getLockedSlots() + " slots are permanently locked for this level)");
                     }
                 }
                 selectedPlants.add(p);

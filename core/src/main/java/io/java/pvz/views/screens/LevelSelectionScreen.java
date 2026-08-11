@@ -14,7 +14,6 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.game.adventure.Chapter;
-import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
@@ -213,7 +212,7 @@ public class LevelSelectionScreen extends BaseScreen {
             }
         } else {
             if (App.getActiveUser().getHighestUnlockedChapterIndex() > chapter.getChapterIndex()) return true;
-            return chapter.isUnlocked() && levelIndex <= chapter.getCurrentLevelIndex();
+            return chapter.isUnlocked() && levelIndex <= chapter.getMaxLevelIndexInThisChapter();
         }
     }
 

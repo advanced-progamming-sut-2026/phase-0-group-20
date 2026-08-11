@@ -59,7 +59,10 @@ public abstract class Level implements GameMode {
         onLevelStart(session);
     }
 
-    public void destroyLevelFields(){};
+    public void destroyLevelFields() {
+    }
+
+    ;
 
     public abstract void onLevelStart(GameSession session);
 
@@ -142,7 +145,7 @@ public abstract class Level implements GameMode {
             }
 
             notify("Zombie " + newZombie.getType().name() +
-                    " spawned in lane " + (lane + 1) + " (Cost: " + newZombie.getWaveCost() + ").");
+                " spawned in lane " + (lane + 1) + " (Cost: " + newZombie.getWaveCost() + ").");
         }
     }
 
@@ -154,9 +157,9 @@ public abstract class Level implements GameMode {
 
     public void notify(String message) {
         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(message)
+                .build());
     }
 
     public boolean skipsPlantSelection() {

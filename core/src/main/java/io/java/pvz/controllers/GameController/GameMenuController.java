@@ -64,13 +64,13 @@ public class GameMenuController {
         GameSession.setPendingLevel(selectedLevel);
         StringBuilder resultText = new StringBuilder();
         resultText.append("Entered Chapter ")
-                .append(GameSession.getPendingChapter().getDisplayName())
-                .append(" - Level: ").append(selectedLevel.getName()).append("...").append("\n");
-        if(selectedLevel instanceof LockedPlants lockLevel){
+            .append(GameSession.getPendingChapter().getDisplayName())
+            .append(" - Level: ").append(selectedLevel.getName()).append("...").append("\n");
+        if (selectedLevel instanceof LockedPlants lockLevel) {
             lockLevel.createModEntities();
             resultText.append(lockLevel.createMessage()).append("\n");
         }
-        Result result = new Result(true,resultText.toString());
+        Result result = new Result(true, resultText.toString());
         if (!selectedLevel.skipsPlantSelection()) {
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
         } else {
@@ -91,10 +91,10 @@ public class GameMenuController {
         Chapter currentChapter = activeAdventure.getCurrentChapter();
 
         SeasonType season = (currentChapter != null) ? currentChapter.getSeasonType() : SeasonType.ANCIENT_EGYPT;
-        int levelNumber = (currentChapter != null) ? currentChapter.getCurrentLevelIndex() + 1 : 1;
+        int levelNumber = (currentChapter != null) ? currentChapter.getMaxLevelIndexInThisChapter() + 1 : 1;
 
         BonusLevel bonusLevel = new BonusLevel("Scoring Challenge", season, 3, 1200,
-                levelNumber, true);
+            levelNumber, true);
 
         GameSession.setPendingBonusLevel(bonusLevel);
 
@@ -212,8 +212,11 @@ public class GameMenuController {
         SeasonType type;
         if (GameSession.getPendingChapter() != null)
             type = GameSession.getPendingChapter().getSeasonType();
+        else if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentChapter() != null)
+            type = GameSession.getInstance().getCurrentChapter().getSeasonType();
         else
             type = SeasonType.MINI_GAME;
+
         return switch (type) {
             case ANCIENT_EGYPT -> Ids.GameMap.ANCIENT_EGYPT_MAIN;
             case FROZEN_CAVES -> Ids.GameMap.ICE_CAVE_MAIN;

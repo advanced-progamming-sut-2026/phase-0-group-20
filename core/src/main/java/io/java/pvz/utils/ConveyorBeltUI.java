@@ -88,28 +88,28 @@ public class ConveyorBeltUI extends Table {
         }
 
         float areaHeight = cardsArea.getHeight();
-        if (areaHeight <= 0) {
+        if (areaHeight <= 0)
             areaHeight = 600f;
 
-            float cardHeight = 50f;
-            float padding = 10f;
-            float speed = areaHeight / 5.5f;
-            float padToTop = 20f;
+        float cardHeight = 50f;
+        float padding = 10f;
+        float speed = areaHeight / 5.5f;
+        float padToTop = 20f;
 
-            for (int i = 0; i < currentConveyorPlants.size(); i++) {
-                Plant plant = currentConveyorPlants.get(i);
-                PlantCardButton card = cardMap.get(plant);
+        for (int i = 0; i < currentConveyorPlants.size(); i++) {
+            Plant plant = currentConveyorPlants.get(i);
+            PlantCardButton card = cardMap.get(plant);
 
-                if (card != null) {
-                    float targetY = areaHeight - ((i + 1) * (cardHeight + padding)) + padToTop;
+            if (card != null) {
+                float targetY = areaHeight - ((i + 1) * (cardHeight + padding)) + padToTop;
 
-                    if (card.getY() < targetY) {
-                        float newY = card.getY() + (speed * delta);
-                        if (newY > targetY) newY = targetY;
-                        card.setY(newY);
-                    }
+                if (card.getY() < targetY) {
+                    float newY = card.getY() + (speed * delta);
+                    if (newY > targetY) newY = targetY;
+                    card.setY(newY);
                 }
             }
         }
+
     }
 }

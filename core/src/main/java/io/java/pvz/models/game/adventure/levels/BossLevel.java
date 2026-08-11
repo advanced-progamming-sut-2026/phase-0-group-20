@@ -16,7 +16,6 @@ public class BossLevel extends Level {
 
     @Override
     public void onLevelStart(GameSession session) {
-
     }
 
 
