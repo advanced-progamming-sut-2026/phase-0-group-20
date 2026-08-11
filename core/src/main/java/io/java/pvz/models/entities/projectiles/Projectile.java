@@ -14,7 +14,6 @@ import java.util.Random;
 
 public class Projectile implements Ticker {
 
-    private static final int SPEED_COEFF = 3;
 
     private final Plant plant;
     private final Zombie zombie;
@@ -38,6 +37,16 @@ public class Projectile implements Ticker {
     private int lifespanTicks = -1;
     private int pierceCount = 999;
 
+    private boolean isArcTrajectory = false;
+    private float launchX;
+    private float launchY;
+    private float flightDurationTicks = 1f;
+    private float elapsedFlightTicks = 0f;
+    private float arcHeightPixels = 0f;
+    private float arcOffsetY = 0f;
+    private float frozenDestX;
+    private float frozenDestY;
+
     public Projectile(Plant plant,
                       ProjectileType type,
                       ProjectileEffect effect,
@@ -55,7 +64,6 @@ public class Projectile implements Ticker {
         this.position = position;
         this.speedX = speedX * PhysicalConstants.SPEED_SCALE_RATIO;
         this.speedY = speedY * PhysicalConstants.SPEED_SCALE_RATIO;
-
         this.piercing = piercing;
         this.canPassObstacles = canPassObstacles;
         this.isDestroyed = false;
@@ -175,11 +183,16 @@ public class Projectile implements Ticker {
     }
 
     public void move() {
+        if (isArcTrajectory) {
+            moveAlongArc();
+            return;
+        }
+
         if (target != null) {
             if (target.isDead()) {
                 target = null;
                 canPassObstacles = false;
-                speedX = baseSpeed > 0 ? baseSpeed : (1.5f * PhysicalConstants.SPEED_SCALE_RATIO);
+                speedX = baseSpeed > 0 ? baseSpeed : (ProjectileTuning.LOST_TARGET_FALLBACK_SPEED_TILES_PER_SEC * PhysicalConstants.SPEED_SCALE_RATIO);
             } else {
                 float dx = target.getX() - position.getX();
                 float dy = target.getY() - position.getY();
@@ -217,9 +230,69 @@ public class Projectile implements Ticker {
         }
     }
 
+    private void moveAlongArc() {
+        float destX;
+        float destY;
+
+        if (target != null && !target.isDead()) {
+            destX = target.getX();
+            destY = target.getY();
+            frozenDestX = destX;
+            frozenDestY = destY;
+        } else {
+            target = null;
+            destX = frozenDestX;
+            destY = frozenDestY;
+        }
+
+        elapsedFlightTicks++;
+        float t = Math.min(1f, elapsedFlightTicks / flightDurationTicks);
+
+        float groundX = launchX + (destX - launchX) * t;
+        float groundY = launchY + (destY - launchY) * t;
+        position.setPosition(groundX, groundY);
+
+        arcOffsetY = 4f * arcHeightPixels * t * (1f - t);
+    }
+
     public void setHomingTarget(Zombie target, float baseSpeed) {
         this.target = target;
         this.baseSpeed = baseSpeed * PhysicalConstants.SPEED_SCALE_RATIO;
+    }
+
+    public void setArcTrajectory(Zombie target, float averageSpeedTilesPerSec, float arcHeightTiles) {
+        this.target = target;
+        this.isArcTrajectory = true;
+        this.canPassObstacles = true;
+
+        this.launchX = position.getX();
+        this.launchY = position.getY();
+        this.frozenDestX = target.getX();
+        this.frozenDestY = target.getY();
+
+        float dx = frozenDestX - launchX;
+        float dy = frozenDestY - launchY;
+        float distancePixels = (float) Math.sqrt(dx * dx + dy * dy);
+        float speedPixelsPerTick = averageSpeedTilesPerSec * PhysicalConstants.SPEED_SCALE_RATIO;
+
+        this.flightDurationTicks = Math.max(1f, distancePixels / Math.max(0.0001f, speedPixelsPerTick));
+        this.arcHeightPixels = arcHeightTiles * PhysicalConstants.TILE_HEIGHT;
+        this.elapsedFlightTicks = 0f;
+        this.arcOffsetY = 0f;
+    }
+
+    public boolean isArcTrajectory() {
+        return isArcTrajectory;
+    }
+
+    public float getArcOffsetY() {
+        return arcOffsetY;
+    }
+
+
+    public float getArcProgress() {
+        if (!isArcTrajectory) return 0f;
+        return Math.min(1f, elapsedFlightTicks / flightDurationTicks);
     }
 
     public void onHit(Zombie z) {

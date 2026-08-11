@@ -386,9 +386,11 @@ public class BattlefieldRenderer {
         float projX = proj.getPosition().getX();
         float projY = proj.getPosition().getY();
 
+        float arcOffsetY = proj.getArcOffsetY();
+
         actor.setPosition(
             projX - actor.getWidth() / 2f,
-            projY - actor.getHeight() / 2f + 40f
+            projY - actor.getHeight() / 2f + 40f + arcOffsetY
         );
     }
 
