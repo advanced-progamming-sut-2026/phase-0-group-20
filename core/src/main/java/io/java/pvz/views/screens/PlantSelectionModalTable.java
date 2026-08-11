@@ -139,7 +139,7 @@ public class PlantSelectionModalTable extends Table {
         topInfoTable.add(headerTable).growX().colspan(2).padTop(30).row();
 
         Table animTable = new Table();
-        Image animBg = UiFactory.imageFor(textures, "IMAGE_BACKGROUNDS_FRONTLAWN_ROW_05");
+        Image animBg = UiFactory.imageFor(textures, "IMAGE_UI_CARDS_BACKGROUNDS_CARD_PLANT_BG_CARNIVAL");
         if (animBg != null) animTable.setBackground(animBg.getDrawable());
 
         String atlasName = UiFactory.getAnimationName(clickedPlant);
