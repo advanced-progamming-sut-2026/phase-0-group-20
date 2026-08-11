@@ -29,6 +29,7 @@ public class ConveyorBelt extends SpecialLevel {
     public void engineLoop(GameSession session, int currentTick) {
 
         super.engineLoop(session, currentTick);
+        if (currentTick%10 ==0 ) System.out.println("Bemola to conveyor belti dash.");
 
         if (currentTick > 0 && currentTick % (BELT_SPEED_SECONDS * TICKS_PER_SECOND) == 0) {
             if (belt.size() < BELT_CAPACITY) {

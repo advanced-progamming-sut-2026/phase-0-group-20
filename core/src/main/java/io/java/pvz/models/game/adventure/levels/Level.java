@@ -59,7 +59,10 @@ public abstract class Level implements GameMode {
         onLevelStart(session);
     }
 
-    public void destroyLevelFields(){};
+    public void destroyLevelFields() {
+    }
+
+    ;
 
     public abstract void onLevelStart(GameSession session);
 
@@ -77,6 +80,9 @@ public abstract class Level implements GameMode {
     public void engineLoop(GameSession session, int currentTick) {
         if (allWavesSpawned) return;
 
+        if (currentTick % 10 == 0)
+            System.out.println("this level is : " + levelNumber + " and current chapter is : " +
+                session.getCurrentChapter().getChapterIndex() + " and current season is : " + season.getName());
         currentActiveWave = session.getArena().getCurrentActiveWave();
 
         if (currentWave == 0) {
@@ -142,7 +148,7 @@ public abstract class Level implements GameMode {
             }
 
             notify("Zombie " + newZombie.getType().name() +
-                    " spawned in lane " + (lane + 1) + " (Cost: " + newZombie.getWaveCost() + ").");
+                " spawned in lane " + (lane + 1) + " (Cost: " + newZombie.getWaveCost() + ").");
         }
     }
 
@@ -154,9 +160,9 @@ public abstract class Level implements GameMode {
 
     public void notify(String message) {
         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(message)
+                .build());
     }
 
     public boolean skipsPlantSelection() {

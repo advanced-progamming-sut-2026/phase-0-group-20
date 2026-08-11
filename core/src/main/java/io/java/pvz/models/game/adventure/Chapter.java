@@ -100,7 +100,7 @@ public class Chapter {
     }
 
     public void advanceToNextLevel() {
-        if (currentLevelIndex < levels.size()) currentLevelIndex++;
+        if (currentLevelIndex < levels.size() - 1) currentLevelIndex++;
     }
 
     public int getCurrentLevelIndex() {
