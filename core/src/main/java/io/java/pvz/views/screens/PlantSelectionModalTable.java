@@ -19,10 +19,13 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.game.adventure.levels.Level;
+import io.java.pvz.models.game.adventure.levels.speciallevels.LockedPlants;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
+import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.PlantCardButton;
 import io.java.pvz.utils.UiFactory;
@@ -38,8 +41,10 @@ public class PlantSelectionModalTable extends Table {
     private final PlantSelectionController controller;
     private final Runnable onComplete;
     private final BorderedTable topInfoTable;
+    private final Table slotsTable = new Table();
     private final Map<Plant, PlantCardButton> cardMap = new HashMap<>();
     private Actor blocker;
+    private final Level currentLevel;
 
     public PlantSelectionModalTable(Skin skin, Runnable onComplete) {
         super();
@@ -47,6 +52,7 @@ public class PlantSelectionModalTable extends Table {
         this.onComplete = onComplete;
         this.controller = new PlantSelectionController();
         this.topInfoTable = new BorderedTable();
+        this.currentLevel = controller.getCurrentLevel();
 
         setSize(900, 800);
         buildContent(skin);
@@ -56,6 +62,14 @@ public class PlantSelectionModalTable extends Table {
         TextureBank textures = AssetLoader.getInstance().getTextures();
         setBackground(skin.getDrawable("image_ui_if_bundle_reward1_bg_10"));
         top();
+
+        if (currentLevel instanceof LockedPlants lockedLevel) {
+            Plant forced = lockedLevel.getForcedToUsePlant();
+            if (forced != null) {
+                controller.addPlant(forced.getName());
+            }
+        }
+
         List<Plant> availablePlants = getSortedPlants();
         if (availablePlants != null && !availablePlants.isEmpty()) {
             clickedPlant = availablePlants.getFirst();
@@ -85,6 +99,7 @@ public class PlantSelectionModalTable extends Table {
         scrollPane.setFadeScrollBars(false);
 
         updateTopInfo(textures);
+        updateSelectedSlots(textures);
 
         TextButton startGameBtn = new TextButton("LET'S ROCK!", skin, "green");
         startGameBtn.addListener(new ClickListener() {
@@ -107,7 +122,43 @@ public class PlantSelectionModalTable extends Table {
 
         add(topInfoTable).growX().height(250).pad(20).row();
         add(scrollPane).grow().pad(20).padTop(0).row();
+        add(slotsTable).padBottom(10).row();
         add(startGameBtn).size(250, 60).padBottom(20);
+    }
+
+    private void updateSelectedSlots(TextureBank textures) {
+        slotsTable.clearChildren();
+        int maxSlots = currentLevel.getPlantSlotCount();
+        int lockedSlots = 0;
+
+        if (currentLevel instanceof LockedPlants lp) {
+            lockedSlots = lp.getLockedSlots();
+        }
+
+        List<Plant> selected = controller.getSelectedPlants();
+
+        for (int i = 0; i < maxSlots; i++) {
+            Table slot = new Table();
+            Image slotBg = UiFactory.imageFor(textures, "IMAGE_UI_PACKETS_EMPTY_PACKET");
+            if (slotBg != null) {
+                slot.setBackground(slotBg.getDrawable());
+            }
+
+            if (i >= maxSlots - lockedSlots) {
+                Image lock = UiFactory.imageFor(textures, Ids.ZenGarden.LOCK);
+                if (lock != null) {
+                    slot.add(lock).size(40, 50).center();
+                }
+            } else if (i < selected.size()) {
+                Plant p = selected.get(i);
+                String plantTextureKey = "IMAGE_UI_PACKETS_" + UiFactory.getAtlasName(p).toUpperCase();
+                Image pImg = UiFactory.imageFor(textures, plantTextureKey);
+                if (pImg != null) {
+                    slot.add(pImg).expand().fill().pad(5);
+                }
+            }
+            slotsTable.add(slot).size(90, 60).pad(5);
+        }
     }
 
     private static @NonNull List<Plant> getSortedPlants() {
@@ -159,7 +210,6 @@ public class PlantSelectionModalTable extends Table {
 
         if(App.getActiveUser().isItUnlocked(clickedPlant)) {
             Table buttonsTable = createButtonTable(textures);
-
             rightContentTable.add(buttonsTable).right().expandX().bottom();
         }
 
@@ -185,34 +235,56 @@ public class PlantSelectionModalTable extends Table {
         }
 
         TextButton boostBtn = generateBoostBtn(textures);
-
-        buttonsTable.add(boostBtn).size(110, 50).padRight(10);
         buttonsTable.add(boostBtn).size(110, 50).padRight(10);
 
         boolean isSelected = activeCard != null && activeCard.getColor().equals(Color.DARK_GRAY);
-        TextButton selectBtn = new TextButton(isSelected ? "DESELECT" : "SELECT", skin, "green");
-        selectBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (isSelected) {
-                    Result res = controller.removePlant(clickedPlant.getName());
-                    if (res != null && res.isSuccessful()) {
-                        if (activeCard != null) {
-                            activeCard.setColor(Color.WHITE);
+        boolean isBanned = false;
+        boolean isForced = false;
+
+        if (currentLevel instanceof LockedPlants lp) {
+            if (!lp.isPlantAllowed(clickedPlant)) isBanned = true;
+            if (clickedPlant.equals(lp.getForcedToUsePlant())) isForced = true;
+        }
+
+        TextButton selectBtn;
+
+
+        if (isBanned) {
+            selectBtn = new TextButton("BANNED", skin, "green");
+            selectBtn.setDisabled(true);
+            selectBtn.setTouchable(Touchable.disabled);
+        } else if (isForced) {
+            selectBtn = new TextButton("FORCED", skin, "green");
+            selectBtn.setDisabled(true);
+            selectBtn.setTouchable(Touchable.disabled);
+        } else {
+            selectBtn = new TextButton(isSelected ? "DESELECT" : "SELECT", skin, "green");
+            selectBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (isSelected) {
+                        Result res = controller.removePlant(clickedPlant.getName());
+                        if (res != null && res.isSuccessful()) {
+                            if (activeCard != null) {
+                                activeCard.setColor(Color.WHITE);
+                            }
+                            updateSelectedSlots(textures);
+                            updateTopInfo(textures);
                         }
-                        updateTopInfo(textures);
-                    }
-                } else {
-                    Result res = controller.addPlant(clickedPlant.getName());
-                    if (res != null && res.isSuccessful()) {
-                        if (activeCard != null) {
-                            activeCard.setColor(Color.DARK_GRAY);
+                    } else {
+                        Result res = controller.addPlant(clickedPlant.getName());
+                        if (res != null && res.isSuccessful()) {
+                            if (activeCard != null) {
+                                activeCard.setColor(Color.DARK_GRAY);
+                            }
+                            updateSelectedSlots(textures);
+                            updateTopInfo(textures);
                         }
-                        updateTopInfo(textures);
                     }
                 }
-            }
-        });
+            });
+        }
+
         buttonsTable.add(selectBtn).size(110, 50);
         return buttonsTable;
     }
@@ -255,7 +327,10 @@ public class PlantSelectionModalTable extends Table {
     private PlantCardButton createPlantCard(TextureBank textures, Plant plant) {
         String plantName = UiFactory.getAtlasName(plant);
         String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
-        String familyTextureKey = "IMAGE_UI_PACKETS_MINTFAM_MELEE";
+        String familyTextureKey = getFamilyImageAddress(plant.getCategory());
+
+        final boolean isBanned = currentLevel instanceof LockedPlants lp && !lp.isPlantAllowed(plant);
+        final boolean isForced = currentLevel instanceof LockedPlants lp && clickedPlant.equals(lp.getForcedToUsePlant());
 
         try {
             Image cardBg = UiFactory.imageFor(textures, getCardAddress(plant));
@@ -274,13 +349,42 @@ public class PlantSelectionModalTable extends Table {
                 .setSkin(skin)
                 .build();
 
+
+            if (isBanned) {
+                Image goldenLock = UiFactory.imageFor(textures, "IMAGE_UI_CARDS_LOCK_MEDIUM_GOLD");
+                if (goldenLock != null) {
+                    goldenLock.setSize(50, 60);
+                    goldenLock.setPosition(45f, 22.5f);
+                    card.addActor(goldenLock);
+                }else {
+                    System.err.println("⚠️ Golden Lock Image is NULL! Check the Texture ID.");
+                }
+
+                card.setColor(Color.GRAY);
+            } else if (controller.getSelectedPlants().contains(plant)) {
+                card.setColor(Color.DARK_GRAY);
+            }
+
             card.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    if (isBanned) {
+                        clickedPlant = plant;
+                        updateTopInfo(textures);
+                        return;
+                    }
+
                     if (card.getColor().equals(Color.DARK_GRAY)) {
+                        if (isForced) {
+                            clickedPlant = plant;
+                            updateTopInfo(textures);
+                            return;
+                        }
+
                         Result res = controller.removePlant(plant.getName());
                         if (res != null && res.isSuccessful()) {
                             card.setColor(Color.WHITE);
+                            updateSelectedSlots(textures);
                             if (clickedPlant == plant) {
                                 updateTopInfo(textures);
                             }
@@ -323,7 +427,6 @@ public class PlantSelectionModalTable extends Table {
             Math.round((height - this.getHeight()) / 2f)
         );
         modalLayer.addActor(this);
-
     }
 
     private String getCardAddress(Plant plant) {
@@ -341,6 +444,21 @@ public class PlantSelectionModalTable extends Table {
         if (plant.getCategory() == PlantCategory.SUN_PRODUCER) return "IMAGE_UI_PACKETS_BOOST";
         return "IMAGE_UI_PACKETS_HOMELESS";
     }
+
+    private String getFamilyImageAddress(PlantCategory category) {
+        return switch (category) {
+            case SUN_PRODUCER -> "IMAGE_UI_PACKETS_MINTFAM_SUN";
+            case MELEE -> "IMAGE_UI_PACKETS_MINTFAM_MELEE";
+            case STRIKE_THROUGH -> "IMAGE_UI_PACKETS_MINTFAM_ELECTRICITY";
+            case HOMING -> "IMAGE_UI_PACKETS_MINTFAM_SHADOW";
+            case LOBBER -> "IMAGE_UI_PACKETS_MINTFAM_LOBBER";
+            case SHOOTER -> "IMAGE_UI_PACKETS_MINTFAM_PEASHOOTER";
+            case MODIFIER -> "IMAGE_UI_PACKETS_MINTFAM_MAGIC";
+            case WALL_NUT -> "IMAGE_UI_PACKETS_MINTFAM_DEFENSE";
+            case EXPLOSIVE ->  "IMAGE_UI_PACKETS_MINTFAM_EXPLOSIVE";
+        };
+    }
+
     @Override
     public boolean remove() {
         if (blocker != null) {

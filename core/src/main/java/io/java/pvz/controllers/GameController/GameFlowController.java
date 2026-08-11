@@ -191,6 +191,7 @@ public class GameFlowController {
             session.useSun(newPlant.getCost());
         }
         session.getTimeManager().registerNewTicker(newPlant);
+        plant.setPlacedTile(desiredTile);
         if (plant.isBoosted()) {
             plant.useFood();
         }

@@ -329,28 +329,6 @@ public class GameFlowScreen extends BaseScreen {
         mainLayer.addActor(seedBankTable);
     }
 
-    private static Table makeConveyor(TextureBank textures) {
-        Table conveyor = new Table();
-        Image edgeLeft = UiFactory.imageFor(textures, Ids.UI.CONVEYOR_SIDE);
-        Image edgeRight = UiFactory.imageFor(textures, Ids.UI.CONVEYOR_SIDE);
-        Image top = UiFactory.imageFor(textures, Ids.UI.CONVEYOR_TOP);
-        Image filling = UiFactory.imageFor(textures, Ids.UI.CONVEYOR_PANEL);
-        TextureRegionDrawable fillingRegion = (TextureRegionDrawable) filling.getDrawable();
-        TiledDrawable tiledFilling = new TiledDrawable(fillingRegion.getRegion());
-
-        Table middleSection = new Table();
-        middleSection.setBackground(tiledFilling);
-        middleSection.add(top).growX().top().row();
-
-        Table cardsArea = new Table();
-        middleSection.add(cardsArea).grow();
-        conveyor.add(edgeLeft).fillY().left();
-        conveyor.add(middleSection).growX().fillY();
-        conveyor.add(edgeRight).fillY().right();
-        return conveyor;
-    }
-
-
     private PlantCardButton createSeedPacket(Plant plant, Skin skin, TextureBank textures) {
         Image bgCard = UiFactory.imageFor(textures, Ids.PlantCards.BG_CARD);
         String plantName = UiFactory.getAtlasName(plant);
