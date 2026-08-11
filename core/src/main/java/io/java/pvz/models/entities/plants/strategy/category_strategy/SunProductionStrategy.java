@@ -55,6 +55,7 @@ public class SunProductionStrategy implements IPlantStrategy {
         int spawnY = context.getPlacedTile().getRow();
 
         Sun newSun = new Sun(type, spawnX, spawnY);
+        newSun.setProducedByPlant(true);
 
         gameSession.getArena().addSun(newSun);
         gameSession.getTimeManager().registerNewTicker(newSun);
@@ -67,6 +68,7 @@ public class SunProductionStrategy implements IPlantStrategy {
         int spawnY = context.getPlacedTile().getRow();
 
         Sun newSun = new Sun(amount, spawnX, spawnY);
+        newSun.setProducedByPlant(true);
 
         gameSession.getArena().addSun(newSun);
         gameSession.getTimeManager().registerNewTicker(newSun);

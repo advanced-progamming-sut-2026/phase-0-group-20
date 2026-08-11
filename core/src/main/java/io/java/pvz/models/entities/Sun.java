@@ -20,6 +20,7 @@ public class Sun implements Ticker {
     private boolean exploded = false;
     private boolean isBeingAbsorbed = false;
     private int absorbedTicksCounter = 0;
+    private boolean producedByPlant = false;
 
     public Sun(SunType type, int col, int row) {
         this.type = type;
@@ -126,5 +127,16 @@ public class Sun implements Ticker {
 
     public void setFalling(boolean falling) {
         this.isFalling = falling;
+    }
+
+    public boolean isProducedByPlant() {
+        return producedByPlant;
+    }
+
+    public void setProducedByPlant(boolean producedByPlant) {
+        this.producedByPlant = producedByPlant;
+        if (producedByPlant) {
+            this.isFalling = false;
+        }
     }
 }

@@ -381,17 +381,25 @@ public class BattlefieldRenderer implements GameEventListener {
         }
         actor.setScale(scale, scale);
 
-        float targetX = sun.getPosition().getX() - actor.getWidth() / 2f;
+        float baseX = sun.getPosition().getX() - actor.getWidth() / 2f;
         float targetY = sun.getPosition().getY() - actor.getHeight() / 2f + 15f;
 
-        boolean isFromSky = (sun.getType() != null);
+        if (sun.isProducedByPlant()) {
+            float offsetX = (float) ((Math.random() - 0.5) * 40.0);
+            float targetX = baseX + offsetX;
 
-        if (isFromSky) {
-            actor.setPosition(targetX, 1180f);
-            actor.addAction(Actions.moveTo(targetX, targetY, 5.0f, Interpolation.linear));
+            actor.setPosition(targetX, targetY + 10f);
+
+            actor.addAction(Actions.sequence(
+                Actions.moveTo(targetX, targetY + 60f, 0.35f, Interpolation.sineOut),
+                Actions.moveTo(targetX, targetY, 0.35f, Interpolation.bounceOut)
+            ));
+
+            sun.getPosition().setX(baseX + offsetX + actor.getWidth() / 2f);
+
         } else {
-            actor.setPosition(targetX, targetY + 40f);
-            actor.addAction(Actions.moveTo(targetX, targetY, 1.0f, Interpolation.bounceOut));
+            actor.setPosition(baseX, 1180f);
+            actor.addAction(Actions.moveTo(baseX, targetY, 4.0f, Interpolation.linear));
         }
 
         float finalScale = scale;
@@ -413,10 +421,6 @@ public class BattlefieldRenderer implements GameEventListener {
                 }
             }
         });
-
-        if (sun.getType() == SunType.RADIOACTIVE_SUN) {
-            actor.setColor(0.3f, 1.0f, 0.3f, 1.0f);
-        }
 
         effectLayer.addActor(actor);
         return actor;
