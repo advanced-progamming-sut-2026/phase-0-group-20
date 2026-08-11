@@ -7,12 +7,15 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import pvz.libpvz.pam.PamPlayer;
 
+import java.util.Map;
+
 public class PamAnimatedActor extends Actor {
     private final PamPlayer player;
     private String clipName;
     private String successfulPath = null;
     private float stateTime = 0f;
     private boolean isLoaded = false;
+    private Map<String, Boolean> visibilityMap = null;
 
     public PamAnimatedActor(PamPlayer player, String clipName, String... pamPaths) {
         this.player = player;
@@ -107,6 +110,10 @@ public class PamAnimatedActor extends Actor {
         return createZombieAnimated(type, clipName);
     }
 
+    public void setVisibilityMap(Map<String, Boolean> visibilityMap) {
+        this.visibilityMap = visibilityMap;
+    }
+
     public void setClip(String clipName) {
         if (clipName == null || clipName.equals(this.clipName)) return;
         this.clipName = clipName;
@@ -145,7 +152,11 @@ public class PamAnimatedActor extends Actor {
             batch.setTransformMatrix(scaledMatrix);
 
             try {
-                player.draw(batch, successfulPath, clipName, stateTime, drawX, drawY, true);
+                if (visibilityMap != null) {
+                    player.draw(batch, successfulPath, clipName, stateTime, drawX, drawY, true, visibilityMap);
+                } else {
+                    player.draw(batch, successfulPath, clipName, stateTime, drawX, drawY, true);
+                }
             } catch (Exception e) {
                 System.err.println("❌ Rendering Error for PAM: " + successfulPath + " - " + e.getMessage());
                 isLoaded = false;

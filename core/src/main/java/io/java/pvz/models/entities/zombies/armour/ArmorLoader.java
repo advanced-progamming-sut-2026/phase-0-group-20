@@ -50,7 +50,15 @@ public class ArmorLoader {
                 }
             }
 
-            ArmorData data = new ArmorData(aliases.getString(0), type, hp, flagsList);
+            List<String> armorLayers = new ArrayList<>();
+            if (od.has("ArmorLayers")) {
+                JSONArray layers = od.getJSONArray("ArmorLayers");
+                for (int f = 0; f < layers.length(); f++) {
+                    armorLayers.add(layers.getString(f));
+                }
+            }
+
+            ArmorData data = new ArmorData(aliases.getString(0), type, hp, flagsList, armorLayers);
 
             for (int j = 0; j < aliases.length(); j++) {
                 dataMap.put(aliases.getString(j), data);

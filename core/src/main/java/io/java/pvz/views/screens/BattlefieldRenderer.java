@@ -16,6 +16,7 @@ import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
+import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.LawnMower;
 import io.java.pvz.models.game.Arena;
@@ -265,6 +266,12 @@ public class BattlefieldRenderer implements GameEventListener {
     private void updateZombieActor(Zombie zombie, PamAnimatedActor actor) {
         actor.setClip(resolveZombieClip(zombie));
         centerOnPoint(actor, zombie.getPosition().getX(), zombie.getPosition().getY() + actor.getHeight() / 2f + 30);
+
+        if (!zombie.isDead()) {
+            updateZombieArmorVisuals(zombie, actor);
+        } else {
+            actor.setVisibilityMap(null);
+        }
     }
 
     private String resolveZombieClip(Zombie zombie) {
@@ -557,5 +564,38 @@ public class BattlefieldRenderer implements GameEventListener {
 
     public Group getHighlightLayer() {
         return highlightLayer;
+    }
+
+    private void updateZombieArmorVisuals(Zombie zombie, PamAnimatedActor zombieActor) {
+        String baseState = zombie.isAttacking() ? "eat" : "walk";
+
+        if (!zombieActor.getClip().equals(baseState)) {
+            zombieActor.setClip(baseState);
+        }
+
+        Armor activeArmor = null;
+        if (zombie.getArmorPieces() != null) {
+            for (Armor armor : zombie.getArmorPieces()) {
+                if (!armor.isDestroyed()) {
+                    activeArmor = armor;
+                    break;
+                }
+            }
+        }
+
+        Map<String, Boolean> visibilityMap = new HashMap<>();
+
+        if (activeArmor != null) {
+            System.out.println("Armor: " + activeArmor.getData().getArmorType());
+            for (String s : activeArmor.getData().getFlags()) {
+                System.out.println(s + "\n");
+            }
+            int damageLayer = activeArmor.getDamageLayer();
+            String state = activeArmor.getData().getArmorLayer(damageLayer);
+            visibilityMap.put(state, true);
+        }
+
+        zombieActor.setVisibilityMap(visibilityMap);
+
     }
 }

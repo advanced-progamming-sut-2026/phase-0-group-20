@@ -50,7 +50,6 @@ public class Armor {
         if (ratio > 0.666f) return 0;
         if (ratio > 0.333f) return 1;
         return 2;
-
     }
 
     @Override
