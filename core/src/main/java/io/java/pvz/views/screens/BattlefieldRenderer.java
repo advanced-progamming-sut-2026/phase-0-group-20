@@ -11,6 +11,7 @@ import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
+import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
@@ -26,6 +27,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventListener;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
@@ -357,8 +359,10 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private PamAnimatedActor spawnSun(Sun sun) {
-        String pamPath1 = "768/FULL/EFFECTS/SUN/SUN.PAM"; //add a method to find all sun type animation
-        String pamPath2 = "768/INITIAL/EFFECTS/SUN/SUN.PAM";
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getSunAnimation(sun.getType());
+
+        String pamPath1 = anim != null ? anim.path : "768/FULL/EFFECTS/SUN/SUN.PAM";
+        String pamPath2 = anim != null ? anim.path.replace("FULL", "INITIAL") : "768/INITIAL/EFFECTS/SUN/SUN.PAM";
 
         PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
             "animation", pamPath1, pamPath2);
@@ -384,7 +388,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
         if (isFromSky) {
             actor.setPosition(targetX, 1180f);
-            actor.addAction(Actions.moveTo(targetX, targetY, 5f, Interpolation.linear));
+            actor.addAction(Actions.moveTo(targetX, targetY, 5.0f, Interpolation.linear));
         } else {
             actor.setPosition(targetX, targetY + 40f);
             actor.addAction(Actions.moveTo(targetX, targetY, 1.0f, Interpolation.bounceOut));
@@ -395,7 +399,6 @@ public class BattlefieldRenderer implements GameEventListener {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 if (!sun.isCollected() && pointer == -1) {
-
                     Result result = gameFlowController.collectSun(sun.getCol(), sun.getRow());
 
                     if (result.isSuccessful()) {
@@ -411,6 +414,10 @@ public class BattlefieldRenderer implements GameEventListener {
             }
         });
 
+        if (sun.getType() == SunType.RADIOACTIVE_SUN) {
+            actor.setColor(0.3f, 1.0f, 0.3f, 1.0f);
+        }
+
         effectLayer.addActor(actor);
         return actor;
     }
@@ -418,6 +425,29 @@ public class BattlefieldRenderer implements GameEventListener {
     private void updateSunActor(Sun sun, PamAnimatedActor actor) {
         if (sun.isBeingAbsorbed()) {
             actor.clearActions();
+
+            AnimationCatalog.EntityAnimation anim = AnimationCatalog.getSunAnimation(sun.getType());
+            float transitionDuration = (anim != null && anim.hasClip("transition_red"))
+                ? anim.getDuration("transition_red") : 0.33f;
+
+            float currentAbsorbTime = sun.getAbsorbedTicksCounter() / (float) TimeManager.TICKS_PER_SECOND;
+
+            if (currentAbsorbTime < transitionDuration) {
+                if (!actor.getClip().equals("transition_red")) {
+                    actor.setClip("transition_red");
+                }
+            }
+
+            else {
+                if (!actor.getClip().equals("red")) {
+                    actor.setClip("red");
+                }
+            }
+        }
+        else {
+            if (!actor.getClip().equals("animation")) {
+                actor.setClip("animation");
+            }
         }
 
         if (!sun.isFalling() || sun.isBeingAbsorbed()) {
