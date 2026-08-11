@@ -59,6 +59,10 @@ public class Chapter {
     }
 
     public Level getCurrentLevel() {
+        System.out.println(currentLevelIndex);
+        if (currentLevelIndex == 4) {
+            currentLevelIndex = 3;
+        }
         return levels.get(currentLevelIndex);
     }
 
