@@ -15,6 +15,7 @@ import io.java.pvz.models.entities.zombies.behavior.context.*;
 import io.java.pvz.models.entities.zombies.behavior.defense.*;
 import io.java.pvz.models.entities.zombies.behavior.effect.JalapenoTimerEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.SunAbsorber;
+import io.java.pvz.models.entities.zombies.behavior.effect.TombRaiserEffect;
 import io.java.pvz.models.entities.zombies.behavior.move.*;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.tiles.GraveStoneTile;
@@ -100,7 +101,7 @@ public class ZombieFactory {
             case ARCADE -> createArcadeMove(zombie);
             case TROGLOBITE -> createTroglobiteMove(zombie);
 
-            case TOMB_RAISER -> createTombRaiserMove(zombie);
+            case TOMB_RAISER -> new NormalMove(zombie);
             case HUNTER -> createHunterMove(zombie);
             case OCTOPUS -> createOctopusMove(zombie);
             case WIZARD -> createWizardMove(zombie);
@@ -117,32 +118,6 @@ public class ZombieFactory {
 
             default -> new NormalMove(zombie);
         };
-    }
-
-    private static MoveBehavior createTombRaiserMove(Zombie zombie) {
-        return new PeriodicActionMove(zombie, 5 * TimeManager.TICKS_PER_SECOND, true, () -> {
-            GameSession session = GameSession.getInstance();
-            List<Tile> availableTiles = new ArrayList<>();
-
-            for (int r = 0; r < session.getArena().getRows(); r++) {
-                for (int c = 5; c < session.getArena().getCols(); c++) {
-                    Tile tile = session.getArena().getTile(r, c);
-                    if (tile.getPlants().isEmpty() && !(tile instanceof GraveStoneTile)) {
-                        availableTiles.add(tile);
-                    }
-                }
-            }
-
-            if (!availableTiles.isEmpty()) {
-                Tile targetTile = availableTiles.get(new Random().nextInt(availableTiles.size()));
-                session.getArena().changeTile(
-                        targetTile.getRow(),
-                        targetTile.getCol(),
-                        new GraveStoneTile(targetTile.getRow(), targetTile.getCol())
-                );
-                GameSession.notify("Grave spawned at: " + targetTile.getRow() + ", " + targetTile.getCol());
-            }
-        });
     }
 
     private static MoveBehavior createHunterMove(Zombie zombie) {
@@ -332,6 +307,10 @@ public class ZombieFactory {
         }
         if (type == ZombieType.ZOMBOTANY_JALAPENO)
             zombie.addEffect(new JalapenoTimerEffect(zombie));
+
+        if (type == ZombieType.TOMB_RAISER) {
+            zombie.addEffect(new TombRaiserEffect(zombie, 5));
+        }
 
     }
 

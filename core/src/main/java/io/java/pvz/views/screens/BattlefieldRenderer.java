@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
 import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.Position;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.SunType;
@@ -78,6 +79,7 @@ public class BattlefieldRenderer implements GameEventListener {
         environmentRenderer = new EnvironmentRenderer(environmentLayer);
 
         GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
+        GameEventMessenger.getInstance().addListener(GameEvent.SPAWN_EFFECT, this);
     }
 
     public Group getGroup() {
@@ -89,6 +91,36 @@ public class BattlefieldRenderer implements GameEventListener {
         if (event == GameEvent.PROJECTILE_HIT) {
             spawnHitSplash(payload);
         }
+
+        else if (event == GameEvent.SPAWN_EFFECT) {
+            System.out.println("Effect Received! Type: " + payload.getMessage());
+
+            if ("BONE_HIT".equals(payload.getMessage())) {
+                spawnBoneHitEffect(payload.getCol(), payload.getRow());
+            }
+        }
+    }
+
+    private void spawnBoneHitEffect(int col, int row) {
+        String pamPath = "768/INITIAL/EFFECTS/ZOMBIE_EGYPT_TOMBRAISER_BONE_HIT/ZOMBIE_EGYPT_TOMBRAISER_BONE_HIT.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "animation", pamPath);
+
+        actor.setSize(100, 100);
+        actor.setOrigin(Align.center);
+
+        Position pos = new Position(col, row);
+
+        float x = pos.getX() - (actor.getWidth() / 2f);
+        float y = pos.getY() - (actor.getHeight() / 2f) + 40;
+
+        actor.setPosition(x, y);
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.5f),
+            Actions.removeActor()
+        ));
     }
 
     private void spawnHitSplash(GameEventPayload payload) {
