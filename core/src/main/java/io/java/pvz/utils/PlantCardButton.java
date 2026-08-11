@@ -93,10 +93,10 @@ public class PlantCardButton extends Table {
             lockIcon = UiFactory.imageFor(textures, "IMAGE_ZEN_GARDEN_LOCKED_POT_ICON");
         }
 
-        buildUI();
+        buildUI(builder);
     }
 
-    private void buildUI() {
+    private void buildUI(Builder builder) {
         setBackground(bgImage.getDrawable());
 
         plantImage.setScaling(Scaling.fit);
@@ -105,7 +105,7 @@ public class PlantCardButton extends Table {
             familyImage.setScaling(Scaling.fit);
         }
 
-        add(plantImage).size(105, 105).expand().center().row();
+        add(plantImage).size(builder.scale, builder.scale).expand().center().row();
 
         if (progressStack != null) {
             add(progressStack).fillX().height(18).bottom();
@@ -214,6 +214,7 @@ public class PlantCardButton extends Table {
         private Plant plant;
         private Skin skin;
         private boolean showProgressBar = true;
+        private float scale = 105f;
 
         private boolean showLevel = true;
 
@@ -244,6 +245,11 @@ public class PlantCardButton extends Table {
 
         public Builder setShowProgressBar(boolean showProgressBar) {
             this.showProgressBar = showProgressBar;
+            return this;
+        }
+
+        public Builder setSize(float scale){
+            this.scale = scale;
             return this;
         }
 

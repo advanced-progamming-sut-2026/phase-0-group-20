@@ -187,7 +187,9 @@ public class GameFlowController {
 
         desiredTile.addPlant(newPlant);
         arena.addPlant(newPlant);
-        session.useSun(newPlant.getCost());
+        if(session.getCurrentChapter().getCurrentLevel().skipsPlantSelection()){
+            session.useSun(newPlant.getCost());
+        }
         session.getTimeManager().registerNewTicker(newPlant);
         if (plant.isBoosted()) {
             plant.useFood();
@@ -199,6 +201,9 @@ public class GameFlowController {
             .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
         session.setCooldownForPlant(plant);
+        if(session.getCurrentChapter().getCurrentLevel() instanceof ConveyorBelt conveyorBelt){
+            conveyorBelt.getBelt().remove(plant);
+        }
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +
             " with the name of " + newPlant.getName() + ".");
     }

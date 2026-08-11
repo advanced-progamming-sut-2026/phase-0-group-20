@@ -2,6 +2,7 @@ package io.java.pvz.utils;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
@@ -47,9 +48,9 @@ public class QuestItemUi extends Table {
         descriptionLabel.setFontScale(0.82f);
         descriptionLabel.setWrap(true);
 
-        float currentProgress = quest.getCondition().getCurrentProgress();
         float maxProgress = quest.getCondition().getTargetProgress();
-        if(maxProgress == 0 )maxProgress = 1.0f;
+        if (maxProgress == 0) maxProgress = 1.0f;
+        float currentProgress =(quest.isCompleted() || quest.isReadyToClaim())? maxProgress: quest.getCondition().getCurrentProgress();
         ProgressBar progressBar = new ProgressBar(0, maxProgress, 1, false, skin, "xp_green");
         progressBar.setValue(currentProgress);
         progressBar.setAnimateDuration(0.2f);
@@ -81,12 +82,20 @@ public class QuestItemUi extends Table {
         rewardTable.add(rewardAmount);
 
         TextButton actionButton;
-        if (quest.isReadyToClaim()) {
-            actionButton = new TextButton("CLAIM", skin, "green-small");
+        if (quest.isCompleted()) {
+            actionButton = new TextButton("COMPLETE", skin, "green_small");
+            actionButton.setDisabled(true);
+            actionButton.setTouchable(Touchable.disabled);
+
+        } else if (quest.isReadyToClaim()) {
+            actionButton = new TextButton("CLAIM", skin, "green_small");
             actionButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     quest.complete();
+                    actionButton.setDisabled(true);
+                    actionButton.setTouchable(Touchable.disabled);
+                    actionButton.setText("COMPLETE");
                 }
             });
         } else {
@@ -102,16 +111,30 @@ public class QuestItemUi extends Table {
             });
         }
 
-        actionButton.getLabel().setFontScale(1.0f);
+        actionButton.getLabel().
 
-        rightTable.add(rewardTable).padRight(16);
-        rightTable.add(actionButton).size(104, 44).padRight(20);
+            setFontScale(1.0f);
+
+        rightTable.add(rewardTable).
+
+            padRight(16);
+        rightTable.add(actionButton).
+
+            size(104, 44).
+
+            padRight(20);
 
         contentTable.add(rightTable);
 
         stack.add(contentTable);
 
-        this.add(stack).expand().fill();
+        this.
+
+            add(stack).
+
+            expand().
+
+            fill();
     }
 
     private String iconKeyFor(Quest quest) {

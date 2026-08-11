@@ -43,6 +43,9 @@ public final class Ids {
         public static final String FLOATING_SHOVEL = "IMAGE_UI_HUD_INGAME_SHOVEL_ICON";
         public static final String PLANT_FOOD_HOVERING = "IMAGE_DANGERROOM_CARD_PLANTFOOD";
         public static final String PLANT_FOOD_ICON = "IMAGE_UI_DANGERROOM_PLANTFOOD_ICON";
+        public static final String CONVEYOR_TOP = "IMAGE_UI_CONVEYOR_CONVEYOR_TOP";
+        public static final String CONVEYOR_SIDE = "IMAGE_UI_CONVEYOR_CONVEYOR_SIDE";
+        public static final String CONVEYOR_PANEL = "IMAGE_UI_CONVEYOR_CONVEYOR_BELT";
 
         public static final String SUN_ICON = "IMAGE_UI_HUD_INGAME_SUN";
         public static final String SUN_ADDER = "IMAGE_UI_GENERIC_BUTTON_GENERIC_CURRENCY_NORMAL";
