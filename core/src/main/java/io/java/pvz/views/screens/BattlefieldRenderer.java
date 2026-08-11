@@ -233,14 +233,28 @@ public class BattlefieldRenderer implements GameEventListener {
 
         Set<Zombie> stillAlive = new HashSet<>(liveZombies);
         Iterator<Map.Entry<Zombie, PamAnimatedActor>> it = zombieActors.entrySet().iterator();
+
         while (it.hasNext()) {
             Map.Entry<Zombie, PamAnimatedActor> entry = it.next();
-            if (!stillAlive.contains(entry.getKey())) {
-                entry.getValue().setClip(resolveZombieClip(entry.getKey())); // will resolve to "die" if the model already flagged it dead
-                despawn(entry.getValue());
+            Zombie zombie = entry.getKey();
+            PamAnimatedActor actor = entry.getValue();
+
+            if (!stillAlive.contains(zombie)) {
+                String deathClip = resolveZombieClip(zombie);
+                actor.setClip(deathClip);
+
+                float lingerTime = DESPAWN_LINGER_SECONDS;
+                AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
+
+                if (anim != null && anim.hasClip(deathClip)) {
+                    lingerTime = anim.getDuration(deathClip);
+                }
+
+                despawn(actor, lingerTime - 0.5f);
                 it.remove();
             }
         }
+
         zombieLayer.getChildren().sort((a, b) -> {
             float ay = a.getY();
             float by = b.getY();
@@ -294,6 +308,14 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private void centerOnPoint(PamAnimatedActor actor, float pixelX, float pixelY) {
         actor.setPosition(pixelX - actor.getWidth() / 2f, pixelY - actor.getHeight() / 2f);
+    }
+
+    private void despawn(PamAnimatedActor actor, float lingerTime) {
+        actor.addAction(Actions.sequence(
+            Actions.delay(lingerTime),
+            Actions.fadeOut(DESPAWN_FADE_SECONDS),
+            Actions.removeActor()
+        ));
     }
 
     private void despawn(PamAnimatedActor actor) {

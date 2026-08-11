@@ -128,9 +128,9 @@ public final class AnimationCatalog {
     }
 
     private static void registerZombies(Map<ZombieType, EntityAnimation> table) {
-        registerZombie(table, ZombieType.NORMAL, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        registerZombie(table, ZombieType.CONE, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
-        registerZombie(table, ZombieType.BUCKET, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.NORMAL, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.6f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.CONE, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.6f, "particles", 0.0333f);
+        registerZombie(table, ZombieType.BUCKET, "768/INITIAL/ZOMBIE/ZOMBIE_TUTORIAL/ZOMBIE_TUTORIAL.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.6f, "particles", 0.0333f);
 
         registerZombie(table, ZombieType.BRICK, "768/FULL/ZOMBIE/ZOMBIE_PIRATE_BASIC_BRICK/ZOMBIE_PIRATE_BASIC_BRICK.PAM", "idle", 2.0f, "walk", 2.0f, "eat", 4.1f, "die", 1.8f, "particles", 0.0333f);
         registerZombie(table, ZombieType.DARK_ARMOR, "768/FULL/ZOMBIE/ZOMBIE_DARK_BASIC/ZOMBIE_DARK_BASIC.PAM", "idle", 2.1f, "walk", 3.0f, "eat", 8.6333f, "die", 1.8333f, "particles", 0.0333f);
