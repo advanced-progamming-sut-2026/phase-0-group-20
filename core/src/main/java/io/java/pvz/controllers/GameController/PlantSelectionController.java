@@ -19,8 +19,22 @@ import java.util.List;
 public class PlantSelectionController {
     private final List<Plant> selectedPlants = new ArrayList<>();
     private final List<String> boostedPlantNames = new ArrayList<>();
+    private Level currentLevel = null;
     private int imitaterTargetId = -1;
 
+    public PlantSelectionController() {
+        try{
+            if (GameSession.getPendingBonusLevel() != null) {
+                currentLevel = GameSession.getPendingBonusLevel();
+            } else if (GameSession.getMinigameLevel() != null) {
+                currentLevel = GameSession.getMinigameLevel();
+            } else {
+                currentLevel = GameSession.getPendingLevel();
+            }
+        }catch(Exception e){
+
+        }
+    }
 
     public Result showAllPlants() {
         User activeUser = App.getActiveUser();
@@ -84,14 +98,7 @@ public class PlantSelectionController {
 
     public Result addPlant(String name) {
         User activeUser = App.getActiveUser();
-        Level currentLevel;
-        if (GameSession.getPendingBonusLevel() != null) {
-            currentLevel = GameSession.getPendingBonusLevel();
-        } else if (GameSession.getMinigameLevel() != null) {
-            currentLevel = GameSession.getMinigameLevel();
-        } else {
-            currentLevel = App.getActiveAdventure().getCurrentChapter().getCurrentLevel();
-        }
+
 
         if (selectedPlants.size() >= currentLevel.getPlantSlotCount()) {
             return new Result(false, "Your seed slots are full! (" + currentLevel.getPlantSlotCount() + " plants max)");
@@ -219,5 +226,9 @@ public class PlantSelectionController {
 
     public List<String> getBoostedPlantNames() {
         return boostedPlantNames;
+    }
+
+    public Level getCurrentLevel() {
+        return currentLevel;
     }
 }
