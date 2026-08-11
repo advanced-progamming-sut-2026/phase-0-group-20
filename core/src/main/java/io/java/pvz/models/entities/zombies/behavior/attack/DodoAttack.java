@@ -1,12 +1,8 @@
 package io.java.pvz.models.entities.zombies.behavior.attack;
 
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.entities.plants.strategy.AntiJumpStrategy;
-import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
-import io.java.pvz.models.enums.plants.PlantCategory;
-import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.game.GameSession;
 
 import java.util.List;
@@ -20,7 +16,6 @@ public class DodoAttack implements AttackBehavior {
         this.normalEatAttack = new NormalAttack(zombie);
     }
 
-
     @Override
     public void execute() {
         GameSession session = GameSession.getInstance();
@@ -29,43 +24,9 @@ public class DodoAttack implements AttackBehavior {
         if (targetPlants.isEmpty()) {
             zombie.setAttacking(false);
             zombie.setState(ZombieState.WALKING);
+            return;
         }
 
-        Plant targetPlant = targetPlants.getFirst();
-
-        for (IPlantStrategy s : targetPlant.getStrategies()) {
-            if (s instanceof AntiJumpStrategy) {
-                notify("Dodo Rider is blocked by Tall-nut!");
-                normalEatAttack.execute();
-                return;
-            }
-        }
-
-        if (isFlyable(targetPlant)) {
-            notify("Dodo Rider flew over " + targetPlant.getName() + "!");
-
-            int newCol = targetPlant.getPlacedTile().getCol() - 1;
-            if (newCol >= 0) {
-                zombie.setCol(newCol);
-                zombie.setX(zombie.getX() - 10);
-            }
-
-            zombie.setAttacking(false);
-            zombie.setState(ZombieState.WALKING);
-        } else {
-            normalEatAttack.execute();
-        }
-    }
-
-    private boolean isFlyable(Plant plant) {
-        PlantCategory category = plant.getCategory();
-
-        boolean isHighHp = category == PlantCategory.WALL_NUT;
-
-        boolean isTrap = plant.getTags().contains(PlantTag.TRAP);
-
-        boolean isLaneChanger = plant.getTags().contains(PlantTag.MOVE_ZOMBIES);
-
-        return isHighHp || isTrap || isLaneChanger;
+        normalEatAttack.execute();
     }
 }

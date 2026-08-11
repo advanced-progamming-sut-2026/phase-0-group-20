@@ -7,5 +7,8 @@ public enum ZombieState {
     POWER_UP,
     POWER,
     POWER_DOWN,
-    DEAD
+    DEAD,
+    FLY_START,
+    FLYING,
+    FLY_END
 }

@@ -100,6 +100,7 @@ public class ZombieFactory {
             case BARREL_ROLLER -> createBarrelMove(zombie);
             case ARCADE -> createArcadeMove(zombie);
             case TROGLOBITE -> createTroglobiteMove(zombie);
+            case DODO -> new DodoMove(zombie);
 
             case TOMB_RAISER -> new NormalMove(zombie);
             case HUNTER -> createHunterMove(zombie);
