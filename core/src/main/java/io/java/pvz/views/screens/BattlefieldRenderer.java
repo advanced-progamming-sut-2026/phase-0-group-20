@@ -384,11 +384,12 @@ public class BattlefieldRenderer implements GameEventListener {
         if (anim == null) return CLIP_IDLE;
 
         if (plant.isBoosted()) {
-            if (anim.hasClip("plantfood")) return "plantfood";
             if (anim.hasClip("plantfood_idle")) return "plantfood_idle";
             if (anim.hasClip("plantfood_stage1")) return "plantfood_stage1";
             if (anim.hasClip("plantfood_on")) return "plantfood_on";
+            if (anim.hasClip("plantfood")) return "plantfood";
             if (anim.hasClip("plantfood_start")) return "plantfood_start";
+
         }
 
         TrapStrategy trap =
@@ -406,7 +407,8 @@ public class BattlefieldRenderer implements GameEventListener {
         }
 
         SunProductionStrategy sunProductionStrategy = plant.getStrategy(SunProductionStrategy.class);
-        if (sunProductionStrategy!= null && plant.getCurrentAction()!=null && plant.getCurrentAction().equals("special")) {
+        if (sunProductionStrategy != null && plant.getCurrentAction() != null && plant.getCurrentAction().equalsIgnoreCase("special")) {
+            if (anim.hasClip("special_stage2")) return "special_stage2";
             if (anim.hasClip("special_idle")) return "special_idle";
             if (anim.hasClip("special")) return "special";
         }

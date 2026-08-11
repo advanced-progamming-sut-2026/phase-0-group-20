@@ -194,6 +194,7 @@ public class Projectile implements Ticker {
         if (target != null) {
             if (target.isDead()) {
                 target = null;
+                isDestroyed = true;
                 canPassObstacles = false;
                 speedX = baseSpeed > 0 ? baseSpeed : (ProjectileTuning.LOST_TARGET_FALLBACK_SPEED_TILES_PER_SEC * PhysicalConstants.SPEED_SCALE_RATIO);
             } else {
