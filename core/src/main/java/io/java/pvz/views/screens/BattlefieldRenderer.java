@@ -21,6 +21,10 @@ import io.java.pvz.models.fields.LawnMower;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.SeasonType;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventListener;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
@@ -31,16 +35,22 @@ import java.util.*;
 import static io.java.pvz.models.enums.PhysicalConstants.TILE_HEIGHT;
 import static io.java.pvz.models.enums.PhysicalConstants.TILE_WIDTH;
 
-public class BattlefieldRenderer {
+public class BattlefieldRenderer implements GameEventListener {
     private static final String CLIP_IDLE = "idle";
     private static final String CLIP_WALK = "walk";
 
     private static final float DESPAWN_LINGER_SECONDS = 0.5f;
     private static final float DESPAWN_FADE_SECONDS = 0.25f;
 
+    private static final float HIT_SPLASH_SIZE = 70f;
+
+    private record HitAnim(String path, String clip, float duration) {}
+    private static final Map<ProjectileType, HitAnim> HIT_ANIMS = buildHitAnimMap();
+
     private final Map<Plant, PamAnimatedActor> plantActors = new HashMap<>();
     private final Map<Zombie, PamAnimatedActor> zombieActors = new HashMap<>();
     private final Map<Projectile, PamAnimatedActor> projectileActors = new HashMap<>();
+    private final Map<Projectile, ProjectileType> projectileActorTypes = new HashMap<>();
     private final Map<Sun, PamAnimatedActor> sunActors = new HashMap<>();
     private final Map<LawnMower, PamAnimatedActor> lawnMowerActors = new HashMap<>();
     private final GameFlowController  gameFlowController = new GameFlowController();
@@ -63,10 +73,41 @@ public class BattlefieldRenderer {
         masterGroup.addActor(effectLayer);
 
         environmentRenderer = new EnvironmentRenderer(environmentLayer);
+
+        GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
     }
 
     public Group getGroup() {
         return masterGroup;
+    }
+
+    @Override
+    public void onEvent(GameEvent event, GameEventPayload payload) {
+        if (event == GameEvent.PROJECTILE_HIT) {
+            spawnHitSplash(payload);
+        }
+    }
+
+    private void spawnHitSplash(GameEventPayload payload) {
+        HitAnim hitAnim = HIT_ANIMS.get(payload.getProjectileType());
+        if (hitAnim == null) return;
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
+            hitAnim.clip(), hitAnim.path());
+
+        actor.setSize(HIT_SPLASH_SIZE, HIT_SPLASH_SIZE);
+        actor.setOrigin(Align.center);
+
+        float x = payload.getPixelX();
+        float y = payload.getPixelY();
+        actor.setPosition(x - actor.getWidth() / 2f, y - actor.getHeight() / 2f + 40f);
+
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(hitAnim.duration()),
+            Actions.removeActor()
+        ));
     }
 
 
@@ -92,6 +133,7 @@ public class BattlefieldRenderer {
         plantActors.clear();
         zombieActors.clear();
         projectileActors.clear();
+        projectileActorTypes.clear();
         sunActors.clear();
     }
 
@@ -351,9 +393,15 @@ public class BattlefieldRenderer {
     private void syncProjectiles(List<Projectile> liveProjectiles) {
         for (Projectile proj : liveProjectiles) {
             PamAnimatedActor actor = projectileActors.get(proj);
-            if (actor == null) {
+            ProjectileType lastRenderedType = projectileActorTypes.get(proj);
+
+            if (actor == null || lastRenderedType != proj.getType()) {
+                if (actor != null) {
+                    actor.remove();
+                }
                 actor = spawnProjectile(proj);
                 projectileActors.put(proj, actor);
+                projectileActorTypes.put(proj, proj.getType());
             }
             updateProjectileActor(proj, actor);
         }
@@ -365,6 +413,7 @@ public class BattlefieldRenderer {
             Projectile proj = entry.getKey();
             if (!stillAlive.contains(proj) || proj.isDestroyed()) {
                 entry.getValue().remove();
+                projectileActorTypes.remove(proj);
                 it.remove();
             }
         }
@@ -386,9 +435,11 @@ public class BattlefieldRenderer {
         float projX = proj.getPosition().getX();
         float projY = proj.getPosition().getY();
 
+        float arcOffsetY = proj.getArcOffsetY();
+
         actor.setPosition(
             projX - actor.getWidth() / 2f,
-            projY - actor.getHeight() / 2f + 40f
+            projY - actor.getHeight() / 2f + 40f + arcOffsetY
         );
     }
 
@@ -424,6 +475,29 @@ public class BattlefieldRenderer {
     private ProjectileAnim resolveProjectileAnim(Projectile proj) {
         ProjectileAnim anim = PROJECTILE_ANIMS.get(proj.getType());
         return anim != null ? anim : PROJECTILE_ANIMS.get(ProjectileType.PEA);
+    }
+
+    private static Map<ProjectileType, HitAnim> buildHitAnimMap() {
+        Map<ProjectileType, HitAnim> map = new EnumMap<>(ProjectileType.class);
+        map.put(ProjectileType.PEA, new HitAnim(Ids.ProjectileHits.PEA, "animation", 0.8333f));
+        map.put(ProjectileType.ICE_PEA, new HitAnim(Ids.ProjectileHits.ICE_PEA, "animation", 0.625f));
+        map.put(ProjectileType.ROTOBAGA_SEED, new HitAnim(Ids.ProjectileHits.ROTOBAGA_SEED, "animation", 0.5f));
+        map.put(ProjectileType.FIRE_PEA, new HitAnim(Ids.ProjectileHits.FIRE_PEA, "animation", 0.625f));
+        map.put(ProjectileType.GOO_PEA, new HitAnim(Ids.ProjectileHits.GOO_PEA, "animation", 0.4667f));
+        map.put(ProjectileType.MAGIC_BEAM, new HitAnim(Ids.ProjectileHits.MAGIC_BEAM, "animation", 2.2f));
+        map.put(ProjectileType.LIGHTNING_CLOUD, new HitAnim(Ids.ProjectileHits.LIGHTNING_CLOUD, "animation", 0.5f));
+        map.put(ProjectileType.CABBAGE, new HitAnim(Ids.ProjectileHits.CABBAGE, "animation", 0.6667f));
+        map.put(ProjectileType.CORN, new HitAnim(Ids.ProjectileHits.CORN, "animation", 0.6667f));
+        map.put(ProjectileType.BUTTER, new HitAnim(Ids.ProjectileHits.BUTTER, "animation", 0.6667f));
+        map.put(ProjectileType.MELON, new HitAnim(Ids.ProjectileHits.MELON, "animation", 0.6667f));
+        map.put(ProjectileType.WINTER_MELON, new HitAnim(Ids.ProjectileHits.WINTER_MELON, "animation", 0.8333f));
+        map.put(ProjectileType.PEPPER, new HitAnim(Ids.ProjectileHits.PEPPER, "animation", 1.2667f));
+        map.put(ProjectileType.GRAPE, new HitAnim(Ids.ProjectileHits.GRAPE, "animation", 0.9f));
+        map.put(ProjectileType.FUME, new HitAnim(Ids.ProjectileHits.FUME, "animation", 0.4667f));
+        map.put(ProjectileType.PLASMA_BALL, new HitAnim(Ids.ProjectileHits.PLASMA_BALL, "animation", 1.3f));
+        map.put(ProjectileType.EXPLODE_NUT_BOWL, new HitAnim(Ids.ProjectileHits.EXPLODE_NUT_BOWL, "explosion", 1.6667f));
+        // SPIKE, WALLNUT_BOWL, GIANT_NUT_BOWL intentionally have no splash asset (blunt/piercing hits, no PAM splat exists)
+        return map;
     }
 
     private PamAnimatedActor spawnLawnMower(LawnMower mower) {

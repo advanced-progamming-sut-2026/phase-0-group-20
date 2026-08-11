@@ -14,5 +14,6 @@ public enum GameEvent {
     LAWNMOWER_TRIGGERED,
     NOTIFY,
     NEW_DAY_STARTED,
-    PLANT_UNLOCKED;
+    PLANT_UNLOCKED,
+    PROJECTILE_HIT;
 }

@@ -84,7 +84,7 @@ public class ProjectileMechanism {
         return switch (name) {
             case "Caulipower" -> new HypnotizeEffect();
             case "Electric Blueberry" -> new LightningEffect();
-            case "citron" -> new AreaOfEffect(new NormalEffect(), 0, 1.5);
+            case "Citron" -> new AreaOfEffect(new NormalEffect(), 0, 1.5);
             default -> new NormalEffect();
         };
     }
@@ -98,8 +98,8 @@ public class ProjectileMechanism {
             case "Goo Peashooter" -> ProjectileType.GOO_PEA;
             case "Caulipower" -> ProjectileType.MAGIC_BEAM;
             case "Electric Blueberry" -> ProjectileType.LIGHTNING_CLOUD;
-            case "citron" -> ProjectileType.PLASMA_BALL;
-            case "kernel-pult" -> ProjectileType.BUTTER;
+            case "Citron" -> ProjectileType.PLASMA_BALL;
+            case "Kernel-pult" -> ProjectileType.BUTTER;
             default -> ProjectileType.PEA;
         };
     }

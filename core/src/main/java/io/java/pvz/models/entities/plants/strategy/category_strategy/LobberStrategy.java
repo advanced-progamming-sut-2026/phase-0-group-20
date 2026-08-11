@@ -96,7 +96,7 @@ public class LobberStrategy implements IPlantStrategy {
                 false,
                 true // canPassObstacles
             );
-            projectile.setHomingTarget(targetZombie, ProjectileTuning.LOB_SPEED_TILES_PER_SEC);
+            projectile.setArcTrajectory(targetZombie, ProjectileTuning.LOB_SPEED_TILES_PER_SEC, ProjectileTuning.LOB_ARC_HEIGHT_TILES);
             Projectile.spawnCustom(projectile);
             notify("🥔 " + name + " lobbed a " + type.name() + "!");
         }
