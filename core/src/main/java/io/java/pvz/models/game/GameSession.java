@@ -434,7 +434,4 @@ public class GameSession {
 
     public GameState getState() {return state;}
 
-    public static Level getPendingLevel() {
-        return pendingLevel;
-    }
 }

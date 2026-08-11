@@ -22,20 +22,6 @@ public class PlantSelectionController {
     private Level currentLevel = null;
     private int imitaterTargetId = -1;
 
-    public PlantSelectionController() {
-        try{
-            if (GameSession.getPendingBonusLevel() != null) {
-                currentLevel = GameSession.getPendingBonusLevel();
-            } else if (GameSession.getMinigameLevel() != null) {
-                currentLevel = GameSession.getMinigameLevel();
-            } else {
-                currentLevel = GameSession.getPendingLevel();
-            }
-        }catch(Exception e){
-
-        }
-    }
-
     public Result showAllPlants() {
         User activeUser = App.getActiveUser();
         if (activeUser == null) return new Result(false, "No active user!");
