@@ -58,12 +58,6 @@ public class Chapter {
         }
     }
 
-    public Level getCurrentLevel() {
-        if (currentLevelIndex == 4) {
-            currentLevelIndex = 3;
-        }
-        return levels.get(currentLevelIndex);
-    }
 
     public boolean isNight() {
         return type == SeasonType.DARK_AGES;

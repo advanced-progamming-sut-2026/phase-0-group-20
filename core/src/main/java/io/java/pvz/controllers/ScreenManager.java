@@ -3,6 +3,8 @@ package io.java.pvz.controllers;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import io.java.pvz.models.App;
+import io.java.pvz.models.database.DataBaseManager;
 
 import java.util.Stack;
 
@@ -44,7 +46,8 @@ public class ScreenManager {
 
         Screen current = screenStack.pop();
         current.dispose();
-
+        if(App.getActiveUser() != null)
+            DataBaseManager.saveOrUpdateUser(App.getActiveUser());
         if (!screenStack.isEmpty()) {
             Screen previous = screenStack.peek();
             previous.resume();

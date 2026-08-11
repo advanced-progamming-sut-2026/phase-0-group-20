@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
@@ -17,6 +16,7 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
+import io.java.pvz.views.screens.modals.*;
 import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
 
