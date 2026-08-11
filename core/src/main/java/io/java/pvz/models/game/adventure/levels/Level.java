@@ -80,9 +80,6 @@ public abstract class Level implements GameMode {
     public void engineLoop(GameSession session, int currentTick) {
         if (allWavesSpawned) return;
 
-        if (currentTick % 10 == 0)
-            System.out.println("this level is : " + levelNumber + " and current chapter is : " +
-                session.getCurrentChapter().getChapterIndex() + " and current season is : " + season.getName());
         currentActiveWave = session.getArena().getCurrentActiveWave();
 
         if (currentWave == 0) {

@@ -397,6 +397,10 @@ public class GameSession {
         return minigameLevel;
     }
 
+    public static Level getPendingLevel() {
+        return pendingLevel;
+    }
+
     public static void setMinigameLevel(Level minigameLevel) {
         GameSession.minigameLevel = minigameLevel;
         GameSession.pendingLevel = null;

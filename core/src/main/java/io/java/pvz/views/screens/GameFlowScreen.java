@@ -35,7 +35,6 @@ import io.java.pvz.models.game.minigame.DroppedSeedPacket;
 import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.*;
-import org.jspecify.annotations.NonNull;
 import pvz.libpvz.textures.TextureBank;
 
 import java.util.*;
@@ -60,7 +59,7 @@ public class GameFlowScreen extends BaseScreen {
     private Image floatingPlantFoodImage = null;
     private PlantFoodUI plantFoodBankUI;
 
-    private ConveyorBeltUI belt ;
+    private ConveyorBeltUI belt;
 
     private Image rowHighlight;
     private Image colHighlight;
@@ -415,10 +414,9 @@ public class GameFlowScreen extends BaseScreen {
         clearScreen(0.1f, 0.1f, 0.1f, 1f);
         AssetLoader.getInstance().updateTextures();
         if (belt != null && GameSession.getInstance() != null &&
-            GameSession.getInstance().getCurrentChapter().getCurrentLevel()
-            instanceof ConveyorBelt beltLevel){
-            List<Plant> currentConveyorPlants = beltLevel.getBelt() ;
-
+            GameSession.getInstance().getCurrentMode()
+                instanceof ConveyorBelt beltLevel) {
+            List<Plant> currentConveyorPlants = beltLevel.getBelt();
             belt.updateConveyor(delta, currentConveyorPlants);
         }
         calculateProgressBar(delta);
@@ -906,7 +904,7 @@ public class GameFlowScreen extends BaseScreen {
             float waveSlice = 1f / waveCount;
             float baseProgress = (level.getCurrentWave() - 1) * waveSlice;
             float currentWaveProgress = 0f;
-           Wave activeWave = GameSession.getInstance().getArena().getCurrentActiveWave();
+            Wave activeWave = GameSession.getInstance().getArena().getCurrentActiveWave();
 
             if (activeWave != null && activeWave.getTotalBaseHp() > 0) {
                 int currentHp = 0;

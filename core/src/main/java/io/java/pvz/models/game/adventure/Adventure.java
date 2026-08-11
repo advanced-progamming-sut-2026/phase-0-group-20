@@ -34,9 +34,9 @@ public class Adventure {
             if (i <= unlockedChapIndex) {
                 chapter.setUnlocked(true);
                 if (i == unlockedChapIndex)
-                    chapter.setCurrentLevelIndex(unlockedLevelIndex);
+                    chapter.setMaxLevelIndexInThisChapter(unlockedLevelIndex);
                 else
-                    chapter.setCurrentLevelIndex(0);
+                    chapter.setMaxLevelIndexInThisChapter(0);
 
             } else
                 chapter.setUnlocked(false);
@@ -60,7 +60,7 @@ public class Adventure {
         if (currentChapterIndex + 1 < chapters.size()) {
             currentChapterIndex++;
             chapters.get(currentChapterIndex).setUnlocked(true);
-            chapters.get(currentChapterIndex).setCurrentLevelIndex(0);
+            chapters.get(currentChapterIndex).setMaxLevelIndexInThisChapter(0);
             notify("New Chapter Unlocked: " + chapters.get(currentChapterIndex).getDisplayName());
         }
     }
@@ -100,7 +100,7 @@ public class Adventure {
         currentChap.advanceToNextLevel();
 
         int targetChapterIndex = currentChapterIndex;
-        int targetLevelIndex = currentChap.getCurrentLevelIndex();
+        int targetLevelIndex = currentChap.getMaxLevelIndexInThisChapter();
 
         if (targetLevelIndex > 3) {
 

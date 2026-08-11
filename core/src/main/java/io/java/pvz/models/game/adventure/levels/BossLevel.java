@@ -16,8 +16,6 @@ public class BossLevel extends Level {
 
     @Override
     public void onLevelStart(GameSession session) {
-        System.out.println("this is the bosssss");
-
     }
 
 
