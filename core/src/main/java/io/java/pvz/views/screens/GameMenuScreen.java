@@ -35,7 +35,7 @@ public class GameMenuScreen extends BaseScreen {
     private void registerMenuPanels() {
         TextureBank textures = AssetLoader.getInstance().getTextures();
         Skin skin = AssetLoader.getInstance().getSkin();
-         menuController.register(Menu.SHOP_MENU, () -> ShopModalMenu.build(menuController, textures, skin));
+         menuController.register(Menu.SHOP_MENU, () -> ShopModalMenu.build(menuController, textures, skin,modalLayer));
 //         menuController.register(Menu.COLLECTION_MENU, () -> CollectionMenu.build());
 //         menuController.register(Menu.GREENHOUSE_MENU, () -> GreenHouseMenu.build());
          menuController.register(Menu.LEADERBOARD_MENU, () -> LeaderboardMenu.build(menuController, textures, skin));

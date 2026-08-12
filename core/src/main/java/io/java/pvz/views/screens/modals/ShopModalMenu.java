@@ -1,6 +1,10 @@
 package io.java.pvz.views.screens.modals;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -21,6 +25,7 @@ import pvz.skin.BorderedTable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class ShopModalMenu extends Table {
     private static final Color BROWN = Color.valueOf("#4A3018");
@@ -41,15 +46,17 @@ public class ShopModalMenu extends Table {
     private Label statusLabel;
 
     private int selectivePlantIndex = 0;
+    private Group modalLayer; // Added to hold the blocker and confirm dialog
 
-    public static Table build(GameMenuController menuController, TextureBank textures, Skin skin) {
-        return new ShopModalMenu(menuController, textures, skin);
+    public static Table build(GameMenuController menuController, TextureBank textures, Skin skin, Group modalLayer) {
+        return new ShopModalMenu(menuController, textures, skin, modalLayer);
     }
 
-    private ShopModalMenu(GameMenuController menuController, TextureBank textures, Skin skin) {
+    private ShopModalMenu(GameMenuController menuController, TextureBank textures, Skin skin, Group modalLayer) {
         this.menuController = menuController;
         this.textures = textures;
         this.skin = skin;
+        this.modalLayer = modalLayer;
         setFillParent(true);
         this.setTouchable(Touchable.enabled);
         this.addListener(new ClickListener());
@@ -173,8 +180,7 @@ public class ShopModalMenu extends Table {
             buySection.add(priceRow).padBottom(12).row();
 
             TextButton buyBtn = UiFactory.textButton("Buy", skin, "green_small", 1.1f, 0.9f, () -> {
-                showStatus(controller.buyItem("daily deal", 1, null));
-                refreshAll();
+                showConfirmDialog(() -> controller.buyItem("daily deal", 1, null), 1600, Shop.CurrencyType.COIN);
             });
             buySection.add(buyBtn).width(170).height(55);
         }
@@ -191,19 +197,19 @@ public class ShopModalMenu extends Table {
         itemsRow.add(buildFixedItemCard(
             Ids.Shop.CARD_GREEN, Ids.GameScreen.GREENHOUSE_ICON,
             "Pot", "Unlocks a Greenhouse pot (max 20)", 2000, Shop.CurrencyType.COIN,
-            () -> { showStatus(controller.buyItem("pot", 1, null)); refreshAll(); }
+            () -> showConfirmDialog(() -> controller.buyItem("pot", 1, null), 2000, Shop.CurrencyType.COIN)
         )).size(CARD_WIDTH, CARD_HEIGHT);
 
         itemsRow.add(buildFixedItemCard(
             Ids.Shop.CARD_BLUE, Ids.Shop.PLANT_FOOD_ICON,
             "Plant Food", "Instantly powers up a plant (max 3 held)", 3, Shop.CurrencyType.DIAMOND,
-            () -> { showStatus(controller.buyItem("plant food", 1, null)); refreshAll(); }
+            () -> showConfirmDialog(() -> controller.buyItem("plant food", 1, null), 3, Shop.CurrencyType.DIAMOND)
         )).size(CARD_WIDTH, CARD_HEIGHT);
 
         itemsRow.add(buildFixedItemCard(
             Ids.Shop.CARD_YELLOW, Ids.Shop.SEED_PACKET_ICON,
             "Random Seed Packet", "5x seed packets of a random unlocked plant", 1000, Shop.CurrencyType.COIN,
-            () -> { showStatus(controller.buyItem("random seed packet", 1, null)); refreshAll(); }
+            () -> showConfirmDialog(() -> controller.buyItem("random seed packet", 1, null), 1000, Shop.CurrencyType.COIN)
         )).size(CARD_WIDTH, CARD_HEIGHT);
 
         itemsRow.add(buildSelectiveSeedPacketCard()).size(CARD_WIDTH, CARD_HEIGHT);
@@ -211,7 +217,7 @@ public class ShopModalMenu extends Table {
         itemsRow.add(buildFixedItemCard(
             Ids.Shop.CARD_COIN, Ids.Shop.COIN,
             "Currency Exchange", "Trade 5 diamonds for 500 coins", 5, Shop.CurrencyType.DIAMOND,
-            () -> { showStatus(controller.buyItem("currency exchange", 1, null)); refreshAll(); }
+            () -> showConfirmDialog(() -> controller.buyItem("currency exchange", 1, null), 5, Shop.CurrencyType.DIAMOND)
         )).size(CARD_WIDTH, CARD_HEIGHT);
 
         Map<String, Shop.PlantPrice> plants = controller.getAvailablePlants();
@@ -316,8 +322,7 @@ public class ShopModalMenu extends Table {
 
         String targetPlantName = selected.getName();
         TextButton buyBtn = UiFactory.textButton("Buy 10x", skin, "purple", 1.1f, 0.9f, () -> {
-            showStatus(controller.buyItem("selective seed packet", 1, targetPlantName));
-            refreshAll();
+            showConfirmDialog(() -> controller.buyItem("selective seed packet", 1, targetPlantName), 5, Shop.CurrencyType.DIAMOND);
         });
         card.add(buyBtn).width(150).height(50);
 
@@ -346,8 +351,7 @@ public class ShopModalMenu extends Table {
 
         card.add(buildPriceRow(price.amount, price.currency)).padBottom(10).row();
         card.add(buildBuyButton(price.currency, () -> {
-            showStatus(controller.buyPlant(plantName));
-            refreshAll();
+            showConfirmDialog(() -> controller.buyPlant(plantName), price.amount, price.currency);
         })).width(150).height(50);
 
         return card;
@@ -370,7 +374,6 @@ public class ShopModalMenu extends Table {
         return UiFactory.textButton("Buy", skin, style, 1.1f, 0.9f, onBuy::run);
     }
 
-
     private void refreshAll() {
         refreshDailyDeal();
         refreshItemsRow();
@@ -380,5 +383,82 @@ public class ShopModalMenu extends Table {
         if (result == null) return;
         statusLabel.setText(result.message());
         statusLabel.setColor(result.isSuccessful() ? SUCCESS_COLOR : ERROR_COLOR);
+    }
+
+    private void showConfirmDialog(Supplier<Result> onConfirm, int price, Shop.CurrencyType currency) {
+        if (modalLayer != null && modalLayer.getStage() != null) {
+            float width = modalLayer.getStage().getViewport().getWorldWidth();
+            float height = modalLayer.getStage().getViewport().getWorldHeight();
+
+            ShopConfirmTable confirmDialog = new ShopConfirmTable(onConfirm, price, currency, width, height);
+            modalLayer.addActor(confirmDialog);
+        }
+    }
+
+    private class ShopConfirmTable extends Table {
+        private final Supplier<Result> onConfirm;
+        private Actor blocker;
+
+        public ShopConfirmTable(Supplier<Result> onConfirm, int price, Shop.CurrencyType currency, float worldWidth, float worldHeight) {
+            this.onConfirm = onConfirm;
+            setFillParent(true);
+            buildBlocker(worldWidth, worldHeight);
+            buildUi(price, currency);
+        }
+
+        private void buildBlocker(float width, float height) {
+            Table blockerTable = new Table();
+            blockerTable.setSize(width, height);
+            blockerTable.setTouchable(Touchable.enabled);
+            blockerTable.addListener(new InputListener() {
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    return true;
+                }
+            });
+            this.blocker = blockerTable;
+            addActor(blockerTable);
+        }
+
+        private void buildUi(int price, Shop.CurrencyType currency) {
+            BorderedTable dialogBox = new BorderedTable();
+            dialogBox.setSize(500, 300);
+            dialogBox.pad(30);
+            Label title = new Label("Confirm Purchase", skin, "big");
+            title.setColor(BROWN);
+            String exchangeKey = (currency == Shop.CurrencyType.COIN) ? " coins" : " diamonds";
+            Label question = new Label("Do you want to buy this Item for " + price + exchangeKey + "?", skin);
+            question.setWrap(true);
+            question.setColor(Color.valueOf("#4A3018"));
+            question.setAlignment(Align.center);
+
+            Table buttonsRow = new Table();
+
+            TextButton cancelBtn = UiFactory.textButton("Cancel", skin, "brown", 1.1f, 0.9f, this::remove);
+
+            TextButton confirmBtn = UiFactory.textButton("Buy", skin, "green", 1.1f, 0.9f, () -> {
+                Result result = onConfirm.get();
+                showStatus(result);
+                refreshAll();
+                this.remove();
+            });
+
+            buttonsRow.add(cancelBtn).size(150, 60).padRight(30);
+            buttonsRow.add(confirmBtn).size(150, 60);
+
+            dialogBox.add(title).padBottom(20).row();
+            dialogBox.add(question).growX().padBottom(30).row();
+            dialogBox.add(buttonsRow);
+
+            add(dialogBox).expand().center();
+        }
+
+        @Override
+        public boolean remove() {
+            if (blocker != null) {
+                blocker.remove();
+            }
+            return super.remove();
+        }
     }
 }
