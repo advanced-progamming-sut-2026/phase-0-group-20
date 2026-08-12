@@ -9,7 +9,7 @@ import io.java.pvz.models.timeManager.Ticker;
 
 public class DroppedSeedPacket implements Ticker {
 
-    private static final int TIMER = 100;
+    private static final int TIMER = 150;
 
     private final Plant plant;
     private final int row;

@@ -99,7 +99,8 @@ public class GameMenuController {
             season = allSeasons[dailyRandom.nextInt(allSeasons.length)];
         }
 
-        int levelNumber = dailyRandom.nextInt(currentChapter.getMaxLevelIndexInThisChapter());
+        int levelNumber = dailyRandom.nextInt(Math.min(currentChapter.getLevels().size() - 1,
+            currentChapter.getMaxLevelIndexInThisChapter()));
 
         BonusLevel bonusLevel = new BonusLevel("Scoring Challenge", season, 3, 1200,
             levelNumber, true);

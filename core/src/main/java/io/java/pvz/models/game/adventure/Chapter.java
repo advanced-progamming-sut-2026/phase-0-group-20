@@ -97,7 +97,7 @@ public class Chapter {
     }
 
     public void advanceToNextLevel() {
-        if (maxLevelIndexInThisChapter < levels.size() - 1) maxLevelIndexInThisChapter++;
+        if (maxLevelIndexInThisChapter < levels.size()) maxLevelIndexInThisChapter++;
     }
 
     public int getMaxLevelIndexInThisChapter() {

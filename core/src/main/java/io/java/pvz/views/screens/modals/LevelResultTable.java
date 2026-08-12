@@ -1,5 +1,6 @@
 package io.java.pvz.views.screens.modals;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -15,17 +16,20 @@ import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.utils.UiFactory;
+import io.java.pvz.views.screens.ChapterSelectionScreen;
 import pvz.skin.BorderedTable;
 
 public class LevelResultTable extends BorderedTable {
 
     private Table blocker;
+    private Game game;
 
-    public LevelResultTable(Skin skin, GameState result) {
+    public LevelResultTable(Skin skin, GameState result, Game game) {
         super();
         pad(35, 45, 35, 45);
         setSize(700, 420);
         buildContent(skin, result);
+        this.game = game;
     }
 
     private void buildContent(Skin skin, GameState result) {
@@ -54,6 +58,8 @@ public class LevelResultTable extends BorderedTable {
                 remove();
                 ScreenManager.getInstance().popScreen();
                 ScreenManager.getInstance().popScreen();
+                ScreenManager.getInstance().popScreen();
+                ScreenManager.getInstance().pushScreen(new ChapterSelectionScreen(game));
             }
         );
         continueBtn.getLabel().setFontScale(1.3f);

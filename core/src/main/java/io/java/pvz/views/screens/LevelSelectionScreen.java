@@ -212,7 +212,8 @@ public class LevelSelectionScreen extends BaseScreen {
             }
         } else {
             if (App.getActiveUser().getHighestUnlockedChapterIndex() > chapter.getChapterIndex()) return true;
-            return chapter.isUnlocked() && levelIndex <= chapter.getMaxLevelIndexInThisChapter();
+            return chapter.isUnlocked() && levelIndex <= Math.min(chapter.getLevels().size() - 1,
+                chapter.getMaxLevelIndexInThisChapter());
         }
     }
 
