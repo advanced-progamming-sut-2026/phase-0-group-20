@@ -65,6 +65,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private final Map<Plant, PamAnimatedActor> plantChillOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantFreezeOverlays = new HashMap<>();
+    private final Map<Plant, PamAnimatedActor> plantOctopusOverlays = new HashMap<>();
 
     private final Group masterGroup = new Group();
     private final Group environmentLayer = new Group();
@@ -111,6 +112,10 @@ public class BattlefieldRenderer implements GameEventListener {
                 spawnIceBlockDamageEffect(payload.getCol(), payload.getRow());
             } else if ("UPDATE_ICE_CRACKS".equals(payload.getMessage())) {
                 updateIceCracks(payload.getPlant(), payload.getAmount());
+            } else if ("OCTOPUS_LAND".equals(payload.getMessage())) {
+                spawnOctopusOnPlant(payload.getPlant());
+            } else if ("OCTOPUS_DIE".equals(payload.getMessage())) {
+                killOctopusOnPlant(payload.getPlant());
             }
         }
     }
@@ -150,6 +155,59 @@ public class BattlefieldRenderer implements GameEventListener {
                 plantFreezeOverlays.put(plant, freezeActor);
             }
             freezeActor.setPosition(targetX, targetY);
+        }
+    }
+
+    private void spawnOctopusOnPlant(Plant plant) {
+        if (plant == null) return;
+
+        PamAnimatedActor plantActor = plantActors.get(plant);
+        float targetX = plantActor != null ? plantActor.getX() : 0;
+        float targetY = plantActor != null ? plantActor.getY() : 0;
+
+        String pamPath = "768/FULL/EFFECTS/ZOMBIE_OCTOPUS_PROJECTILE/ZOMBIE_OCTOPUS_PROJECTILE.PAM";
+
+        PamAnimatedActor octopusActor = plantOctopusOverlays.get(plant);
+        if (octopusActor == null) {
+            octopusActor = PamAnimatedActor.createEffectAnimated(pamPath, "animation");
+            octopusActor.setSize(TILE_WIDTH, TILE_HEIGHT);
+            octopusActor.setOrigin(Align.center);
+            plantLayer.addActor(octopusActor);
+            plantOctopusOverlays.put(plant, octopusActor);
+        }
+
+        float startX = targetX + 400f;
+        float startY = targetY + 200f;
+
+        octopusActor.setPosition(startX, startY);
+
+        float flyTime = 0.8f;
+
+        PamAnimatedActor finalOctopusActor = octopusActor;
+        octopusActor.addAction(Actions.sequence(
+            Actions.parallel(
+                Actions.moveTo(targetX, targetY, flyTime, Interpolation.linear),
+                Actions.moveBy(0, -200f, flyTime, Interpolation.pow2In)
+            ),
+            Actions.run(() -> finalOctopusActor.setClip("animation2")),
+            Actions.delay(0.9f),
+
+            Actions.run(() -> finalOctopusActor.setClip("animation3"))
+        ));
+    }
+
+    private void killOctopusOnPlant(Plant plant) {
+        if (plant == null) return;
+        PamAnimatedActor octopusActor = plantOctopusOverlays.remove(plant);
+
+        if (octopusActor != null) {
+            octopusActor.clearActions();
+            octopusActor.setClip("die");
+
+            octopusActor.addAction(Actions.sequence(
+                Actions.delay(2.0f),
+                Actions.removeActor()
+            ));
         }
     }
 
@@ -302,6 +360,7 @@ public class BattlefieldRenderer implements GameEventListener {
         sunActors.clear();
         plantChillOverlays.clear();
         plantFreezeOverlays.clear();
+        plantOctopusOverlays.clear();
     }
 
     private void syncLawnMowers(LawnMower[] mowers) {
@@ -349,6 +408,10 @@ public class BattlefieldRenderer implements GameEventListener {
             if (!stillAlive.contains(entry.getKey())) {
                 despawn(entry.getValue());
                 removePlantIceOverlay(entry.getKey());
+
+                PamAnimatedActor octopusActor = plantOctopusOverlays.remove(entry.getKey());
+                if (octopusActor != null) octopusActor.remove();
+
                 it.remove();
             }
         }
@@ -504,12 +567,14 @@ public class BattlefieldRenderer implements GameEventListener {
 
         if (zombie.isDead()) return pickClip(anim, CLIP_WALK, "die");
 
+        if (zombie.getState() == ZombieState.TOSS) return pickClip(anim, CLIP_IDLE, "toss");
+
         if (zombie.getState() == ZombieState.INTRO) return pickClip(anim, "idle", "intro");
 
         if (zombie.getState() == ZombieState.CAST) return pickClip(anim, CLIP_IDLE, "cast");
         if (zombie.getState() == ZombieState.CAST_LOOP) return pickClip(anim, CLIP_IDLE, "cast_loop");
         if (zombie.getState() == ZombieState.REEL) return pickClip(anim, CLIP_IDLE, "reel");
-        if (zombie.getState() == ZombieState.TOSS) return pickClip(anim, CLIP_IDLE, "toss");
+
 
         if (zombie.getState() == ZombieState.FLY_START) return pickClip(anim, CLIP_WALK, "fly_start");
         if (zombie.getState() == ZombieState.FLYING) return pickClip(anim, CLIP_WALK, "fly_loop", "fly");

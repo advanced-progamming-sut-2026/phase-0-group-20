@@ -102,7 +102,7 @@ public class ZombieFactory {
 
             case TOMB_RAISER -> new NormalMove(zombie);
             case HUNTER -> new NormalMove(zombie);
-            case OCTOPUS -> createOctopusMove(zombie);
+            case OCTOPUS -> new NormalMove(zombie);
             case WIZARD -> createWizardMove(zombie);
             case PIANIST -> createPianistMove(zombie);
 
@@ -116,28 +116,6 @@ public class ZombieFactory {
 
             default -> new NormalMove(zombie);
         };
-    }
-
-    private static MoveBehavior createOctopusMove(Zombie zombie) {
-        return new PeriodicActionMove(zombie, 6 * TimeManager.TICKS_PER_SECOND, true, () -> {
-            GameSession session = GameSession.getInstance();
-            Plant nearestPlant = null;
-            int closestCol = -1;
-
-            for (Plant p : session.getArena().getActivePlants()) {
-                if (p.getPlacedTile().getRow() == zombie.getRow()
-                        && p.getPlacedTile().getCol() <= zombie.getCol()) {
-                    if (p.getPlacedTile().getCol() > closestCol) {
-                        closestCol = p.getPlacedTile().getCol();
-                        nearestPlant = p;
-                    }
-                }
-            }
-
-            if (nearestPlant != null && !nearestPlant.isFrozen() && !nearestPlant.hasOctopus()) {
-                nearestPlant.receiveOctopus();
-            }
-        });
     }
 
     private static MoveBehavior createWizardMove(Zombie zombie) {
@@ -294,6 +272,10 @@ public class ZombieFactory {
         if (type == ZombieType.FISHERMAN) {
             zombie.setCol(8);
             zombie.addEffect(new FishermanHookEffect(zombie, 4));
+        }
+
+        if (type == ZombieType.OCTOPUS) {
+            zombie.addEffect(new OctopusTossEffect(zombie, 6));
         }
 
     }
