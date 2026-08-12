@@ -183,7 +183,7 @@ public class GameFlowScreen extends BaseScreen {
         if (!levelResultShown && (state == GameState.WON || state == GameState.LOST)) {
             gameFlowController.gameOver();
             levelResultShown = true;
-            new LevelResultTable(AssetLoader.getInstance().getSkin(), state).show(modalLayer, viewport);
+            new LevelResultTable(AssetLoader.getInstance().getSkin(), state, game).show(modalLayer, viewport);
         }
     }
 
