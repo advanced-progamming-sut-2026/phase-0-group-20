@@ -22,6 +22,7 @@ import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
+import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.utils.ConveyorBeltUI;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PlantCardButton;
@@ -47,6 +48,8 @@ public class GameHUD {
     private ProgressBar waveProgressBar;
     private Image progressHeadIcon;
     private float visualWaveProgress = 0f;
+
+    private Table seedBankTable;
 
     public GameHUD(Group mainLayer, Group modalLayer, Viewport viewport, GameInputHandler inputHandler, GameFlowController gameFlowController) {
         this.mainLayer = mainLayer;
@@ -77,17 +80,27 @@ public class GameHUD {
     }
 
     private void setupPlantSelectionMenu() {
-        if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
+        if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
+            buildBeghouledSeedBank();
+        } else if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin, () -> {
                 buildSeedBank();
             });
             plantSelectionModal.show(modalLayer, viewport);
         } else {
             belt = new ConveyorBeltUI(skin, textures,
-                (plant) -> createSeedPacket(plant));
+                (plant) -> createSeedPacket(plant,false));
             belt.setSize(200f, 700);
             belt.setPosition(20f, 250);
             mainLayer.addActor(belt);
+        }
+    }
+
+    public void refreshSeedBank() {
+        if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
+            buildBeghouledSeedBank();
+        } else {
+            buildSeedBank();
         }
     }
 
@@ -164,18 +177,23 @@ public class GameHUD {
     }
 
     private void buildSeedBank() {
-        Table seedBankTable = new Table();
-        seedBankTable.setPosition(20f, 100f);
-        seedBankTable.setSize(180f, 800f);
-        seedBankTable.top().left();
-        seedBankTable.pad(20f);
+        if (seedBankTable == null) {
+            seedBankTable = new Table();
+            seedBankTable.setPosition(20f, 100f);
+            seedBankTable.setSize(180f, 800f);
+            seedBankTable.top().left();
+            seedBankTable.pad(20f);
+            mainLayer.addActor(seedBankTable);
+        } else {
+            seedBankTable.clear();
+        }
 
         List<Plant> selectedPlants = GameSession.getInstance().getChosenPlants();
         int maxSlots = 8;
 
         for (int i = 0; i < maxSlots; i++) {
             if (i < selectedPlants.size()) {
-                PlantCardButton plantButton = createSeedPacket(selectedPlants.get(i));
+                PlantCardButton plantButton = createSeedPacket(selectedPlants.get(i) ,true);
                 seedBankTable.add(plantButton).size(180f, 85f).padBottom(10f).row();
             } else {
                 Table emptySlot = new Table();
@@ -184,10 +202,33 @@ public class GameHUD {
                 seedBankTable.add(emptySlot).size(180f, 85f).padBottom(10f).row();
             }
         }
-        mainLayer.addActor(seedBankTable);
     }
 
-    private PlantCardButton createSeedPacket(Plant plant) {
+    private void buildBeghouledSeedBank() {
+        if (seedBankTable == null) {
+            seedBankTable = new Table();
+            seedBankTable.setPosition(20f, 100f);
+            seedBankTable.setSize(180f, 800f);
+            seedBankTable.top().left();
+            seedBankTable.pad(20f);
+            mainLayer.addActor(seedBankTable);
+        } else {
+            seedBankTable.clear();
+        }
+
+        BeghouledLevel level = (BeghouledLevel) GameSession.getInstance().getCurrentMode();
+        List<String> basePlants = level.getBasePlants();
+
+        for (String plantName : basePlants) {
+            Plant plant = App.findPlantByName(plantName);
+            if (plant != null) {
+                PlantCardButton plantButton = createBeghouledUpgradePacket(plant);
+                seedBankTable.add(plantButton).size(180f, 85f).padBottom(10f).row();
+            }
+        }
+    }
+
+    private PlantCardButton createSeedPacket(Plant plant , boolean lockIncluded) {
         Image bgCard = UiFactory.imageFor(textures, Ids.PlantCards.BG_CARD);
         String plantName = UiFactory.getAtlasName(plant);
         String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
@@ -200,6 +241,7 @@ public class GameHUD {
             .setSkin(skin)
             .setShowProgressBar(false)
             .setSize(90f)
+            .setLockIncluded(lockIncluded)
             .setShowLevel(false)
             .build();
 
@@ -207,6 +249,33 @@ public class GameHUD {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 inputHandler.onPlantCardClicked(plant, plantIcon);
+            }
+        });
+
+        return plantButton;
+    }
+
+    private PlantCardButton createBeghouledUpgradePacket(Plant plant) {
+        Image bgCard = UiFactory.imageFor(textures, Ids.PlantCards.BG_CARD);
+        String plantName = UiFactory.getAtlasName(plant);
+        String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
+        Image plantIcon = UiFactory.imageFor(textures, plantTextureKey);
+
+        PlantCardButton plantButton = new PlantCardButton.Builder()
+            .setBgImage(bgCard)
+            .setPlant(plant)
+            .setPlantImage(plantIcon)
+            .setSkin(skin)
+            .setShowProgressBar(false)
+            .setSize(90f)
+            .setLockIncluded(false)
+            .setShowLevel(false)
+            .build();
+
+        plantButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                inputHandler.onBeghouledUpgradeClicked(plant.getName());
             }
         });
 

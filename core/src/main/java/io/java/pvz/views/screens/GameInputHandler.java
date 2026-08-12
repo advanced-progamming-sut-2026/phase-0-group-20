@@ -19,6 +19,10 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.models.game.minigame.BowlingLevel;
 import io.java.pvz.models.game.minigame.DroppedSeedPacket;
 import io.java.pvz.models.game.minigame.VaseBreakerLevel;
@@ -45,13 +49,16 @@ public class GameInputHandler {
     private boolean isPlantFoodSelected = false;
     private Image floatingPlantFoodImage = null;
 
+    private Vector2 selectedGridPos = null;
+
     private final Image rowHighlight;
     private final Image colHighlight;
 
     private static final int COLS = 9;
     private static final int ROWS = 5;
 
-    public GameInputHandler(Group mainLayer, Viewport viewport, Group highlightLayer, GameFlowController gameFlowController, MiniGameController miniGameController) {
+    public GameInputHandler(Group mainLayer, Viewport viewport, Group highlightLayer,
+                            GameFlowController gameFlowController, MiniGameController miniGameController) {
         this.mainLayer = mainLayer;
         this.viewport = viewport;
         this.gameFlowController = gameFlowController;
@@ -89,6 +96,8 @@ public class GameInputHandler {
         selectedPacketToPlace = null;
         isShovelSelected = false;
         isPlantFoodSelected = false;
+
+        selectedGridPos = null;
     }
 
     private Image createFloatingImage(Drawable drawable, float size) {
@@ -118,6 +127,20 @@ public class GameInputHandler {
         selectedPlantToPlace = plant;
         selectedPacketToPlace = packet;
         floatingPlantImage = createFloatingImage(plantIcon.getDrawable(), 80);
+    }
+
+    public void onBeghouledUpgradeClicked(String plantName) {
+        clearAllSelections();
+        Result result = miniGameController.upgradeBeghouledPlants(plantName);
+
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(result.message())
+                .build());
+
+        if (result.isSuccessful() && gameHUD != null) {
+            gameHUD.refreshSeedBank();
+        }
     }
 
     public void onShovelClicked() {
@@ -183,13 +206,46 @@ public class GameInputHandler {
                 return;
             }
 
+            if (selectedGridPos != null && floatingPlantImage != null) {
+                Result result = miniGameController.swapPlants(
+                    (int) selectedGridPos.x, (int) selectedGridPos.y
+                    , col, row);
+                if(!result.isSuccessful()){
+                    GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                        new GameEventPayload.Builder(GameEvent.NOTIFY)
+                            .message(result.message())
+                            .build());
+                }
+                clearAllSelections();
+                return;
+            }
+
+            if (GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
+                handleGridPickup(col, row);
+                return;
+            }
+
             if (selectedPlantToPlace != null && floatingPlantImage != null) {
                 handlePlanting(col, row);
                 return;
             }
-
             if (GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel) {
                 miniGameController.breakVase(String.valueOf(col), String.valueOf(row));
+            }
+        }
+    }
+
+    private void handleGridPickup(int col, int row) {
+        Plant plantOnTile = miniGameController.getPlantAtTile(col,row);
+        if (plantOnTile != null ) {
+            selectedGridPos = new Vector2(col, row);
+
+            TextureBank textures = AssetLoader.getInstance().getTextures();
+            String plantTextureKey = "IMAGE_UI_PACKETS_" + UiFactory.getAtlasName(plantOnTile).toUpperCase();
+            Image plantIcon = UiFactory.imageFor(textures, plantTextureKey);
+
+            if (plantIcon != null) {
+                floatingPlantImage = createFloatingImage(plantIcon.getDrawable(), 80);
             }
         }
     }
@@ -205,8 +261,6 @@ public class GameInputHandler {
         } else {
             if(GameSession.getInstance().getCurrentMode() instanceof BowlingLevel) {
                 result = miniGameController.plantBowlingNut(selectedPlantToPlace, col, row);
-                System.out.println(result.message());
-
             }else{
                 result = gameFlowController.plantPlant(selectedPlantToPlace.getName(),
                     String.valueOf(col), String.valueOf(row));
@@ -222,7 +276,7 @@ public class GameInputHandler {
     }
 
     public void updatePlantingHighlights() {
-        if (isShovelSelected || isPlantFoodSelected || selectedPlantToPlace != null) {
+        if (isShovelSelected || isPlantFoodSelected || selectedPlantToPlace != null || selectedGridPos != null) {
             Vector2 gridPos = getGridPosition();
             if (gridPos != null) {
                 int col = (int) gridPos.x;

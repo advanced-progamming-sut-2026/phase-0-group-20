@@ -275,28 +275,26 @@ public class MiniGameController {
     }
 
 
-    public Result swapPlants(String x1Str, String y1Str, String x2Str, String y2Str) {
+    public Result swapPlants(int col1 , int row1 , int col2, int row2) {
         GameSession session = GameSession.getInstance();
 
         if (!(session.getCurrentMode() instanceof BeghouledLevel)) {
             return new Result(false, "You can only swap plants in the Beghouled minigame!");
         }
 
-        int x1, y1, x2, y2;
-        try {
-            x1 = Integer.parseInt(x1Str);
-            y1 = Integer.parseInt(y1Str);
-            x2 = Integer.parseInt(x2Str);
-            y2 = Integer.parseInt(y2Str);
-        } catch (NumberFormatException e) {
-            return new Result(false, "Invalid coordinates! Please enter valid integer numbers.");
-        }
-
         BeghouledManager manager = ((BeghouledLevel) session.getCurrentMode()).getManager();
-        String response = manager.swapPlants(y1 - 1, x1 - 1, y2 - 1, x2 - 1);
+        String response = manager.swapPlants(row1 - 1 , col1 - 1 , row2 - 1 , col2 - 1);
 
         boolean isSuccess = response.startsWith("Match found") || response.startsWith("Cascade");
         return new Result(isSuccess, response);
+    }
+
+    public Plant getPlantAtTile(int col , int row ){
+        Arena arena = GameSession.getInstance().getArena();
+        if(arena.isSunOnTile(arena.getTile(row-1,col-1)))
+            return null;
+        Plant plant = arena.getTile(row-1,col-1).getPlants().getFirst();
+        return plant;
     }
 
     public Result upgradeBeghouledPlants(String plantName) {

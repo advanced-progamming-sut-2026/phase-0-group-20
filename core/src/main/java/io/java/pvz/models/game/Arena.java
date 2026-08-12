@@ -251,6 +251,14 @@ public class Arena {
         Arrays.fill(lawnMowers, null);
     }
 
+    public boolean isSunOnTile(Tile tile) {
+        for (Sun sun : activeSuns) {
+            if(sun.getRow() == tile.getRow() && sun.getCol() == tile.getCol())
+                return true;
+        }
+        return false;
+    }
+
     public List<PushableObstacle> getActiveObstacles() {
         return this.activeObstacles;
     }

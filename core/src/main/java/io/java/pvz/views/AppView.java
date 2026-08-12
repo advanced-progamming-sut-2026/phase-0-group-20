@@ -18,7 +18,6 @@ public class AppView {
         if (stayedUser == null) {
             App.setActiveAdventure(new Adventure());
         }
-
         if (stayedUser != null) {
             App.setActiveUser(stayedUser);
             App.setActiveMenu(Menu.MAIN_MENU);
