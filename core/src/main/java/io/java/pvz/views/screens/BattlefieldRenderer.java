@@ -920,25 +920,25 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private void updateZombieArmorVisuals(Zombie zombie, PamAnimatedActor zombieActor) {
-        Armor activeArmor = null;
+        Map<String, Boolean> visibilityMap = new HashMap<>();
+
         if (zombie.getArmorPieces() != null) {
             for (Armor armor : zombie.getArmorPieces()) {
                 if (!armor.isDestroyed()) {
-                    activeArmor = armor;
-                    break;
+                    int damageLayer = armor.getDamageLayer();
+                    String state = armor.getData().getArmorLayer(damageLayer);
+
+                    if (state != null) {
+                        visibilityMap.put(state, true);
+                    }
+
+                    String group = armor.getData().getArmorLayerGroup();
+                    if (group != null) {
+                        visibilityMap.put(group, true);
+                    }
                 }
             }
         }
-
-        Map<String, Boolean> visibilityMap = new HashMap<>();
-
-        if (activeArmor != null) {
-            int damageLayer = activeArmor.getDamageLayer();
-            String state = activeArmor.getData().getArmorLayer(damageLayer);
-            visibilityMap.put(state, true);
-        }
-
         zombieActor.setVisibilityMap(visibilityMap);
-
     }
 }

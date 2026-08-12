@@ -123,9 +123,10 @@ public class InGameEntityGenerator {
     private static List<ZombieType> getDarkAgesZombies(int levelIndex) {
         return switch (levelIndex) {
             case 0 -> Arrays.asList(
-                    ZombieType.NORMAL,
-                    ZombieType.CONE,
-                    ZombieType.JUGGLER
+//                    ZombieType.NORMAL,
+//                    ZombieType.CONE,
+//                    ZombieType.JUGGLER
+                ZombieType.DARK_ARMOR
             );
             case 1 -> Arrays.asList(
                     ZombieType.NORMAL,
