@@ -130,8 +130,35 @@ public class BattlefieldRenderer implements GameEventListener {
                 spawnSheepOnPlant(payload.getPlant());
             } else if ("SHEEP_REMOVE".equals(msg)) {
                 removeSheepFromPlant(payload.getPlant());
+            } else if ("IMP_THROWN".equals(msg)) {
+                animateImpFlight(payload.getZombie(), payload.getPixelX(), payload.getPixelY());
             }
         }
+    }
+
+    private void animateImpFlight(Zombie imp, float startX, float startY) {
+        if (imp == null) return;
+        PamAnimatedActor actor = zombieActors.get(imp);
+        if (actor == null) {
+            actor = spawnZombie(imp);
+            zombieActors.put(imp, actor);
+            zombieActorTypes.put(imp, imp.getType());
+        }
+
+        float targetX = imp.getPosition().getX() - actor.getWidth() / 2f;
+        float targetY = imp.getPosition().getY() + actor.getHeight() / 2f + 30;
+
+        actor.setPosition(startX, startY + 100f);
+
+        actor.addAction(Actions.sequence(
+            Actions.parallel(
+                Actions.moveTo(targetX, targetY, 0.8f, Interpolation.linear),
+                Actions.sequence(
+                    Actions.moveBy(0, 250f, 0.4f, Interpolation.sineOut),
+                    Actions.moveBy(0, -250f, 0.4f, Interpolation.sineIn)
+                )
+            )
+        ));
     }
 
     private void spawnSheepOnPlant(Plant plant) {
@@ -688,6 +715,12 @@ public class BattlefieldRenderer implements GameEventListener {
         if (zombie.getState() == ZombieState.CAST) return pickClip(anim, CLIP_IDLE, "cast");
         if (zombie.getState() == ZombieState.CAST_LOOP) return pickClip(anim, CLIP_IDLE, "cast_loop");
         if (zombie.getState() == ZombieState.REEL) return pickClip(anim, CLIP_IDLE, "reel");
+
+        if (zombie.getState() == ZombieState.SMASH) return pickClip(anim, "eat", "smash_left");
+        if (zombie.getState() == ZombieState.THROW_IMP) return pickClip(anim, "idle", "fire", "cannon_fire");
+
+        if (zombie.getState() == ZombieState.FLYING_IMP) return pickClip(anim, "walk", "fly");
+        if (zombie.getState() == ZombieState.LANDING) return pickClip(anim, "idle", "land");
 
         if (zombie.getState() == ZombieState.FLY_START) return pickClip(anim, CLIP_WALK, "fly_start");
         if (zombie.getState() == ZombieState.FLYING) return pickClip(anim, CLIP_WALK, "fly_loop", "fly");

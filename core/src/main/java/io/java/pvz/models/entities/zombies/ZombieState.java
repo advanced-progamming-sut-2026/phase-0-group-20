@@ -21,5 +21,9 @@ public enum ZombieState {
     SPINNING,
     SPIN_DOWN,
     SPELL,
-    SPECIAL
+    SPECIAL,
+    SMASH,
+    THROW_IMP,
+    FLYING_IMP,
+    LANDING
 }
