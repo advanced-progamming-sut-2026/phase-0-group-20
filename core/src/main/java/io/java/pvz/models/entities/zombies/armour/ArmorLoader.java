@@ -58,7 +58,8 @@ public class ArmorLoader {
                 }
             }
 
-            ArmorData data = new ArmorData(aliases.getString(0), type, hp, flagsList, armorLayers);
+            String layerGroup = od.has("ArmorLayerGroup") ? od.getString("ArmorLayerGroup") : null;
+            ArmorData data = new ArmorData(aliases.getString(0), type, hp, flagsList, armorLayers, layerGroup);
 
             for (int j = 0; j < aliases.length(); j++) {
                 dataMap.put(aliases.getString(j), data);

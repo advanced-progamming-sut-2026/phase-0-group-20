@@ -22,6 +22,7 @@ import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
+import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.Brain;
@@ -72,6 +73,9 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Map<Brain, Image> brainActors = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantChillOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantFreezeOverlays = new HashMap<>();
+    private final Map<Plant, PamAnimatedActor> plantOctopusOverlays = new HashMap<>();
+    private final Map<Plant, PamAnimatedActor> plantSheepOverlays = new HashMap<>();
+    private final Map<Zombie, ZombieType> zombieActorTypes = new HashMap<>();
 
     private final Group masterGroup = new Group();
     private final Group environmentLayer = new Group();
@@ -93,6 +97,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
         GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.SPAWN_EFFECT, this);
+        GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(1f, 0f, 0f, 0.55f);
@@ -124,8 +129,136 @@ public class BattlefieldRenderer implements GameEventListener {
                 spawnIceBlockDamageEffect(payload.getCol(), payload.getRow());
             } else if ("UPDATE_ICE_CRACKS".equals(payload.getMessage())) {
                 updateIceCracks(payload.getPlant(), payload.getAmount());
+            } else if ("OCTOPUS_LAND".equals(payload.getMessage())) {
+                spawnOctopusOnPlant(payload.getPlant());
+            } else if ("OCTOPUS_DIE".equals(payload.getMessage())) {
+                killOctopusOnPlant(payload.getPlant());
+            }
+        } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
+            String msg = String.valueOf(payload.getMessage());
+
+            if ("DEFLECT_PROJECTILE".equals(msg)) {
+                spawnDeflectedProjectileVisual(payload.getZombie(), payload.getPlant(), payload.getProjectileType());
+            } else if ("SHEEP_APPLY".equals(msg)) {
+                spawnSheepOnPlant(payload.getPlant());
+            } else if ("SHEEP_REMOVE".equals(msg)) {
+                removeSheepFromPlant(payload.getPlant());
+            } else if ("IMP_THROWN".equals(msg)) {
+                animateImpFlight(payload.getZombie(), payload.getPixelX(), payload.getPixelY());
             }
         }
+    }
+
+    private void animateImpFlight(Zombie imp, float startX, float startY) {
+        if (imp == null) return;
+        PamAnimatedActor actor = zombieActors.get(imp);
+        if (actor == null) {
+            actor = spawnZombie(imp);
+            zombieActors.put(imp, actor);
+            zombieActorTypes.put(imp, imp.getType());
+        }
+
+        float targetX = imp.getPosition().getX() - actor.getWidth() / 2f;
+        float targetY = imp.getPosition().getY() + actor.getHeight() / 2f + 30;
+
+        actor.setPosition(startX, startY + 100f);
+
+        actor.addAction(Actions.sequence(
+            Actions.parallel(
+                Actions.moveTo(targetX, targetY, 0.8f, Interpolation.linear),
+                Actions.sequence(
+                    Actions.moveBy(0, 250f, 0.4f, Interpolation.sineOut),
+                    Actions.moveBy(0, -250f, 0.4f, Interpolation.sineIn)
+                )
+            )
+        ));
+    }
+
+    private void spawnSheepOnPlant(Plant plant) {
+        if (plant == null) return;
+
+        PamAnimatedActor plantActor = plantActors.get(plant);
+        if (plantActor != null) {
+            plantActor.setVisible(false);
+        }
+
+        String pamPath = "768/FULL/EFFECTS/DARK_WIZARD_SHEEPENING/DARK_WIZARD_SHEEPENING.PAM";
+        PamAnimatedActor sheepActor = plantSheepOverlays.get(plant);
+
+        if (sheepActor == null) {
+            sheepActor = PamAnimatedActor.createEffectAnimated(pamPath, "animation");
+            sheepActor.setSize(TILE_WIDTH, TILE_HEIGHT);
+            sheepActor.setOrigin(Align.center);
+            plantLayer.addActor(sheepActor);
+            plantSheepOverlays.put(plant, sheepActor);
+        }
+
+        if (plantActor != null) {
+            sheepActor.setPosition(plantActor.getX(), plantActor.getY() + 15f);
+        }
+
+        PamAnimatedActor finalSheep = sheepActor;
+        sheepActor.addAction(Actions.sequence(
+            Actions.delay(1.7f),
+            Actions.run(() -> finalSheep.setClip("idle"))
+        ));
+    }
+
+    private void removeSheepFromPlant(Plant plant) {
+        if (plant == null) return;
+
+        PamAnimatedActor sheepActor = plantSheepOverlays.remove(plant);
+        if (sheepActor != null) {
+            sheepActor.clearActions();
+            sheepActor.setClip("animation2");
+
+            sheepActor.addAction(Actions.sequence(
+                Actions.delay(1.1f),
+                Actions.removeActor()
+            ));
+        }
+
+        PamAnimatedActor plantActor = plantActors.get(plant);
+        if (plantActor != null) {
+            plantActor.addAction(Actions.sequence(
+                Actions.delay(0.5f),
+                Actions.visible(true)
+            ));
+        }
+    }
+
+    private void spawnDeflectedProjectileVisual(Zombie zombie, Plant plant, ProjectileType type) {
+        if (zombie == null || plant == null || type == null) return;
+
+        ProjectileAnim anim = PROJECTILE_ANIMS.getOrDefault(type, PROJECTILE_ANIMS.get(ProjectileType.PEA));
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), anim.clip(), anim.path());
+        actor.setSize(30, 30);
+        actor.setOrigin(Align.center);
+        actor.setScaleX(-1f);
+
+        float startX = zombie.getPosition().getX() - 20f;
+        float startY = zombie.getPosition().getY() + 40f;
+
+        float targetX = plant.getPosition().getX();
+        float targetY = plant.getPosition().getY() + 40f;
+
+        actor.setPosition(startX, startY);
+        effectLayer.addActor(actor);
+
+        float travelTime = 0.5f;
+
+        actor.addAction(Actions.sequence(
+            Actions.moveTo(targetX, targetY, travelTime, Interpolation.linear),
+            Actions.run(() -> {
+                GameEventPayload hitPayload = new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
+                    .projectileType(type)
+                    .pixelCoordinate(targetX, targetY)
+                    .build();
+                spawnHitSplash(hitPayload);
+            }),
+            Actions.removeActor()
+        ));
     }
 
     private void updatePlantIceOverlay(Plant plant, int stacks) {
@@ -163,6 +296,59 @@ public class BattlefieldRenderer implements GameEventListener {
                 plantFreezeOverlays.put(plant, freezeActor);
             }
             freezeActor.setPosition(targetX, targetY);
+        }
+    }
+
+    private void spawnOctopusOnPlant(Plant plant) {
+        if (plant == null) return;
+
+        PamAnimatedActor plantActor = plantActors.get(plant);
+        float targetX = plantActor != null ? plantActor.getX() : 0;
+        float targetY = plantActor != null ? plantActor.getY() : 0;
+
+        String pamPath = "768/FULL/EFFECTS/ZOMBIE_OCTOPUS_PROJECTILE/ZOMBIE_OCTOPUS_PROJECTILE.PAM";
+
+        PamAnimatedActor octopusActor = plantOctopusOverlays.get(plant);
+        if (octopusActor == null) {
+            octopusActor = PamAnimatedActor.createEffectAnimated(pamPath, "animation");
+            octopusActor.setSize(TILE_WIDTH, TILE_HEIGHT);
+            octopusActor.setOrigin(Align.center);
+            plantLayer.addActor(octopusActor);
+            plantOctopusOverlays.put(plant, octopusActor);
+        }
+
+        float startX = targetX + 400f;
+        float startY = targetY + 200f;
+
+        octopusActor.setPosition(startX, startY);
+
+        float flyTime = 0.8f;
+
+        PamAnimatedActor finalOctopusActor = octopusActor;
+        octopusActor.addAction(Actions.sequence(
+            Actions.parallel(
+                Actions.moveTo(targetX, targetY, flyTime, Interpolation.linear),
+                Actions.moveBy(0, -200f, flyTime, Interpolation.pow2In)
+            ),
+            Actions.run(() -> finalOctopusActor.setClip("animation2")),
+            Actions.delay(0.9f),
+
+            Actions.run(() -> finalOctopusActor.setClip("animation3"))
+        ));
+    }
+
+    private void killOctopusOnPlant(Plant plant) {
+        if (plant == null) return;
+        PamAnimatedActor octopusActor = plantOctopusOverlays.remove(plant);
+
+        if (octopusActor != null) {
+            octopusActor.clearActions();
+            octopusActor.setClip("die");
+
+            octopusActor.addAction(Actions.sequence(
+                Actions.delay(2.0f),
+                Actions.removeActor()
+            ));
         }
     }
 
@@ -317,6 +503,9 @@ public class BattlefieldRenderer implements GameEventListener {
         sunActors.clear();
         plantChillOverlays.clear();
         plantFreezeOverlays.clear();
+        plantOctopusOverlays.clear();
+        plantSheepOverlays.clear();
+        zombieActorTypes.clear();
 
         for (Image actor : brainActors.values()) actor.remove();
         brainActors.clear();
@@ -426,6 +615,13 @@ public class BattlefieldRenderer implements GameEventListener {
             if (!stillAlive.contains(entry.getKey())) {
                 despawn(entry.getValue());
                 removePlantIceOverlay(entry.getKey());
+
+                PamAnimatedActor octopusActor = plantOctopusOverlays.remove(entry.getKey());
+                if (octopusActor != null) octopusActor.remove();
+
+                PamAnimatedActor sheepActor = plantSheepOverlays.remove(entry.getKey());
+                if (sheepActor != null) sheepActor.remove();
+
                 it.remove();
             }
         }
@@ -511,9 +707,15 @@ public class BattlefieldRenderer implements GameEventListener {
     private void syncZombies(List<Zombie> liveZombies) {
         for (Zombie zombie : liveZombies) {
             PamAnimatedActor actor = zombieActors.get(zombie);
-            if (actor == null) {
+            ZombieType lastRenderedType = zombieActorTypes.get(zombie);
+
+            if (actor == null || lastRenderedType != zombie.getType()) {
+                if (actor != null) {
+                    actor.remove();
+                }
                 actor = spawnZombie(zombie);
                 zombieActors.put(zombie, actor);
+                zombieActorTypes.put(zombie, zombie.getType());
             }
             updateZombieActor(zombie, actor);
         }
@@ -538,6 +740,7 @@ public class BattlefieldRenderer implements GameEventListener {
                 }
 
                 despawn(actor, lingerTime - 0.5f);
+                zombieActorTypes.remove(zombie);
                 it.remove();
             }
         }
@@ -581,6 +784,21 @@ public class BattlefieldRenderer implements GameEventListener {
 
         if (zombie.isDead()) return pickClip(anim, CLIP_WALK, "die");
 
+        if (zombie.getState() == ZombieState.TOSS) return pickClip(anim, CLIP_IDLE, "toss");
+
+        if (zombie.getState() == ZombieState.INTRO) return pickClip(anim, "idle", "intro");
+        if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, "idle", "special");
+
+        if (zombie.getState() == ZombieState.CAST) return pickClip(anim, CLIP_IDLE, "cast");
+        if (zombie.getState() == ZombieState.CAST_LOOP) return pickClip(anim, CLIP_IDLE, "cast_loop");
+        if (zombie.getState() == ZombieState.REEL) return pickClip(anim, CLIP_IDLE, "reel");
+
+        if (zombie.getState() == ZombieState.SMASH) return pickClip(anim, "eat", "smash_left");
+        if (zombie.getState() == ZombieState.THROW_IMP) return pickClip(anim, "idle", "fire", "cannon_fire");
+
+        if (zombie.getState() == ZombieState.FLYING_IMP) return pickClip(anim, "walk", "fly");
+        if (zombie.getState() == ZombieState.LANDING) return pickClip(anim, "idle", "land");
+
         if (zombie.getState() == ZombieState.FLY_START) return pickClip(anim, CLIP_WALK, "fly_start");
         if (zombie.getState() == ZombieState.FLYING) return pickClip(anim, CLIP_WALK, "fly_loop", "fly");
         if (zombie.getState() == ZombieState.FLY_END) return pickClip(anim, CLIP_WALK, "fly_end", "land");
@@ -590,6 +808,12 @@ public class BattlefieldRenderer implements GameEventListener {
         if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
 
         if (zombie.getState() == ZombieState.THROW) return pickClip(anim, CLIP_WALK, "throw");
+
+        if (zombie.getState() == ZombieState.SPIN_UP)   return pickClip(anim, CLIP_IDLE, "spinup");
+        if (zombie.getState() == ZombieState.SPINNING)  return pickClip(anim, CLIP_WALK, "spin_walk", "spin");
+        if (zombie.getState() == ZombieState.SPIN_DOWN) return pickClip(anim, CLIP_IDLE, "spindown");
+
+        if (zombie.getState() == ZombieState.SPELL) return pickClip(anim, "idle", "sheep");
 
         if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
         if (zombie.getState() == ZombieState.STUNNED) return pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop");
@@ -925,25 +1149,25 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private void updateZombieArmorVisuals(Zombie zombie, PamAnimatedActor zombieActor) {
-        Armor activeArmor = null;
+        Map<String, Boolean> visibilityMap = new HashMap<>();
+
         if (zombie.getArmorPieces() != null) {
             for (Armor armor : zombie.getArmorPieces()) {
                 if (!armor.isDestroyed()) {
-                    activeArmor = armor;
-                    break;
+                    int damageLayer = armor.getDamageLayer();
+                    String state = armor.getData().getArmorLayer(damageLayer);
+
+                    if (state != null) {
+                        visibilityMap.put(state, true);
+                    }
+
+                    String group = armor.getData().getArmorLayerGroup();
+                    if (group != null) {
+                        visibilityMap.put(group, true);
+                    }
                 }
             }
         }
-
-        Map<String, Boolean> visibilityMap = new HashMap<>();
-
-        if (activeArmor != null) {
-            int damageLayer = activeArmor.getDamageLayer();
-            String state = activeArmor.getData().getArmorLayer(damageLayer);
-            visibilityMap.put(state, true);
-        }
-
         zombieActor.setVisibilityMap(visibilityMap);
-
     }
 }

@@ -4,6 +4,8 @@ import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.effect.PlantEffect;
+import io.java.pvz.models.entities.plants.effect.SheepEffect;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.plants.strategy.TorchwoodStrategy;
 import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;

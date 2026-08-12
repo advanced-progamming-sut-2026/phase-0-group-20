@@ -1,7 +1,7 @@
 package io.java.pvz.models.entities.zombies.behavior.attack;
 
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.entities.plants.effect.CatEffect;
+import io.java.pvz.models.entities.plants.effect.SheepEffect;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.fields.tiles.Tile;
@@ -46,7 +46,7 @@ public class NormalAttack implements AttackBehavior {
         if (!isZombieToEat) {
             Plant targetPlant = currentTile.getPlants().get(0);
             for (Plant p : currentTile.getPlants()) {
-                boolean isCat = p.getActiveEffects().stream().anyMatch(e -> e instanceof CatEffect);
+                boolean isCat = p.getActiveEffects().stream().anyMatch(e -> e instanceof SheepEffect);
                 if (!isCat) {
                     targetPlant = p;
                     break;

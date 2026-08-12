@@ -353,7 +353,11 @@ public class User {
     }
 
     public void unlockedPlants(Plant p) {
-        getUnlockedPlants().add(p);
+        boolean exist = getUnlockedPlants().stream()
+            .anyMatch(plant1 -> plant1.getName().equals(p.getName()));
+        if(!exist) {
+            getUnlockedPlants().add(p);
+        }
         this.addMessage(Message.plantUnlockedMessage(p));
     }
 

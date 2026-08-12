@@ -2,12 +2,12 @@ package io.java.pvz.models.entities.zombies.behavior.move;
 
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieFactory;
+import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
+import io.java.pvz.models.entities.zombies.behavior.effect.GargantuarThrowImpEffect;
 import io.java.pvz.models.game.GameSession;
 
 public class GargantuarMove implements MoveBehavior {
-    private static final int IMP_LANDING_COLUMN = 2;
-
     private final Zombie zombie;
     private boolean impThrown;
 
@@ -18,23 +18,13 @@ public class GargantuarMove implements MoveBehavior {
 
     @Override
     public void execute() {
-        if (!impThrown && zombie.getHealth() <= zombie.getBaseHp() / 2) {
-            throwImp();
+        if (zombie.getState() == ZombieState.THROW_IMP || zombie.getState() == ZombieState.SMASH) return;
+
+        if (!impThrown && (zombie.getHealth() < zombie.getBaseHp())) {
             impThrown = true;
+            zombie.addEffect(new GargantuarThrowImpEffect(zombie));
+            return;
         }
-
         zombie.moveForward();
-    }
-
-    private void throwImp() {
-        Zombie imp = ZombieFactory.create(ZombieType.IMP, zombie.getRow());
-        imp.setCol(IMP_LANDING_COLUMN);
-
-        GameSession session = GameSession.getInstance();
-        session.getTimeManager().registerNewTicker(imp);
-        session.getArena().addZombie(imp);
-
-        notify(zombie.getName() + " threw its Imp onto column "
-                + (IMP_LANDING_COLUMN + 1) + " of row " + zombie.getRow() + "!");
     }
 }
