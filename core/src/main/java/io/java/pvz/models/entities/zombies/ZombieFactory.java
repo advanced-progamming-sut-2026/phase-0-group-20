@@ -104,8 +104,7 @@ public class ZombieFactory {
 
             case FISHERMAN -> new StationaryMove(zombie);
 
-            case KING -> new PeriodicActionMove(zombie, 10 * TimeManager.TICKS_PER_SECOND, false,
-                    () -> zombie.getAttackBehavior().execute());
+            case KING -> new StationaryMove(zombie);
 
             case ZOMBOTANY_PEASHOOTER -> new PeriodicActionMove(zombie, 15, true,
                     () -> zombie.getAttackBehavior().execute());
@@ -252,6 +251,10 @@ public class ZombieFactory {
 
         if (type == ZombieType.WIZARD) {
             zombie.addEffect(new WizardSpellEffect(zombie, 6));
+        }
+
+        if (type == ZombieType.KING) {
+            zombie.addEffect(new KingKnightEffect(zombie, 5));
         }
 
     }

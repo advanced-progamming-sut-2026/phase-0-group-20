@@ -19,6 +19,7 @@ import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
+import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.LawnMower;
@@ -67,6 +68,7 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Map<Plant, PamAnimatedActor> plantFreezeOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantOctopusOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantSheepOverlays = new HashMap<>();
+    private final Map<Zombie, ZombieType> zombieActorTypes = new HashMap<>();
 
     private final Group masterGroup = new Group();
     private final Group environmentLayer = new Group();
@@ -461,6 +463,7 @@ public class BattlefieldRenderer implements GameEventListener {
         plantFreezeOverlays.clear();
         plantOctopusOverlays.clear();
         plantSheepOverlays.clear();
+        zombieActorTypes.clear();
     }
 
     private void syncLawnMowers(LawnMower[] mowers) {
@@ -600,9 +603,15 @@ public class BattlefieldRenderer implements GameEventListener {
     private void syncZombies(List<Zombie> liveZombies) {
         for (Zombie zombie : liveZombies) {
             PamAnimatedActor actor = zombieActors.get(zombie);
-            if (actor == null) {
+            ZombieType lastRenderedType = zombieActorTypes.get(zombie);
+
+            if (actor == null || lastRenderedType != zombie.getType()) {
+                if (actor != null) {
+                    actor.remove();
+                }
                 actor = spawnZombie(zombie);
                 zombieActors.put(zombie, actor);
+                zombieActorTypes.put(zombie, zombie.getType());
             }
             updateZombieActor(zombie, actor);
         }
@@ -627,6 +636,7 @@ public class BattlefieldRenderer implements GameEventListener {
                 }
 
                 despawn(actor, lingerTime - 0.5f);
+                zombieActorTypes.remove(zombie);
                 it.remove();
             }
         }
@@ -673,11 +683,11 @@ public class BattlefieldRenderer implements GameEventListener {
         if (zombie.getState() == ZombieState.TOSS) return pickClip(anim, CLIP_IDLE, "toss");
 
         if (zombie.getState() == ZombieState.INTRO) return pickClip(anim, "idle", "intro");
+        if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, "idle", "special");
 
         if (zombie.getState() == ZombieState.CAST) return pickClip(anim, CLIP_IDLE, "cast");
         if (zombie.getState() == ZombieState.CAST_LOOP) return pickClip(anim, CLIP_IDLE, "cast_loop");
         if (zombie.getState() == ZombieState.REEL) return pickClip(anim, CLIP_IDLE, "reel");
-
 
         if (zombie.getState() == ZombieState.FLY_START) return pickClip(anim, CLIP_WALK, "fly_start");
         if (zombie.getState() == ZombieState.FLYING) return pickClip(anim, CLIP_WALK, "fly_loop", "fly");

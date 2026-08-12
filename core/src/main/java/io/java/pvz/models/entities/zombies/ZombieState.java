@@ -20,5 +20,6 @@ public enum ZombieState {
     SPIN_UP,
     SPINNING,
     SPIN_DOWN,
-    SPELL
+    SPELL,
+    SPECIAL
 }
