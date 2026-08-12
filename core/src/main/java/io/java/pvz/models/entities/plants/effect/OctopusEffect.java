@@ -1,6 +1,9 @@
 package io.java.pvz.models.entities.plants.effect;
 
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 
 public class OctopusEffect implements PlantEffect {
     private int hp;
@@ -20,6 +23,12 @@ public class OctopusEffect implements PlantEffect {
 
             plant.setStunned(false);
             notify("Octopus destroyed! " + plant.getName() + " is free!");
+
+            GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+                new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                    .message("OCTOPUS_DIE")
+                    .plant(plant)
+                    .build());
         }
     }
 
@@ -31,11 +40,17 @@ public class OctopusEffect implements PlantEffect {
     public void apply(Plant plant) {
         plant.setStunned(true);
         notify(plant.getName() + " is covered by an OCTOPUS!");
+
+        GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+            new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                .message("OCTOPUS_LAND")
+                .plant(plant)
+                .build());
     }
 
     @Override
     public void execute(Plant plant, int currentTick) {
-        // it must be empty
+
     }
 
     @Override

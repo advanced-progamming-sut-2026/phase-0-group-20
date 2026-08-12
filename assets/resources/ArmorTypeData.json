@@ -83,6 +83,7 @@
     "objdata": {
       "ArmorType": "ShoulderArmor",
       "BaseHealth": 1600,
+      "ArmorLayerGroup": "zombie_shoulder_armor",
       "ArmorFlags": [
         "damageable",
         "passdamage"
@@ -107,6 +108,7 @@
     "objdata": {
       "ArmorType": "Crown",
       "BaseHealth": 1600,
+      "ArmorLayerGroup": "_zombie_armor_crown_states",
       "ArmorFlags": [
         "damageable",
         "droppable",
