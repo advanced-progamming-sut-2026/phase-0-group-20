@@ -27,6 +27,7 @@ import io.java.pvz.models.game.minigame.BowlingLevel;
 import io.java.pvz.models.game.minigame.DroppedSeedPacket;
 import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.utils.Ids;
+import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
 
@@ -149,7 +150,8 @@ public class GameInputHandler {
         if (!wasSelected) {
             isShovelSelected = true;
             TextureBank textures = AssetLoader.getInstance().getTextures();
-            floatingShovelImage = createFloatingImage(UiFactory.imageFor(textures, Ids.UI.FLOATING_SHOVEL).getDrawable(), 80);
+            floatingShovelImage =
+                createFloatingImage(UiFactory.imageFor(textures, Ids.UI.FLOATING_SHOVEL).getDrawable(), 80);
         }
     }
 
@@ -159,7 +161,9 @@ public class GameInputHandler {
         if (!wasSelected && App.getActiveUser().getPlantFoodCount() > 0) {
             isPlantFoodSelected = true;
             TextureBank textures = AssetLoader.getInstance().getTextures();
-            floatingPlantFoodImage = createFloatingImage(UiFactory.imageFor(textures, "IMAGE_UI_HUD_INGAME_PLANTFOOD_BANK_COLLECT").getDrawable(), 20);
+            floatingPlantFoodImage = createFloatingImage(
+                UiFactory.imageFor(textures, "IMAGE_UI_HUD_INGAME_PLANTFOOD_BUTTON_DOWN").getDrawable(), 20
+            );
         }
     }
 
@@ -193,6 +197,15 @@ public class GameInputHandler {
 
             if (isShovelSelected) {
                 if (gameFlowController.pluckPlant(String.valueOf(col), String.valueOf(row)).isSuccessful()) {
+                    float tileX = GRID_START_X + (col - 1) * TILE_WIDTH;
+                    float tileY = GRID_START_Y + (row - 1) * TILE_HEIGHT;
+
+                    float centerX = tileX + (TILE_WIDTH / 2f);
+                    float centerY = tileY + (TILE_HEIGHT / 2f);
+                    PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated
+                        ("768/INITIAL/EFFECTS/PLANTFOOD_FX/PLANTFOOD_FX.PAM","plantfood");
+                    actor.setPosition(centerX, centerY);
+                    mainLayer.addActor(actor);
                     clearAllSelections();
                 }
                 return;
@@ -202,6 +215,7 @@ public class GameInputHandler {
                 if (gameFlowController.feedPlant(String.valueOf(col), String.valueOf(row)).isSuccessful()) {
                     clearAllSelections();
                     if (gameHUD != null) gameHUD.updatePlantFoodCount();
+
                 }
                 return;
             }
@@ -210,7 +224,7 @@ public class GameInputHandler {
                 Result result = miniGameController.swapPlants(
                     (int) selectedGridPos.x, (int) selectedGridPos.y
                     , col, row);
-                if(!result.isSuccessful()){
+                if (!result.isSuccessful()) {
                     GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
                         new GameEventPayload.Builder(GameEvent.NOTIFY)
                             .message(result.message())
@@ -236,8 +250,8 @@ public class GameInputHandler {
     }
 
     private void handleGridPickup(int col, int row) {
-        Plant plantOnTile = miniGameController.getPlantAtTile(col,row);
-        if (plantOnTile != null ) {
+        Plant plantOnTile = miniGameController.getPlantAtTile(col, row);
+        if (plantOnTile != null) {
             selectedGridPos = new Vector2(col, row);
 
             TextureBank textures = AssetLoader.getInstance().getTextures();
@@ -259,9 +273,9 @@ public class GameInputHandler {
                 String.valueOf(col), String.valueOf(row)
             );
         } else {
-            if(GameSession.getInstance().getCurrentMode() instanceof BowlingLevel) {
+            if (GameSession.getInstance().getCurrentMode() instanceof BowlingLevel) {
                 result = miniGameController.plantBowlingNut(selectedPlantToPlace, col, row);
-            }else{
+            } else {
                 result = gameFlowController.plantPlant(selectedPlantToPlace.getName(),
                     String.valueOf(col), String.valueOf(row));
             }

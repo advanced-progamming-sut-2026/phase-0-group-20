@@ -188,6 +188,7 @@ public class GameSession {
             if (instance.progressListener != null)
                 instance.progressListener.unregisterFromAllEvents();
         }
+        App.getActiveUser().setPlantFoodCount(0);
 
         instance = null;
     }

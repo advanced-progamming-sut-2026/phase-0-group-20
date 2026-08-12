@@ -1,7 +1,12 @@
 package io.java.pvz.utils;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.models.App;
 import pvz.libpvz.textures.TextureBank;
 
 public class PlantFoodUI extends Group {
@@ -23,8 +28,17 @@ public class PlantFoodUI extends Group {
             float leafOffsetX = 5f;
             float leafOffsetY = 5f;
             mainLeaf.setScale(1.5f);
-
+            mainLeaf.setTouchable(Touchable.enabled);
             mainLeaf.setPosition(leafOffsetX, leafOffsetY);
+            mainLeaf.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                   if(App.getActiveUser()!= null){
+                       new GameFlowController().cheatAddPlantFood();
+                       updateFood(App.getActiveUser().getPlantFoodCount());
+                   }
+                }
+            });
             addActor(mainLeaf);
         }
 
@@ -39,7 +53,7 @@ public class PlantFoodUI extends Group {
             slotGlow.setSize(20,20);
             if (slotGlow != null) {
                 slotGlow.setPosition(firstSlotX + (i * slotSpacing), slotY);
-
+                slotGlow.setTouchable(Touchable.disabled);
                 slotGlow.setVisible(false);
 
                 filledSlots[i] = slotGlow;
