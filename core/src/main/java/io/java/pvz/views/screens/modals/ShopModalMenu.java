@@ -129,7 +129,8 @@ public class ShopModalMenu extends Table {
         content.pad(15, 35, 15, 35);
 
         Image plantIcon = dailyPlant != null
-            ? UiFactory.imageFor(textures, Ids.Shop.PLANT_PACKET_PREFIX + UiFactory.getAtlasName(dailyPlant).toUpperCase())
+            ? UiFactory.imageFor(textures,
+            Ids.Shop.PLANT_PACKET_PREFIX + UiFactory.getAtlasName(dailyPlant).toUpperCase())
             : UiFactory.imageFor(textures, Ids.Shop.SEED_PACKET_ICON);
         plantIcon.setScaling(Scaling.fit);
         content.add(plantIcon).size(150, 150).padRight(30);
@@ -148,7 +149,8 @@ public class ShopModalMenu extends Table {
         info.add(clockRow).padBottom(10).row();
 
         String plantName = dailyPlant != null ? dailyPlant.getName() : "No plants unlocked yet";
-        Label nameLabel = new Label(dailyPlant != null ? ("10x " + plantName + " Seed Packets") : plantName, skin, "big");
+        Label nameLabel = new Label(dailyPlant != null ? ("10x " + plantName + " Seed Packets") :
+            plantName, skin, "big");
         nameLabel.setColor(Color.WHITE);
         nameLabel.setFontScale(1.25f);
         info.add(nameLabel).row();
@@ -209,7 +211,8 @@ public class ShopModalMenu extends Table {
         itemsRow.add(buildFixedItemCard(
             Ids.Shop.CARD_YELLOW, Ids.Shop.SEED_PACKET_ICON,
             "Random Seed Packet", "5x seed packets of a random unlocked plant", 1000, Shop.CurrencyType.COIN,
-            () -> showConfirmDialog(() -> controller.buyItem("random seed packet", 1, null), 1000, Shop.CurrencyType.COIN)
+            () -> showConfirmDialog(() -> controller.buyItem("random seed packet",
+                1, null), 1000, Shop.CurrencyType.COIN)
         )).size(CARD_WIDTH, CARD_HEIGHT);
 
         itemsRow.add(buildSelectiveSeedPacketCard()).size(CARD_WIDTH, CARD_HEIGHT);
@@ -217,7 +220,8 @@ public class ShopModalMenu extends Table {
         itemsRow.add(buildFixedItemCard(
             Ids.Shop.CARD_COIN, Ids.Shop.COIN,
             "Currency Exchange", "Trade 5 diamonds for 500 coins", 5, Shop.CurrencyType.DIAMOND,
-            () -> showConfirmDialog(() -> controller.buyItem("currency exchange", 1, null), 5, Shop.CurrencyType.DIAMOND)
+            () -> showConfirmDialog(() -> controller.buyItem("currency exchange",
+                1, null), 5, Shop.CurrencyType.DIAMOND)
         )).size(CARD_WIDTH, CARD_HEIGHT);
 
         Map<String, Shop.PlantPrice> plants = controller.getAvailablePlants();
@@ -322,7 +326,8 @@ public class ShopModalMenu extends Table {
 
         String targetPlantName = selected.getName();
         TextButton buyBtn = UiFactory.textButton("Buy 10x", skin, "purple", 1.1f, 0.9f, () -> {
-            showConfirmDialog(() -> controller.buyItem("selective seed packet", 1, targetPlantName), 5, Shop.CurrencyType.DIAMOND);
+            showConfirmDialog(() -> controller.buyItem("selective seed packet",
+                1, targetPlantName), 5, Shop.CurrencyType.DIAMOND);
         });
         card.add(buyBtn).width(150).height(50);
 
@@ -399,7 +404,8 @@ public class ShopModalMenu extends Table {
         private final Supplier<Result> onConfirm;
         private Actor blocker;
 
-        public ShopConfirmTable(Supplier<Result> onConfirm, int price, Shop.CurrencyType currency, float worldWidth, float worldHeight) {
+        public ShopConfirmTable(Supplier<Result> onConfirm, int price, Shop.CurrencyType currency,
+                                float worldWidth, float worldHeight) {
             this.onConfirm = onConfirm;
             setFillParent(true);
             buildBlocker(worldWidth, worldHeight);

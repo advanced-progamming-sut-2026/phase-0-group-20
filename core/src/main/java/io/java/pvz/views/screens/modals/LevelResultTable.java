@@ -2,6 +2,7 @@ package io.java.pvz.views.screens.modals;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -9,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.ScreenManager;
@@ -58,8 +58,10 @@ public class LevelResultTable extends BorderedTable {
                 remove();
                 ScreenManager.getInstance().popScreen();
                 ScreenManager.getInstance().popScreen();
-                ScreenManager.getInstance().popScreen();
-                ScreenManager.getInstance().pushScreen(new ChapterSelectionScreen(game));
+                if (ScreenManager.getInstance().getCurrentScreen() instanceof ChapterSelectionScreen) {
+                    ScreenManager.getInstance().popScreen();
+                    ScreenManager.getInstance().pushScreen(new ChapterSelectionScreen(game));
+                }
             }
         );
         continueBtn.getLabel().setFontScale(1.3f);

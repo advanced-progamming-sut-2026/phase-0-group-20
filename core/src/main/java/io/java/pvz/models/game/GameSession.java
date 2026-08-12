@@ -265,6 +265,10 @@ public class GameSession {
         arena.getActivePlants().removeIf(plant -> {
             if (plant.isDead()) {
                 timeManager.unregisterTicker(plant);
+
+                if (plant.getPlacedTile() != null && plant.getPlacedTile().getPlants() != null)
+                    plant.getPlacedTile().getPlants().remove(plant);
+
                 GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
                     .plant(plant)
                     .coordinate(plant.getPlacedTile().getRow(), plant.getPlacedTile().getCol())

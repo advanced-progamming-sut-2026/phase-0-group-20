@@ -50,7 +50,8 @@ public class QuestItemUi extends Table {
 
         float maxProgress = quest.getCondition().getTargetProgress();
         if (maxProgress == 0) maxProgress = 1.0f;
-        float currentProgress =(quest.isCompleted() || quest.isReadyToClaim())? maxProgress: quest.getCondition().getCurrentProgress();
+        float currentProgress = (quest.isCompleted() || quest.isReadyToClaim()) ?
+            maxProgress : quest.getCondition().getCurrentProgress();
         ProgressBar progressBar = new ProgressBar(0, maxProgress, 1, false, skin, "xp_green");
         progressBar.setValue(currentProgress);
         progressBar.setAnimateDuration(0.2f);

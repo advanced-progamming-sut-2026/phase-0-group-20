@@ -14,7 +14,8 @@ public class RandomVaseTile extends Tile implements VaseTile {
     public RandomVaseTile(int row, int col) {
         super(row, col);
         int random = RAND.nextInt(3);
-        this.contents = (random == 0) ? VaseInside.PLANT_FOOD : (random == 1) ? VaseInside.ZOMBIE : VaseInside.SEED_PACKET;
+        this.contents = (random == 0) ? VaseInside.PLANT_FOOD :
+            (random == 1) ? VaseInside.ZOMBIE : VaseInside.SEED_PACKET;
     }
 
     @Override

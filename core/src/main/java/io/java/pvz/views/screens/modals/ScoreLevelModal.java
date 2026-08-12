@@ -45,7 +45,8 @@ public class ScoreLevelModal extends BorderedTable {
         questionLabel.setAlignment(Align.center);
         questionLabel.setColor(Color.BROWN);
 
-        Label highScoreLabel = new Label("High Score : "+ App.getActiveUser().getHighestBonusScore(), skin, "medium");
+        Label highScoreLabel = new Label("High Score : "+ App.getActiveUser().getHighestBonusScore(),
+            skin, "medium");
         highScoreLabel.setAlignment(Align.center);
         highScoreLabel.setColor(Color.valueOf("#4A3018"));
 

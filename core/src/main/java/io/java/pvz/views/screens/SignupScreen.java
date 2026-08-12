@@ -71,8 +71,9 @@ public class SignupScreen extends BaseScreen {
             }
         });
         baseTable.add(registerBtn).height(70).padTop(15).row();
-        
-        TextButton backBtn =  UiFactory.textButton("Already have account? Login", skin, "green_small",1.05f, 0.95f, () -> {
+
+        TextButton backBtn =  UiFactory.textButton("Already have account? Login", skin,
+            "green_small",1.05f, 0.95f, () -> {
             ScreenManager.getInstance().pushScreen(new LoginScreen(game));
         });
         baseTable.add(backBtn).height(50).padTop(5).row();

@@ -273,7 +273,8 @@ public class BattlefieldRenderer implements GameEventListener {
             PamAnimatedActor chillActor = plantChillOverlays.get(plant);
 
             if (chillActor == null) {
-                chillActor = PamAnimatedActor.createEffectAnimated("768/FULL/EFFECTS/FROSTBITE_CHILL_PLANT/FROSTBITE_CHILL_PLANT.PAM", clipName);
+                chillActor = PamAnimatedActor.createEffectAnimated(
+                    "768/FULL/EFFECTS/FROSTBITE_CHILL_PLANT/FROSTBITE_CHILL_PLANT.PAM", clipName);
                 chillActor.setSize(TILE_WIDTH, TILE_HEIGHT);
                 chillActor.setOrigin(Align.center);
                 plantLayer.addActor(chillActor);
@@ -289,7 +290,8 @@ public class BattlefieldRenderer implements GameEventListener {
 
             PamAnimatedActor freezeActor = plantFreezeOverlays.get(plant);
             if (freezeActor == null) {
-                freezeActor = PamAnimatedActor.createEffectAnimated("768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_PLANT/FROSTBITE_ICE_BLOCK_PLANT.PAM", "freeze_idle");
+                freezeActor = PamAnimatedActor.createEffectAnimated(
+                    "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_PLANT/FROSTBITE_ICE_BLOCK_PLANT.PAM", "freeze_idle");
                 freezeActor.setSize(TILE_WIDTH, TILE_HEIGHT);
                 freezeActor.setOrigin(Align.center);
                 plantLayer.addActor(freezeActor);
@@ -388,7 +390,8 @@ public class BattlefieldRenderer implements GameEventListener {
         String pamPath1 = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_PARTICLES/FROSTBITE_ICE_BLOCK_PARTICLES.PAM";
         String pamPath2 = "768/INITIAL/EFFECTS/FROSTBITE_ICE_BLOCK_PARTICLES/FROSTBITE_ICE_BLOCK_PARTICLES.PAM";
 
-        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "animation", pamPath1, pamPath2);
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
+            "animation", pamPath1, pamPath2);
 
         actor.setSize(80, 80);
         actor.setOrigin(Align.center);
@@ -432,7 +435,8 @@ public class BattlefieldRenderer implements GameEventListener {
         String pamPath1 = "768/FULL/EFFECTS/ZOMBIE_HUNTER_SNOWBALL_SPLAT/ZOMBIE_HUNTER_SNOWBALL_SPLAT.PAM";
         String pamPath2 = "768/INITIAL/EFFECTS/ZOMBIE_HUNTER_SNOWBALL_SPLAT/ZOMBIE_HUNTER_SNOWBALL_SPLAT.PAM";
 
-        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "animation", pamPath1, pamPath2);
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
+            "animation", pamPath1, pamPath2);
 
 
         actor.setSize(80, 80);
