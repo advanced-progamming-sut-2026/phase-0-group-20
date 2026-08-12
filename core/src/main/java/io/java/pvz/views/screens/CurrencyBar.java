@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
+import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
@@ -66,14 +67,14 @@ public class CurrencyBar extends Table {
     private void cheatCoin() {
         User user = App.getActiveUser();
         if (user == null) return;
-        user.setCoin(COIN_CHEAT_AMOUNT + user.getCoin());
+        new GameMenuController().cheat(DIAMOND_CHEAT_AMOUNT,"coin");
         refresh();
     }
 
     private void cheatDiamonds() {
         User user = App.getActiveUser();
         if (user == null) return;
-        user.setDiamond(user.getDiamond() + DIAMOND_CHEAT_AMOUNT);
+        new GameMenuController().cheat(DIAMOND_CHEAT_AMOUNT,"diamond");
         refresh();
     }
 

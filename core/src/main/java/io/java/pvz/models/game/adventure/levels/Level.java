@@ -1,5 +1,6 @@
 package io.java.pvz.models.game.adventure.levels;
 
+import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.plants.Plant;
@@ -223,7 +224,7 @@ public abstract class Level implements GameMode {
     }
 
     public float getDifficultyCoefficient() {
-        int diffLevel = Settings.getInstance().getDifficulty();
+        int diffLevel = App.getSettings().getDifficulty();
         return 0.4f + (diffLevel * 0.2f);
     }
 

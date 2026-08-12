@@ -1,5 +1,6 @@
 package io.java.pvz.models.game;
 
+import io.java.pvz.models.App;
 import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.SunType;
@@ -32,7 +33,7 @@ public class SunManager implements Ticker {
         int timeInSeconds = currentTick / TimeManager.TICKS_PER_SECOND;
         double nextSunInSeconds = Math.max(6 + (0.05 * timeInSeconds), 12.0);
 
-        Settings settings = Settings.getInstance();
+        Settings settings = App.getSettings();
 
         this.timeToNextSun = (int) (nextSunInSeconds *
                 TimeManager.TICKS_PER_SECOND *

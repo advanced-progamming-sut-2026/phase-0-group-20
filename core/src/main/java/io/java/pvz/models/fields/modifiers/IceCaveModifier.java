@@ -1,5 +1,6 @@
 package io.java.pvz.models.fields.modifiers;
 
+import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.plants.Plant;
@@ -70,7 +71,7 @@ public class IceCaveModifier implements SeasonModifier {
 
     private void setupSlipperyTiles(Arena arena) {
         float chance = (float) (getCurrentLevelNumber() * LEVEL_SCALING_FACTOR *
-                (BASE_SLIPPERY_SCALING + DIFFICULTY_MULTIPLIER * Settings.getInstance().getDifficulty()));
+                (BASE_SLIPPERY_SCALING + DIFFICULTY_MULTIPLIER * App.getSettings().getDifficulty()));
         if (rand.nextDouble() >= SLIPPERY_STAGE_CHANCE + chance)
             return;
 

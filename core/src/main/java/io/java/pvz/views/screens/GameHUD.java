@@ -137,11 +137,13 @@ public class GameHUD {
     }
 
     private void setupActionButtons() {
-        Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 50, 50, () -> {
-            gameFlowController.releaseNuke();
-        }, false);
-        nukeBtn.setPosition(50, 50);
-        mainLayer.addActor(nukeBtn);
+        if(App.getSettings().isDebug()){
+            Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 50, 50, () -> {
+                gameFlowController.releaseNuke();
+            }, false);
+            nukeBtn.setPosition(50, 50);
+            mainLayer.addActor(nukeBtn);
+        }
 
         Stack shovelBtn = UiFactory.iconButton(textures, skin, Ids.UI.SHOVEL, 110, 110, () -> {
             inputHandler.onShovelClicked();

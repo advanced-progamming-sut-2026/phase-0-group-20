@@ -128,7 +128,8 @@ public class GameMenuController {
         if (activeUser == null) {
             return new Result(false, "No active user found!");
         }
-
+        if(!App.getSettings().isDebug())
+            return new Result(false, "Cheat not allowed!");
         if (type.equalsIgnoreCase("coin")) {
             activeUser.earnCoin(amount);
             return new Result(true, amount + " coins added successfully!");

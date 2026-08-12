@@ -1,5 +1,6 @@
 package io.java.pvz.models.entities.zombies;
 
+import io.java.pvz.models.App;
 import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.obstacle.ArcadeMachine;
 import io.java.pvz.models.entities.obstacle.Barrel;
@@ -188,7 +189,7 @@ public class ZombieFactory {
     }
 
     private static AttackBehavior getAttackAI(ZombieType type, Zombie zombie, ZombieData data) {
-        Settings settings = Settings.getInstance();
+        Settings settings = App.getSettings();
         float dmgMultiplier = settings.getZombieDamageMultiplier();
         return switch (type) {
             case PIANIST, BARREL_ROLLER -> new SquashHit(zombie);
@@ -299,7 +300,7 @@ public class ZombieFactory {
     }
 
     private static void applyDifficultyModifiers(Zombie zombie) {
-        Settings settings = Settings.getInstance();
+        Settings settings = App.getSettings();
 
         int newHealth = (int) (zombie.getHealth() * settings.getZombieHealthMultiplier());
         zombie.setHealth(newHealth);

@@ -4,6 +4,7 @@ import io.java.pvz.controllers.NavigationController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.Result;
+import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
@@ -35,21 +36,14 @@ public class GameFlowController {
         return null;
     }
 
-    public Result advanceTime(String amount) {
-        Integer timeAmount = parsePositiveInt(amount);
-        if (timeAmount == null) {
-            return new Result(false, "Invalid amount given. (Integer above ZERO)");
-        }
+    public Result advanceTime(int timeAmount) {
         GameSession.getInstance().update(timeAmount);
 
         if (GameSession.getInstance().isGameOver()) {
-            NavigationController.exitMenu();
             App.getActiveUser().setPlantFoodCount(0);
             App.getActiveUser().getUnlockedPlants().forEach(p -> p.setBoosted(false));
             if (GameSession.getInstance().getCurrentMode() != null)
                 ((Level) GameSession.getInstance().getCurrentMode()).destroyLevelFields();
-
-            return new Result(true, "Returned to " + App.getActiveMenu().getName());
         }
 
         return new Result(true, "Successfully advanced time for " + timeAmount + " ticks.");
@@ -71,12 +65,7 @@ public class GameFlowController {
     }
 
     public Result collectSun(int realCol, int realRow) {
-//        Integer userCol = parsePositiveInt(colStr);
-//        Integer userRow = parsePositiveInt(rowStr);
-//
-//        if (userCol == null || userRow == null) {
-//            return new Result(false, "Invalid coordinate given. (Integer above ZERO)");
-//        }
+
 
         Arena arena = GameSession.getInstance().getArena();
         Sun sun = arena.getSunInCoordinate(realCol, realRow);
@@ -95,6 +84,9 @@ public class GameFlowController {
 
     public Result cheatAddSun(String amount) {
         Integer sunAmount = parsePositiveInt(amount);
+        if(!App.getSettings().isDebug()){
+            return new Result(false, "Cheat is not Allowed");
+        }
         if (sunAmount == null) {
             return new Result(false, "Invalid amount given. (Integer above ZERO)");
         }

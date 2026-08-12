@@ -99,6 +99,6 @@ public class Settings {
     }
 
     public float getGameSpeedMultiplier() {
-        return 1.0f - (difficulty - 3) * 0.15f;
+        return 1.0f + (difficulty - 3) * 0.15f;
     }
 }

@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.controllers.GameController.MiniGameController;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.App;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.GameState;
@@ -109,7 +110,8 @@ public class GameFlowScreen extends BaseScreen {
         handleDebugSpawnKeys();
         batch.end();
 
-        drawDebugLayout();
+        if(App.getSettings().isGrid())
+            drawDebugLayout();
         advanceSimulation(delta);
         syncDroppedPackets();
 
@@ -171,7 +173,7 @@ public class GameFlowScreen extends BaseScreen {
 
         simulationAccumulator += delta;
         while (simulationAccumulator >= TICK_DURATION) {
-            session.update(1);
+            gameFlowController.advanceTime(1);
             simulationAccumulator -= TICK_DURATION;
         }
 

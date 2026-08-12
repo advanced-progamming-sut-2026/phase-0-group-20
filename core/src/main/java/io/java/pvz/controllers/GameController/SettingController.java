@@ -1,6 +1,7 @@
 package io.java.pvz.controllers.GameController;
 
 import io.java.pvz.controllers.AudioManager;
+import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.Settings;
 
@@ -13,7 +14,7 @@ public class SettingController {
                 return new Result(false, "Invalid difficulty (Must be an integer [1-5])");
             }
 
-            Settings.getInstance().setDifficulty(desiredDifficulty);
+            App.getSettings().setDifficulty(desiredDifficulty);
             return new Result(true, "Difficulty changed successfully to " + desiredDifficulty);
         } catch (NumberFormatException e) {
             return new Result(false, "Invalid difficulty (Must be an integer [1-5])");
@@ -21,46 +22,46 @@ public class SettingController {
     }
 
     public int getDifficulty() {
-        return Settings.getInstance().getDifficulty();
+        return App.getSettings().getDifficulty();
     }
 
     public void setDifficulty(int difficulty) {
         if(difficulty >= 1 && difficulty <= 5) {
-            Settings.getInstance().setDifficulty(difficulty);
+            App.getSettings().setDifficulty(difficulty);
         }
     }
 
     public float getMusicVolume() {
-        return Settings.getInstance().getMusicVolume();
+        return App.getSettings().getMusicVolume();
     }
 
     public void setMusicVolume(float volume) {
-        Settings.getInstance().setMusicVolume(volume);
+        App.getSettings().setMusicVolume(volume);
         AudioManager.getInstance().changeMusicVolume(volume);
     }
 
     public float getSfxVolume() {
-        return Settings.getInstance().getSfxVolume();
+        return App.getSettings().getSfxVolume();
     }
 
     public void setSfxVolume(float volume) {
-        Settings.getInstance().setSfxVolume(volume);
+        App.getSettings().setSfxVolume(volume);
         AudioManager.getInstance().changeSfxVolume(volume);
     }
 
     public boolean isGrid() {
-        return Settings.getInstance().isGrid();
+        return App.getSettings().isGrid();
     }
 
     public void setGrid(boolean grid) {
-        Settings.getInstance().setGrid(grid);
+        App.getSettings().setGrid(grid);
     }
 
     public boolean isDebug() {
-        return Settings.getInstance().isDebug();
+        return App.getSettings().isDebug();
     }
 
     public void setDebug(boolean debug) {
-        Settings.getInstance().setDebug(debug);
+        App.getSettings().setDebug(debug);
     }
 }

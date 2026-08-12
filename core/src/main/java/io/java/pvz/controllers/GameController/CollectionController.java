@@ -163,7 +163,7 @@ public class CollectionController {
                 return new Result(false, "You already have this plant.");
             }
         }
-        if (activeUser.getCoin() < BASE_COST) {
+        if (activeUser.getCoin() < PURCHASE_COST) {
             GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
                     .message("Not Enough Coin. COST: " + PURCHASE_COST)

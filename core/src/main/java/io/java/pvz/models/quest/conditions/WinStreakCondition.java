@@ -2,6 +2,7 @@ package io.java.pvz.models.quest.conditions;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.java.pvz.models.App;
 import io.java.pvz.models.Settings;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventPayload;
@@ -21,7 +22,7 @@ public class WinStreakCondition extends QuestCondition {
     public void updateProgress(GameEventPayload payload) {
         GameEvent event = payload.getType();
 
-        if (event == GameEvent.LEVEL_COMPLETED && Settings.getInstance().getDifficulty() == 5) {
+        if (event == GameEvent.LEVEL_COMPLETED && App.getSettings().getDifficulty() == 5) {
             currentProgress++;
 
         } else if (event == GameEvent.GAME_OVER) {
