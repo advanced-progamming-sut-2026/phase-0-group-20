@@ -16,5 +16,8 @@ public enum ZombieState {
     CAST,
     CAST_LOOP,
     REEL,
-    TOSS
+    TOSS,
+    SPIN_UP,
+    SPINNING,
+    SPIN_DOWN
 }

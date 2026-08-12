@@ -3,8 +3,12 @@ package io.java.pvz.models.entities.zombies.behavior.defense;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.context.JugglerContext;
+import io.java.pvz.models.entities.zombies.behavior.effect.JugglerDeflectEffect;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 
 public class JugglerDefense implements DefenseBehavior {
     private final Zombie zombie;
@@ -51,13 +55,15 @@ public class JugglerDefense implements DefenseBehavior {
         }
 
         if (targetPlant != null) {
-            if (type == ProjectileType.ICE_PEA) {
-                targetPlant.receiveIceHit();
-                GameSession.notify("Juggler reflected ICE to " + targetPlant.getName() + "!");
-            } else {
-                targetPlant.takeDamage(20);
-                GameSession.notify("Juggler reflected projectile to " + targetPlant.getName() + "!");
-            }
+            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("DEFLECT_PROJECTILE")
+                    .zombie(zombie)
+                    .plant(targetPlant)
+                    .projectileType(type)
+                    .build());
+
+            zombie.addEffect(new JugglerDeflectEffect(zombie, targetPlant, type));
         }
     }
 }

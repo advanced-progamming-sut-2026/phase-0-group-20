@@ -87,6 +87,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
         GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.SPAWN_EFFECT, this);
+        GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
     }
 
     public Group getGroup() {
@@ -117,7 +118,47 @@ public class BattlefieldRenderer implements GameEventListener {
             } else if ("OCTOPUS_DIE".equals(payload.getMessage())) {
                 killOctopusOnPlant(payload.getPlant());
             }
+        } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
+            String msg = String.valueOf(payload.getMessage());
+
+            if ("DEFLECT_PROJECTILE".equals(msg)) {
+                spawnDeflectedProjectileVisual(payload.getZombie(), payload.getPlant(), payload.getProjectileType());
+            }
         }
+    }
+
+    private void spawnDeflectedProjectileVisual(Zombie zombie, Plant plant, ProjectileType type) {
+        if (zombie == null || plant == null || type == null) return;
+
+        ProjectileAnim anim = PROJECTILE_ANIMS.getOrDefault(type, PROJECTILE_ANIMS.get(ProjectileType.PEA));
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), anim.clip(), anim.path());
+        actor.setSize(30, 30);
+        actor.setOrigin(Align.center);
+        actor.setScaleX(-1f);
+
+        float startX = zombie.getPosition().getX() - 20f;
+        float startY = zombie.getPosition().getY() + 40f;
+
+        float targetX = plant.getPosition().getX();
+        float targetY = plant.getPosition().getY() + 40f;
+
+        actor.setPosition(startX, startY);
+        effectLayer.addActor(actor);
+
+        float travelTime = 0.5f;
+
+        actor.addAction(Actions.sequence(
+            Actions.moveTo(targetX, targetY, travelTime, Interpolation.linear),
+            Actions.run(() -> {
+                GameEventPayload hitPayload = new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
+                    .projectileType(type)
+                    .pixelCoordinate(targetX, targetY)
+                    .build();
+                spawnHitSplash(hitPayload);
+            }),
+            Actions.removeActor()
+        ));
     }
 
     private void updatePlantIceOverlay(Plant plant, int stacks) {
@@ -585,6 +626,10 @@ public class BattlefieldRenderer implements GameEventListener {
         if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
 
         if (zombie.getState() == ZombieState.THROW) return pickClip(anim, CLIP_WALK, "throw");
+
+        if (zombie.getState() == ZombieState.SPIN_UP)   return pickClip(anim, CLIP_IDLE, "spinup");
+        if (zombie.getState() == ZombieState.SPINNING)  return pickClip(anim, CLIP_WALK, "spin_walk", "spin");
+        if (zombie.getState() == ZombieState.SPIN_DOWN) return pickClip(anim, CLIP_IDLE, "spindown");
 
         if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
         if (zombie.getState() == ZombieState.STUNNED) return pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop");
