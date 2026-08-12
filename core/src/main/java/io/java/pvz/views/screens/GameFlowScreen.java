@@ -98,7 +98,6 @@ public class GameFlowScreen extends BaseScreen {
     public void render(float delta) {
         clearScreen(0.1f, 0.1f, 0.1f, 1f);
         AssetLoader.getInstance().updateTextures();
-
         gameHUD.update(delta);
         inputHandler.handleTileClick();
         handleCameraMovement(delta);

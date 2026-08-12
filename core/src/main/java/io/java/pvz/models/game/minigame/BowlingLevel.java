@@ -8,12 +8,13 @@ import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalWinCondition;
+import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class BowlingLevel extends Level implements IMinigame {
+public class BowlingLevel extends ConveyorBelt implements IMinigame {
 
     private static final int TICKS_PER_SECOND = 10;
     private static final int BELT_SPEED_SECONDS = 8;

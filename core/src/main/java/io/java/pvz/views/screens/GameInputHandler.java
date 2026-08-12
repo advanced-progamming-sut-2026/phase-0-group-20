@@ -19,6 +19,7 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
+import io.java.pvz.models.game.minigame.BowlingLevel;
 import io.java.pvz.models.game.minigame.DroppedSeedPacket;
 import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.utils.Ids;
@@ -202,8 +203,14 @@ public class GameInputHandler {
                 String.valueOf(col), String.valueOf(row)
             );
         } else {
-            result = gameFlowController.plantPlant(selectedPlantToPlace.getName(),
-                String.valueOf(col), String.valueOf(row));
+            if(GameSession.getInstance().getCurrentMode() instanceof BowlingLevel) {
+                result = miniGameController.plantBowlingNut(selectedPlantToPlace, col, row);
+                System.out.println(result.message());
+
+            }else{
+                result = gameFlowController.plantPlant(selectedPlantToPlace.getName(),
+                    String.valueOf(col), String.valueOf(row));
+            }
         }
 
         if (result.isSuccessful()) {

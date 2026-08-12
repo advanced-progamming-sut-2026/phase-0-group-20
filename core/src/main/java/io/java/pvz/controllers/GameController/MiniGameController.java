@@ -80,11 +80,7 @@ public class MiniGameController {
         return new Result(false, "There is no vase here.");
     }
 
-    public Result plantBowlingNut(String indexStr, String rowStr, String colStr) {
-        Integer index = parsePositiveInt(indexStr);
-        Integer row = parsePositiveInt(rowStr);
-        Integer col = parsePositiveInt(colStr);
-        if (index == null || row == null || col == null) return new Result(false, "Invalid coordinates or index");
+    public Result plantBowlingNut(Plant nut, int col, int  row) {
 
         GameSession session = GameSession.getInstance();
         BowlingLevel level = (BowlingLevel) session.getCurrentMode();
@@ -92,8 +88,6 @@ public class MiniGameController {
         if (!level.isBehindRedLine(col))
             return new Result(false, "You must plant behind the red line!");
 
-
-        Plant nut = level.consumePlant(index - 1);
         if (nut == null) return new Result(false, "No plant at this index!");
 
         ProjectileType type;
@@ -111,16 +105,16 @@ public class MiniGameController {
             nut,
             type,
             damage,
-            new Position(col, row),
+            new Position(col, row-1),
             ProjectileTuning.BOWLING_SPEED_TILES_PER_SEC,
             0,
             false,
             true
         );
 
-        bowl.setBouncesLeft(Integer.MAX_VALUE); //can collide infinitely
-
-        return new Result(true, "Bowled a " + nut.getName() + "!");
+        bowl.setBouncesLeft(Integer.MAX_VALUE);
+        level.getBelt().remove(nut);
+        return new Result(true, "Bowled a " + nut.getName() + "! in " + col + " " + row);
     }
 
 
