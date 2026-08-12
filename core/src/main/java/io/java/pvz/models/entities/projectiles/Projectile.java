@@ -113,6 +113,14 @@ public class Projectile implements Ticker {
             piercing,
             canPassObstacles
         );
+        if (speedX > 0)
+            position.moveX(PhysicalConstants.TILE_WIDTH / 2);
+        else if (speedX < 0)
+            position.moveX(-PhysicalConstants.TILE_WIDTH / 2);
+        if (speedY > 0)
+            position.moveY(PhysicalConstants.TILE_HEIGHT / 2);
+        else if (speedY < 0)
+            position.moveY(-PhysicalConstants.TILE_HEIGHT / 2);
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
@@ -137,6 +145,15 @@ public class Projectile implements Ticker {
             piercing,
             canPassObstacles
         );
+        if (speedX > 0)
+            position.moveX(PhysicalConstants.TILE_WIDTH / 2);
+        else if (speedX < 0)
+            position.moveX(-PhysicalConstants.TILE_WIDTH / 2);
+        if (speedY > 0)
+            position.moveY(PhysicalConstants.TILE_HEIGHT / 2);
+        else if (speedY < 0)
+            position.moveY(-PhysicalConstants.TILE_HEIGHT / 2);
+
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
@@ -245,6 +262,7 @@ public class Projectile implements Ticker {
             frozenDestY = destY;
         } else {
             target = null;
+            isDestroyed = true;
             destX = frozenDestX;
             destY = frozenDestY;
         }
