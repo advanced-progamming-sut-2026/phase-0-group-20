@@ -5,8 +5,6 @@ import io.java.pvz.models.entities.obstacle.ArcadeMachine;
 import io.java.pvz.models.entities.obstacle.Barrel;
 import io.java.pvz.models.entities.obstacle.IceBlock;
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.entities.plants.effect.CatEffect;
-import io.java.pvz.models.entities.plants.effect.PlantEffect;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.entities.zombies.armour.ArmorData;
 import io.java.pvz.models.entities.zombies.armour.ArmorLoader;
@@ -16,8 +14,6 @@ import io.java.pvz.models.entities.zombies.behavior.defense.*;
 import io.java.pvz.models.entities.zombies.behavior.effect.*;
 import io.java.pvz.models.entities.zombies.behavior.move.*;
 import io.java.pvz.models.enums.plants.ProjectileType;
-import io.java.pvz.models.fields.tiles.GraveStoneTile;
-import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
@@ -103,7 +99,7 @@ public class ZombieFactory {
             case TOMB_RAISER -> new NormalMove(zombie);
             case HUNTER -> new NormalMove(zombie);
             case OCTOPUS -> new NormalMove(zombie);
-            case WIZARD -> createWizardMove(zombie);
+            case WIZARD -> new NormalMove(zombie);
             case PIANIST -> createPianistMove(zombie);
 
             case FISHERMAN -> new StationaryMove(zombie);
@@ -116,29 +112,6 @@ public class ZombieFactory {
 
             default -> new NormalMove(zombie);
         };
-    }
-
-    private static MoveBehavior createWizardMove(Zombie zombie) {
-        return new PeriodicActionMove(zombie, 5 * TimeManager.TICKS_PER_SECOND, true, () -> {
-            GameSession session = GameSession.getInstance();
-            List<Plant> validTargets = new ArrayList<>();
-
-            for (Plant p : session.getArena().getActivePlants()) {
-                boolean isCat = false;
-                for (PlantEffect effect : p.getActiveEffects()) {
-                    if (effect instanceof CatEffect) {
-                        isCat = true;
-                        break;
-                    }
-                }
-                if (!isCat) validTargets.add(p);
-            }
-
-            if (!validTargets.isEmpty()) {
-                Plant target = validTargets.get(new Random().nextInt(validTargets.size()));
-                target.addEffect(new CatEffect(zombie));
-            }
-        });
     }
 
     private static MoveBehavior createPianistMove(Zombie zombie) {
@@ -168,7 +141,6 @@ public class ZombieFactory {
             case PIANIST, BARREL_ROLLER -> new SquashHit(zombie);
             case GARGANTUAR -> new SmashAttack(zombie, (int) (data.getSmashDamage() * dmgMultiplier));
             case KING -> new KingAttack(zombie);
-            case WIZARD -> new WizardTransformAttack(zombie);
             case DODO -> new DodoAttack(zombie);
             case ZOMBOTANY_SQUASH -> new SquashSuicideAttack(zombie);
             case ZOMBOTANY_PEASHOOTER -> new RangedAttack(zombie, ProjectileType.PEA, ProjectileType.NORMAL_PEA_DAMAGE);
@@ -276,6 +248,10 @@ public class ZombieFactory {
 
         if (type == ZombieType.OCTOPUS) {
             zombie.addEffect(new OctopusTossEffect(zombie, 6));
+        }
+
+        if (type == ZombieType.WIZARD) {
+            zombie.addEffect(new WizardSpellEffect(zombie, 6));
         }
 
     }

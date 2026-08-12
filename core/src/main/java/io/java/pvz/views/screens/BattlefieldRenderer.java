@@ -66,6 +66,7 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Map<Plant, PamAnimatedActor> plantChillOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantFreezeOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantOctopusOverlays = new HashMap<>();
+    private final Map<Plant, PamAnimatedActor> plantSheepOverlays = new HashMap<>();
 
     private final Group masterGroup = new Group();
     private final Group environmentLayer = new Group();
@@ -123,7 +124,64 @@ public class BattlefieldRenderer implements GameEventListener {
 
             if ("DEFLECT_PROJECTILE".equals(msg)) {
                 spawnDeflectedProjectileVisual(payload.getZombie(), payload.getPlant(), payload.getProjectileType());
+            } else if ("SHEEP_APPLY".equals(msg)) {
+                spawnSheepOnPlant(payload.getPlant());
+            } else if ("SHEEP_REMOVE".equals(msg)) {
+                removeSheepFromPlant(payload.getPlant());
             }
+        }
+    }
+
+    private void spawnSheepOnPlant(Plant plant) {
+        if (plant == null) return;
+
+        PamAnimatedActor plantActor = plantActors.get(plant);
+        if (plantActor != null) {
+            plantActor.setVisible(false);
+        }
+
+        String pamPath = "768/FULL/EFFECTS/DARK_WIZARD_SHEEPENING/DARK_WIZARD_SHEEPENING.PAM";
+        PamAnimatedActor sheepActor = plantSheepOverlays.get(plant);
+
+        if (sheepActor == null) {
+            sheepActor = PamAnimatedActor.createEffectAnimated(pamPath, "animation");
+            sheepActor.setSize(TILE_WIDTH, TILE_HEIGHT);
+            sheepActor.setOrigin(Align.center);
+            plantLayer.addActor(sheepActor);
+            plantSheepOverlays.put(plant, sheepActor);
+        }
+
+        if (plantActor != null) {
+            sheepActor.setPosition(plantActor.getX(), plantActor.getY() + 15f);
+        }
+
+        PamAnimatedActor finalSheep = sheepActor;
+        sheepActor.addAction(Actions.sequence(
+            Actions.delay(1.7f),
+            Actions.run(() -> finalSheep.setClip("idle"))
+        ));
+    }
+
+    private void removeSheepFromPlant(Plant plant) {
+        if (plant == null) return;
+
+        PamAnimatedActor sheepActor = plantSheepOverlays.remove(plant);
+        if (sheepActor != null) {
+            sheepActor.clearActions();
+            sheepActor.setClip("animation2");
+
+            sheepActor.addAction(Actions.sequence(
+                Actions.delay(1.1f),
+                Actions.removeActor()
+            ));
+        }
+
+        PamAnimatedActor plantActor = plantActors.get(plant);
+        if (plantActor != null) {
+            plantActor.addAction(Actions.sequence(
+                Actions.delay(0.5f),
+                Actions.visible(true)
+            ));
         }
     }
 
@@ -402,6 +460,7 @@ public class BattlefieldRenderer implements GameEventListener {
         plantChillOverlays.clear();
         plantFreezeOverlays.clear();
         plantOctopusOverlays.clear();
+        plantSheepOverlays.clear();
     }
 
     private void syncLawnMowers(LawnMower[] mowers) {
@@ -452,6 +511,9 @@ public class BattlefieldRenderer implements GameEventListener {
 
                 PamAnimatedActor octopusActor = plantOctopusOverlays.remove(entry.getKey());
                 if (octopusActor != null) octopusActor.remove();
+
+                PamAnimatedActor sheepActor = plantSheepOverlays.remove(entry.getKey());
+                if (sheepActor != null) sheepActor.remove();
 
                 it.remove();
             }
@@ -630,6 +692,8 @@ public class BattlefieldRenderer implements GameEventListener {
         if (zombie.getState() == ZombieState.SPIN_UP)   return pickClip(anim, CLIP_IDLE, "spinup");
         if (zombie.getState() == ZombieState.SPINNING)  return pickClip(anim, CLIP_WALK, "spin_walk", "spin");
         if (zombie.getState() == ZombieState.SPIN_DOWN) return pickClip(anim, CLIP_IDLE, "spindown");
+
+        if (zombie.getState() == ZombieState.SPELL) return pickClip(anim, "idle", "sheep");
 
         if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
         if (zombie.getState() == ZombieState.STUNNED) return pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop");

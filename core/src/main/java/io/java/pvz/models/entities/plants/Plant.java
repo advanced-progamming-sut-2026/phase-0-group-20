@@ -131,10 +131,6 @@ public class Plant implements IPlant, Ticker {
     public void onTick(int currentTick) {
         if (actionTimer > 0) actionTimer--;
 
-        if (stunned || isFrozen() || hasOctopus()) {
-            return;
-        }
-
         activeEffects.removeIf(effect -> {
             if (effect.isExpired()) {
                 effect.remove(this);
@@ -143,6 +139,11 @@ public class Plant implements IPlant, Ticker {
             effect.execute(this, currentTick);
             return false;
         });
+
+        if (stunned || isFrozen() || hasOctopus()) {
+            return;
+        }
+
 
         if (isAsleep()) {
             return;
