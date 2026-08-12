@@ -82,7 +82,7 @@ public class PlantCardButton extends Table {
             this.levelContainer = null;
         }
 
-        if (!isUnlocked) {
+        if (!isUnlocked && builder.lockIncluded) {
             Pixmap dimPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
             dimPixmap.setColor(0, 0, 0, 0.65f);
             dimPixmap.fill();
@@ -119,7 +119,7 @@ public class PlantCardButton extends Table {
             addActor(levelContainer);
         }
 
-        if (!isUnlocked) {
+        if (!isUnlocked && builder.lockIncluded) {
             addActor(darkOverlay);
             if (lockIcon != null) {
                 addActor(lockIcon);
@@ -215,6 +215,7 @@ public class PlantCardButton extends Table {
         private Skin skin;
         private boolean showProgressBar = true;
         private float scale = 105f;
+        private boolean lockIncluded = true;
 
         private boolean showLevel = true;
 
@@ -255,6 +256,11 @@ public class PlantCardButton extends Table {
 
         public Builder setShowLevel(boolean showLevel) {
             this.showLevel = showLevel;
+            return this;
+        }
+
+        public Builder setLockIncluded(boolean lockIncluded) {
+            this.lockIncluded = lockIncluded;
             return this;
         }
 
