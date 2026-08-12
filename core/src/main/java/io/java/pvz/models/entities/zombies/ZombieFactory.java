@@ -13,10 +13,7 @@ import io.java.pvz.models.entities.zombies.armour.ArmorLoader;
 import io.java.pvz.models.entities.zombies.behavior.attack.*;
 import io.java.pvz.models.entities.zombies.behavior.context.*;
 import io.java.pvz.models.entities.zombies.behavior.defense.*;
-import io.java.pvz.models.entities.zombies.behavior.effect.HunterThrowEffect;
-import io.java.pvz.models.entities.zombies.behavior.effect.JalapenoTimerEffect;
-import io.java.pvz.models.entities.zombies.behavior.effect.SunAbsorber;
-import io.java.pvz.models.entities.zombies.behavior.effect.TombRaiserEffect;
+import io.java.pvz.models.entities.zombies.behavior.effect.*;
 import io.java.pvz.models.entities.zombies.behavior.move.*;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.tiles.GraveStoneTile;
@@ -109,8 +106,7 @@ public class ZombieFactory {
             case WIZARD -> createWizardMove(zombie);
             case PIANIST -> createPianistMove(zombie);
 
-            case FISHERMAN -> new PeriodicActionMove(zombie, 4 * TimeManager.TICKS_PER_SECOND, false,
-                    () -> zombie.getAttackBehavior().execute());
+            case FISHERMAN -> new StationaryMove(zombie);
 
             case KING -> new PeriodicActionMove(zombie, 10 * TimeManager.TICKS_PER_SECOND, false,
                     () -> zombie.getAttackBehavior().execute());
@@ -195,7 +191,6 @@ public class ZombieFactory {
             case GARGANTUAR -> new SmashAttack(zombie, (int) (data.getSmashDamage() * dmgMultiplier));
             case KING -> new KingAttack(zombie);
             case WIZARD -> new WizardTransformAttack(zombie);
-            case FISHERMAN -> new FishermanHookAttack(zombie);
             case DODO -> new DodoAttack(zombie);
             case ZOMBOTANY_SQUASH -> new SquashSuicideAttack(zombie);
             case ZOMBOTANY_PEASHOOTER -> new RangedAttack(zombie, ProjectileType.PEA, ProjectileType.NORMAL_PEA_DAMAGE);
@@ -294,6 +289,11 @@ public class ZombieFactory {
 
         if (type == ZombieType.HUNTER) {
             zombie.addEffect(new HunterThrowEffect(zombie, 3));
+        }
+
+        if (type == ZombieType.FISHERMAN) {
+            zombie.setCol(8);
+            zombie.addEffect(new FishermanHookEffect(zombie, 4));
         }
 
     }

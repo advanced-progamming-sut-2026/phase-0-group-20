@@ -8,8 +8,13 @@ public enum ZombieState {
     POWER,
     POWER_DOWN,
     DEAD,
+    INTRO,
     FLY_START,
     FLYING,
     FLY_END,
-    THROW
+    THROW,
+    CAST,
+    CAST_LOOP,
+    REEL,
+    TOSS
 }
