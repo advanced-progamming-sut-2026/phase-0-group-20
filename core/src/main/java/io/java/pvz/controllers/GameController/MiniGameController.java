@@ -138,7 +138,8 @@ public class MiniGameController {
             return new Result(false, "Invalid zombie type: " + zombieAlias);
 
         if (!level.getZombiesForThisLevel().contains(type))
-            return new Result(false, "You cannot use " + zombieAlias + " in this level! Check your available zombies.");
+            return new Result(false, "You cannot use " + zombieAlias +
+                " in this level! Check your available zombies.");
 
         Zombie newZombie = InGameEntityGenerator.getZombieForGame(type, row - 1);
 

@@ -17,6 +17,7 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.minigame.BowlingLevel;
@@ -35,6 +36,7 @@ public class GameInputHandler {
     private final MiniGameController miniGameController;
     private GameHUD gameHUD;
 
+    private Zombie selectedZombieToPlace = null;
     private Plant selectedPlantToPlace = null;
     private DroppedSeedPacket selectedPacketToPlace = null;
     private Image floatingPlantImage = null;
@@ -84,7 +86,7 @@ public class GameInputHandler {
         floatingPlantImage = null;
         floatingShovelImage = null;
         floatingPlantFoodImage = null;
-
+        selectedZombieToPlace = null;
         selectedPlantToPlace = null;
         selectedPacketToPlace = null;
         isShovelSelected = false;
@@ -105,6 +107,12 @@ public class GameInputHandler {
         image.setTouchable(Touchable.disabled);
         mainLayer.addActor(image);
         return image;
+    }
+
+    public void onZombieCardClicked(Zombie zombie, Image zombieIcon) {
+        clearAllSelections();
+        selectedZombieToPlace = zombie;
+        floatingPlantImage = createFloatingImage(zombieIcon.getDrawable(), 80);
     }
 
     public void onPlantCardClicked(Plant plant, Image plantIcon) {
@@ -183,6 +191,11 @@ public class GameInputHandler {
                 return;
             }
 
+            if (selectedZombieToPlace != null && floatingPlantImage != null) {
+                handleZombiePlacement(col, row);
+                return;
+            }
+
             if (selectedPlantToPlace != null && floatingPlantImage != null) {
                 handlePlanting(col, row);
                 return;
@@ -192,6 +205,16 @@ public class GameInputHandler {
                 miniGameController.breakVase(String.valueOf(col), String.valueOf(row));
             }
         }
+    }
+
+    private void handleZombiePlacement(int col, int row) {
+        String alias = selectedZombieToPlace.getType().getJsonAlias();
+        Result result = miniGameController.handlePutZombie(alias, String.valueOf(col), String.valueOf(row));
+
+        System.out.println(result.message());
+
+        if (result.isSuccessful())
+            clearAllSelections();
     }
 
     private void handlePlanting(int col, int row) {
