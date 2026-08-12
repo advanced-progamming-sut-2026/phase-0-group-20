@@ -16,7 +16,9 @@ import io.java.pvz.models.game.minigame.BowlingLevel;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 
 public class GameMenuController {
 
@@ -89,9 +91,15 @@ public class GameMenuController {
     public Result enterScoringLevel() {
         Adventure activeAdventure = App.getActiveAdventure();
         Chapter currentChapter = activeAdventure.getCurrentChapter();
+        long epochDay = LocalDate.now().toEpochDay();
+        Random dailyRandom = new Random(epochDay);
+        SeasonType[] allSeasons = SeasonType.values();
+        SeasonType season = allSeasons[dailyRandom.nextInt(allSeasons.length)];
+        while (season == SeasonType.MINI_GAME) {
+            season = allSeasons[dailyRandom.nextInt(allSeasons.length)];
+        }
 
-        SeasonType season = (currentChapter != null) ? currentChapter.getSeasonType() : SeasonType.ANCIENT_EGYPT;
-        int levelNumber = (currentChapter != null) ? currentChapter.getMaxLevelIndexInThisChapter() + 1 : 1;
+        int levelNumber = dailyRandom.nextInt(currentChapter.getMaxLevelIndexInThisChapter());
 
         BonusLevel bonusLevel = new BonusLevel("Scoring Challenge", season, 3, 1200,
             levelNumber, true);
@@ -128,7 +136,7 @@ public class GameMenuController {
         if (activeUser == null) {
             return new Result(false, "No active user found!");
         }
-        if(!App.getSettings().isDebug())
+        if (!App.getSettings().isDebug())
             return new Result(false, "Cheat not allowed!");
         if (type.equalsIgnoreCase("coin")) {
             activeUser.earnCoin(amount);
@@ -215,7 +223,9 @@ public class GameMenuController {
             type = GameSession.getPendingChapter().getSeasonType();
         else if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentChapter() != null)
             type = GameSession.getInstance().getCurrentChapter().getSeasonType();
-        else
+        else if (GameSession.getPendingBonusLevel() != null) {
+            type = GameSession.getPendingBonusLevel().getSeason();
+        } else
             type = SeasonType.MINI_GAME;
 
         return switch (type) {

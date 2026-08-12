@@ -82,7 +82,7 @@ public class BonusLevel extends Level implements GameEventListener {
             long waveSeed = (LocalDate.now().toEpochDay() * 1000L) + wave.getCurrentNumber();
             waveRandom = new Random(waveSeed);
 
-            availableZombies = InGameEntityGenerator.getZombiesForDailyChallenge();
+            availableZombies = InGameEntityGenerator.getZombiesForDailyChallenge(this);
         } else {
             waveRandom = new Random();
             availableZombies = session.getChosenZombies();
