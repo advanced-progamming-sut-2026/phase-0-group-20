@@ -99,13 +99,13 @@ public class GameSession {
         Arena arena = new Arena();
 
         List<Zombie> inGameZombies = InGameEntityGenerator.getZombiesForLevel(
-                pendingChapter.getSeasonType(),
-                currentLevel.getLevelNumber()
+            pendingChapter.getSeasonType(),
+            currentLevel.getLevelNumber()
         );
 
         GameSession.destroyInstance();
         GameSession session = GameSession.getInstance(pendingChapter, currentLevel,
-                arena, inGamePlants, inGameZombies);
+            arena, inGamePlants, inGameZombies);
 
         arena.registerLawnMowers();
         App.setActiveSession(session);
@@ -133,10 +133,10 @@ public class GameSession {
         Chapter fakeChapter = new Chapter(SeasonType.MINI_GAME);
 
         List<Zombie> inGameZombies =
-                InGameEntityGenerator.getZombiesForLevel(SeasonType.ANCIENT_EGYPT, minigameLevel.getLevelNumber());
+            InGameEntityGenerator.getZombiesForLevel(SeasonType.ANCIENT_EGYPT, minigameLevel.getLevelNumber());
 
         GameSession session = GameSession.getInstance(fakeChapter, minigameLevel,
-                arena, inGamePlants, inGameZombies);
+            arena, inGamePlants, inGameZombies);
 
         session.setCurrentMode(minigameLevel);
 
@@ -158,14 +158,11 @@ public class GameSession {
         Chapter currentChapter = adventure.getCurrentChapter();
 
         List<Zombie> inGameZombies;
-        if (bonusLevel.isDailyChallenge())
-            inGameZombies = InGameEntityGenerator.getZombiesForDailyChallenge();
-        else
-            inGameZombies = InGameEntityGenerator
-                    .getZombiesForLevel(bonusLevel.getSeason(), bonusLevel.getLevelNumber());
+        inGameZombies = InGameEntityGenerator.getZombiesForDailyChallenge(bonusLevel);
+
 
         GameSession session = GameSession.getInstance(currentChapter, bonusLevel,
-                arena, inGamePlants, inGameZombies);
+            arena, inGamePlants, inGameZombies);
 
         session.setCurrentMode(bonusLevel);
         bonusLevel.onStart(session);
@@ -184,8 +181,8 @@ public class GameSession {
             if (instance.dropListener != null) {
                 GameEventMessenger.getInstance().removeListener(GameEvent.ZOMBIE_KILLED, instance.dropListener);
                 GameEventMessenger.getInstance().removeListener(
-                        GameEvent.ZOMBIE_KILLED_LAWN_MOWER,
-                        instance.dropListener);
+                    GameEvent.ZOMBIE_KILLED_LAWN_MOWER,
+                    instance.dropListener);
             }
             if (instance.progressListener != null)
                 instance.progressListener.unregisterFromAllEvents();
@@ -196,9 +193,9 @@ public class GameSession {
 
     public static void notify(String message) {
         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(message)
+                .build());
     }
 
     public static BonusLevel getPendingBonusLevel() {
@@ -207,9 +204,9 @@ public class GameSession {
 
     public static void setPendingBonusLevel(BonusLevel level) {
         pendingBonusLevel = level;
-        pendingLevel = null ;
-        pendingChapter = null ;
-        minigameLevel = null ;
+        pendingLevel = null;
+        pendingChapter = null;
+        minigameLevel = null;
     }
 
     public void instantiateCooldowns(List<Plant> chosenPlants) {
@@ -222,7 +219,7 @@ public class GameSession {
     public void resetCooldownsForCategory(PlantCategory category) {
         if (plantsCooldown != null) {
             plantsCooldown.replaceAll((plant, cooldown) ->
-                    (plant.getCategory() == category) ? 0 : cooldown
+                (plant.getCategory() == category) ? 0 : cooldown
             );
         }
     }
@@ -267,10 +264,10 @@ public class GameSession {
             if (plant.isDead()) {
                 timeManager.unregisterTicker(plant);
                 GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_LOST)
-                        .plant(plant)
-                        .coordinate(plant.getPlacedTile().getRow(), plant.getPlacedTile().getCol())
-                        .arena(arena)
-                        .build();
+                    .plant(plant)
+                    .coordinate(plant.getPlacedTile().getRow(), plant.getPlacedTile().getCol())
+                    .arena(arena)
+                    .build();
                 GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST, payload);
                 return true;
             }
@@ -298,16 +295,16 @@ public class GameSession {
             this.state = GameState.LOST;
             this.isGameOver = true;
             GameEventPayload payload = new GameEventPayload.Builder(GameEvent.GAME_OVER)
-                    .arena(arena)
-                    .build();
+                .arena(arena)
+                .build();
             GameEventMessenger.getInstance().dispatch(GameEvent.GAME_OVER, payload);
             notify("Zombies ate your brains! GAME OVER.");
         } else if (result == GameState.WON) {
             this.state = GameState.WON;
             this.isGameOver = true;
             GameEventPayload payload = new GameEventPayload.Builder(GameEvent.LEVEL_COMPLETED)
-                    .arena(arena)
-                    .build();
+                .arena(arena)
+                .build();
             GameEventMessenger.getInstance().dispatch(GameEvent.LEVEL_COMPLETED, payload);
             notify("You survived! LEVEL COMPLETED.");
         }
@@ -432,6 +429,8 @@ public class GameSession {
         return imitaterTargetId;
     }
 
-    public GameState getState() {return state;}
+    public GameState getState() {
+        return state;
+    }
 
 }

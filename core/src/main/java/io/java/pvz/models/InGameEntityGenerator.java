@@ -6,6 +6,7 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieFactory;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.game.adventure.SeasonType;
+import io.java.pvz.models.game.adventure.levels.BonusLevel;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -203,31 +204,15 @@ public class InGameEntityGenerator {
         };
     }
 
-    public static List<Zombie> getZombiesForDailyChallenge() {
-
-        long todaySeed = LocalDate.now().toEpochDay() + 2;
+    public static List<Zombie> getZombiesForDailyChallenge(BonusLevel level) {
+        long todaySeed = LocalDate.now().toEpochDay();
         Random dailyRandom = new Random(todaySeed);
 
-        ZombieType[] allowedDailyTypes = ZombieType.values();
+        SeasonType selectedSeason = level.getSeason();
 
-        List<ZombieType> todaysEnums = new ArrayList<>();
+        int selectedLevel = dailyRandom.nextInt(3) + 1;
 
-
-        int typesToPick = 2 + dailyRandom.nextInt(3);
-
-        while (todaysEnums.size() < typesToPick) {
-            ZombieType randomType = allowedDailyTypes[dailyRandom.nextInt(allowedDailyTypes.length)];
-            if (!todaysEnums.contains(randomType)) {
-                todaysEnums.add(randomType);
-            }
-        }
-
-        List<Zombie> dailyZombies = new ArrayList<>();
-        for (ZombieType type : todaysEnums) {
-            dailyZombies.add(getZombieForGame(type, 0));
-        }
-
-        return dailyZombies;
+        return getZombiesForLevel(selectedSeason, selectedLevel);
     }
 
     private static List<ZombieType> getMiniGameZombies(int levelIndex) {

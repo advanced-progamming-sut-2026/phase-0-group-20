@@ -3,10 +3,9 @@ package io.java.pvz.views.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.utils.Scaling;
-import io.java.pvz.controllers.ButtonAnimator;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
@@ -16,6 +15,7 @@ import io.java.pvz.models.game.adventure.Chapter;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
+import io.java.pvz.views.screens.modals.ScoreLevelModal;
 import pvz.libpvz.textures.TextureBank;
 
 public class ChapterSelectionScreen extends BaseScreen {
@@ -44,7 +44,18 @@ public class ChapterSelectionScreen extends BaseScreen {
 
         Table topBar = new Table();
         topBar.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.BACK_ICON, 100, 100,
-            () -> ScreenManager.getInstance().popScreen())).left();
+            () -> ScreenManager.getInstance().popScreen())).left().padRight(20);
+
+        TextButton actionButton = new TextButton("SCORE-LEVEL", skin, "green");
+        actionButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ScoreLevelModal scoreLevelModal = new ScoreLevelModal(skin,game);
+                scoreLevelModal.show(modalLayer,viewport);
+            }
+        });
+        topBar.add(actionButton).size(180, 60).left();
+
         topBar.add().expandX();
         mainLayer.add(topBar).growX().padTop(20).padLeft(30).row();
 
