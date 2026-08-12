@@ -3,18 +3,14 @@ package io.java.pvz.views.screens;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
+import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
@@ -23,15 +19,13 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.minigame.BeghouledLevel;
-import io.java.pvz.utils.ConveyorBeltUI;
-import io.java.pvz.utils.Ids;
-import io.java.pvz.utils.PlantCardButton;
-import io.java.pvz.utils.PlantFoodUI;
-import io.java.pvz.utils.UiFactory;
+import io.java.pvz.models.game.minigame.IZombieLevel;
+import io.java.pvz.utils.*;
 import io.java.pvz.views.screens.modals.PauseMenuTable;
 import io.java.pvz.views.screens.modals.PlantSelectionModalTable;
 import pvz.libpvz.textures.TextureBank;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameHUD {
@@ -82,6 +76,8 @@ public class GameHUD {
     private void setupPlantSelectionMenu() {
         if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
             buildBeghouledSeedBank();
+        } else if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof IZombieLevel) {
+            buildSeedBank();
         } else if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin, () -> {
                 buildSeedBank();
@@ -89,7 +85,7 @@ public class GameHUD {
             plantSelectionModal.show(modalLayer, viewport);
         } else {
             belt = new ConveyorBeltUI(skin, textures,
-                (plant) -> createSeedPacket(plant,false));
+                (plant) -> createSeedPacket(plant, false));
             belt.setSize(200f, 700);
             belt.setPosition(20f, 250);
             mainLayer.addActor(belt);
@@ -150,7 +146,7 @@ public class GameHUD {
     }
 
     private void setupActionButtons() {
-        if(App.getSettings().isDebug()){
+        if (App.getSettings().isDebug()) {
             Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 50, 50, () -> {
                 gameFlowController.releaseNuke();
             }, false);
@@ -189,17 +185,32 @@ public class GameHUD {
         }
 
         List<Plant> selectedPlants = GameSession.getInstance().getChosenPlants();
+
+        List<Zombie> selectedZombie = new ArrayList<>();
+        if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel)
+            iZombieLevel.getZombiesForThisLevel()
+                .forEach(s -> selectedZombie.add(InGameEntityGenerator.getZombieForGame(s, 0)));
+
         int maxSlots = 8;
 
-        for (int i = 0; i < maxSlots; i++) {
-            if (i < selectedPlants.size()) {
-                PlantCardButton plantButton = createSeedPacket(selectedPlants.get(i) ,true);
-                seedBankTable.add(plantButton).size(180f, 85f).padBottom(10f).row();
-            } else {
-                Table emptySlot = new Table();
-                Image emptySlotImg = UiFactory.imageFor(textures, "IMAGE_UI_PACKETS_EMPTY_PACKET");
-                emptySlot.setBackground(emptySlotImg.getDrawable());
-                seedBankTable.add(emptySlot).size(180f, 85f).padBottom(10f).row();
+        if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel) {
+            for (int i = 0; i < maxSlots; i++) {
+                if (i < selectedZombie.size()) {
+                    ZombieCardButton zombieCardButton = createZombiePacket(selectedZombie.get(i));
+                    seedBankTable.add(zombieCardButton).size(180f, 85f).padBottom(75).row();
+                }
+            }
+        } else {
+            for (int i = 0; i < maxSlots; i++) {
+                if (i < selectedPlants.size()) {
+                    PlantCardButton plantButton = createSeedPacket(selectedPlants.get(i), true);
+                    seedBankTable.add(plantButton).size(180f, 85f).padBottom(10f).row();
+                } else {
+                    Table emptySlot = new Table();
+                    Image emptySlotImg = UiFactory.imageFor(textures, "IMAGE_UI_PACKETS_EMPTY_PACKET");
+                    emptySlot.setBackground(emptySlotImg.getDrawable());
+                    seedBankTable.add(emptySlot).size(180f, 85f).padBottom(10f).row();
+                }
             }
         }
     }
@@ -228,7 +239,7 @@ public class GameHUD {
         }
     }
 
-    private PlantCardButton createSeedPacket(Plant plant , boolean lockIncluded) {
+    private PlantCardButton createSeedPacket(Plant plant, boolean lockIncluded) {
         Image bgCard = UiFactory.imageFor(textures, Ids.PlantCards.BG_CARD);
         String plantName = UiFactory.getAtlasName(plant);
         String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
@@ -280,6 +291,20 @@ public class GameHUD {
         });
 
         return plantButton;
+    }
+
+    private ZombieCardButton createZombiePacket(Zombie zombie) {
+        Image background = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_READY");
+        String zombiePath = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_" + UiFactory.getZombieAddress(zombie);
+        Image zombieImage = UiFactory.imageFor(textures, zombiePath);
+        ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie);
+        card.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                inputHandler.onZombieCardClicked(zombie, zombieImage);
+            }
+        });
+        return card;
     }
 
     private void setupWaveMarkers() {

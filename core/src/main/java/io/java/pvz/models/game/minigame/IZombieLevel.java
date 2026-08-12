@@ -74,7 +74,7 @@ public class IZombieLevel extends Level implements IMinigame {
 
         });
 
-        int numPlants = rand.nextInt(6) + 3 + levelNumber; // min: 3 different types
+        int numPlants = rand.nextInt(6) + 4 + levelNumber; // min: 4 different types
         List<Plant> availableTemplates = App.getActiveUser().getUnlockedPlants().stream()
                 .filter(plant -> {
                     String plantName = plant.getName().toLowerCase();

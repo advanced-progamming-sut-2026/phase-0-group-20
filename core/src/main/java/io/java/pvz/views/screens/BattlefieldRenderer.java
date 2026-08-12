@@ -1,11 +1,14 @@
 package io.java.pvz.views.screens;
 
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
 import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.loader.AssetLoader;
@@ -22,6 +25,7 @@ import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.fields.Brain;
 import io.java.pvz.models.fields.LawnMower;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
@@ -30,6 +34,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventListener;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.Ids;
@@ -38,8 +43,7 @@ import io.java.pvz.utils.UiFactory;
 
 import java.util.*;
 
-import static io.java.pvz.models.enums.PhysicalConstants.TILE_HEIGHT;
-import static io.java.pvz.models.enums.PhysicalConstants.TILE_WIDTH;
+import static io.java.pvz.models.enums.PhysicalConstants.*;
 
 public class BattlefieldRenderer implements GameEventListener {
     private static final String CLIP_IDLE = "idle";
@@ -47,6 +51,9 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private static final float DESPAWN_LINGER_SECONDS = 0.5f;
     private static final float DESPAWN_FADE_SECONDS = 0.25f;
+
+    private Image redLineActor;
+    private Texture redLineTexture;
 
     private static final float HIT_SPLASH_SIZE = 70f;
 
@@ -63,7 +70,7 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Map<LawnMower, PamAnimatedActor> lawnMowerActors = new HashMap<>();
     private final GameFlowController gameFlowController = new GameFlowController();
     private final EnvironmentRenderer environmentRenderer;
-
+    private final Map<Brain, Image> brainActors = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantChillOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantFreezeOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantOctopusOverlays = new HashMap<>();
@@ -91,6 +98,12 @@ public class BattlefieldRenderer implements GameEventListener {
         GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.SPAWN_EFFECT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
+
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(1f, 0f, 0f, 0.55f);
+        pixmap.fill();
+        redLineTexture = new Texture(pixmap);
+        pixmap.dispose();
     }
 
     public Group getGroup() {
@@ -467,6 +480,8 @@ public class BattlefieldRenderer implements GameEventListener {
 
         environmentRenderer.sync(arena);
         syncLawnMowers(arena.getLawnMowers());
+        syncBrains(arena);
+        syncRedLine(arena);
         syncPlants(arena.getActivePlants());
         syncZombies(arena.getActiveZombies());
         syncProjectiles(arena.getActiveProjectiles());
@@ -491,6 +506,10 @@ public class BattlefieldRenderer implements GameEventListener {
         plantOctopusOverlays.clear();
         plantSheepOverlays.clear();
         zombieActorTypes.clear();
+
+        for (Image actor : brainActors.values()) actor.remove();
+        brainActors.clear();
+        if (redLineActor != null) redLineActor.remove();
     }
 
     private void syncLawnMowers(LawnMower[] mowers) {
@@ -519,6 +538,64 @@ public class BattlefieldRenderer implements GameEventListener {
                 it.remove();
             }
         }
+    }
+
+    private void syncBrains(Arena arena) {
+        GameSession session = GameSession.getInstance();
+        if (!(session != null && session.getCurrentMode() instanceof IZombieLevel)) {
+            for (Image actor : brainActors.values()) actor.remove();
+            brainActors.clear();
+            return;
+        }
+
+        Set<Brain> liveBrains = new HashSet<>();
+
+        for (int row = 0; row < arena.getRows(); row++) {
+            Brain brain = arena.getBrainInRow(row);
+            if (brain == null || brain.isEaten()) continue;
+
+            liveBrains.add(brain);
+            Image actor = brainActors.get(brain);
+            if (actor == null) {
+                actor = UiFactory.imageFor(AssetLoader.getInstance().getTextures(),
+                    "IMAGE_ZOMBIE_POWER_BRAIN_PROJECTILE_POWER_BRAIN_PROJECTILE_112X82");
+
+                actor.setScale(1.2f);
+                mowerLayer.addActor(actor);
+                brainActors.put(brain, actor);
+            }
+
+            float x = GRID_START_X - (TILE_WIDTH * 0.35f) - 70;
+            float y = GRID_START_Y + (row * TILE_HEIGHT) + (TILE_HEIGHT / 2f) - (actor.getHeight() / 2f);
+            actor.setPosition(x, y);
+        }
+
+        Iterator<Map.Entry<Brain, Image>> it = brainActors.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Brain, Image> entry = it.next();
+            if (!liveBrains.contains(entry.getKey())) {
+                entry.getValue().remove();
+                it.remove();
+            }
+        }
+    }
+
+    private void syncRedLine(Arena arena) {
+        GameSession session = GameSession.getInstance();
+        if (session == null || !(session.getCurrentMode() instanceof IZombieLevel level)) {
+            if (redLineActor != null) redLineActor.setVisible(false);
+            return;
+        }
+
+        if (redLineActor == null) {
+            redLineActor = new Image(redLineTexture);
+            highlightLayer.addActor(redLineActor);
+        }
+
+        float x = GRID_START_X + (level.getRedLineCol() * TILE_WIDTH);
+        redLineActor.setSize(6f, arena.getRows() * TILE_HEIGHT);
+        redLineActor.setPosition(x, GRID_START_Y);
+        redLineActor.setVisible(true);
     }
 
     private void syncPlants(List<Plant> livePlants) {
