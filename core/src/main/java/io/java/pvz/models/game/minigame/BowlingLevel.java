@@ -4,6 +4,7 @@ import io.java.pvz.models.App;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.PlantFactory;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.RedLineCapable;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class BowlingLevel extends ConveyorBelt implements IMinigame {
+public class BowlingLevel extends ConveyorBelt implements IMinigame, RedLineCapable {
 
     private static final int TICKS_PER_SECOND = 10;
     private static final int BELT_SPEED_SECONDS = 8;
@@ -98,5 +99,10 @@ public class BowlingLevel extends ConveyorBelt implements IMinigame {
     @Override
     public MiniGameType getMiniGameType() {
         return MiniGameType.BOWLING;
+    }
+
+    @Override
+    public int getRedLineCol() {
+        return RED_LINE_COL;
     }
 }

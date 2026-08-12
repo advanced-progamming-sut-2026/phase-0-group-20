@@ -29,11 +29,15 @@ import io.java.pvz.models.fields.Brain;
 import io.java.pvz.models.fields.LawnMower;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.RedLineCapable;
 import io.java.pvz.models.game.adventure.SeasonType;
+import io.java.pvz.models.game.adventure.levels.Level;
+import io.java.pvz.models.game.adventure.levels.speciallevels.DeadLine;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventListener;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.game.minigame.BowlingLevel;
 import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.AnimationCatalog;
@@ -100,7 +104,7 @@ public class BattlefieldRenderer implements GameEventListener {
         GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(1f, 0f, 0f, 0.55f);
+        pixmap.setColor(1f, 0f, 0f, 1f);
         pixmap.fill();
         redLineTexture = new Texture(pixmap);
         pixmap.dispose();
@@ -586,20 +590,30 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private void syncRedLine(Arena arena) {
         GameSession session = GameSession.getInstance();
-        if (session == null || !(session.getCurrentMode() instanceof IZombieLevel level)) {
+        Level level;
+
+        if (session == null) {
             if (redLineActor != null) redLineActor.setVisible(false);
             return;
         }
 
-        if (redLineActor == null) {
-            redLineActor = new Image(redLineTexture);
-            highlightLayer.addActor(redLineActor);
+        level = (Level) session.getCurrentMode();
+
+        if (level instanceof RedLineCapable redLineCapable) {
+            if (redLineActor == null) {
+                redLineActor = new Image(redLineTexture);
+                highlightLayer.addActor(redLineActor);
+            }
+
+            float x = GRID_START_X + (redLineCapable.getRedLineCol() * TILE_WIDTH) - 3;
+            redLineActor.setSize(6f, arena.getRows() * TILE_HEIGHT);
+            redLineActor.setPosition(x, GRID_START_Y);
+            redLineActor.setVisible(true);
+        } else {
+            if (redLineActor != null) redLineActor.setVisible(false);
+            return;
         }
 
-        float x = GRID_START_X + (level.getRedLineCol() * TILE_WIDTH);
-        redLineActor.setSize(6f, arena.getRows() * TILE_HEIGHT);
-        redLineActor.setPosition(x, GRID_START_Y);
-        redLineActor.setVisible(true);
     }
 
     private void syncPlants(List<Plant> livePlants) {
@@ -813,8 +827,8 @@ public class BattlefieldRenderer implements GameEventListener {
 
         if (zombie.getState() == ZombieState.THROW) return pickClip(anim, CLIP_WALK, "throw");
 
-        if (zombie.getState() == ZombieState.SPIN_UP)   return pickClip(anim, CLIP_IDLE, "spinup");
-        if (zombie.getState() == ZombieState.SPINNING)  return pickClip(anim, CLIP_WALK, "spin_walk", "spin");
+        if (zombie.getState() == ZombieState.SPIN_UP) return pickClip(anim, CLIP_IDLE, "spinup");
+        if (zombie.getState() == ZombieState.SPINNING) return pickClip(anim, CLIP_WALK, "spin_walk", "spin");
         if (zombie.getState() == ZombieState.SPIN_DOWN) return pickClip(anim, CLIP_IDLE, "spindown");
 
         if (zombie.getState() == ZombieState.SPELL) return pickClip(anim, "idle", "sheep");

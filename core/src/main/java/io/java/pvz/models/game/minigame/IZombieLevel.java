@@ -10,6 +10,7 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.fields.Brain;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.RedLineCapable;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.minigame.minigameCondition.IZombieLoseCondition;
@@ -19,7 +20,7 @@ import io.java.pvz.models.timeManager.Ticker;
 import java.util.List;
 import java.util.Random;
 
-public class IZombieLevel extends Level implements IMinigame {
+public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
     private final Random rand = new Random();
     private int redLineCol = 6;
@@ -104,6 +105,7 @@ public class IZombieLevel extends Level implements IMinigame {
         return col >= redLineCol;
     }
 
+    @Override
     public int getRedLineCol() {
         return redLineCol;
     }
