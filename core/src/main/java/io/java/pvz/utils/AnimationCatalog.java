@@ -56,6 +56,7 @@ public final class AnimationCatalog {
         registerMowers(MOWERS);
         registerSuns(SUNS);
     }
+
     private static void registerPlants(Map<String, EntityAnimation> table) {
         registerPlantsPart1(table);
         registerPlantsPart2(table);

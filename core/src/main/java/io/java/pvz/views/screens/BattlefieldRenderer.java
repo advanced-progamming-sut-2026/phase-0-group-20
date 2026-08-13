@@ -805,6 +805,17 @@ public class BattlefieldRenderer implements GameEventListener {
         if (zombie.getState() == ZombieState.TOSS) return pickClip(anim, CLIP_IDLE, "toss");
 
         if (zombie.getState() == ZombieState.INTRO) return pickClip(anim, "idle", "intro");
+
+        if (zombie.getType() == ZombieType.ALL_STAR) {
+            if (zombie.getState() == ZombieState.SPECIAL) {
+                return pickClip(anim, CLIP_WALK, "tackle");
+            }
+
+            if (zombie.getState() == ZombieState.WALKING && zombie.getCurrentSpeed() > zombie.getBaseSpeed() * 1.5f) {
+                return pickClip(anim, CLIP_WALK, "run");
+            }
+        }
+
         if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, "idle", "special");
 
         if (zombie.getState() == ZombieState.CAST) return pickClip(anim, CLIP_IDLE, "cast");
