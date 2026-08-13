@@ -24,6 +24,7 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
+import io.java.pvz.models.entities.zombies.behavior.effect.RageEffect;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.Brain;
 import io.java.pvz.models.fields.LawnMower;
@@ -861,6 +862,23 @@ public class BattlefieldRenderer implements GameEventListener {
             if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
             if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, CLIP_WALK, "attack");
             if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
+        }
+
+        if (zombie.getType() == ZombieType.NEWSPAPER) {
+
+            if (zombie.getState() == ZombieState.ENRAGING) {
+                return pickClip(anim, CLIP_WALK, "newspaper_defeat");
+            }
+
+            boolean isEnraged = zombie.getActiveEffects().stream().anyMatch(e -> e instanceof RageEffect);
+
+            if (isEnraged) {
+                if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
+                return pickClip(anim, CLIP_WALK, "walk");
+            } else {
+                if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat_newspaper");
+                return pickClip(anim, CLIP_WALK, "walk_newspaper");
+            }
         }
 
         if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
