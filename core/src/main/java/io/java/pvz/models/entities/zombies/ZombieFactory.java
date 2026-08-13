@@ -4,6 +4,7 @@ import io.java.pvz.models.App;
 import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.obstacle.ArcadeMachine;
 import io.java.pvz.models.entities.obstacle.Barrel;
+import io.java.pvz.models.entities.obstacle.Piano;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.entities.zombies.armour.ArmorData;
@@ -108,6 +109,18 @@ public class ZombieFactory {
                 zombie.setMoveBehavior(new ArcadeMove(zombie, machine));
                 zombie.setDefenseBehavior(new ArcadeDefense(zombie));
                 zombie.setAttackBehavior(new NormalAttack(zombie));
+            }
+            case PIANIST -> {
+                Piano piano = new Piano(zombie.getCol(), zombie.getRow());
+                piano.getPosition().setX(zombie.getX() - 45f);
+
+                GameSession session = GameSession.getInstance();
+                if (session != null && session.getArena() != null) {
+                    session.getArena().getActiveObstacles().add(piano);
+                }
+
+                zombie.setMoveBehavior(new PianistMove(zombie, piano));
+                zombie.setDefenseBehavior(new PianistDefense(zombie));
             }
             default -> {
                 zombie.setMoveBehavior(getMoveAI(type, zombie));

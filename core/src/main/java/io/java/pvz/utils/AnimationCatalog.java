@@ -333,7 +333,7 @@ public final class AnimationCatalog {
         registerZombie(table, ZombieType.PROSPECTOR, "768/FULL/ZOMBIE/ZOMBIE_PROSPECTOR/ZOMBIE_PROSPECTOR.PAM",
             "idle", 2.3667f, "walk", 1.9667f, "eat", 6.8f, "die", 2.2667f, "particles", 0.0333f,
             "blastoff", 0.2667f, "fly", 0.7f, "land", 0.3333f);
-        registerZombie(table, ZombieType.PIANIST, "768/FULL/ZOMBIE/PIANO/PIANO.PAM",
+        registerZombie(table, ZombieType.PIANIST, "768/FULL/ZOMBIE/ZOMBIE_PIANO/ZOMBIE_PIANO.PAM",
             "idle", 2.0f, "play", 1.0f, "damage", 1.0f, "play2", 1.0f, "die", 3.0f, "particles", 0.0333f);
         registerZombie(table, ZombieType.NEWSPAPER,
             "768/FULL/ZOMBIE/ZOMBIE_MODERN_NEWSPAPER/ZOMBIE_MODERN_NEWSPAPER.PAM",

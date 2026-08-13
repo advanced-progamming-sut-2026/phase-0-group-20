@@ -17,6 +17,7 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.obstacle.ArcadeMachine;
 import io.java.pvz.models.entities.obstacle.Barrel;
+import io.java.pvz.models.entities.obstacle.Piano;
 import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.DigestionStrategy;
@@ -149,6 +150,8 @@ public class BattlefieldRenderer implements GameEventListener {
                 spawnBarrelBreakEffect(payload.getPixelX(), payload.getPixelY());
             } else if ("ARCADE_MACHINE_BREAK".equals(payload.getMessage())) {
                 spawnArcadeBreakEffect(payload.getPixelX(), payload.getPixelY());
+            } else if ("PIANO_BREAK".equals(payload.getMessage())) {
+                spawnPianoBreakEffect(payload.getPixelX(), payload.getPixelY());
             }
         } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
             String msg = String.valueOf(payload.getMessage());
@@ -163,6 +166,22 @@ public class BattlefieldRenderer implements GameEventListener {
                 animateImpFlight(payload.getZombie(), payload.getPixelX(), payload.getPixelY());
             }
         }
+    }
+
+    private void spawnPianoBreakEffect(float x, float y) {
+        String pamPath = "768/FULL/ZOMBIE/PIANO/PIANO.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "die", pamPath);
+        actor.setSize(TILE_WIDTH, TILE_HEIGHT);
+        actor.setOrigin(Align.center);
+        actor.setPosition(x - actor.getWidth() / 2f, y - actor.getHeight() / 2f + 30f);
+
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(3.0f),
+            Actions.removeActor()
+        ));
     }
 
     private void spawnArcadeBreakEffect(float x, float y) {
@@ -646,13 +665,18 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private PamAnimatedActor spawnObstacle(PushableObstacle obs) {
         String pamPath;
+        String defaultClip = "idle";
+
         if (obs instanceof ArcadeMachine) {
             pamPath = "768/FULL/EFFECTS/80S_ARCADE_CABINET/80S_ARCADE_CABINET.PAM";
+        } else if (obs instanceof Piano) {
+            pamPath = "768/FULL/ZOMBIE/PIANO/PIANO.PAM";
+            defaultClip = "play";
         } else {
             pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_ZOMBIE/FROSTBITE_ICE_BLOCK_ZOMBIE.PAM";
         }
 
-        PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, "idle");
+        PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, defaultClip);
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
         zombieLayer.addActor(actor);
@@ -660,7 +684,20 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private void updateObstacleActor(PushableObstacle obs, PamAnimatedActor actor) {
-        centerOnPoint(actor, obs.getX(), obs.getPosition().getY() + actor.getHeight() / 2f);
+        float offsetY = 0f;
+
+        if (obs instanceof Piano) {
+            offsetY = 40f;
+        }
+
+        centerOnPoint(actor, obs.getX(), obs.getPosition().getY() + actor.getHeight() / 2f + offsetY);
+
+        if (obs instanceof Piano piano) {
+            String targetClip = piano.isPlaying() ? "play" : "idle";
+            if (!actor.getClip().equals(targetClip)) {
+                actor.setClip(targetClip);
+            }
+        }
     }
 
     private void syncBrains(Arena arena) {
@@ -945,6 +982,20 @@ public class BattlefieldRenderer implements GameEventListener {
             }
         }
 
+        if (zombie.getType() == ZombieType.PIANIST) {
+            if (zombie.getState() == ZombieState.SPECIAL) {
+                return pickClip(anim, CLIP_WALK, "play");
+            }
+            return pickClip(anim, CLIP_IDLE, "idle");
+        }
+
+        if (zombie.getType() == ZombieType.CRYSTAL_SKULL) {
+            if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
+            if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
+            if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, CLIP_WALK, "attack");
+            if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
+        }
+
         if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, "idle", "special");
 
         if (zombie.getState() == ZombieState.CAST) return pickClip(anim, CLIP_IDLE, "cast");
@@ -960,13 +1011,6 @@ public class BattlefieldRenderer implements GameEventListener {
         if (zombie.getState() == ZombieState.FLY_START) return pickClip(anim, CLIP_WALK, "fly_start");
         if (zombie.getState() == ZombieState.FLYING) return pickClip(anim, CLIP_WALK, "fly_loop", "fly");
         if (zombie.getState() == ZombieState.FLY_END) return pickClip(anim, CLIP_WALK, "fly_end", "land");
-
-        if (zombie.getType() == ZombieType.CRYSTAL_SKULL) {
-            if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
-            if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
-            if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, CLIP_WALK, "attack");
-            if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
-        }
 
         if (zombie.getType() == ZombieType.NEWSPAPER) {
 

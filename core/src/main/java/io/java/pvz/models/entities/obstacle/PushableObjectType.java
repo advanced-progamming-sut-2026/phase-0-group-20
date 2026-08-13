@@ -5,7 +5,8 @@ import io.java.pvz.models.entities.zombies.ZombieType;
 public enum PushableObjectType {
     BARREL(ZombieType.BARREL_ROLLER),
     ARCADE_MACHINE(ZombieType.ARCADE),
-    ICE_BLOCK(ZombieType.TROGLOBITE);
+    ICE_BLOCK(ZombieType.TROGLOBITE),
+    PIANO(ZombieType.PIANIST);
 
     private final ZombieType pusherZombieType;
 
