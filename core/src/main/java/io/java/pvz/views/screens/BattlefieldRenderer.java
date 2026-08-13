@@ -137,6 +137,8 @@ public class BattlefieldRenderer implements GameEventListener {
                 spawnOctopusOnPlant(payload.getPlant());
             } else if ("OCTOPUS_DIE".equals(payload.getMessage())) {
                 killOctopusOnPlant(payload.getPlant());
+            } else if ("CRYSTAL_SKULL_BEAM".equals(payload.getMessage())) {
+                spawnCrystalSkullBeamEffect(payload.getZombie());
             }
         } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
             String msg = String.valueOf(payload.getMessage());
@@ -151,6 +153,28 @@ public class BattlefieldRenderer implements GameEventListener {
                 animateImpFlight(payload.getZombie(), payload.getPixelX(), payload.getPixelY());
             }
         }
+    }
+
+    private void spawnCrystalSkullBeamEffect(Zombie zombie) {
+        if (zombie == null) return;
+
+        String pamPath = "768/FULL/EFFECTS/CRYSTALSKULL_BEAM/CRYSTALSKULL_BEAM.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "laser_beam", pamPath);
+
+        actor.setSize(TILE_WIDTH * 4, TILE_HEIGHT);
+        actor.setOrigin(Align.right);
+
+        float x = zombie.getPosition().getX() - actor.getWidth();
+        float y = zombie.getPosition().getY() + 40f;
+
+        actor.setPosition(x, y);
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(0.6667f),
+            Actions.removeActor()
+        ));
     }
 
     private void animateImpFlight(Zombie imp, float startX, float startY) {
@@ -831,6 +855,13 @@ public class BattlefieldRenderer implements GameEventListener {
         if (zombie.getState() == ZombieState.FLY_START) return pickClip(anim, CLIP_WALK, "fly_start");
         if (zombie.getState() == ZombieState.FLYING) return pickClip(anim, CLIP_WALK, "fly_loop", "fly");
         if (zombie.getState() == ZombieState.FLY_END) return pickClip(anim, CLIP_WALK, "fly_end", "land");
+
+        if (zombie.getType() == ZombieType.CRYSTAL_SKULL) {
+            if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
+            if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
+            if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, CLIP_WALK, "attack");
+            if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
+        }
 
         if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
         if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
