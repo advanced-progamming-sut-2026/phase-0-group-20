@@ -7,7 +7,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.fields.LawnMower;
-import io.java.pvz.models.fields.obstacle.IceHolder;
+import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.*;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameMode;
@@ -236,7 +236,7 @@ public class GameMapController {
         statusDisplay.append("- Type: ").append(determineTileShape(tile)).append("\n");
 
         if (tile instanceof IceHolder iceHolder && iceHolder.hasIceBlock())
-            statusDisplay.append("- IceBlock HP: ").append(iceHolder.getIceBlock().getIceHp()).append("\n");
+            statusDisplay.append("- IceBlock HP: ").append(iceHolder.getIceBlock().getHealth()).append("\n");
         if (tile instanceof GraveStoneTile graveTile)
             statusDisplay.append("- Grave HP: ").append(graveTile.getGraveStone().getHp()).append("\n");
         else if (tile instanceof NecromanceTile necroTile)

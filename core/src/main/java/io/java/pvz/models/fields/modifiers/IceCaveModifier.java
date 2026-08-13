@@ -2,14 +2,13 @@ package io.java.pvz.models.fields.modifiers;
 
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
-import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
 import io.java.pvz.models.enums.plants.PlantTag;
-import io.java.pvz.models.fields.obstacle.IceBlock;
-import io.java.pvz.models.fields.obstacle.IceHolder;
+import io.java.pvz.models.entities.obstacle.IceBlock;
+import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.NormalTile;
 import io.java.pvz.models.fields.tiles.SlipperyTile;
 import io.java.pvz.models.fields.tiles.Tile;
@@ -204,6 +203,7 @@ public class IceCaveModifier implements SeasonModifier {
                 if (iceBlock != null) {
                     iceHolder.setIceBlock(iceBlock);
                     session.getTimeManager().registerNewTicker(iceBlock);
+                    session.getArena().getActiveObstacles().add(iceBlock);
                     placed++;
                 }
             }

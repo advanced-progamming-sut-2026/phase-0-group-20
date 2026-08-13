@@ -1,10 +1,10 @@
 package io.java.pvz.models.fields.modifiers;
 
+import io.java.pvz.models.entities.obstacle.GraveStone;
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieFactory;
 import io.java.pvz.models.entities.zombies.ZombieType;
-import io.java.pvz.models.fields.obstacle.GraveStone;
 import io.java.pvz.models.fields.tiles.GraveStoneTile;
 import io.java.pvz.models.fields.tiles.NecromanceTile;
 import io.java.pvz.models.fields.tiles.NormalTile;

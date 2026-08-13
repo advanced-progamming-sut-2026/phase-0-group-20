@@ -2,7 +2,7 @@ package io.java.pvz.models.entities.plants.strategy;
 
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.fields.obstacle.IceHolder;
+import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;

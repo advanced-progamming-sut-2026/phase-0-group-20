@@ -4,6 +4,10 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.behavior.context.AllStarContext;
+import io.java.pvz.models.entities.zombies.behavior.effect.AllStarTackleEffect;
+import io.java.pvz.models.entities.zombies.behavior.effect.Effect;
+import io.java.pvz.models.entities.zombies.behavior.effect.ZombieEffect;
+import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
 
 import java.util.List;
@@ -26,36 +30,32 @@ public class AllStarSmashAttack implements AttackBehavior {
             return;
         }
 
-        GameSession session = GameSession.getInstance();
-        boolean hitSomething = false;
-
-        List<Plant> targets = session.getArena().getTile(zombie.getRow(), zombie.getCol()).getPlants();
-
-        for (Plant plant : targets) {
-            plant.takeDamage(99999);
-            notify("All-Star Zombie tackled and destroyed " + plant.getName() + "!");
-            hitSomething = true;
-        }
-
-        for (Zombie z : session.getArena().getActiveZombies()) {
-            if (z.isHypnotized() && z.getRow() == zombie.getRow() && Math.abs(z.getX() - zombie.getX()) < 30) {
-                z.takeDamage(99999);
-                notify("All-Star Zombie tackled a hypnotized zombie!");
-                hitSomething = true;
-                break;
+        if (zombie.getActiveEffects() != null) {
+            for (ZombieEffect effect : zombie.getActiveEffects()) {
+                if (effect instanceof AllStarTackleEffect) {
+                    return;
+                }
             }
         }
 
-        if (hitSomething) {
-            context.setTackled();
-            resumeWalking();
-        } else {
-            resumeWalking();
+        GameSession session = GameSession.getInstance();
+
+        for (Zombie z : session.getArena().getActiveZombies()) {
+            if (z.isHypnotized() && !z.isDead() && z.getRow() == zombie.getRow() && Math.abs(z.getX() - zombie.getX()) < 30) {
+                zombie.addEffect(new AllStarTackleEffect(zombie, context, z));
+                return;
+            }
         }
 
-    }
+        Tile currentTile = session.getArena().getTile(zombie.getRow(), zombie.getCol());
+        if (currentTile != null) {
+            List<Plant> targets = currentTile.getPlants();
+            if (!targets.isEmpty() && !targets.get(0).isDead()) {
+                zombie.addEffect(new AllStarTackleEffect(zombie, context, targets));
+                return;
+            }
+        }
 
-    private void resumeWalking() {
         zombie.setAttacking(false);
         zombie.setState(ZombieState.WALKING);
     }

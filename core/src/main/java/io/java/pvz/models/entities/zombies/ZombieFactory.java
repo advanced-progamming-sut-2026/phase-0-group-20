@@ -4,7 +4,7 @@ import io.java.pvz.models.App;
 import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.obstacle.ArcadeMachine;
 import io.java.pvz.models.entities.obstacle.Barrel;
-import io.java.pvz.models.entities.obstacle.IceBlock;
+import io.java.pvz.models.entities.obstacle.Piano;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.entities.zombies.armour.ArmorData;
@@ -14,6 +14,7 @@ import io.java.pvz.models.entities.zombies.behavior.context.*;
 import io.java.pvz.models.entities.zombies.behavior.defense.*;
 import io.java.pvz.models.entities.zombies.behavior.effect.*;
 import io.java.pvz.models.entities.zombies.behavior.move.*;
+import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
@@ -80,6 +81,47 @@ public class ZombieFactory {
                 zombie.setAttackBehavior(new SnorkelAttack(zombie, ctx));
                 zombie.setDefenseBehavior(new SnorkelDefense(ctx));
             }
+            case BARREL_ROLLER -> {
+                int barrelCol = Math.max(0, zombie.getCol() - 1);
+                Barrel barrel = new Barrel(barrelCol, zombie.getRow());
+
+                barrel.getPosition().setX(zombie.getX() - PhysicalConstants.TILE_WIDTH);
+
+                GameSession session = GameSession.getInstance();
+                if (session != null && session.getArena() != null) {
+                    session.getArena().getActiveObstacles().add(barrel);
+                }
+
+                zombie.setMoveBehavior(new BarrelRollerMove(zombie, barrel));
+                zombie.setDefenseBehavior(new BarrelRollerDefense(zombie));
+                zombie.setAttackBehavior(new NormalAttack(zombie));
+            }
+            case ARCADE -> {
+                int machineCol = Math.max(0, zombie.getCol() - 1);
+                ArcadeMachine machine = new ArcadeMachine(machineCol, zombie.getRow());
+                machine.getPosition().setX(zombie.getX() - PhysicalConstants.TILE_WIDTH);
+
+                GameSession session = GameSession.getInstance();
+                if (session != null && session.getArena() != null) {
+                    session.getArena().getActiveObstacles().add(machine);
+                }
+
+                zombie.setMoveBehavior(new ArcadeMove(zombie, machine));
+                zombie.setDefenseBehavior(new ArcadeDefense(zombie));
+                zombie.setAttackBehavior(new NormalAttack(zombie));
+            }
+            case PIANIST -> {
+                Piano piano = new Piano(zombie.getCol(), zombie.getRow());
+                piano.getPosition().setX(zombie.getX() - 45f);
+
+                GameSession session = GameSession.getInstance();
+                if (session != null && session.getArena() != null) {
+                    session.getArena().getActiveObstacles().add(piano);
+                }
+
+                zombie.setMoveBehavior(new PianistMove(zombie, piano));
+                zombie.setDefenseBehavior(new PianistDefense(zombie));
+            }
             default -> {
                 zombie.setMoveBehavior(getMoveAI(type, zombie));
                 zombie.setAttackBehavior(getAttackAI(type, zombie, data));
@@ -92,20 +134,10 @@ public class ZombieFactory {
         return switch (type) {
             case GARGANTUAR -> new GargantuarMove(zombie);
             case NEWSPAPER -> new NewspaperMove(zombie);
-            case BARREL_ROLLER -> createBarrelMove(zombie);
-            case ARCADE -> createArcadeMove(zombie);
-            case TROGLOBITE -> createTroglobiteMove(zombie);
+            case TROGLOBITE -> new TroglobiteMove(zombie);
             case DODO -> new DodoMove(zombie);
-
-            case TOMB_RAISER -> new NormalMove(zombie);
-            case HUNTER -> new NormalMove(zombie);
-            case OCTOPUS -> new NormalMove(zombie);
-            case WIZARD -> new NormalMove(zombie);
             case PIANIST -> createPianistMove(zombie);
-
-            case FISHERMAN -> new StationaryMove(zombie);
-
-            case KING -> new StationaryMove(zombie);
+            case FISHERMAN, KING -> new StationaryMove(zombie);
 
             case ZOMBOTANY_PEASHOOTER -> new PeriodicActionMove(zombie, 15, true,
                     () -> zombie.getAttackBehavior().execute());
@@ -138,7 +170,7 @@ public class ZombieFactory {
         Settings settings = App.getSettings();
         float dmgMultiplier = settings.getZombieDamageMultiplier();
         return switch (type) {
-            case PIANIST, BARREL_ROLLER -> new SquashHit(zombie);
+            case PIANIST -> new SquashHit(zombie);
             case GARGANTUAR -> new SmashAttack(zombie, (int) (data.getSmashDamage() * dmgMultiplier));
             case KING -> new KingAttack(zombie);
             case DODO -> new DodoAttack(zombie);
@@ -152,78 +184,9 @@ public class ZombieFactory {
         return switch (type) {
             case JANE -> new ParasolDefense();
             case IMP_DRAGON -> new DragonImpDefense();
+            case TROGLOBITE -> new TroglobiteDefense(zombie);
             default -> new NormalDefense();
         };
-    }
-
-    private static MoveBehavior createBarrelMove(Zombie zombie) {
-        Barrel barrel = new Barrel(zombie.getCol(), zombie.getRow());
-        if (GameSession.getInstance() != null) GameSession.getInstance().getArena().getActiveObstacles().add(barrel);
-        return new PushMove(zombie,
-                () -> !barrel.isDestroyed(),
-                () -> {
-                    float oldX = zombie.getX();
-                    zombie.moveForward();
-                    barrel.push(zombie.getX() - oldX);
-                    zombie.getAttackBehavior().execute();
-                },
-                new NormalMove(zombie)
-        );
-    }
-
-    private static MoveBehavior createArcadeMove(Zombie zombie) {
-        ArcadeMachine arcadeMachine = new ArcadeMachine(zombie.getCol(), zombie.getRow());
-        if (GameSession.getInstance() != null)
-            GameSession.getInstance().getArena().getActiveObstacles().add(arcadeMachine);
-        return new PushMove(zombie,
-                () -> !arcadeMachine.isDestroyed(),
-                () -> {
-                    float oldX = zombie.getX();
-                    zombie.moveForward();
-                    arcadeMachine.push(zombie.getX() - oldX);
-                    arcadeMachine.getPosition().setX(zombie.getX() - 40);
-
-                    GameSession session = GameSession.getInstance();
-                    for (Plant p : session.getArena()
-                            .getTile(arcadeMachine.getRow(), arcadeMachine.getCol()).getPlants()) {
-                        p.takeDamage(99999);
-                    }
-                    for (Zombie z : session.getArena().getActiveZombies()) {
-                        if (z.isHypnotized() && z.getRow()
-                                == arcadeMachine.getRow() && Math.abs(z.getX() - arcadeMachine.getX()) < 30) {
-                            z.takeDamage(99999);
-                        }
-                    }
-                },
-                new NormalMove(zombie)
-        );
-    }
-
-    private static MoveBehavior createTroglobiteMove(Zombie zombie) {
-        IceBlock iceBlock = new IceBlock(zombie.getCol(), zombie.getRow());
-        if (GameSession.getInstance() != null) GameSession.getInstance().getArena().getActiveObstacles().add(iceBlock);
-        return new PushMove(zombie,
-                () -> !iceBlock.isDestroyed(),
-                () -> {
-                    float oldX = zombie.getX();
-                    zombie.moveForward();
-                    iceBlock.push(zombie.getX() - oldX);
-                    iceBlock.getPosition().setX(zombie.getX() - 40);
-
-                    GameSession session = GameSession.getInstance();
-                    for (Plant p : session.getArena().getTile(iceBlock.getRow(), iceBlock.getCol()).getPlants()) {
-                        p.takeDamage(99999);
-                    }
-                    for (Zombie z : session.getArena().getActiveZombies()) {
-                        if (z.isHypnotized() &&
-                                z.getRow() == iceBlock.getRow() &&
-                                Math.abs(z.getX() - iceBlock.getX()) < 30) {
-                            z.takeDamage(99999);
-                        }
-                    }
-                },
-                new NormalMove(zombie)
-        );
     }
 
     private static void applyInherentEffects(ZombieType type, Zombie zombie) { // effects that execute from birth
