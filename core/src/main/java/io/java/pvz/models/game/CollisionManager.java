@@ -86,7 +86,8 @@ public class CollisionManager {
 
     private void handleProjectiles() {
         for (Projectile proj : arena.getActiveProjectiles()) {
-            if (proj.isDestroyed()) continue;
+            if (proj.isDestroyed() || !proj.isSpawned()) continue;
+
             Tile currentTile = arena.getTile(proj.getPosition().getRow(), proj.getPosition().getCol());
             if (currentTile == null) continue;
             if (!proj.isFiredByZombie() && !proj.isGetTorchWood()) {

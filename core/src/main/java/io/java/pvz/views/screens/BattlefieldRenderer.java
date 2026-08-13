@@ -38,12 +38,10 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.RedLineCapable;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.Level;
-import io.java.pvz.models.game.adventure.levels.speciallevels.DeadLine;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventListener;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
-import io.java.pvz.models.game.minigame.BowlingLevel;
 import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.AnimationCatalog;
@@ -1217,6 +1215,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private void syncProjectiles(List<Projectile> liveProjectiles) {
         for (Projectile proj : liveProjectiles) {
+            if (!proj.isSpawned()) continue;
             PamAnimatedActor actor = projectileActors.get(proj);
             ProjectileType lastRenderedType = projectileActorTypes.get(proj);
 

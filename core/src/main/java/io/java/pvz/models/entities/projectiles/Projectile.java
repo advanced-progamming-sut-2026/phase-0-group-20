@@ -50,6 +50,9 @@ public class Projectile implements Ticker {
     private float frozenDestX;
     private float frozenDestY;
 
+    private int spawnDelayTicks = 0;
+    private boolean isSpawned = true;
+
     public Projectile(Plant plant,
                       ProjectileType type,
                       ProjectileEffect effect,
@@ -183,9 +186,29 @@ public class Projectile implements Ticker {
         };
     }
 
+    public void setSpawnDelayTicks(int ticks) {
+        this.spawnDelayTicks = ticks;
+        this.isSpawned = (ticks <= 0);
+    }
+
+    public boolean isSpawned() {
+        return isSpawned;
+    }
+
     @Override
     public void onTick(int currentTick) {
         if (isDestroyed) return;
+
+        if (spawnDelayTicks > 0) {
+            if (plant != null && plant.isDead()) {
+                isDestroyed = true;
+                return;
+            }
+            spawnDelayTicks--;
+            if (spawnDelayTicks <= 0) isSpawned = true;
+
+            return;
+        }
 
         if (lifespanTicks > 0) {
             lifespanTicks--;
@@ -362,6 +385,12 @@ public class Projectile implements Ticker {
 
     public void onHit(Plant p) {
         if (isDestroyed || p == null || p.isDead()) return;
+        GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
+            new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
+                .pixelCoordinate(this.getX(), this.getY())
+                .projectileType(this.type)
+                .plant(p)
+                .build());
 
         p.takeDamage(this.damage);
 
@@ -420,6 +449,13 @@ public class Projectile implements Ticker {
     public void onHitObstacle(Tile tile) {
         if (!canPassObstacles) {
             isDestroyed = true;
+            GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
+                new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
+                    .pixelCoordinate(this.getX(), this.getY())
+                    .projectileType(this.type)
+                    .coordinate(tile.getRow(), tile.getCol())
+                    .build());
+
         }
     }
 

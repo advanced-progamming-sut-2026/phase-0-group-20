@@ -13,7 +13,7 @@ import java.util.List;
 public class ProjectileMechanism {
 
 
-    public static void executeNewProjectile(Plant plant, boolean shootForward, boolean shootBackward) {
+    public static void executeNewProjectile(Plant plant, boolean shootForward, boolean shootBackward, int delayTicks) {
         int damage = plant.getDamage();
         ProjectileType type = getProjectileType(plant.getName());
         int plantRow = plant.getPlacedTile().getRow();
@@ -34,7 +34,7 @@ public class ProjectileMechanism {
             if (speedX < 0 && !shootBackward) continue;
             if (spawnRow < 0 || spawnRow >= GameSession.getInstance().getArena().getRows()) continue;
 
-            Projectile.spawnNewProjectile(
+            Projectile p = Projectile.spawnNewProjectile(
                 plant,
                 type,
                 damage,
@@ -44,6 +44,7 @@ public class ProjectileMechanism {
                 isPiercingProjectile(type),
                 canPassObstacles(plant)
             );
+            p.setSpawnDelayTicks(delayTicks);
         }
     }
 
@@ -55,7 +56,7 @@ public class ProjectileMechanism {
         };
     }
 
-    public static void executeTargetedProjectile(Plant plant, Zombie target) {
+    public static void executeTargetedProjectile(Plant plant, Zombie target, int delayTicks) {
         int damage = plant.getDamage();
         ProjectileType type = getProjectileType(plant.getName());
         ProjectileEffect effect = getProjectileEffect(plant.getName());
@@ -78,6 +79,7 @@ public class ProjectileMechanism {
 
         projectile.setEffect(effect);
         projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
+        projectile.setSpawnDelayTicks(delayTicks);
     }
 
     public static ProjectileEffect getProjectileEffect(String name) {

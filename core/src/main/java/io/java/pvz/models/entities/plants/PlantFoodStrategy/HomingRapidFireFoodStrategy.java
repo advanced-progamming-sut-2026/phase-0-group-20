@@ -25,9 +25,9 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
                 Zombie target = session.getArena().getNearestZombie(col, row); //we should implement it later
 
                 if (target != null && !target.isDead())
-                    ProjectileMechanism.executeTargetedProjectile(plant, target);
+                    ProjectileMechanism.executeTargetedProjectile(plant, target, 1);
                 else
-                    ProjectileMechanism.executeNewProjectile(plant, true, false);
+                    ProjectileMechanism.executeNewProjectile(plant, true, false, 1);
 
             }
 

@@ -41,7 +41,7 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
         if (doesRapidFire && tickTimer <= durationTicks) {
             if (tickTimer % 2 == 0)
-                ProjectileMechanism.executeNewProjectile(plant, true, false);
+                ProjectileMechanism.executeNewProjectile(plant, true, false, 1);
             if (tickTimer == 2)
                 notify(plant.getName() + " unleashed a rapid-fire barrage!");
         }
@@ -64,6 +64,8 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
                     false,
                     false
                 );
+
+                projectile.setSpawnDelayTicks(1);
                 projectile.setSize(2);
 
                 giantShotsFired++;
