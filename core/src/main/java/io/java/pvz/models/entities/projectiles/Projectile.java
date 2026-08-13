@@ -362,6 +362,12 @@ public class Projectile implements Ticker {
 
     public void onHit(Plant p) {
         if (isDestroyed || p == null || p.isDead()) return;
+        GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
+            new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
+                .pixelCoordinate(this.getX(), this.getY())
+                .projectileType(this.type)
+                .plant(p)
+                .build());
 
         p.takeDamage(this.damage);
 
@@ -420,6 +426,13 @@ public class Projectile implements Ticker {
     public void onHitObstacle(Tile tile) {
         if (!canPassObstacles) {
             isDestroyed = true;
+            GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
+                new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
+                    .pixelCoordinate(this.getX(), this.getY())
+                    .projectileType(this.type)
+                    .coordinate(tile.getRow(), tile.getCol())
+                    .build());
+
         }
     }
 
