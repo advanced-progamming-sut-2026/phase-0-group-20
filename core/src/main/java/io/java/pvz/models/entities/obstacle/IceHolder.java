@@ -1,4 +1,4 @@
-package io.java.pvz.models.fields.obstacle;
+package io.java.pvz.models.entities.obstacle;
 
 public interface IceHolder {
     boolean hasIceBlock();
@@ -19,6 +19,6 @@ public interface IceHolder {
 
         iceBlock.takeDamage(damage);
 
-        if (iceBlock.getIceHp() <= 0) removeIceBlock();
+        if (iceBlock.getHealth() <= 0) removeIceBlock();
     }
 }

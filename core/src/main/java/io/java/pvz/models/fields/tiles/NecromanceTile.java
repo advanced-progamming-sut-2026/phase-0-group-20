@@ -1,9 +1,9 @@
 package io.java.pvz.models.fields.tiles;
 
+import io.java.pvz.models.entities.obstacle.GraveHolder;
+import io.java.pvz.models.entities.obstacle.GraveStone;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.fields.obstacle.GraveHolder;
-import io.java.pvz.models.fields.obstacle.GraveStone;
 import io.java.pvz.models.game.GameSession;
 
 public class NecromanceTile extends Tile implements GraveHolder {

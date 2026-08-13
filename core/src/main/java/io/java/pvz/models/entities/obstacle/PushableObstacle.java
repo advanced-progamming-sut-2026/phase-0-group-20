@@ -1,8 +1,9 @@
 package io.java.pvz.models.entities.obstacle;
 
 import io.java.pvz.models.Position;
+import io.java.pvz.models.entities.zombies.ZombieType;
 
-public abstract class PushableObstacle {
+public abstract class PushableObstacle implements Damageable {
     protected Position position;
     protected PushableObjectType type;
     protected int health;
@@ -17,6 +18,7 @@ public abstract class PushableObstacle {
         this.isDestroyed = false;
     }
 
+    @Override
     public void takeDamage(int damage) {
         if (isDestroyed) return;
 
@@ -32,8 +34,12 @@ public abstract class PushableObstacle {
         position.moveX(dx);
     }
 
-    public abstract void onDestroy();
+    public boolean canBePushedBy(ZombieType zombieType) {
+        ZombieType pusher = type.getPusherZombieType();
+        return pusher == null || pusher == zombieType;
+    }
 
+    public abstract void onDestroy();
 
     public Position getPosition() {
         return position;
@@ -55,6 +61,7 @@ public abstract class PushableObstacle {
         return type;
     }
 
+    @Override
     public int getHealth() {
         return health;
     }
@@ -63,6 +70,7 @@ public abstract class PushableObstacle {
         return maxHealth;
     }
 
+    @Override
     public boolean isDestroyed() {
         return isDestroyed;
     }

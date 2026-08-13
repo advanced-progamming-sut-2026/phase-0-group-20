@@ -9,6 +9,7 @@ import io.java.pvz.models.game.GameSession;
 public class TurquoiseMove implements MoveBehavior {
     private final Zombie zombie;
     private final TurquoiseContext context;
+    private static final int STEAL_AMOUNT = 25;
 
     public TurquoiseMove(Zombie zombie, TurquoiseContext context) {
         this.zombie = zombie;
@@ -19,20 +20,20 @@ public class TurquoiseMove implements MoveBehavior {
     public void execute() {
         if (context.isCharging()) {
             zombie.getAttackBehavior().execute();
+            return;
+        }
+
+        if (canSeePlantIn4Tiles() && GameSession.getInstance().getCurrentSun() >= STEAL_AMOUNT) {
+            zombie.getAttackBehavior().execute();
         } else {
-            if (canSeePlantIn4Tiles()) {
-                context.startCharging();
-                zombie.getAttackBehavior().execute();
-            } else {
-                zombie.moveForward();
-            }
+            zombie.moveForward();
         }
     }
 
     private boolean canSeePlantIn4Tiles() {
         GameSession session = GameSession.getInstance();
         int zRow = zombie.getRow();
-        int zCol = (int) (zombie.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
+        int zCol = zombie.getCol();
 
         for (Plant p : session.getArena().getActivePlants()) {
             int pRow = p.getPlacedTile().getRow();

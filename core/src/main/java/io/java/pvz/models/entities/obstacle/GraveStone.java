@@ -1,4 +1,4 @@
-package io.java.pvz.models.fields.obstacle;
+package io.java.pvz.models.entities.obstacle;
 
 public class GraveStone {
     private final boolean hasSun;
