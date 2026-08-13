@@ -15,6 +15,7 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
+import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.DigestionStrategy;
 import io.java.pvz.models.entities.plants.strategy.category_strategy.SunProductionStrategy;
@@ -81,6 +82,7 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Map<Plant, PamAnimatedActor> plantOctopusOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantSheepOverlays = new HashMap<>();
     private final Map<Zombie, ZombieType> zombieActorTypes = new HashMap<>();
+    private final Map<PushableObstacle, PamAnimatedActor> obstacleActors = new HashMap<>();
 
     private final Group masterGroup = new Group();
     private final Group environmentLayer = new Group();
@@ -519,6 +521,7 @@ public class BattlefieldRenderer implements GameEventListener {
         syncZombies(arena.getActiveZombies());
         syncProjectiles(arena.getActiveProjectiles());
         syncSuns(arena.getActiveSuns());
+        syncObstacles(arena.getActiveObstacles());
     }
 
     public void clear() {
@@ -571,6 +574,45 @@ public class BattlefieldRenderer implements GameEventListener {
                 it.remove();
             }
         }
+    }
+
+    private void syncObstacles(List<PushableObstacle> obstacles) {
+        if (obstacles == null) return;
+
+        Set<PushableObstacle> liveObstacles = new HashSet<>();
+        for (PushableObstacle obs : obstacles) {
+            if (obs != null && !obs.isDestroyed()) {
+                liveObstacles.add(obs);
+                PamAnimatedActor actor = obstacleActors.get(obs);
+                if (actor == null) {
+                    actor = spawnObstacle(obs);
+                    obstacleActors.put(obs, actor);
+                }
+                updateObstacleActor(obs, actor);
+            }
+        }
+
+        Iterator<Map.Entry<PushableObstacle, PamAnimatedActor>> it = obstacleActors.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<PushableObstacle, PamAnimatedActor> entry = it.next();
+            if (!liveObstacles.contains(entry.getKey())) {
+                entry.getValue().remove();
+                it.remove();
+            }
+        }
+    }
+
+    private PamAnimatedActor spawnObstacle(PushableObstacle obs) {
+        String pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_ZOMBIE/FROSTBITE_ICE_BLOCK_ZOMBIE.PAM";
+        PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, "idle");
+        actor.setSize(TILE_WIDTH, TILE_HEIGHT);
+        actor.setOrigin(Align.center);
+        zombieLayer.addActor(actor);
+        return actor;
+    }
+
+    private void updateObstacleActor(PushableObstacle obs, PamAnimatedActor actor) {
+        centerOnPoint(actor, obs.getX(), obs.getPosition().getY() + actor.getHeight() / 2f);
     }
 
     private void syncBrains(Arena arena) {
@@ -878,6 +920,12 @@ public class BattlefieldRenderer implements GameEventListener {
             } else {
                 if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat_newspaper");
                 return pickClip(anim, CLIP_WALK, "walk_newspaper");
+            }
+        }
+
+        if (zombie.getType() == ZombieType.TROGLOBITE) {
+            if (zombie.getState() == ZombieState.PUSH) {
+                return pickClip(anim, CLIP_WALK, "push");
             }
         }
 

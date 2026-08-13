@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import io.java.pvz.models.fields.obstacle.GraveHolder;
+import io.java.pvz.models.entities.obstacle.GraveHolder;
 import io.java.pvz.models.fields.tiles.*;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;

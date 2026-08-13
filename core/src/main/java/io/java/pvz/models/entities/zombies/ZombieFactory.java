@@ -4,7 +4,6 @@ import io.java.pvz.models.App;
 import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.obstacle.ArcadeMachine;
 import io.java.pvz.models.entities.obstacle.Barrel;
-import io.java.pvz.models.entities.obstacle.IceBlock;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.entities.zombies.armour.ArmorData;
@@ -94,7 +93,7 @@ public class ZombieFactory {
             case NEWSPAPER -> new NewspaperMove(zombie);
             case BARREL_ROLLER -> createBarrelMove(zombie);
             case ARCADE -> createArcadeMove(zombie);
-            case TROGLOBITE -> createTroglobiteMove(zombie);
+            case TROGLOBITE -> new TroglobiteMove(zombie);
             case DODO -> new DodoMove(zombie);
 
             case TOMB_RAISER -> new NormalMove(zombie);
@@ -152,6 +151,7 @@ public class ZombieFactory {
         return switch (type) {
             case JANE -> new ParasolDefense();
             case IMP_DRAGON -> new DragonImpDefense();
+            case TROGLOBITE -> new TroglobiteDefense(zombie);
             default -> new NormalDefense();
         };
     }
@@ -191,33 +191,6 @@ public class ZombieFactory {
                     for (Zombie z : session.getArena().getActiveZombies()) {
                         if (z.isHypnotized() && z.getRow()
                                 == arcadeMachine.getRow() && Math.abs(z.getX() - arcadeMachine.getX()) < 30) {
-                            z.takeDamage(99999);
-                        }
-                    }
-                },
-                new NormalMove(zombie)
-        );
-    }
-
-    private static MoveBehavior createTroglobiteMove(Zombie zombie) {
-        IceBlock iceBlock = new IceBlock(zombie.getCol(), zombie.getRow());
-        if (GameSession.getInstance() != null) GameSession.getInstance().getArena().getActiveObstacles().add(iceBlock);
-        return new PushMove(zombie,
-                () -> !iceBlock.isDestroyed(),
-                () -> {
-                    float oldX = zombie.getX();
-                    zombie.moveForward();
-                    iceBlock.push(zombie.getX() - oldX);
-                    iceBlock.getPosition().setX(zombie.getX() - 40);
-
-                    GameSession session = GameSession.getInstance();
-                    for (Plant p : session.getArena().getTile(iceBlock.getRow(), iceBlock.getCol()).getPlants()) {
-                        p.takeDamage(99999);
-                    }
-                    for (Zombie z : session.getArena().getActiveZombies()) {
-                        if (z.isHypnotized() &&
-                                z.getRow() == iceBlock.getRow() &&
-                                Math.abs(z.getX() - iceBlock.getX()) < 30) {
                             z.takeDamage(99999);
                         }
                     }

@@ -1,4 +1,4 @@
-package io.java.pvz.models.fields.obstacle;
+package io.java.pvz.models.entities.obstacle;
 
 import io.java.pvz.models.App;
 import io.java.pvz.models.game.GameSession;

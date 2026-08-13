@@ -25,7 +25,6 @@ public class Barrel extends PushableObstacle {
         imp2.setX(this.getX() + 30);
         session.getTimeManager().registerNewTicker(imp2);
 
-
         session.getArena().getActiveZombies().add(imp1);
         session.getArena().getActiveZombies().add(imp2);
     }
