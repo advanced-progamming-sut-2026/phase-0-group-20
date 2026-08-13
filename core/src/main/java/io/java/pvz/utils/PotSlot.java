@@ -64,7 +64,7 @@ public class PotSlot extends Stack {
 
     private void buildPlantedOrCollectableUI(TextureBank textures, Skin skin, PotCondition condition) {
         Plant plant = pot.getPlantedPlant();
-        String atlasName = (plant == null) ? "MARIGOLD" : UiFactory.getAtlasName(plant);
+        String atlasName = (plant == null) ? "MARIGOLD" : UiFactory.getAnimationName(plant);
         PamAnimatedActor actor = PamAnimatedActor.createPlantIdle(atlasName);
         actor.setScale(0.7f);
 

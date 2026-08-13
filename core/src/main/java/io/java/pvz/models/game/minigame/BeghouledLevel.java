@@ -16,6 +16,7 @@ import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
 import io.java.pvz.models.game.minigame.minigameCondition.BeghouledWinCondition;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -23,11 +24,12 @@ public class BeghouledLevel extends Level implements IMinigame {
     private final Random random = new Random();
     private final BeghouledManager manager = new BeghouledManager();
 
-    private final List<String> basePlants = new ArrayList<>(List.of(
-            "peashooter", "sunflower", "wall-nut", "snow pea", "cabbage-pult"
-    ));
+    private static final List<String> ALL_POSSIBLE_BASE_PLANTS = List.of(
+        "peashooter", "sunflower", "wall-nut", "snow pea", "cabbage-pult", "puff-shroom", "kernel-pult"
+    );
 
-    // we can add or remove plants from this list
+    private final List<String> basePlants = new ArrayList<>();
+
     private final int targetMatches;
     private int successfulMatches = 0;
     private int tickCounter = 0;
@@ -37,9 +39,20 @@ public class BeghouledLevel extends Level implements IMinigame {
         super(name, season, waveCount, baseWaveBudget, levelNumber);
         this.targetMatches = 20 + (levelNumber * 5);
 
+        initRandomBasePlants();
 
         this.addWinCondition(new BeghouledWinCondition());
         this.addLoseCondition(new NormalLoseCondition());
+    }
+
+    private void initRandomBasePlants() {
+        List<String> pool = new ArrayList<>(ALL_POSSIBLE_BASE_PLANTS);
+        Collections.shuffle(pool, random);
+        basePlants.clear();
+        int limit = Math.min(6, pool.size());
+        for (int i = 0; i < limit; i++) {
+            basePlants.add(pool.get(i));
+        }
     }
 
     @Override
@@ -58,7 +71,6 @@ public class BeghouledLevel extends Level implements IMinigame {
             tickCounter = 0;
 
             if (currentSpawnInterval > 15) currentSpawnInterval--;
-
         }
     }
 
@@ -74,25 +86,37 @@ public class BeghouledLevel extends Level implements IMinigame {
 
         session.getArena().addZombie(newZombie);
         session.getTimeManager().registerNewTicker(newZombie);
-        String message = "A new zombie "+newZombie.getName()+" has been spawned in" +
-                "("+(newZombie.getCol()+1)+", "+(newZombie.getRow()+1)+")!";
+        String message = "A new zombie " + newZombie.getName() + " has been spawned in" +
+            "(" + (newZombie.getCol() + 1) + ", " + (newZombie.getRow() + 1) + ")!";
         GameSession.notify(message);
-
     }
 
     public void fillBoardRandomly(GameSession session) {
         int rows = session.getArena().getRows();
         int cols = session.getArena().getCols();
+        Arena arena = session.getArena();
 
+        List<Plant> plantsToRemove = new ArrayList<>(arena.getActivePlants());
+        for (Plant p : plantsToRemove) {
+            session.getTimeManager().unregisterTicker(p);
+            arena.getActivePlants().remove(p);
+            if (p.getPlacedTile() != null) {
+                p.getPlacedTile().getPlants().remove(p);
+            }
+        }
+
+        boolean validBoardGenerated = false;
+
+        while (!validBoardGenerated) {
+            validBoardGenerated = isValidBoardGenerated(session, rows, cols, arena, validBoardGenerated);
+        }
+    }
+
+    private boolean isValidBoardGenerated(GameSession session, int rows, int cols, Arena arena, boolean validBoardGenerated) {
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols - 1; c++) {
-                Tile tile = session.getArena().getTile(r, c);
-
+                Tile tile = arena.getTile(r, c);
                 if (tile.isCrater()) continue;
-
-                if (!tile.getPlants().isEmpty()) {
-                    tile.getPlants().clear();
-                }
 
                 String randomPlantName;
                 do {
@@ -105,11 +129,22 @@ public class BeghouledLevel extends Level implements IMinigame {
                     tile.addPlant(newPlant);
                     newPlant.setPosition(new Position(tile.getCol(), tile.getRow()));
                     newPlant.setPlacedTile(tile);
-                    session.getArena().addPlant(newPlant);
-                    session.getTimeManager().registerNewTicker(newPlant);
+                    arena.addPlant(newPlant);
                 }
             }
         }
+        if (manager.hasPossibleMatches(session)) {
+            validBoardGenerated = true;
+            for (Plant p : arena.getActivePlants()) {
+                session.getTimeManager().registerNewTicker(p);
+            }
+        } else {
+            for (Plant p : arena.getActivePlants()) {
+                if (p.getPlacedTile() != null) p.getPlacedTile().getPlants().clear();
+            }
+            arena.getActivePlants().clear();
+        }
+        return validBoardGenerated;
     }
 
     public void addSuccessfulMatch() {
@@ -132,6 +167,11 @@ public class BeghouledLevel extends Level implements IMinigame {
     @Override
     public boolean skipsPlantSelection() {
         return true;
+    }
+
+    public boolean isUpgradable(String plantName) {
+        if (plantName == null) return false;
+        return getUpgradeInfo(plantName.toLowerCase()) != null;
     }
 
     public String upgradePlants(String fromPlantName) {
@@ -163,7 +203,7 @@ public class BeghouledLevel extends Level implements IMinigame {
         }
 
         return "Successfully upgraded " + upgradedCount + " " +
-                fromPlantName + "s to " + upgradeInfo.toPlantName() + "!";
+            fromPlantName + "s to " + upgradeInfo.toPlantName() + "!";
     }
 
     private int replacePlantsOnBoard(GameSession session, String fromPlantName, Plant template) {
@@ -196,19 +236,26 @@ public class BeghouledLevel extends Level implements IMinigame {
         return upgradedCount;
     }
 
-    private UpgradeInfo getUpgradeInfo(String fromPlantName) {
-        return switch (fromPlantName) {
+    public UpgradeInfo getUpgradeInfo(String fromPlantName) {
+        return switch (fromPlantName.toLowerCase()) {
             case "peashooter" -> new UpgradeInfo("repeater", 500);
             case "repeater" -> new UpgradeInfo("mega gatling pea", 1500);
             case "wall-nut" -> new UpgradeInfo("tall-nut", 500);
+            case "tall-nut" -> new UpgradeInfo("explode-o-nut", 1000);
             case "puff-shroom" -> new UpgradeInfo("fume-shroom", 250);
             case "cabbage-pult" -> new UpgradeInfo("melon-pult", 1000);
             case "melon-pult" -> new UpgradeInfo("winter melon", 750);
+            case "sunflower" -> new UpgradeInfo("twin sunflower", 800);
             default -> null;
         };
     }
 
+    public int getUpgradeCost(String fromPlantName) {
+        return getUpgradeInfo(fromPlantName.toLowerCase()).cost();
+    }
+
     private record UpgradeInfo(String toPlantName, int cost) {
+
     }
 
     @Override
@@ -227,7 +274,7 @@ public class BeghouledLevel extends Level implements IMinigame {
             Plant p1 = getPlantAt(arena, r, c - 1);
             Plant p2 = getPlantAt(arena, r, c - 2);
             if (p1 != null && p2 != null &&
-                    p1.getName().equalsIgnoreCase(plantName) && p2.getName().equalsIgnoreCase(plantName)) {
+                p1.getName().equalsIgnoreCase(plantName) && p2.getName().equalsIgnoreCase(plantName)) {
                 return true;
             }
         }
@@ -236,7 +283,7 @@ public class BeghouledLevel extends Level implements IMinigame {
             Plant p1 = getPlantAt(arena, r - 1, c);
             Plant p2 = getPlantAt(arena, r - 2, c);
             if (p1 != null && p2 != null &&
-                    p1.getName().equalsIgnoreCase(plantName) && p2.getName().equalsIgnoreCase(plantName)) {
+                p1.getName().equalsIgnoreCase(plantName) && p2.getName().equalsIgnoreCase(plantName)) {
                 return true;
             }
         }
@@ -253,5 +300,4 @@ public class BeghouledLevel extends Level implements IMinigame {
     public BeghouledManager getManager() {
         return manager;
     }
-
 }

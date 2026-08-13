@@ -18,6 +18,7 @@ import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.events.GameEvent;
@@ -31,6 +32,8 @@ import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
+
+import java.util.HashMap;
 
 import static io.java.pvz.models.enums.PhysicalConstants.*;
 
@@ -51,6 +54,7 @@ public class GameInputHandler {
 
     private boolean isPlantFoodSelected = false;
     private Image floatingPlantFoodImage = null;
+    private final HashMap<Tile,PamAnimatedActor> plantFoodAnimations = new HashMap<>();
 
     private Vector2 selectedGridPos = null;
 
@@ -205,15 +209,7 @@ public class GameInputHandler {
 
             if (isShovelSelected) {
                 if (gameFlowController.pluckPlant(String.valueOf(col), String.valueOf(row)).isSuccessful()) {
-                    float tileX = GRID_START_X + (col - 1) * TILE_WIDTH;
-                    float tileY = GRID_START_Y + (row - 1) * TILE_HEIGHT;
 
-                    float centerX = tileX + (TILE_WIDTH / 2f);
-                    float centerY = tileY + (TILE_HEIGHT / 2f);
-                    PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated
-                        ("768/INITIAL/EFFECTS/PLANTFOOD_FX/PLANTFOOD_FX.PAM","plantfood");
-                    actor.setPosition(centerX, centerY);
-                    mainLayer.addActor(actor);
                     clearAllSelections();
                 }
                 return;
@@ -221,6 +217,19 @@ public class GameInputHandler {
 
             if (isPlantFoodSelected) {
                 if (gameFlowController.feedPlant(String.valueOf(col), String.valueOf(row)).isSuccessful()) {
+                    float tileX = GRID_START_X + (col - 1) * TILE_WIDTH;
+                    float tileY = GRID_START_Y + (row - 1) * TILE_HEIGHT;
+
+                    float offsetX = 10f;
+                    float offsetY = 100f;
+                    float centerX = tileX + (TILE_WIDTH / 2f) + offsetX;
+                    float centerY = tileY + (TILE_HEIGHT / 2f) + offsetY;
+                    PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated
+                        ("768/INITIAL/EFFECTS/PLANTFOOD_FX/PLANTFOOD_FX.PAM","plantfood");
+                    actor.setPosition(centerX, centerY);
+                    mainLayer.addActor(actor);
+                    Tile tile = GameSession.getInstance().getArena().getTile(row-1, col-1);
+                    plantFoodAnimations.put(tile, actor);
                     clearAllSelections();
                     if (gameHUD != null) gameHUD.updatePlantFoodCount();
 
@@ -258,6 +267,22 @@ public class GameInputHandler {
             }
             if (GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel) {
                 miniGameController.breakVase(String.valueOf(col), String.valueOf(row));
+            }
+        }
+    }
+
+    public void sickAnimations(){
+        if(plantFoodAnimations.isEmpty()) return;
+        GameSession session = GameSession.getInstance();
+        if (session == null) return;
+        for (Tile tile : plantFoodAnimations.keySet()) {
+            if(tile.getPlants().isEmpty())return;
+            for (Plant plant : tile.getPlants()) {
+                if(!plant.isBoosted()){
+                    PamAnimatedActor actor = plantFoodAnimations.get(tile);
+                    mainLayer.removeActor(actor);
+                    break;
+                }
             }
         }
     }

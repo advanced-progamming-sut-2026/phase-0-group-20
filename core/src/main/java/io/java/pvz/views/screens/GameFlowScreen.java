@@ -101,6 +101,7 @@ public class GameFlowScreen extends BaseScreen {
         AssetLoader.getInstance().updateTextures();
         gameHUD.update(delta);
         inputHandler.handleTileClick();
+        inputHandler.sickAnimations();
         handleCameraMovement(delta);
         inputHandler.updatePlantingHighlights();
 

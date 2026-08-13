@@ -232,8 +232,9 @@ public class GameHUD {
 
         for (String plantName : basePlants) {
             Plant plant = App.findPlantByName(plantName);
-            if (plant != null) {
-                PlantCardButton plantButton = createBeghouledUpgradePacket(plant);
+            if (plant != null && level.isUpgradable(plant.getName())) {
+                int cost = level.getUpgradeCost(plant.getName());
+                PlantCardButton plantButton = createBeghouledUpgradePacket(plant,cost);
                 seedBankTable.add(plantButton).size(180f, 85f).padBottom(10f).row();
             }
         }
@@ -266,7 +267,7 @@ public class GameHUD {
         return plantButton;
     }
 
-    private PlantCardButton createBeghouledUpgradePacket(Plant plant) {
+    private PlantCardButton createBeghouledUpgradePacket(Plant plant, int cost) {
         Image bgCard = UiFactory.imageFor(textures, Ids.PlantCards.BG_CARD);
         String plantName = UiFactory.getAtlasName(plant);
         String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
@@ -279,6 +280,7 @@ public class GameHUD {
             .setSkin(skin)
             .setShowProgressBar(false)
             .setSize(90f)
+            .setCost(cost)
             .setLockIncluded(false)
             .setShowLevel(false)
             .build();

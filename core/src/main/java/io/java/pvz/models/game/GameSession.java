@@ -134,7 +134,7 @@ public class GameSession {
         Chapter fakeChapter = new Chapter(SeasonType.MINI_GAME);
 
         List<Zombie> inGameZombies =
-            InGameEntityGenerator.getZombiesForLevel(SeasonType.ANCIENT_EGYPT, minigameLevel.getLevelNumber());
+            InGameEntityGenerator.getZombiesForLevel(SeasonType.MINI_GAME, minigameLevel.getLevelNumber());
 
         GameSession session = GameSession.getInstance(fakeChapter, minigameLevel,
             arena, inGamePlants, inGameZombies);
