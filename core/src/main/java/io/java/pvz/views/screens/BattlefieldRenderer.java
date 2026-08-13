@@ -15,6 +15,7 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
+import io.java.pvz.models.entities.obstacle.ArcadeMachine;
 import io.java.pvz.models.entities.obstacle.Barrel;
 import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
@@ -146,6 +147,8 @@ public class BattlefieldRenderer implements GameEventListener {
                 spawnCrystalSkullBeamEffect(payload.getZombie());
             }else if ("BARREL_BREAK".equals(payload.getMessage())) {
                 spawnBarrelBreakEffect(payload.getPixelX(), payload.getPixelY());
+            } else if ("ARCADE_MACHINE_BREAK".equals(payload.getMessage())) {
+                spawnArcadeBreakEffect(payload.getPixelX(), payload.getPixelY());
             }
         } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
             String msg = String.valueOf(payload.getMessage());
@@ -160,6 +163,22 @@ public class BattlefieldRenderer implements GameEventListener {
                 animateImpFlight(payload.getZombie(), payload.getPixelX(), payload.getPixelY());
             }
         }
+    }
+
+    private void spawnArcadeBreakEffect(float x, float y) {
+        String pamPath = "768/FULL/EFFECTS/80S_ARCADE_CABINET/80S_ARCADE_CABINET.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "death", pamPath);
+        actor.setSize(TILE_WIDTH, TILE_HEIGHT);
+        actor.setOrigin(Align.center);
+        actor.setPosition(x - actor.getWidth() / 2f, y - actor.getHeight() / 2f + 30f);
+
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(3.5f),
+            Actions.removeActor()
+        ));
     }
 
     private void spawnBarrelBreakEffect(float x, float y) {
@@ -626,7 +645,13 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private PamAnimatedActor spawnObstacle(PushableObstacle obs) {
-        String pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_ZOMBIE/FROSTBITE_ICE_BLOCK_ZOMBIE.PAM";
+        String pamPath;
+        if (obs instanceof ArcadeMachine) {
+            pamPath = "768/FULL/EFFECTS/80S_ARCADE_CABINET/80S_ARCADE_CABINET.PAM";
+        } else {
+            pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_ZOMBIE/FROSTBITE_ICE_BLOCK_ZOMBIE.PAM";
+        }
+
         PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, "idle");
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
@@ -961,6 +986,12 @@ public class BattlefieldRenderer implements GameEventListener {
         }
 
         if (zombie.getType() == ZombieType.TROGLOBITE) {
+            if (zombie.getState() == ZombieState.PUSH) {
+                return pickClip(anim, CLIP_WALK, "push");
+            }
+        }
+
+        if (zombie.getType() == ZombieType.ARCADE) {
             if (zombie.getState() == ZombieState.PUSH) {
                 return pickClip(anim, CLIP_WALK, "push");
             }
