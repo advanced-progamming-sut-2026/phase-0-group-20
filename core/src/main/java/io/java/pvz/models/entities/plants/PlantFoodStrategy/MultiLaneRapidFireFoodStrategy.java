@@ -25,7 +25,7 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
         int damage = plant.getDamage();
         int plantCol = plant.getPlacedTile().getCol();
 
-        Projectile.spawnNewProjectile(
+        Projectile projectile = Projectile.spawnNewProjectile(
             plant,
             type,
             damage,
@@ -35,6 +35,7 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
             false,
             false);
 
+        projectile.setSpawnDelayTicks(1);
         if (currentRow >= session.getArena().getRows() - 1) directionCoeff = -1;
         else if (currentRow <= 0) directionCoeff = 1;
 

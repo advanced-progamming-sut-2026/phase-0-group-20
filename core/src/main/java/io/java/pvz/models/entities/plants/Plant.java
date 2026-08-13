@@ -19,6 +19,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.utils.AnimationCatalog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,9 +97,9 @@ public class Plant implements IPlant, Ticker {
     public void useFood() {
         if (plantFoodStrategy.isEmpty()) {
             GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                            .message(getName() + " has no Plant Food effect wired up yet!")
-                            .build());
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message(getName() + " has no Plant Food effect wired up yet!")
+                    .build());
             return;
         }
 
@@ -174,7 +175,7 @@ public class Plant implements IPlant, Ticker {
 
         this.currentHp -= amount;
         GameSession.notify(getName() + " Taking " + amount + " damage in " +
-                (placedTile.getCol() + 1) + "," + (placedTile.getRow() + 1));
+            (placedTile.getCol() + 1) + "," + (placedTile.getRow() + 1));
 
         if (currentHp <= 0) {
             this.currentHp = -1;
@@ -183,9 +184,9 @@ public class Plant implements IPlant, Ticker {
 
         if (isDead()) {
             GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,
-                    new GameEventPayload.Builder(GameEvent.PLANT_LOST)
-                            .message(getName() + " has lost!")
-                            .build()
+                new GameEventPayload.Builder(GameEvent.PLANT_LOST)
+                    .message(getName() + " has lost!")
+                    .build()
             );
             GameSession.getInstance().getTimeManager().unregisterTicker(this);
             GameSession.notify("Plant " + getName() + " has been Destroyed!");
@@ -199,7 +200,7 @@ public class Plant implements IPlant, Ticker {
     public boolean addStack() {
         if (this.getTags().contains(PlantTag.STACK) && stackCount < 5) {
             stackCount++;
-            GameSession.notify("Plant " + getName() + " has been Stacked! stack count: " +  stackCount);
+            GameSession.notify("Plant " + getName() + " has been Stacked! stack count: " + stackCount);
             return true;
         }
         return false;
@@ -328,26 +329,25 @@ public class Plant implements IPlant, Ticker {
 
     private boolean applySunMechanic(String tag, float value) {
         switch (tag) {
-            case "DOUBLE_SUN_CHANCE" ->
-                    applyToStrategy(SunProductionStrategy.class, s -> s.setDoubleSunChance(true));
-            case "SUN_AMOUNT_BUFF" ->
-                    applyToStrategy(SunProductionStrategy.class, s -> s.increaseSunAmount(value));
+            case "DOUBLE_SUN_CHANCE" -> applyToStrategy(SunProductionStrategy.class, s -> s.setDoubleSunChance(true));
+            case "SUN_AMOUNT_BUFF" -> applyToStrategy(SunProductionStrategy.class, s -> s.increaseSunAmount(value));
             case "SUN_DROP_INCREMENT" ->
-                    applyToStrategy(SunOnHitStrategy.class, s -> s.addSunPerHitMultiplier((int) value));
-            default -> { return false; }
+                applyToStrategy(SunOnHitStrategy.class, s -> s.addSunPerHitMultiplier((int) value));
+            default -> {
+                return false;
+            }
         }
         return true;
     }
 
     private boolean applyTimeMechanic(String tag, float value) {
         switch (tag) {
-            case "GROW_TIME_REDUCTION" ->
-                    applyToStrategy(SunProductionStrategy.class, s -> s.reduceGrowTime(value));
-            case "REGEN_SPEEDUP" ->
-                    applyToStrategy(ChargeStrategy.class, s -> s.speedUpRegen(value));
-            case "EAT_TIME_REDUCTION" ->
-                    applyToStrategy(GraveBusterStrategy.class, s -> s.reduceEatTime(value));
-            default -> { return false; }
+            case "GROW_TIME_REDUCTION" -> applyToStrategy(SunProductionStrategy.class, s -> s.reduceGrowTime(value));
+            case "REGEN_SPEEDUP" -> applyToStrategy(ChargeStrategy.class, s -> s.speedUpRegen(value));
+            case "EAT_TIME_REDUCTION" -> applyToStrategy(GraveBusterStrategy.class, s -> s.reduceEatTime(value));
+            default -> {
+                return false;
+            }
         }
         return true;
     }
@@ -361,9 +361,11 @@ public class Plant implements IPlant, Ticker {
                 applyToStrategy(MagnetStrategy.class, s -> s.increaseRange(value));
             }
             case "SPLASH_DAMAGE_BUFF" ->
-                    applyToStrategy(LobberStrategy.class, s -> s.increaseSplashDamage((int) value));
+                applyToStrategy(LobberStrategy.class, s -> s.increaseSplashDamage((int) value));
             case "WARM_RADIUS_EXT" -> applyToStrategy(LobberStrategy.class, s -> s.increaseWarmRadius(value));
-            default -> { return false; }
+            default -> {
+                return false;
+            }
         }
         return true;
     }
@@ -377,7 +379,9 @@ public class Plant implements IPlant, Ticker {
                 applyToStrategy(GlobalEffectStrategy.class, s -> s.increaseFreezeDuration(value));
             }
             case "DURATION_EXT" -> applyToStrategy(MintBuffStrategy.class, s -> s.increaseBoostDuration(value));
-            default -> { return false; }
+            default -> {
+                return false;
+            }
         }
         return true;
     }
@@ -385,25 +389,23 @@ public class Plant implements IPlant, Ticker {
     private boolean applyOffensiveMechanic(String tag, float value) {
         switch (tag) {
             case "ADDITIONAL_PIERCE" ->
-                    applyToStrategy(StrikeThroughStrategy.class, s -> s.increasePierceLimit((int) value));
+                applyToStrategy(StrikeThroughStrategy.class, s -> s.increasePierceLimit((int) value));
             case "POISON_TICK_BUFF" ->
-                    applyToStrategy(ShootingStrategy.class, s -> s.increasePoisonTickDamage((int) value));
-            case "PRIORITIZE_GARGANTUARS" ->
-                    applyToStrategy(HomingStrategy.class,
-                            s -> s.setTargetMode(HomingStrategy.TargetMode.GARGANTUAR_FIRST));
-            case "BONUS_SMASH_CHARGES" ->
-                    applyToStrategy(TrapStrategy.class, s -> s.increaseSmashCharges((int) value));
+                applyToStrategy(ShootingStrategy.class, s -> s.increasePoisonTickDamage((int) value));
+            case "PRIORITIZE_GARGANTUARS" -> applyToStrategy(HomingStrategy.class,
+                s -> s.setTargetMode(HomingStrategy.TargetMode.GARGANTUAR_FIRST));
+            case "BONUS_SMASH_CHARGES" -> applyToStrategy(TrapStrategy.class, s -> s.increaseSmashCharges((int) value));
             case "GRAPE_BOUNCE_EXT" ->
-                    applyToStrategy(ExplosiveStrategy.class, s -> s.increaseBounceLimit((int) value));
-            case "BONUS_GRAB_TARGETS" ->
-                    applyToStrategy(TrapStrategy.class, s -> s.increaseMaxTargets((int) value));
-            case "BUTTER_CHANCE_BUFF" ->
-                    applyToStrategy(LobberStrategy.class, s -> s.increaseButterChance(value));
+                applyToStrategy(ExplosiveStrategy.class, s -> s.increaseBounceLimit((int) value));
+            case "BONUS_GRAB_TARGETS" -> applyToStrategy(TrapStrategy.class, s -> s.increaseMaxTargets((int) value));
+            case "BUTTER_CHANCE_BUFF" -> applyToStrategy(LobberStrategy.class, s -> s.increaseButterChance(value));
             case "REFLECT_DAMAGE_BUFF" ->
-                    applyToStrategy(SpikeStrategy.class, s -> s.increaseReflectDamage((int) value));
+                applyToStrategy(SpikeStrategy.class, s -> s.increaseReflectDamage((int) value));
             case "EXPLODE_DAMAGE_BUFF" ->
-                    applyToStrategy(DeathExplosionStrategy.class, s -> s.increaseExplosionDamage((int) value));
-            default -> { return false; }
+                applyToStrategy(DeathExplosionStrategy.class, s -> s.increaseExplosionDamage((int) value));
+            default -> {
+                return false;
+            }
         }
         return true;
     }
@@ -412,24 +414,25 @@ public class Plant implements IPlant, Ticker {
         switch (tag) {
             case "GROWTH_STAGE_MAX_UP" -> this.setSize(this.getSize() + (int) value);
             case "DEATH_EXPLOSION_AOE" ->
-                    applyToStrategy(TorchwoodStrategy.class, s -> s.setExplodesOnDeath(value > 0));
+                applyToStrategy(TorchwoodStrategy.class, s -> s.setExplodesOnDeath(value > 0));
             case "EXPLODE_ON_FINISH" -> {
                 applyToStrategy(GraveBusterStrategy.class, s -> s.setExplodeOnFinish(true));
                 applyToStrategy(MeltIceStrategy.class, s -> s.setExplodeOnFinish(true));
             }
             case "ZOMBIE_HEALTH_MULTIPLIER" ->
-                    applyToStrategy(HypnotizeStrategy.class, s -> s.setHealthMultiplier(value));
+                applyToStrategy(HypnotizeStrategy.class, s -> s.setHealthMultiplier(value));
             case "ZOMBIE_DAMAGE_MULTIPLIER" ->
-                    applyToStrategy(HypnotizeStrategy.class, s -> s.setDamageMultiplier(value));
+                applyToStrategy(HypnotizeStrategy.class, s -> s.setDamageMultiplier(value));
             case "AUTO_PLANT_FOOD_CHANCE" ->
-                    applyToStrategy(ShootingStrategy.class, s -> s.setAutoPlantFoodChance(value));
+                applyToStrategy(ShootingStrategy.class, s -> s.setAutoPlantFoodChance(value));
             case "AUTO_PLANTFOOD_ON_ENTER" ->
-                    applyToStrategy(ImitateStrategy.class, s -> s.setAutoPlantFood(value > 0));
+                applyToStrategy(ImitateStrategy.class, s -> s.setAutoPlantFood(value > 0));
             case "RESET_FAMILY_COOLDOWNS" ->
-                    applyToStrategy(MintBuffStrategy.class, s -> s.setResetCooldowns(value > 0));
-            case "MELT_AREA_3X3" ->
-                    applyToStrategy(MeltIceStrategy.class, s -> s.setMeltArea3x3(true));
-            default -> { return false; }
+                applyToStrategy(MintBuffStrategy.class, s -> s.setResetCooldowns(value > 0));
+            case "MELT_AREA_3X3" -> applyToStrategy(MeltIceStrategy.class, s -> s.setMeltArea3x3(true));
+            default -> {
+                return false;
+            }
         }
         return true;
     }
@@ -444,12 +447,12 @@ public class Plant implements IPlant, Ticker {
 
     public void onZombieDeath(Zombie z) {
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
-                .zombie(z)
-                .plant(this)
-                .seasonType(GameSession.getInstance().getCurrentChapter().getSeasonType())
-                .arena(GameSession.getInstance().getArena())
-                .coordinate(z.getRow(), z.getCol())
-                .build();
+            .zombie(z)
+            .plant(this)
+            .seasonType(GameSession.getInstance().getCurrentChapter().getSeasonType())
+            .arena(GameSession.getInstance().getArena())
+            .coordinate(z.getRow(), z.getCol())
+            .build();
         GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
     }
 
@@ -562,9 +565,9 @@ public class Plant implements IPlant, Ticker {
         return null;
     }
 
-    public void triggerAction(String action, int durationTicks) {
+    public void triggerAction(String action) {
         this.currentAction = action;
-        this.actionTimer = durationTicks;
+        this.actionTimer = (int) (AnimationCatalog.getPlantAnimation(this).getDuration(action) * 10);
     }
 
     public String getCurrentAction() {

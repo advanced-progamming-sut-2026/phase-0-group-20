@@ -41,7 +41,7 @@ public class ShootingStrategy implements IPlantStrategy {
             if (burstCooldownTicks > 0) {
                 burstCooldownTicks--;
             } else {
-                executeNewProjectile(context, currentShootForward, currentShootBackward);
+                executeNewProjectile(context, currentShootForward, currentShootBackward, 5);
                 pendingShots--;
                 burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
             }
@@ -130,9 +130,10 @@ public class ShootingStrategy implements IPlantStrategy {
             return;
         }
 
-        executeNewProjectile(context, shootForward, shootBackward);
-        context.triggerAction("attack", 15);
+        context.triggerAction("attack");
         notify(context.getName() + " fired a projectile!");
+
+        executeNewProjectile(context, shootForward, shootBackward, 5);
 
         int baseVolley = ProjectileMechanism.getVolleyCount(context.getName());
         int stackBonus = Math.max(0, context.getStackCount() - 1);

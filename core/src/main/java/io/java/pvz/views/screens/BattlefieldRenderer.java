@@ -995,6 +995,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private void syncProjectiles(List<Projectile> liveProjectiles) {
         for (Projectile proj : liveProjectiles) {
+            if (!proj.isSpawned()) continue;
             PamAnimatedActor actor = projectileActors.get(proj);
             ProjectileType lastRenderedType = projectileActorTypes.get(proj);
 

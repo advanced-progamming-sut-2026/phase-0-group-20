@@ -25,7 +25,7 @@ public class LaneClearFoodStrategy implements PlantFoodStrategy {
         ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
 
         if (type != null) {
-            Projectile.spawnNewProjectile(
+            Projectile projectile = Projectile.spawnNewProjectile(
                 plant,
                 type,
                 damage,
@@ -35,6 +35,8 @@ public class LaneClearFoodStrategy implements PlantFoodStrategy {
                 true, //clean whole line
                 false
             );
+
+            projectile.setSpawnDelayTicks(5);
         }
 
         notify(plant.getName() + " unleashed a lane-clearing attack: " + description);
