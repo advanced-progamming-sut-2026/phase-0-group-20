@@ -15,6 +15,7 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
+import io.java.pvz.models.entities.obstacle.Barrel;
 import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.DigestionStrategy;
@@ -26,6 +27,7 @@ import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.entities.zombies.behavior.effect.RageEffect;
+import io.java.pvz.models.entities.zombies.behavior.move.BarrelRollerMove;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.Brain;
 import io.java.pvz.models.fields.LawnMower;
@@ -142,6 +144,8 @@ public class BattlefieldRenderer implements GameEventListener {
                 killOctopusOnPlant(payload.getPlant());
             } else if ("CRYSTAL_SKULL_BEAM".equals(payload.getMessage())) {
                 spawnCrystalSkullBeamEffect(payload.getZombie());
+            }else if ("BARREL_BREAK".equals(payload.getMessage())) {
+                spawnBarrelBreakEffect(payload.getPixelX(), payload.getPixelY());
             }
         } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
             String msg = String.valueOf(payload.getMessage());
@@ -156,6 +160,22 @@ public class BattlefieldRenderer implements GameEventListener {
                 animateImpFlight(payload.getZombie(), payload.getPixelX(), payload.getPixelY());
             }
         }
+    }
+
+    private void spawnBarrelBreakEffect(float x, float y) {
+        String pamPath = "768/FULL/ZOMBIE/ZOMBIE_PIRATE_BARREL_PUSHER_BARREL/ZOMBIE_PIRATE_BARREL_PUSHER_BARREL.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "die", pamPath);
+        actor.setSize(TILE_WIDTH, TILE_HEIGHT);
+        actor.setOrigin(Align.center);
+        actor.setPosition(x - actor.getWidth() / 2f, y - actor.getHeight() / 2f + 30f);
+
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(2.0f),
+            Actions.removeActor()
+        ));
     }
 
     private void spawnCrystalSkullBeamEffect(Zombie zombie) {
@@ -581,6 +601,9 @@ public class BattlefieldRenderer implements GameEventListener {
 
         Set<PushableObstacle> liveObstacles = new HashSet<>();
         for (PushableObstacle obs : obstacles) {
+
+            if (obs instanceof Barrel) continue;
+
             if (obs != null && !obs.isDestroyed()) {
                 liveObstacles.add(obs);
                 PamAnimatedActor actor = obstacleActors.get(obs);
@@ -866,6 +889,20 @@ public class BattlefieldRenderer implements GameEventListener {
 
     private String resolveZombieClip(Zombie zombie) {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie.getType());
+
+        if (zombie.getType() == ZombieType.BARREL_ROLLER) {
+            boolean hasBarrel = zombieHasBarrel(zombie);
+            if (zombie.isDead()) {
+                return hasBarrel ? pickClip(anim, CLIP_WALK, "die") : pickClip(anim, CLIP_WALK, "die2");
+            }
+            if (zombie.isAttacking()) {
+                return hasBarrel ? pickClip(anim, CLIP_WALK, "eat") : pickClip(anim, CLIP_WALK, "eat2");
+            }
+            if (zombie.getState() == ZombieState.STUNNED) {
+                return hasBarrel ? pickClip(anim, CLIP_WALK, "idle") : pickClip(anim, CLIP_WALK, "idle2");
+            }
+            return hasBarrel ? pickClip(anim, CLIP_WALK, "walk") : pickClip(anim, CLIP_WALK, "walk2");
+        }
 
         if (zombie.isDead()) return pickClip(anim, CLIP_WALK, "die");
 
@@ -1295,5 +1332,12 @@ public class BattlefieldRenderer implements GameEventListener {
             }
         }
         zombieActor.setVisibilityMap(visibilityMap);
+    }
+
+    private boolean zombieHasBarrel(Zombie zombie) {
+        if (zombie.getMoveBehavior() instanceof BarrelRollerMove moveBehavior) {
+            return moveBehavior.getBarrel() != null && !moveBehavior.getBarrel().isDestroyed();
+        }
+        return false;
     }
 }

@@ -13,6 +13,7 @@ import io.java.pvz.models.entities.zombies.behavior.context.*;
 import io.java.pvz.models.entities.zombies.behavior.defense.*;
 import io.java.pvz.models.entities.zombies.behavior.effect.*;
 import io.java.pvz.models.entities.zombies.behavior.move.*;
+import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
@@ -79,6 +80,21 @@ public class ZombieFactory {
                 zombie.setAttackBehavior(new SnorkelAttack(zombie, ctx));
                 zombie.setDefenseBehavior(new SnorkelDefense(ctx));
             }
+            case BARREL_ROLLER -> {
+                int barrelCol = Math.max(0, zombie.getCol() - 1);
+                Barrel barrel = new Barrel(barrelCol, zombie.getRow());
+
+                barrel.getPosition().setX(zombie.getX() - PhysicalConstants.TILE_WIDTH);
+
+                GameSession session = GameSession.getInstance();
+                if (session != null && session.getArena() != null) {
+                    session.getArena().getActiveObstacles().add(barrel);
+                }
+
+                zombie.setMoveBehavior(new BarrelRollerMove(zombie, barrel));
+                zombie.setDefenseBehavior(new BarrelRollerDefense(zombie));
+                zombie.setAttackBehavior(new NormalAttack(zombie));
+            }
             default -> {
                 zombie.setMoveBehavior(getMoveAI(type, zombie));
                 zombie.setAttackBehavior(getAttackAI(type, zombie, data));
@@ -91,7 +107,6 @@ public class ZombieFactory {
         return switch (type) {
             case GARGANTUAR -> new GargantuarMove(zombie);
             case NEWSPAPER -> new NewspaperMove(zombie);
-            case BARREL_ROLLER -> createBarrelMove(zombie);
             case ARCADE -> createArcadeMove(zombie);
             case TROGLOBITE -> new TroglobiteMove(zombie);
             case DODO -> new DodoMove(zombie);
@@ -154,21 +169,6 @@ public class ZombieFactory {
             case TROGLOBITE -> new TroglobiteDefense(zombie);
             default -> new NormalDefense();
         };
-    }
-
-    private static MoveBehavior createBarrelMove(Zombie zombie) {
-        Barrel barrel = new Barrel(zombie.getCol(), zombie.getRow());
-        if (GameSession.getInstance() != null) GameSession.getInstance().getArena().getActiveObstacles().add(barrel);
-        return new PushMove(zombie,
-                () -> !barrel.isDestroyed(),
-                () -> {
-                    float oldX = zombie.getX();
-                    zombie.moveForward();
-                    barrel.push(zombie.getX() - oldX);
-                    zombie.getAttackBehavior().execute();
-                },
-                new NormalMove(zombie)
-        );
     }
 
     private static MoveBehavior createArcadeMove(Zombie zombie) {
