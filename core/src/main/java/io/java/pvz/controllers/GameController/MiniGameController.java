@@ -292,8 +292,9 @@ public class MiniGameController {
 
     public Plant getPlantAtTile(int col , int row ){
         Arena arena = GameSession.getInstance().getArena();
-        if(arena.isSunOnTile(arena.getTile(row-1,col-1)))
+        if (arena.getTile(row-1,col-1 ).getPlants().isEmpty()) {
             return null;
+        }
         Plant plant = arena.getTile(row-1,col-1).getPlants().getFirst();
         return plant;
     }

@@ -25,6 +25,7 @@ public class PlantCardButton extends Table {
     private final Stack progressStack;
 
     private final Container<Label> levelContainer;
+    private final Container<Label> costContainer;
 
     private boolean isReadyToUpgrade;
     private boolean isUnlocked;
@@ -82,6 +83,19 @@ public class PlantCardButton extends Table {
             this.levelContainer = null;
         }
 
+        if (builder.costIncluded && builder.skin != null) {
+            int cost = (builder.cost == -1 )? plant.getCost() : builder.cost;
+            Label costLbl = new Label(String.valueOf(cost), builder.skin, "medium_outline");
+            costLbl.setFontScale(1.3f);
+            costLbl.setAlignment(Align.center);
+
+            this.costContainer = new Container<>(costLbl);
+            this.costContainer.setTransform(true);
+            this.costContainer.setOrigin(Align.center);
+        } else {
+            this.costContainer = null;
+        }
+
         if (!isUnlocked && builder.lockIncluded) {
             Pixmap dimPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
             dimPixmap.setColor(0, 0, 0, 0.65f);
@@ -119,6 +133,10 @@ public class PlantCardButton extends Table {
             addActor(levelContainer);
         }
 
+        if (costContainer != null) {
+            addActor(costContainer);
+        }
+
         if (!isUnlocked && builder.lockIncluded) {
             addActor(darkOverlay);
             if (lockIcon != null) {
@@ -141,9 +159,14 @@ public class PlantCardButton extends Table {
 
         if (levelContainer != null) {
             levelContainer.pack();
+            levelContainer.setPosition(getWidth() - levelContainer.getWidth() , getHeight() - levelContainer.getHeight() + 30f);
+        }
+
+        if (costContainer != null) {
+            costContainer.pack();
             float padX = 8f;
-            float padY = 8f;
-            levelContainer.setPosition(getWidth() - levelContainer.getWidth() , getHeight() - levelContainer.getHeight() +30f);
+            float padY = (progressStack != null) ? 12 : 8f;
+            costContainer.setPosition(getWidth() - costContainer.getWidth() - padX, padY);
         }
 
         if (!isUnlocked) {
@@ -216,6 +239,8 @@ public class PlantCardButton extends Table {
         private boolean showProgressBar = true;
         private float scale = 105f;
         private boolean lockIncluded = true;
+        private boolean costIncluded = true;
+        private int cost = -1;
 
         private boolean showLevel = true;
 
@@ -264,12 +289,22 @@ public class PlantCardButton extends Table {
             return this;
         }
 
+        public Builder setCostIncluded(boolean costIncluded) {
+            this.costIncluded = costIncluded;
+            return this;
+        }
+
+        public Builder setCost(int cost ) {
+            this.cost = cost;
+            return this;
+        }
+
         public PlantCardButton build() {
             if (bgImage == null || plantImage == null || plant == null) {
                 throw new IllegalStateException("Not all the necessary arguments are set!");
             }
 
-            if ((showProgressBar || showLevel) && skin == null) {
+            if ((showProgressBar || showLevel || costIncluded) && skin == null) {
                 throw new IllegalStateException("Skin is not set!");
             }
             return new PlantCardButton(this);

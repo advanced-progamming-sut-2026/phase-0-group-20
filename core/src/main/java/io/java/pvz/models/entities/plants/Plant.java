@@ -18,6 +18,8 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.game.minigame.BeghouledLevel;
+import io.java.pvz.models.game.minigame.BeghouledManager;
 import io.java.pvz.models.timeManager.Ticker;
 
 import java.util.ArrayList;
@@ -182,6 +184,11 @@ public class Plant implements IPlant, Ticker {
         }
 
         if (isDead()) {
+            if(GameSession.getInstance() != null
+                && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel){
+                if(placedTile != null)
+                    placedTile.setCrater(true);
+            }
             GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,
                     new GameEventPayload.Builder(GameEvent.PLANT_LOST)
                             .message(getName() + " has lost!")
@@ -189,6 +196,8 @@ public class Plant implements IPlant, Ticker {
             );
             GameSession.getInstance().getTimeManager().unregisterTicker(this);
             GameSession.notify("Plant " + getName() + " has been Destroyed!");
+
+
         }
     }
 

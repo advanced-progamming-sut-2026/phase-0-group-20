@@ -16,12 +16,14 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PlantCardButton;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.utils.ZombieCardButton;
 import pvz.libpvz.textures.TextureBank;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,7 +31,7 @@ public class CollectionScreen extends BaseScreen {
     private final Skin skin;
     private boolean isShowingPlants = true;
     private final CollectionController controller = new CollectionController();
-    private final List<PlantCardButton> allPlantCards = new java.util.ArrayList<>();
+    private final List<PlantCardButton> allPlantCards = new ArrayList<>();
 
     private enum FilterState {
         ALL("Show All Plants"),
@@ -205,10 +207,19 @@ public class CollectionScreen extends BaseScreen {
     private Table buildPlantsTable(TextureBank textures) {
         Table table = new Table();
         table.top();
-
+        User currentUser = App.getActiveUser();
         if (allPlantCards.isEmpty()) {
             for (Plant plant : App.getAllPlants()) {
-                createPlantCard(textures, plant);
+                if(currentUser.isItUnlocked(plant)){
+                    Plant foundPlant = currentUser.getUnlockedPlants().stream()
+                        .filter(p -> p.getName().equals(plant.getName()))
+                        .findFirst()
+                        .orElse(null);
+                    if(foundPlant != null){
+                        createPlantCard(textures,foundPlant);
+                    }
+                }else
+                    createPlantCard(textures, plant);
             }
         }
 
