@@ -21,7 +21,7 @@ public class PeriodicActionMove implements MoveBehavior {
     @Override
     public void execute() {
         if (movesForward) {
-            zombie.moveForward();
+            zombie.move();
         }
 
         tickCounter++;

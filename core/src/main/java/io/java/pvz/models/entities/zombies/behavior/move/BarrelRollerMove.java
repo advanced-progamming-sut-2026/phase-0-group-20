@@ -27,14 +27,14 @@ public class BarrelRollerMove implements MoveBehavior {
         if (barrel != null && !barrel.isDestroyed()) {
             zombie.setAttacking(false);
             float oldX = zombie.getX();
-            zombie.moveForward();
+            zombie.move();
             float dx = zombie.getX() - oldX;
 
             barrel.push(dx);
             barrel.getPosition().setX(zombie.getX() - PhysicalConstants.TILE_WIDTH);
             crushPlantsOnTile(barrel);
         } else {
-            zombie.moveForward();
+            zombie.move();
         }
     }
 

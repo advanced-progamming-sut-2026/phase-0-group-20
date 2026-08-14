@@ -885,6 +885,7 @@ public class BattlefieldRenderer implements GameEventListener {
                 zombieActors.put(zombie, actor);
                 zombieActorTypes.put(zombie, zombie.getType());
             }
+            if (zombie.getCurrentSpeed() < 0) actor.setScaleX(-1);
             updateZombieActor(zombie, actor);
         }
 
@@ -931,7 +932,7 @@ public class BattlefieldRenderer implements GameEventListener {
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
         actor.setScale(1f, 1f);
-        if (zombie.getCurrentSpeed() < 0) actor.setScale(-1);
+        if (zombie.getCurrentSpeed() < 0) actor.setScaleX(-1);
         zombieLayer.addActor(actor);
         return actor;
     }

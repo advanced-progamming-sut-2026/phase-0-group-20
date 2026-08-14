@@ -26,7 +26,7 @@ public class NewspaperMove implements MoveBehavior {
             checkNewspaperStatus();
         }
 
-        zombie.moveForward();
+        zombie.move();
     }
 
     private void checkNewspaperStatus() {

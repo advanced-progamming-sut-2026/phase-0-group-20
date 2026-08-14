@@ -3,7 +3,6 @@ package io.java.pvz.models.entities.zombies.behavior.move;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.context.TurquoiseContext;
-import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
 
 public class TurquoiseMove implements MoveBehavior {
@@ -26,7 +25,7 @@ public class TurquoiseMove implements MoveBehavior {
         if (canSeePlantIn4Tiles() && GameSession.getInstance().getCurrentSun() >= STEAL_AMOUNT) {
             zombie.getAttackBehavior().execute();
         } else {
-            zombie.moveForward();
+            zombie.move();
         }
     }
 

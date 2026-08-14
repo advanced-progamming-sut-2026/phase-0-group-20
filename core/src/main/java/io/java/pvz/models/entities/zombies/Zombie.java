@@ -84,11 +84,13 @@ public class Zombie implements Ticker {
         if (dead) return;
 
         List<ZombieEffect> snapshot = new ArrayList<>(activeEffects);
-        for (ZombieEffect effect : snapshot) {
-            effect.execute();
+        if (getCol() < 10) {
+            for (ZombieEffect effect : snapshot) {
+                effect.execute();
+            }
         }
 
-        if (attacking) {
+        if (attacking && getCol() < 10) {
             if (currentTick % 2 == 0) attackBehavior.execute();
         } else {
             moveBehavior.execute();
@@ -378,20 +380,16 @@ public class Zombie implements Ticker {
         return spawnEffect;
     }
 
-    public void moveForward() {
+    public void move() {
         if (this.isHypnotized()) {
-            this.position.moveX(this.currentSpeed);
-
+            if (this.currentSpeed < 0) currentSpeed *= -1;
             if (this.getCol() >= GameSession.getInstance().getArena().getCols()) {
                 this.setDead(true);
             }
-        } else {
-            this.position.moveX(-this.currentSpeed);
         }
-    }
 
-    public void moveBackward() {
-        this.position.moveX(this.currentSpeed);
+        this.position.moveX(-this.currentSpeed);
+
     }
 
     public Tile getTile() {

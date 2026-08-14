@@ -66,7 +66,7 @@ public class PianistMove implements MoveBehavior, GameEventListener {
                 zombie.setState(ZombieState.SPECIAL);
 
                 float oldX = zombie.getX();
-                zombie.moveForward();
+                zombie.move();
                 float dx = zombie.getX() - oldX;
 
                 piano.push(dx);
@@ -93,7 +93,7 @@ public class PianistMove implements MoveBehavior, GameEventListener {
             }
         } else {
             zombie.setState(ZombieState.WALKING);
-            zombie.moveForward();
+            zombie.move();
         }
     }
 

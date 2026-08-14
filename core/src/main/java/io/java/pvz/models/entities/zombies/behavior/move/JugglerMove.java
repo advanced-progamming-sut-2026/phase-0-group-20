@@ -20,11 +20,11 @@ public class JugglerMove implements MoveBehavior {
         syncAnimationState();
 
         if (context.isSpinning()) {
-            zombie.moveForward();
-            zombie.moveForward();
+            zombie.move();
+            zombie.move();
         } else {
             if (GameSession.getInstance().getTimeManager().getCurrentTick() % 2 == 0) {
-                zombie.moveForward();
+                zombie.move();
             }
         }
     }
