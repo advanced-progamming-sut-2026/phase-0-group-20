@@ -139,7 +139,7 @@ public class ZombieFactory {
             case PIANIST -> createPianistMove(zombie);
             case FISHERMAN, KING -> new StationaryMove(zombie);
 
-            case ZOMBOTANY_PEASHOOTER -> new PeriodicActionMove(zombie, 15, true,
+            case ZOMBOTANY_PEASHOOTER -> new PeriodicActionMove(zombie, 1.5f, true,
                     () -> zombie.getAttackBehavior().execute());
 
             default -> new NormalMove(zombie);
@@ -147,7 +147,7 @@ public class ZombieFactory {
     }
 
     private static MoveBehavior createPianistMove(Zombie zombie) {
-        return new PeriodicActionMove(zombie, 4 * TimeManager.TICKS_PER_SECOND, true, () -> {
+        return new PeriodicActionMove(zombie, 4, true, () -> {
             GameSession session = GameSession.getInstance();
             Random rand = new Random();
             int maxRows = session.getArena().getRows();

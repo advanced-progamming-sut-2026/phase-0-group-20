@@ -19,6 +19,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +92,7 @@ public class Zombie implements Ticker {
         }
 
         if (attacking && getCol() < 10) {
-            if (currentTick % 2 == 0) attackBehavior.execute();
+            if (currentTick % (TimeManager.TICKS_PER_SECOND / 5) == 0) attackBehavior.execute();
         } else {
             moveBehavior.execute();
         }

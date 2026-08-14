@@ -16,6 +16,7 @@ import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.minigame.minigameCondition.IZombieLoseCondition;
 import io.java.pvz.models.game.minigame.minigameCondition.IZombieWinCondition;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
 import java.util.Random;
@@ -56,7 +57,7 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
         session.getTimeManager().registerNewTicker(new Ticker() {
             int ticksPassed = 0;
-            int currentInterval = 120;
+            int currentInterval = 12 * TimeManager.TICKS_PER_SECOND; // 12 seconds
 
             @Override
             public void onTick(int currentTick) {
@@ -69,7 +70,8 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
                 if (ticksPassed >= currentInterval) {
                     session.getArena().addSun(new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow()));
                     ticksPassed = 0;
-                    if (currentInterval > 40) currentInterval -= 12;
+                    if (currentInterval > 4 * TimeManager.TICKS_PER_SECOND)
+                        currentInterval -= TimeManager.TICKS_PER_SECOND;
                 }
             }
 
