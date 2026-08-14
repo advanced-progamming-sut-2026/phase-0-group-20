@@ -9,4 +9,6 @@ public enum PhysicalConstants {
     public static final float GRID_START_Y = 115f;
 
     public static final float SPEED_SCALE_RATIO = TILE_WIDTH / TILE_UNIT_LENGTH; // will be used instead of tile unit length
+    public static final int ROWS  = 5;
+    public static final int COLUMNS  = 9;
 }

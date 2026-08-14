@@ -27,5 +27,5 @@ public enum ZombieState {
     FLYING_IMP,
     LANDING,
     ENRAGING,
-    PUSH
+    PUSH,
 }
