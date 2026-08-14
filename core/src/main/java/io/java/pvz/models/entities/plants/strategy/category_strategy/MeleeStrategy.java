@@ -54,7 +54,7 @@ public class MeleeStrategy implements IPlantStrategy {
 
         for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
             if (z.isDead()) continue;
-            double dist = z.getX() / PhysicalConstants.TILE_UNIT_LENGTH - plantCol;
+            double dist = (z.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH  - plantCol;
 
             if (dist >= backwardRange && dist <= forwardRange) {
                 if (Math.abs(dist) < minDistance) {

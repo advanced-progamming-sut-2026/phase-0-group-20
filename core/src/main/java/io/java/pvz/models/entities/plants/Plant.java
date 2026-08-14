@@ -21,8 +21,10 @@ import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.models.game.minigame.BeghouledManager;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.AnimationCatalog;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -576,7 +578,7 @@ public class Plant implements IPlant, Ticker {
 
     public void triggerAction(String action) {
         this.currentAction = action;
-        this.actionTimer = (int) (AnimationCatalog.getPlantAnimation(this).getDuration(action) * 10);
+        this.actionTimer = (int) (AnimationCatalog.getPlantAnimation(this).getDuration(action) * TimeManager.TICKS_PER_SECOND);
     }
 
     public String getCurrentAction() {

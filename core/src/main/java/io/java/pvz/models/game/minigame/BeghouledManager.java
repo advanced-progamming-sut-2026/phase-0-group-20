@@ -69,18 +69,15 @@ public class BeghouledManager {
         }
     }
 
-    // متد جدید برای بررسی اینکه آیا اصلاً حرکتی روی صفحه وجود دارد یا خیر
     public boolean hasPossibleMatches(GameSession session) {
         int rows = session.getArena().getRows();
         int cols = session.getArena().getCols();
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols - 1; c++) {
-                // شبیه‌سازی جابه‌جایی افقی (با کاشی سمت راست)
                 if (c < cols - 2) {
                     if (simulateSwapAndCheck(session, r, c, r, c + 1)) return true;
                 }
-                // شبیه‌سازی جابه‌جایی عمودی (با کاشی پایین)
                 if (r < rows - 1) {
                     if (simulateSwapAndCheck(session, r, c, r + 1, c)) return true;
                 }
@@ -89,7 +86,6 @@ public class BeghouledManager {
         return false;
     }
 
-    // متد کمکی برای شبیه‌سازی یک حرکت بدون تاثیر روی UI
     private boolean simulateSwapAndCheck(GameSession session, int r1, int c1, int r2, int c2) {
         Tile t1 = session.getArena().getTile(r1, c1);
         Tile t2 = session.getArena().getTile(r2, c2);
@@ -102,10 +98,8 @@ public class BeghouledManager {
         if (p1 == null && p2 == null) return false;
         if (p1 != null && p2 != null && p1.getName().equals(p2.getName())) return false;
 
-        // ۱. جابه‌جایی موقت
         forceSwap(t1, t2, p1, p2);
 
-        // ۲. بررسی مچ شدن در این حالت فرضی
         int rows = session.getArena().getRows();
         int cols = session.getArena().getCols();
         boolean[][] matched = new boolean[rows][cols];
@@ -124,7 +118,6 @@ public class BeghouledManager {
             if (hasMatch) break;
         }
 
-        // ۳. برگرداندن جایگاه گیاهان به حالت اول
         forceSwap(t1, t2, p2, p1);
 
         return hasMatch;
@@ -137,14 +130,12 @@ public class BeghouledManager {
             handleCascades(session);
         }
 
-        // +++ اضافه شدن سیستم بررسی بن‌بست بعد از ثابت شدن صفحه +++
         if (!hasPossibleMatches(session)) {
             GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
                     .message("No moves left! Reshuffling board...")
                     .build());
 
-            // رفرش کردن کامل مپ و ایجاد گیاهان جدید
             ((BeghouledLevel) session.getCurrentMode()).fillBoardRandomly(session);
         }
     }
@@ -174,18 +165,17 @@ public class BeghouledManager {
     private boolean pullPlantFromAbove(GameSession session, int r, int c, Tile targetTile) {
         int rows = session.getArena().getRows();
 
-        // تغییر مهم: گشتن به دنبال گیاه در سطرهای بالایی (k از r + 1 شروع می‌شود تا بالای صفحه)
         for (int k = r + 1; k < rows; k++) {
             Tile upperTile = session.getArena().getTile(k, c);
 
             if (!upperTile.isCrater() && !upperTile.getPlants().isEmpty()) {
                 Plant fallingPlant = upperTile.getPlants().get(0);
 
-                upperTile.getPlants().clear(); // برداشتن گیاه از کاشی بالایی
+                upperTile.getPlants().clear();
 
-                targetTile.addPlant(fallingPlant); // اضافه کردن به کاشی پایینی
+                targetTile.addPlant(fallingPlant);
                 fallingPlant.setPosition(new Position(targetTile.getCol(), targetTile.getRow()));
-                fallingPlant.setPlacedTile(targetTile); // آپدیت کردن رفرنس کاشی برای جلوگیری از باگ‌های مموری
+                fallingPlant.setPlacedTile(targetTile);
 
                 return true;
             }

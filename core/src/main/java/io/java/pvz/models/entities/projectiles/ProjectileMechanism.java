@@ -13,7 +13,7 @@ import java.util.List;
 public class ProjectileMechanism {
 
 
-    public static void executeNewProjectile(Plant plant, boolean shootForward, boolean shootBackward, int delayTicks) {
+    public static void executeNewProjectile(Plant plant, boolean shootForward, boolean shootBackward, float delaySeconds) {
         int damage = plant.getDamage();
         ProjectileType type = getProjectileType(plant.getName());
         int plantRow = plant.getPlacedTile().getRow();
@@ -44,7 +44,7 @@ public class ProjectileMechanism {
                 isPiercingProjectile(type),
                 canPassObstacles(plant)
             );
-            p.setSpawnDelayTicks(delayTicks);
+            p.setSpawnDelayTicks(delaySeconds);
         }
     }
 
@@ -56,7 +56,7 @@ public class ProjectileMechanism {
         };
     }
 
-    public static void executeTargetedProjectile(Plant plant, Zombie target, int delayTicks) {
+    public static void executeTargetedProjectile(Plant plant, Zombie target, float delaySeconds) {
         int damage = plant.getDamage();
         ProjectileType type = getProjectileType(plant.getName());
         ProjectileEffect effect = getProjectileEffect(plant.getName());
@@ -79,7 +79,7 @@ public class ProjectileMechanism {
 
         projectile.setEffect(effect);
         projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
-        projectile.setSpawnDelayTicks(delayTicks);
+        projectile.setSpawnDelayTicks(delaySeconds);
     }
 
     public static ProjectileEffect getProjectileEffect(String name) {

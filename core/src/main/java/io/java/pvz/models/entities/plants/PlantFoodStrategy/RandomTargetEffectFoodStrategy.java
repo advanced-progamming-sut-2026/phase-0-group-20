@@ -50,7 +50,7 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
 
         for (Zombie target : targets) {
             if (isLobbedProjectile)
-                ProjectileMechanism.executeTargetedProjectile(plant, target, 1);
+                ProjectileMechanism.executeTargetedProjectile(plant, target, 0.1f);
             else
                 applyDirectEffect(target, plant);
         }

@@ -7,6 +7,7 @@ import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.SpecialLevel;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,6 @@ import java.util.Random;
 
 
 public class ConveyorBelt extends SpecialLevel {
-    private static final int TICKS_PER_SECOND = 10;
     private static final int BELT_SPEED_SECONDS = 6;
     private static final int BELT_CAPACITY = 10;
     private final List<Plant> belt = new ArrayList<>();
@@ -30,7 +30,7 @@ public class ConveyorBelt extends SpecialLevel {
 
         super.engineLoop(session, currentTick);
 
-        if (currentTick > 0 && currentTick % (BELT_SPEED_SECONDS * TICKS_PER_SECOND) == 0) {
+        if (currentTick > 0 && currentTick % (BELT_SPEED_SECONDS * TimeManager.TICKS_PER_SECOND) == 0) {
             if (belt.size() < BELT_CAPACITY) {
                 spawnPlantOnBelt();
             }

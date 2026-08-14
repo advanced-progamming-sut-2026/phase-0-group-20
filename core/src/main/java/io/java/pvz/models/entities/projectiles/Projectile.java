@@ -2,8 +2,11 @@ package io.java.pvz.models.entities.projectiles;
 
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.strategy.category_strategy.LobberStrategy;
+import io.java.pvz.models.entities.plants.strategy.category_strategy.ShootingStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.PhysicalConstants;
+import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
@@ -11,6 +14,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
 import java.util.Random;
@@ -124,6 +128,7 @@ public class Projectile implements Ticker {
             position.moveY(PhysicalConstants.TILE_HEIGHT / 2);
         else if (speedY < 0)
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 2);
+
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
@@ -186,9 +191,9 @@ public class Projectile implements Ticker {
         };
     }
 
-    public void setSpawnDelayTicks(int ticks) {
-        this.spawnDelayTicks = ticks;
-        this.isSpawned = (ticks <= 0);
+    public void setSpawnDelayTicks(float delaySeconds) {
+        this.spawnDelayTicks = (int) (delaySeconds * TimeManager.TICKS_PER_SECOND);
+        this.isSpawned = (spawnDelayTicks <= 0);
     }
 
     public boolean isSpawned() {
@@ -461,8 +466,8 @@ public class Projectile implements Ticker {
 
     public boolean isOutOfBounds() {
         if (bouncesLeft > 0) return false;
-        return position.getCol() < 0 || position.getCol() >= GameSession.getInstance().getArena().getCols()
-            || position.getRow() < 0 || position.getRow() >= GameSession.getInstance().getArena().getRows();
+        return position.getCol() < -1 || position.getCol() > GameSession.getInstance().getArena().getCols()
+            || position.getRow() < -1 || position.getRow() > GameSession.getInstance().getArena().getRows();
     }
 
     public ProjectileType getType() {

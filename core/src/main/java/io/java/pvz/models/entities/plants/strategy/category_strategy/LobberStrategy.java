@@ -5,6 +5,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.projectiles.*;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.game.GameSession;
@@ -49,7 +50,7 @@ public class LobberStrategy implements IPlantStrategy {
 
     private void executeNewLobbedProjectile(Plant context, Zombie targetZombie) {
         String name = context.getName();
-        int spawnX = context.getPlacedTile().getCol();
+        int spawnX = context.getPlacedTile().getCol() - 1;
         int spawnY = context.getPlacedTile().getRow();
 
         ProjectileType type = null;
@@ -100,7 +101,8 @@ public class LobberStrategy implements IPlantStrategy {
             );
             projectile.setArcTrajectory(targetZombie, ProjectileTuning.LOB_SPEED_TILES_PER_SEC,
                 ProjectileTuning.LOB_ARC_HEIGHT_TILES);
-            projectile.setSpawnDelayTicks(5);
+            projectile.setSpawnDelayTicks(0.5f);
+
             Projectile.spawnCustom(projectile);
             context.triggerAction("attack");
             notify("🥔 " + name + " lobbed a " + type.name() + "!");

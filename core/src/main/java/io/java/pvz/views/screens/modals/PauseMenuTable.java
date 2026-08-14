@@ -161,6 +161,10 @@ public class PauseMenuTable extends BorderedTable {
 
     @Override
     public boolean remove() {
+        GameSession session = GameSession.getInstance();
+        if (session != null)
+            session.resumeGame();
+
         if (blocker != null) {
             blocker.remove();
         }
