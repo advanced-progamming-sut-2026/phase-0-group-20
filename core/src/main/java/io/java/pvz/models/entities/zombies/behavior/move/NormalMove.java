@@ -11,6 +11,6 @@ public class NormalMove implements MoveBehavior {
 
     @Override
     public void execute() {
-        zombie.moveForward();
+        zombie.move();
     }
 }

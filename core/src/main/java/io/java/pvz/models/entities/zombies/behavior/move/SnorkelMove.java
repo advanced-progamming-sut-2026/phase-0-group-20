@@ -30,7 +30,7 @@ public class SnorkelMove implements MoveBehavior {
                 GameSession.notify("Snorkel Zombie is walking on land.");
             }
         }
-        zombie.moveForward();
+        zombie.move();
     }
 
     private boolean isWaterTile(Tile tile) {

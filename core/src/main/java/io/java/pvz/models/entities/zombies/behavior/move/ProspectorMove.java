@@ -28,9 +28,12 @@ public class ProspectorMove implements MoveBehavior {
         }
 
         if (context.isMovingReverse()) {
-            zombie.moveBackward();
-        } else {
-            zombie.moveForward();
+            float currentSpeed = zombie.getCurrentSpeed();
+            if (currentSpeed > 0)
+                zombie.setCurrentSpeed(-currentSpeed);
         }
+
+        zombie.move();
+
     }
 }

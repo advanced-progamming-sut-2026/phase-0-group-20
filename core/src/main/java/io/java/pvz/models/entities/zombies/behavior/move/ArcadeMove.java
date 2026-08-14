@@ -49,7 +49,7 @@ public class ArcadeMove implements MoveBehavior, GameEventListener {
             zombie.setState(ZombieState.PUSH);
 
             float oldX = zombie.getX();
-            zombie.moveForward();
+            zombie.move();
             float dx = zombie.getX() - oldX;
 
             arcadeMachine.push(dx);
@@ -60,7 +60,7 @@ public class ArcadeMove implements MoveBehavior, GameEventListener {
             if (zombie.getState() == ZombieState.PUSH) {
                 zombie.setState(ZombieState.WALKING);
             }
-            zombie.moveForward();
+            zombie.move();
         }
     }
 

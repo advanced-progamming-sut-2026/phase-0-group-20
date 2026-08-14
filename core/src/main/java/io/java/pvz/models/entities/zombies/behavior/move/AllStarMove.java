@@ -24,14 +24,14 @@ public class AllStarMove implements MoveBehavior {
                 speedIncreased = true;
             }
             zombie.setState(ZombieState.WALKING);
-            zombie.moveForward();
+            zombie.move();
         } else {
             if (speedIncreased) {
                 zombie.resetSpeed();
                 speedIncreased = false;
             }
             zombie.setState(ZombieState.WALKING);
-            zombie.moveForward();
+            zombie.move();
         }
     }
 }

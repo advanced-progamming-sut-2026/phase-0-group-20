@@ -32,7 +32,7 @@ public class DodoMove implements MoveBehavior {
         int targetCol = Math.min (8, currentCol - 1);
 
         if (targetCol < 0) {
-            zombie.moveForward();
+            zombie.move();
             return;
         }
 
@@ -65,7 +65,7 @@ public class DodoMove implements MoveBehavior {
             }
         }
 
-        zombie.moveForward();
+        zombie.move();
     }
 
     private boolean isFlyable(Plant plant) {

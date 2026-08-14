@@ -41,7 +41,7 @@ public class TroglobiteMove implements MoveBehavior {
             int oldCol = currentTargetIceBlock.getCol();
 
             float oldX = zombie.getX();
-            zombie.moveForward();
+            zombie.move();
             float dx = zombie.getX() - oldX;
 
             currentTargetIceBlock.push(dx);
@@ -65,7 +65,7 @@ public class TroglobiteMove implements MoveBehavior {
         } else {
             currentTargetIceBlock = null;
             zombie.setState(ZombieState.WALKING);
-            zombie.moveForward();
+            zombie.move();
         }
     }
 

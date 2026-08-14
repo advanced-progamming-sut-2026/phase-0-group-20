@@ -380,20 +380,16 @@ public class Zombie implements Ticker {
         return spawnEffect;
     }
 
-    public void moveForward() {
+    public void move() {
         if (this.isHypnotized()) {
-            this.position.moveX(this.currentSpeed);
-
+            if (this.currentSpeed < 0) currentSpeed *= -1;
             if (this.getCol() >= GameSession.getInstance().getArena().getCols()) {
                 this.setDead(true);
             }
-        } else {
-            this.position.moveX(-this.currentSpeed);
         }
-    }
 
-    public void moveBackward() {
-        this.position.moveX(this.currentSpeed);
+        this.position.moveX(-this.currentSpeed);
+
     }
 
     public Tile getTile() {

@@ -1,11 +1,8 @@
 package io.java.pvz.models.entities.zombies.behavior.move;
 
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.entities.zombies.ZombieFactory;
 import io.java.pvz.models.entities.zombies.ZombieState;
-import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.behavior.effect.GargantuarThrowImpEffect;
-import io.java.pvz.models.game.GameSession;
 
 public class GargantuarMove implements MoveBehavior {
     private final Zombie zombie;
@@ -25,6 +22,6 @@ public class GargantuarMove implements MoveBehavior {
             zombie.addEffect(new GargantuarThrowImpEffect(zombie));
             return;
         }
-        zombie.moveForward();
+        zombie.move();
     }
 }
