@@ -207,12 +207,13 @@ public class Arena {
     }
 
     public Tile getTile(int row, int col) {
-        if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return null;
+        row = Math.min(Math.max(row, 0), ROWS - 1);
+        col = Math.min(Math.max(col, 0), COLS - 1);
         return tiles[row][col];
     }
 
     public void changeTile(int row, int col, Tile tile) {
-        if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return;
+        if (row < 0 || row > ROWS || col < 0 || col > COLS) return;
         tiles[row][col] = tile;
         GameSession.getInstance().getTimeManager().registerNewTicker(tile);
     }

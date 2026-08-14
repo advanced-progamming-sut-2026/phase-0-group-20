@@ -84,11 +84,13 @@ public class Zombie implements Ticker {
         if (dead) return;
 
         List<ZombieEffect> snapshot = new ArrayList<>(activeEffects);
-        for (ZombieEffect effect : snapshot) {
-            effect.execute();
+        if (getCol() < 10) {
+            for (ZombieEffect effect : snapshot) {
+                effect.execute();
+            }
         }
 
-        if (attacking) {
+        if (attacking && getCol() < 10) {
             if (currentTick % 2 == 0) attackBehavior.execute();
         } else {
             moveBehavior.execute();

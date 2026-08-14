@@ -2,7 +2,6 @@ package io.java.pvz.models.game.adventure.levels;
 
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
-import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
@@ -21,6 +20,9 @@ import io.java.pvz.models.game.events.GameEventPayload;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static io.java.pvz.models.enums.PhysicalConstants.GRID_START_X;
+import static io.java.pvz.models.enums.PhysicalConstants.TILE_WIDTH;
 
 
 public abstract class Level implements GameMode {
@@ -133,7 +135,14 @@ public abstract class Level implements GameMode {
             if (shinyZombie()) {
                 newZombie.setShiny(true);
             }
-            newZombie.setCol(session.getArena().getCols() - 1); // better for the later arrangements
+
+            int waveCount = wave.getCurrentNumber();
+            int randomX = random.nextInt(100);
+
+            if (waveCount == 1)
+                randomX += (int) (TILE_WIDTH) / 2;
+
+            newZombie.setX(GRID_START_X + TILE_WIDTH * 9 + 300 + randomX * 6);
 
             wave.addZombie(newZombie);
             accumulatedCost += newZombie.getWaveCost();

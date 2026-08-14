@@ -23,7 +23,7 @@ public class ProspectorMove implements MoveBehavior {
 
             zombie.setCol(0);
 
-            zombie.setX(PhysicalConstants.TILE_UNIT_LENGTH / 2f);
+            zombie.setX(PhysicalConstants.GRID_START_X + PhysicalConstants.TILE_WIDTH / 2);
             return;
         }
 

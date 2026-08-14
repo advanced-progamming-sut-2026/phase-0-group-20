@@ -29,7 +29,7 @@ public class DodoMove implements MoveBehavior {
         }
 
         int currentCol = zombie.getCol();
-        int targetCol = currentCol - 1;
+        int targetCol = Math.min (8, currentCol - 1);
 
         if (targetCol < 0) {
             zombie.moveForward();
@@ -37,7 +37,7 @@ public class DodoMove implements MoveBehavior {
         }
 
         float tileLeftEdge = (currentCol * PhysicalConstants.TILE_WIDTH) + PhysicalConstants.GRID_START_X;
-        float jumpTriggerDistance = tileLeftEdge + 20f; // فاصله شروع پرش
+        float jumpTriggerDistance = tileLeftEdge + 20f;
 
         if (zombie.getX() <= jumpTriggerDistance) {
             GameSession session = GameSession.getInstance();
