@@ -53,7 +53,7 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
             case "kernel-pult":
                 for (Zombie zombie : allZombies)
                     if (!zombie.isDead())
-                        ProjectileMechanism.executeTargetedProjectile(plant, zombie, 5);
+                        ProjectileMechanism.executeTargetedProjectile(plant, zombie, 0.5f);
                 break;
 
             case "garlic":

@@ -8,7 +8,6 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.fields.modifiers.SeasonModifier;
-import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.game.adventure.Chapter;
 import io.java.pvz.models.game.adventure.SeasonType;
@@ -23,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GameSession {
-    private static final float PLANT_COOLDOWN = 50f;
+
     private static GameSession instance;
     // for mew points
     private static BonusLevel pendingBonusLevel = null;
@@ -227,7 +226,7 @@ public class GameSession {
     }
 
     public void setCooldownForPlant(Plant plant) {
-        plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
+        plantsCooldown.computeIfPresent(plant, (key, value) -> plant.getRecharge() * TimeManager.TICKS_PER_SECOND);
     }
 
     public void update(int timeAmount) {
@@ -380,9 +379,6 @@ public class GameSession {
         return false;
     }
 
-    public void setPlantCooldown(Plant plant) {
-        plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
-    }
 
     public HashMap<Plant, Float> getPlantsCooldown() {
         return plantsCooldown;

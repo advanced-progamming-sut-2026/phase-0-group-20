@@ -10,9 +10,10 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 
 public class IceBlock extends PushableObstacle implements Ticker {
-    public static final int MELT_RATE_PER_TICK = 6;
+    public static final int MELT_RATE_PER_TICK = 60 / TimeManager.TICKS_PER_SECOND;
     private Plant frozenPlant;
     private Zombie frozenZombie;
 

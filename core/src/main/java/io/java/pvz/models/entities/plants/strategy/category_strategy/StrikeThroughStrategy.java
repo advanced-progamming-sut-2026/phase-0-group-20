@@ -78,7 +78,7 @@ public class StrikeThroughStrategy implements IPlantStrategy {
                 false
             );
 
-            projectile.setSpawnDelayTicks(5);
+            projectile.setSpawnDelayTicks(0.5f);
             projectile.setPierceCount(pierceLimit);
             if (lifespan > 0) {
                 projectile.setLifespanTicks(lifespan);

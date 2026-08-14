@@ -1,5 +1,7 @@
 package io.java.pvz.models.enums;
 
+import io.java.pvz.models.timeManager.TimeManager;
+
 public enum PhysicalConstants {
     ;
     public static final int TILE_UNIT_LENGTH = 10;
@@ -8,5 +10,5 @@ public enum PhysicalConstants {
     public static final float GRID_START_X = 750;
     public static final float GRID_START_Y = 115f;
 
-    public static final float SPEED_SCALE_RATIO = TILE_WIDTH / TILE_UNIT_LENGTH; // will be used instead of tile unit length
+    public static final float SPEED_SCALE_RATIO = TILE_WIDTH / TimeManager.TICKS_PER_SECOND; // will be used instead of tile unit length
 }

@@ -100,7 +100,7 @@ public class LobberStrategy implements IPlantStrategy {
             );
             projectile.setArcTrajectory(targetZombie, ProjectileTuning.LOB_SPEED_TILES_PER_SEC,
                 ProjectileTuning.LOB_ARC_HEIGHT_TILES);
-            projectile.setSpawnDelayTicks(5);
+            projectile.setSpawnDelayTicks(0.5f);
             Projectile.spawnCustom(projectile);
             context.triggerAction("attack");
             notify("🥔 " + name + " lobbed a " + type.name() + "!");

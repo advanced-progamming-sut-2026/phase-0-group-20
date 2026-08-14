@@ -35,7 +35,7 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
             false,
             false);
 
-        projectile.setSpawnDelayTicks(1);
+        projectile.setSpawnDelayTicks(0.1f);
         if (currentRow >= session.getArena().getRows() - 1) directionCoeff = -1;
         else if (currentRow <= 0) directionCoeff = 1;
 

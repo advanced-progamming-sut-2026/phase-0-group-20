@@ -1,8 +1,11 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -20,6 +23,7 @@ import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.models.game.minigame.IZombieLevel;
+import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.*;
 import io.java.pvz.views.screens.modals.PauseMenuTable;
 import io.java.pvz.views.screens.modals.PlantSelectionModalTable;
@@ -257,14 +261,55 @@ public class GameHUD {
             .setShowLevel(false)
             .build();
 
+        Image cooldownOverlay = getCooldownEffect(plant, plantButton);
+
+        plantButton.addActor(cooldownOverlay);
+
         plantButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                Float cd = GameSession.getInstance().getPlantsCooldown().get(plant);
+                if (cd != null && cd > 0) {
+                    GameSession.notify(plant.getName() + " is recharging!");
+                    return;
+                }
+
                 inputHandler.onPlantCardClicked(plant, plantIcon);
             }
         });
 
         return plantButton;
+    }
+
+    private Image getCooldownEffect(Plant plant, PlantCardButton plantButton) {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(0f, 0f, 0f, 0.4f);
+        pixmap.fill();
+        Texture darkOverlayTex = new Texture(pixmap);
+        pixmap.dispose();
+
+        Image cooldownOverlay = new Image(darkOverlayTex) {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                if (GameSession.getInstance() == null) return;
+
+                float cd = GameSession.getInstance().getPlantsCooldown().get(plant);
+                if (cd > 0) {
+                    this.setVisible(true);
+
+                    float maxCd = plant.getRecharge() * TimeManager.TICKS_PER_SECOND;
+                    float percentage = cd / maxCd;
+
+                    this.setSize(plantButton.getWidth() * percentage, plantButton.getHeight());
+                    this.setPosition(0, 0);
+                } else {
+                    this.setVisible(false);
+                }
+            }
+        };
+        cooldownOverlay.setTouchable(Touchable.disabled);
+        return cooldownOverlay;
     }
 
     private PlantCardButton createBeghouledUpgradePacket(Plant plant, int cost) {

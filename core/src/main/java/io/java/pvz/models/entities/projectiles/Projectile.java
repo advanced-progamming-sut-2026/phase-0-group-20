@@ -2,6 +2,8 @@ package io.java.pvz.models.entities.projectiles;
 
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.strategy.category_strategy.LobberStrategy;
+import io.java.pvz.models.entities.plants.strategy.category_strategy.ShootingStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.ProjectileType;
@@ -11,6 +13,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
 import java.util.Random;
@@ -124,6 +127,10 @@ public class Projectile implements Ticker {
             position.moveY(PhysicalConstants.TILE_HEIGHT / 2);
         else if (speedY < 0)
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 2);
+
+        if (plant.getStrategies().contains(LobberStrategy.class))
+            position.moveX(-PhysicalConstants.TILE_WIDTH);
+
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
@@ -186,9 +193,9 @@ public class Projectile implements Ticker {
         };
     }
 
-    public void setSpawnDelayTicks(int ticks) {
-        this.spawnDelayTicks = ticks;
-        this.isSpawned = (ticks <= 0);
+    public void setSpawnDelayTicks(float delaySeconds) {
+        this.spawnDelayTicks = (int) (delaySeconds * TimeManager.TICKS_PER_SECOND);
+        this.isSpawned = (spawnDelayTicks <= 0);
     }
 
     public boolean isSpawned() {
