@@ -23,6 +23,7 @@ import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.models.game.minigame.IZombieLevel;
+import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.*;
 import io.java.pvz.views.screens.modals.PauseMenuTable;
@@ -87,7 +88,7 @@ public class GameHUD {
                 buildSeedBank();
             });
             plantSelectionModal.show(modalLayer, viewport);
-        } else {
+        } else if (GameSession.getInstance() != null && !(GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel)) {
             belt = new ConveyorBeltUI(skin, textures,
                 (plant) -> createSeedPacket(plant, false));
             belt.setSize(200f, 700);
@@ -165,12 +166,23 @@ public class GameHUD {
         mainLayer.addActor(shovelBtn);
 
         Stack pauseBtn = UiFactory.iconButton(textures, skin, Ids.UI.PAUSE, 90, 90, () -> {
+            if (GameSession.getInstance() != null) GameSession.getInstance().pauseGame();
             new PauseMenuTable(skin).show(modalLayer, viewport);
         });
         pauseBtn.setPosition(1730, 950);
         mainLayer.addActor(pauseBtn);
 
         Stack fastForwardBtn = UiFactory.iconButton(textures, skin, Ids.UI.FAST_FORWARD, 90, 90, () -> {
+            GameSession session = GameSession.getInstance();
+            if (session != null) {
+                if (session.getSpeedMultiplier() == 1.0f) {
+                    session.setSpeedMultiplier(2.0f);
+                    GameSession.notify("⏩ Fast Forward: 2X SPEED");
+                } else {
+                    session.setSpeedMultiplier(1.0f);
+                    GameSession.notify("▶️ Normal Speed");
+                }
+            }
         });
         fastForwardBtn.setPosition(1620, 950);
         mainLayer.addActor(fastForwardBtn);
@@ -238,7 +250,7 @@ public class GameHUD {
             Plant plant = App.findPlantByName(plantName);
             if (plant != null && level.isUpgradable(plant.getName())) {
                 int cost = level.getUpgradeCost(plant.getName());
-                PlantCardButton plantButton = createBeghouledUpgradePacket(plant,cost);
+                PlantCardButton plantButton = createBeghouledUpgradePacket(plant, cost);
                 seedBankTable.add(plantButton).size(180f, 85f).padBottom(10f).row();
             }
         }
@@ -261,10 +273,10 @@ public class GameHUD {
             .setShowLevel(false)
             .build();
 
-        Image cooldownOverlay = getCooldownEffect(plant, plantButton);
-
-        plantButton.addActor(cooldownOverlay);
-
+        if (belt == null) {
+            Image cooldownOverlay = getCooldownEffect(plant, plantButton);
+            plantButton.addActor(cooldownOverlay);
+        }
         plantButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

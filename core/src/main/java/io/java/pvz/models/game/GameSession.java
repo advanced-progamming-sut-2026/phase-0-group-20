@@ -51,6 +51,7 @@ public class GameSession {
     private ProgressListener progressListener;
     private int imitaterTargetId = -1;
 
+    private float speedMultiplier = 1.0f;
 
     private GameSession(Chapter chapter, Level currentLevel,
                         Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
@@ -435,4 +436,23 @@ public class GameSession {
         return state;
     }
 
+    public void setSpeedMultiplier(float speedMultiplier) {
+        this.speedMultiplier = speedMultiplier;
+    }
+
+    public float getSpeedMultiplier() {
+        return speedMultiplier;
+    }
+
+    public void pauseGame() {
+        if (this.state == GameState.RUNNING) {
+            this.state = GameState.PAUSED;
+        }
+    }
+
+    public void resumeGame() {
+        if (this.state == GameState.PAUSED) {
+            this.state = GameState.RUNNING;
+        }
+    }
 }

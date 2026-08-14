@@ -84,7 +84,7 @@ public class ShootingStrategy implements IPlantStrategy {
                 if (rowDiff == colDiff && rowDiff > 0) return true;
             } else {
                 int zRow = z.getRow();
-                int zCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
+                int zCol = (int) ((z.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH );
 
                 int rowDiff = zRow - plantRow;
                 int colDiff = zCol - plantCol;

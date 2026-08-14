@@ -99,7 +99,16 @@ public class GameFlowScreen extends BaseScreen {
     public void render(float delta) {
         clearScreen(0.1f, 0.1f, 0.1f, 1f);
         AssetLoader.getInstance().updateTextures();
-        gameHUD.update(delta);
+        GameSession session = GameSession.getInstance();
+        float simDelta = delta;
+
+        if (session != null) {
+            if (session.getState() == GameState.PAUSED)
+                simDelta = 0f;
+            else
+                simDelta = delta * session.getSpeedMultiplier();
+        }
+        gameHUD.update(simDelta);
         inputHandler.handleTileClick();
         inputHandler.sickAnimations();
         handleCameraMovement(delta);
@@ -113,7 +122,7 @@ public class GameFlowScreen extends BaseScreen {
 
         if(App.getSettings().isGrid())
             drawDebugLayout();
-        advanceSimulation(delta);
+        advanceSimulation(simDelta);
         syncDroppedPackets();
 
         if (stage != null) {
@@ -170,7 +179,7 @@ public class GameFlowScreen extends BaseScreen {
 
     private void advanceSimulation(float delta) {
         GameSession session = GameSession.getInstance();
-        if (session == null) return;
+        if (session == null || session.getState() == GameState.PAUSED) return;
 
         simulationAccumulator += delta;
         while (simulationAccumulator >= TICK_DURATION) {

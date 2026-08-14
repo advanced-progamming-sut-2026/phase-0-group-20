@@ -6,6 +6,7 @@ import io.java.pvz.models.entities.plants.strategy.category_strategy.LobberStrat
 import io.java.pvz.models.entities.plants.strategy.category_strategy.ShootingStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.PhysicalConstants;
+import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
@@ -127,9 +128,6 @@ public class Projectile implements Ticker {
             position.moveY(PhysicalConstants.TILE_HEIGHT / 2);
         else if (speedY < 0)
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 2);
-
-        if (plant.getStrategies().contains(LobberStrategy.class))
-            position.moveX(-PhysicalConstants.TILE_WIDTH);
 
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
@@ -468,8 +466,8 @@ public class Projectile implements Ticker {
 
     public boolean isOutOfBounds() {
         if (bouncesLeft > 0) return false;
-        return position.getCol() < 0 || position.getCol() >= GameSession.getInstance().getArena().getCols()
-            || position.getRow() < 0 || position.getRow() >= GameSession.getInstance().getArena().getRows();
+        return position.getCol() < -1 || position.getCol() > GameSession.getInstance().getArena().getCols()
+            || position.getRow() < -1 || position.getRow() > GameSession.getInstance().getArena().getRows();
     }
 
     public ProjectileType getType() {

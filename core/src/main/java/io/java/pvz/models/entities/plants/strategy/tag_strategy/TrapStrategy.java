@@ -88,7 +88,7 @@ public class TrapStrategy implements IPlantStrategy {
         for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
             if (z.isDead()) continue;
 
-            double zColFloat = z.getX() / PhysicalConstants.TILE_UNIT_LENGTH;
+            double zColFloat = (z.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH ;
             double dist = Math.abs(zColFloat - plantCol);
 
             if (dist <= detectionRadius) {
