@@ -238,7 +238,13 @@ public class GameSession {
             if (currentMode != null)
                 currentMode.engineLoop(this, timeManager.getCurrentTick());
 
-            SeasonModifier currentModifier = currentChapter.getModifier();
+            SeasonModifier currentModifier = null;
+            if (currentMode instanceof Level levelMode) {
+                currentModifier = levelMode.getSeasonModifier();
+            } else if (currentChapter != null) {
+                currentModifier = currentChapter.getModifier();
+            }
+
             if (currentModifier != null)
                 currentModifier.updateEnvironment(timeManager.getCurrentTick(), arena);
 

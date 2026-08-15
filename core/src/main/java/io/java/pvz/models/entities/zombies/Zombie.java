@@ -93,7 +93,7 @@ public class Zombie implements Ticker {
         }
 
         if (attacking && getCol() < 10) {
-            if (currentTick % (TimeManager.TICKS_PER_SECOND / 5) == 0) attackBehavior.execute();
+            if (currentTick % 2 == 0) attackBehavior.execute();
         } else {
             moveBehavior.execute();
         }
