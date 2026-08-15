@@ -243,7 +243,7 @@ public class Zombie implements Ticker {
         return info.toString().trim();
     }
 
-    private void updateTile() {
+    protected void updateTile() {
         int column = this.getCol();
         int row = this.getRow();
         this.tile = GameSession.getInstance().getArena().getTile(row, column);
