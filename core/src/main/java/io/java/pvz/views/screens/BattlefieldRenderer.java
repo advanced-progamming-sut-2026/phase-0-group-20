@@ -598,6 +598,7 @@ public class BattlefieldRenderer implements GameEventListener {
         plantOctopusOverlays.clear();
         plantSheepOverlays.clear();
         zombieActorTypes.clear();
+        obstacleActors.clear();
 
         for (Image actor : brainActors.values()) actor.remove();
         brainActors.clear();
