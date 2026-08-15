@@ -11,6 +11,7 @@ import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.plants.strategy.ImitateStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
+import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
 import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
@@ -99,14 +100,18 @@ public class GameFlowController {
         List<Zombie> activeZombies = arena.getActiveZombies();
 
         for (Zombie zombie : activeZombies) {
-            zombie.takeDamage(10000);
-            GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
-                .zombie(zombie)
-                .coordinate(zombie.getRow(), zombie.getCol())
-                .arena(arena)
-                .seasonType(GameSession.getInstance().getCurrentChapter().getSeasonType())
-                .build();
-            GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
+            if (zombie.getCol() >= 0 && zombie.getCol() < arena.getCols()) {
+
+                zombie.addEffect(new FireEffect(zombie, 100000));
+
+                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)
+                    .zombie(zombie)
+                    .coordinate(zombie.getRow(), zombie.getCol())
+                    .arena(arena)
+                    .seasonType(GameSession.getInstance().getCurrentChapter().getSeasonType())
+                    .build();
+                GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
+            }
         }
 
         return new Result(true, "Nuked the whole arena!! Dast Khosh Donald.J.Trump.");

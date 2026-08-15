@@ -28,7 +28,7 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
-import io.java.pvz.models.entities.zombies.behavior.effect.RageEffect;
+import io.java.pvz.models.entities.zombies.behavior.effect.*;
 import io.java.pvz.models.entities.zombies.behavior.move.BarrelRollerMove;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.Brain;
@@ -598,6 +598,7 @@ public class BattlefieldRenderer implements GameEventListener {
         plantOctopusOverlays.clear();
         plantSheepOverlays.clear();
         zombieActorTypes.clear();
+        obstacleActors.clear();
 
         for (Image actor : brainActors.values()) actor.remove();
         brainActors.clear();
@@ -824,44 +825,50 @@ public class BattlefieldRenderer implements GameEventListener {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
         if (anim == null) return CLIP_IDLE;
 
+        String action = plant.getCurrentAction();
+        if (action != null && anim.hasClip(action)) {
+            return action;
+        }
+
         if (plant.isBoosted()) {
-            if (anim.hasClip("plantfood_idle")) return "plantfood_idle";
-            if (anim.hasClip("plantfood_stage1")) return "plantfood_stage1";
-            if (anim.hasClip("plantfood_on")) return "plantfood_on";
+            if (anim.hasClip("plantfood_loop")) return "plantfood_loop";
             if (anim.hasClip("plantfood")) return "plantfood";
-            if (anim.hasClip("plantfood_start")) return "plantfood_start";
-
+            if (anim.hasClip("plantfood_on")) return "plantfood_on";
         }
 
-        TrapStrategy trap =
-            plant.getStrategy(TrapStrategy.class);
-        if (trap != null && !trap.isArmed()) {
-            if (anim.hasClip("plant_idle")) return "plant_idle";
-            if (anim.hasClip("plant")) return "plant";
-        }
-
-        DigestionStrategy digestion =
-            plant.getStrategy(DigestionStrategy.class);
+        DigestionStrategy digestion = plant.getStrategy(DigestionStrategy.class);
         if (digestion != null && digestion.isDigesting()) {
             if (anim.hasClip("special_idle")) return "special_idle";
             if (anim.hasClip("special")) return "special";
         }
 
-        SunProductionStrategy sunProductionStrategy = plant.getStrategy(SunProductionStrategy.class);
-        if (sunProductionStrategy != null && plant.getCurrentAction() != null && plant.getCurrentAction().equalsIgnoreCase("special")) {
-            if (anim.hasClip("special_stage2")) return "special_stage2";
-            if (anim.hasClip("special_idle")) return "special_idle";
-            if (anim.hasClip("special")) return "special";
+        TrapStrategy trap = plant.getStrategy(TrapStrategy.class);
+        if (trap != null && !trap.isArmed()) {
+            if (anim.hasClip("plant_idle")) return "plant_idle";
+            if (anim.hasClip("plant")) return "plant";
         }
 
-        String action = plant.getCurrentAction();
-        if (action != null && anim.hasClip(action))
-            return action;
+        if (plant.isAsleep() && anim.hasClip("sleep")) return "sleep";
 
+        int size = plant.getSize();
+        if (size > 1) {
+            String stageIdle = "idle_stage" + size;
+            String altStageIdle = "idle" + size;
+            if (anim.hasClip(stageIdle)) return stageIdle;
+            if (anim.hasClip(altStageIdle)) return altStageIdle;
+        }
 
-        if (plant.isAsleep() && anim.hasClip("sleep"))
-            return "sleep";
-
+        float hpRatio = (float) plant.getCurrentHp() / plant.getMaxHp();
+        if (hpRatio <= 0.33f) {
+            if (anim.hasClip("damage3")) return "damage3";
+            if (anim.hasClip("idle_damage3")) return "idle_damage3";
+            if (anim.hasClip("damage2")) return "damage2";
+        } else if (hpRatio <= 0.66f) {
+            if (anim.hasClip("damage2")) return "damage2";
+            if (anim.hasClip("idle_damage2")) return "idle_damage2";
+            if (anim.hasClip("damage")) return "damage";
+            if (anim.hasClip("idle_damage")) return "idle_damage";
+        }
 
         if (anim.hasClip("idle")) return "idle";
         if (anim.hasClip("loop")) return "loop";
@@ -898,17 +905,25 @@ public class BattlefieldRenderer implements GameEventListener {
             PamAnimatedActor actor = entry.getValue();
 
             if (!stillAlive.contains(zombie)) {
-                String deathClip = resolveZombieClip(zombie);
-                actor.setClip(deathClip);
 
-                float lingerTime = DESPAWN_LINGER_SECONDS;
-                AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
+                if (zombie.isBurnedToAsh()) {
+                    spawnAshEffect(zombie);
+                    actor.remove();
+                }
+                else {
+                    String deathClip = resolveZombieClip(zombie);
+                    actor.setClip(deathClip);
 
-                if (anim != null && anim.hasClip(deathClip)) {
-                    lingerTime = anim.getDuration(deathClip);
+                    float lingerTime = DESPAWN_LINGER_SECONDS;
+                    AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
+
+                    if (anim != null && anim.hasClip(deathClip)) {
+                        lingerTime = anim.getDuration(deathClip);
+                    }
+
+                    despawn(actor, lingerTime - 0.5f);
                 }
 
-                despawn(actor, lingerTime - 0.5f);
                 zombieActorTypes.remove(zombie);
                 it.remove();
             }
@@ -940,6 +955,38 @@ public class BattlefieldRenderer implements GameEventListener {
     private void updateZombieActor(Zombie zombie, PamAnimatedActor actor) {
         actor.setClip(resolveZombieClip(zombie));
         centerOnPoint(actor, zombie.getPosition().getX(), zombie.getPosition().getY() + actor.getHeight() / 2f + 30);
+
+        if (zombie.isHypnotized()) {
+            actor.setScaleX(-1f);
+        } else {
+            actor.setScaleX(1f);
+        }
+
+        if (zombie.isHypnotized()) {
+            actor.setColor(1f, 0.4f, 1f, 1f);
+        } else {
+            boolean isPoisoned = false;
+            boolean isChilled = false;
+            boolean isFrozen = false;
+
+            if (zombie.getActiveEffects() != null) {
+                for (ZombieEffect effect : zombie.getActiveEffects()) {
+                    if (effect instanceof PoisonEffect) isPoisoned = true;
+                    if (effect instanceof ChillEffect) isChilled = true;
+                    if (effect instanceof FreezeEffect) isFrozen = true;
+                }
+            }
+
+            if (isFrozen) {
+                actor.setColor(0.3f, 0.6f, 1f, 1f);
+            } else if (isChilled) {
+                actor.setColor(0.7f, 0.9f, 1f, 1f);
+            } else if (isPoisoned) {
+                actor.setColor(0.6f, 1f, 0.2f, 1f);
+            } else {
+                actor.setColor(1f, 1f, 1f, 1f);
+            }
+        }
 
         if (!zombie.isDead()) {
             updateZombieArmorVisuals(zombie, actor);
@@ -1414,5 +1461,41 @@ public class BattlefieldRenderer implements GameEventListener {
             return moveBehavior.getBarrel() != null && !moveBehavior.getBarrel().isDestroyed();
         }
         return false;
+    }
+
+    private void spawnAshEffect(Zombie zombie) {
+        String pamPath = resolveAshPamPath(zombie.getType());
+
+        PamAnimatedActor ashActor = PamAnimatedActor.createEffectAnimated(pamPath, "animation");
+
+        ashActor.setSize(TILE_WIDTH, TILE_HEIGHT);
+        ashActor.setOrigin(Align.center);
+
+        float x = zombie.getPosition().getX() - ashActor.getWidth() / 2f;
+        float y = zombie.getPosition().getY() + 45f;
+
+        ashActor.setPosition(x, y);
+
+        if (zombie.getCurrentSpeed() < 0 || zombie.isHypnotized()) {
+            ashActor.setScaleX(-1f);
+        }
+
+        effectLayer.addActor(ashActor);
+
+        ashActor.addAction(Actions.sequence(
+            Actions.delay(2.5f),
+            Actions.fadeOut(0.5f),
+            Actions.removeActor()
+        ));
+    }
+
+    private String resolveAshPamPath(ZombieType type) {
+        return switch (type) {
+            case GARGANTUAR -> "768/INITIAL/EFFECTS/ZOMBIE_GARGANTUAR_ASH/ZOMBIE_GARGANTUAR_ASH.PAM";
+            case IMP, IMP_DRAGON -> "768/INITIAL/EFFECTS/ZOMBIE_IMP_ASH/ZOMBIE_IMP_ASH.PAM";
+            case KING, ALL_STAR -> "768/INITIAL/EFFECTS/ZOMBIE_BIG_ASH/ZOMBIE_BIG_ASH.PAM";
+            case JANE -> "768/FULL/EFFECTS/ZOMBIE_LOSTCITY_JANE_ASH/ZOMBIE_LOSTCITY_JANE_ASH.PAM";
+            default -> "768/INITIAL/EFFECTS/ZOMBIE_ASH/ZOMBIE_ASH.PAM";
+        };
     }
 }

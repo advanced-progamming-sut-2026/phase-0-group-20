@@ -42,6 +42,9 @@ public class ShootingStrategy implements IPlantStrategy {
                 burstCooldownTicks--;
             } else {
                 executeNewProjectile(context, currentShootForward, currentShootBackward, 0.5f);
+
+                playShootingAnimation(context);
+
                 pendingShots--;
                 burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
             }
@@ -130,7 +133,7 @@ public class ShootingStrategy implements IPlantStrategy {
             return;
         }
 
-        context.triggerAction("attack");
+        playShootingAnimation(context);
         notify(context.getName() + " fired a projectile!");
 
         executeNewProjectile(context, shootForward, shootBackward, 0.5f);
@@ -148,6 +151,16 @@ public class ShootingStrategy implements IPlantStrategy {
 
         lastShotTick = currentTick;
     }
+
+    private void playShootingAnimation(Plant context) {
+        if (context.getName().equalsIgnoreCase("Pea Pod")) {
+            int stack = context.getStackCount();
+            context.triggerAction(stack <= 1 ? "attack" : "attack " + stack);
+        } else {
+            context.triggerAction("attack");
+        }
+    }
+
     public void increaseRange(int range) {
         this.rangeExtension += range;
     }

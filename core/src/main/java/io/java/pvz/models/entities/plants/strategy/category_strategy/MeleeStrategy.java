@@ -8,11 +8,13 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
+import java.util.Random;
 
 public class MeleeStrategy implements IPlantStrategy {
     private int lastAttackTick = 0;
     private int aliveTicks = 0;
     private float rangeExtension = 0;
+    private final Random rand = new Random();
 
     private int attackCount = 0;
 
@@ -68,7 +70,11 @@ public class MeleeStrategy implements IPlantStrategy {
             int damage = name.equals("Wasabi Whip") ? Math.max(baseDamage, 40) : baseDamage;
 
             target.takeDamage(damage);
-            context.triggerAction("attack");
+
+            int r = rand.nextInt(5) + 1;
+            String animName = r == 1 ? "attack" : "attack" + r;
+            context.triggerAction(animName);
+
             if (target.isDead()) {
                 context.onZombieDeath(target);
             }

@@ -121,9 +121,9 @@ public final class UiFactory {
         String name = plant.getName();
         return switch (name) {
             case "Rotobaga" -> "XSHOT";
-            case "Goo Peashooter" -> "POISONPEASHOOTER";
+            case "Goo Peashooter" -> "GOOPEASHOOTER";
             case "Mega Gatling Pea" -> "MEGAGATLING";
-            case "Cherry Bomb" -> "CHERRY_BOMB";
+            case "Cherry Bomb" -> "CHERRYBOMB";
             case "Iceberg Lettuce" -> "ICEBURG";
             case "Pierce-mint" -> "SPEARMINT";
             default -> name.replace("-", "").replace(" ", "");
