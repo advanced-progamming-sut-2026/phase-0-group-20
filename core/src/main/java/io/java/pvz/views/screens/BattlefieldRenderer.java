@@ -150,6 +150,8 @@ public class BattlefieldRenderer implements GameEventListener {
                 spawnArcadeBreakEffect(payload.getPixelX(), payload.getPixelY());
             } else if ("PIANO_BREAK".equals(payload.getMessage())) {
                 spawnPianoBreakEffect(payload.getPixelX(), payload.getPixelY());
+            } else if ("FREEZING_WIND".equals(payload.getMessage())) {
+                spawnWindEffect(payload.getRow());
             }
         } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
             String msg = String.valueOf(payload.getMessage());
@@ -1117,11 +1119,11 @@ public class BattlefieldRenderer implements GameEventListener {
     private PamAnimatedActor spawnSun(Sun sun) {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getSunAnimation(sun.getType());
 
-        String pamPath1 = anim != null ? anim.path : "768/FULL/EFFECTS/SUN/SUN.PAM";
-        String pamPath2 = anim != null ? anim.path.replace("FULL", "INITIAL") : "768/INITIAL/EFFECTS/SUN/SUN.PAM";
+        String pamPath2 = anim != null ? anim.path.replace("FULL", "INITIAL") :
+            "768/INITIAL/EFFECTS/SUN/SUN.PAM";
 
         PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
-            "animation", pamPath1, pamPath2);
+            "animation", pamPath2);
 
         actor.setSize(80, 80);
         actor.setOrigin(Align.center);
@@ -1414,5 +1416,26 @@ public class BattlefieldRenderer implements GameEventListener {
             return moveBehavior.getBarrel() != null && !moveBehavior.getBarrel().isDestroyed();
         }
         return false;
+    }
+
+    private void spawnWindEffect(int row) {
+        float y = GRID_START_Y + (row + 1 )* TILE_HEIGHT + TILE_HEIGHT / 2f;
+
+        String pamPath = "768/FULL/EFFECTS/FROSTBITE_CHILL_WIND/FROSTBITE_CHILL_WIND.PAM";
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "animation", pamPath);
+
+        actor.setSize(TILE_WIDTH * 9, TILE_HEIGHT);
+        actor.setOrigin(Align.center);
+
+        float startX = GRID_START_X + (9 * TILE_WIDTH) + 200f;
+        float targetX = GRID_START_X - (9 * TILE_WIDTH) - 200f;
+
+        actor.setPosition(startX, y - (actor.getHeight() / 2f));
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.moveTo(targetX, actor.getY(), 2f, Interpolation.linear),
+            Actions.removeActor()
+        ));
     }
 }

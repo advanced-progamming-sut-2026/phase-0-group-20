@@ -2,26 +2,32 @@ package io.java.pvz.models.fields.modifiers;
 
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
+import io.java.pvz.models.entities.obstacle.IceBlock;
+import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
 import io.java.pvz.models.enums.plants.PlantTag;
-import io.java.pvz.models.entities.obstacle.IceBlock;
-import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.NormalTile;
 import io.java.pvz.models.fields.tiles.SlipperyTile;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.timeManager.TimeManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class IceCaveModifier implements SeasonModifier {
 
-    private static final double FREEZING_WIND_CHANCE = 0.4;
+    private static final double FREEZING_WIND_CHANCE = 1;
     private static final double SLIPPERY_STAGE_CHANCE = 0.5;
-    private static final int MAX_FROSTBITE_LEVEL = 3;
 
     //for chance of slippery tile:
     private static final float DIFFICULTY_MULTIPLIER = 0.2f;
@@ -29,7 +35,9 @@ public class IceCaveModifier implements SeasonModifier {
     private static final float LEVEL_SCALING_FACTOR = 0.1f;
 
     private final Random rand = new Random();
-    private final Map<Plant, Integer> frostbiteLevels = new HashMap<>();
+
+    private int windTimer = -1;
+    private final List<Integer> upcomingWindRows = new ArrayList<>();
 
     @Override
     public void onCurrentLevelStart() {
@@ -42,12 +50,25 @@ public class IceCaveModifier implements SeasonModifier {
 
     @Override
     public void onWaveStart(Wave wave) {
-        Arena arena = GameSession.getInstance().getArena();
+        double currentWindChance = Math.min(1, FREEZING_WIND_CHANCE + 0.05 * getCurrentLevelNumber());
 
-        double currentWindChance = Math.min(0.8, FREEZING_WIND_CHANCE + 0.05 * getCurrentLevelNumber());
+        if (rand.nextDouble() < currentWindChance) {
+            Arena arena = GameSession.getInstance().getArena();
+            int rows = arena.getRows();
+            int numberOfLanes = rand.nextInt(2) + 1 + getCurrentLevelNumber() / 2;
 
-        if (rand.nextDouble() < currentWindChance)
-            blowFreezingWind(arena);
+            upcomingWindRows.clear();
+            while (upcomingWindRows.size() < numberOfLanes) {
+                int lane = rand.nextInt(rows);
+                if (!upcomingWindRows.contains(lane)) upcomingWindRows.add(lane);
+            }
+
+            windTimer = 5 * TimeManager.TICKS_PER_SECOND;
+
+            for (int row : upcomingWindRows) {
+                System.out.println("A freezing wind is approaching lane " + (row + 1) + "!");
+            }
+        }
     }
 
     @Override
@@ -61,16 +82,21 @@ public class IceCaveModifier implements SeasonModifier {
 
         for (Zombie zombie : arena.getActiveZombies()) {
             boolean frozen = zombie.getActiveEffects().stream()
-                    .anyMatch(zombieEffect -> zombieEffect instanceof FreezeEffect);
+                .anyMatch(zombieEffect -> zombieEffect instanceof FreezeEffect);
             if (frozen) zombie.removeFreezeEffect();
         }
 
-        frostbiteLevels.keySet().removeIf(plant -> plant.getCurrentHp() <= 0);
+        if (windTimer > 0) {
+            windTimer--;
+            if (windTimer == 0) {
+                blowFreezingWind(arena);
+            }
+        }
     }
 
     private void setupSlipperyTiles(Arena arena) {
         float chance = (float) (getCurrentLevelNumber() * LEVEL_SCALING_FACTOR *
-                (BASE_SLIPPERY_SCALING + DIFFICULTY_MULTIPLIER * App.getSettings().getDifficulty()));
+            (BASE_SLIPPERY_SCALING + DIFFICULTY_MULTIPLIER * App.getSettings().getDifficulty()));
         if (rand.nextDouble() >= SLIPPERY_STAGE_CHANCE + chance)
             return;
 
@@ -81,9 +107,9 @@ public class IceCaveModifier implements SeasonModifier {
         int placed = 0;
 
         long remainTiles = Arrays.stream(arena.getTiles())
-                .flatMap(Arrays::stream)
-                .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
-                .count();
+            .flatMap(Arrays::stream)
+            .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
+            .count();
 
         while (placed < numberOfFTiles && remainTiles > 0) {
             int randomRow = rand.nextInt(rows);
@@ -94,7 +120,7 @@ public class IceCaveModifier implements SeasonModifier {
                 SlipperyTile.SlideDirection direction = pickDirection(randomRow, rows);
                 arena.changeTile(randomRow, randomCol, new SlipperyTile(randomRow, randomCol, direction));
                 notify("An ice floe sliding " + direction
-                        + " covers row " + (randomRow + 1) + ", col " + (randomCol + 1) + ".");
+                    + " covers row " + (randomRow + 1) + ", col " + (randomCol + 1) + ".");
                 placed++;
                 remainTiles--;
             }
@@ -108,36 +134,28 @@ public class IceCaveModifier implements SeasonModifier {
     }
 
     private void blowFreezingWind(Arena arena) {
-        int rows = arena.getRows();
-        int numberOfLanes = rand.nextInt(2) + 1 + getCurrentLevelNumber() / 2;
+        for (int row : upcomingWindRows) {
+            System.out.println("Freezing wind sweeps through lane " + (row + 1) + "!");
 
-        List<Integer> frozenRow = new ArrayList<>();
-        while (frozenRow.size() < numberOfLanes) {
-            int lane = rand.nextInt(rows);
-            if (!frozenRow.contains(lane)) frozenRow.add(lane);
-        }
+            GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+                new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                    .message("FREEZING_WIND")
+                    .coordinate(row, 0)
+                    .build());
 
-        for (int row : frozenRow) {
-            notify("A freezing wind sweeps through lane " + (row + 1) + "!");
             for (Plant plant : new ArrayList<>(arena.getActivePlants())) {
                 Tile tile = plant.getPlacedTile();
                 if (tile == null || tile.getRow() != row) continue;
                 if (plant.getTags().contains(PlantTag.FIRE)) continue;
 
-                applyFrostbite(plant, arena);
+                plant.receiveIceHit();
+
+                if (plant.isFrozen() && tile instanceof IceHolder iceHolder && !iceHolder.hasIceBlock()) {
+                    freezePlant(plant, arena);
+                }
             }
         }
-    }
-
-    private void applyFrostbite(Plant plant, Arena arena) {
-        int level = frostbiteLevels.merge(plant, 1, Integer::sum);
-
-        if (level >= MAX_FROSTBITE_LEVEL) {
-            frostbiteLevels.remove(plant);
-            freezePlant(plant, arena);
-        } else
-            notify(plant.getName() + " is at frostbite level " + level + "/" + MAX_FROSTBITE_LEVEL + ".");
-
+        upcomingWindRows.clear();
     }
 
     private void freezePlant(Plant plant, Arena arena) {
@@ -152,12 +170,19 @@ public class IceCaveModifier implements SeasonModifier {
         arena.getActivePlants().remove(plant);
         tile.getPlants().remove(plant);
 
+        GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+            new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                .message("REMOVE_ICE_OVERLAY")
+                .plant(plant)
+                .build());
+
         if (tile instanceof IceHolder) {
             IceBlock iceBlock = new IceBlock(plant, row, col);
             ((IceHolder) tile).setIceBlock(iceBlock);
             session.getTimeManager().registerNewTicker(iceBlock);
-            notify(plant.getName() + " is completely frozen inside an IceBlock at row " +
-                    (row + 1) + ", col " + (col + 1) + "!");
+            arena.getActiveObstacles().add(iceBlock);
+            System.out.println(plant.getName() + " is completely frozen inside an IceBlock at row " +
+                (row + 1) + ", col " + (col + 1) + "!");
         }
     }
 
@@ -187,7 +212,7 @@ public class IceCaveModifier implements SeasonModifier {
                         Plant templatePlant = plants.get(rand.nextInt(plants.size()));
                         Plant freshPlant = InGameEntityGenerator.getPlantForGame(templatePlant, false);
                         iceBlock = new IceBlock(freshPlant, randomRow, randomCol);
-                        notify("A pre-frozen Plant was placed at row " + (randomRow + 1) + ", col " + (randomCol + 1));
+                        System.out.println("A pre-frozen Plant was placed at row " + (randomRow + 1) + ", col " + (randomCol + 1));
                     }
                 } else {
                     List<Zombie> zombies = GameSession.getInstance().getChosenZombies();
@@ -196,7 +221,7 @@ public class IceCaveModifier implements SeasonModifier {
                         Zombie newZombie = InGameEntityGenerator.getZombieForGame(randomZombie.getType(), randomRow);
                         newZombie.setCol(randomCol);
                         iceBlock = new IceBlock(newZombie, randomRow, randomCol);
-                        notify("A pre-frozen Zombie was placed at row " + (randomRow + 1) + ", col " + (randomCol + 1));
+                        System.out.println("A pre-frozen Zombie was placed at row " + (randomRow + 1) + ", col " + (randomCol + 1));
                     }
                 }
 
