@@ -10,6 +10,7 @@ import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalWinCondition;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,6 @@ import java.util.Random;
 
 public class BowlingLevel extends ConveyorBelt implements IMinigame, RedLineCapable {
 
-    private static final int TICKS_PER_SECOND = 10;
     private static final int BELT_SPEED_SECONDS = 8;
     private static final int BELT_CAPACITY = 10;
     private static final int RED_LINE_COL = 3;
@@ -38,7 +38,7 @@ public class BowlingLevel extends ConveyorBelt implements IMinigame, RedLineCapa
     @Override
     public void engineLoop(GameSession session, int currentTick) {
         super.engineLoop(session, currentTick);
-        if (currentTick > 0 && currentTick % (BELT_SPEED_SECONDS * TICKS_PER_SECOND) == 0) {
+        if (currentTick > 0 && currentTick % (BELT_SPEED_SECONDS * TimeManager.TICKS_PER_SECOND) == 0) {
             if (belt.size() < BELT_CAPACITY) {
                 spawnPlantOnBelt();
             }

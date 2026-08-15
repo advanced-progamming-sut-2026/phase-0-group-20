@@ -126,13 +126,12 @@ public class SunAbsorber extends Effect {
     }
 
     private boolean canStealSomething() {
-        boolean hasSunInBank = GameSession.getInstance().getCurrentSun() > 0;
         for (Sun s : GameSession.getInstance().getArena().getActiveSuns()) {
             if (!s.isCollected() && !s.isBeingAbsorbed()) {
                 return true;
             }
         }
-        return hasSunInBank;
+        return false;
     }
 
     private void lockOnTargetSun() {

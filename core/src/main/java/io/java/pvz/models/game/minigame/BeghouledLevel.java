@@ -14,6 +14,7 @@ import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
 import io.java.pvz.models.game.minigame.minigameCondition.BeghouledWinCondition;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,7 +71,8 @@ public class BeghouledLevel extends Level implements IMinigame {
             spawnSingleZombie(session);
             tickCounter = 0;
 
-            if (currentSpawnInterval > 15) currentSpawnInterval--;
+            if (currentSpawnInterval > 1.5 * TimeManager.TICKS_PER_SECOND)
+                currentSpawnInterval -= TimeManager.TICKS_PER_SECOND / 10;
         }
     }
 

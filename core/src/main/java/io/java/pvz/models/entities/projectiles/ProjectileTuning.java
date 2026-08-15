@@ -12,7 +12,7 @@ public final class ProjectileTuning {
 
     public static final float FUME_SPEED_TILES_PER_SEC = 5.0f;
 
-    public static final float LOB_SPEED_TILES_PER_SEC = 4.0f;
+    public static final float LOB_SPEED_TILES_PER_SEC = 6.0f;
 
     public static final float LOB_ARC_HEIGHT_TILES = 2.2f;
 

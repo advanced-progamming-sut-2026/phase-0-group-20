@@ -108,7 +108,7 @@ public class Arena {
     public List<Zombie> zombieInRow(int row) {
         List<Zombie> zombies = new ArrayList<>();
         for (Zombie z : activeZombies) {
-            if (z.getRow() == row) {
+            if (z.getRow() == row && z.getCol() < 10) {
                 zombies.add(z);
             }
         }
@@ -254,7 +254,7 @@ public class Arena {
 
     public boolean isSunOnTile(Tile tile) {
         for (Sun sun : activeSuns) {
-            if(sun.getRow() == tile.getRow() && sun.getCol() == tile.getCol())
+            if (sun.getRow() == tile.getRow() && sun.getCol() == tile.getCol())
                 return true;
         }
         return false;

@@ -11,14 +11,6 @@ import io.java.pvz.models.timeManager.TimeManager;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Trap Strategy:
- * The plant remains inactive (unarmed) for a specific duration after planting.
- * Once armed, it monitors its tile (or adjacent ones) and triggers a deadly effect
- * when an enemy steps on it.
- */
-
 public class TrapStrategy implements IPlantStrategy {
     private int startTick = -1;
     private boolean isArmed = false;
@@ -45,11 +37,11 @@ public class TrapStrategy implements IPlantStrategy {
         List<Zombie> targets = findTargets(name, plantRow, plantCol);
 
         if (!targets.isEmpty()) {
-            notify("🚨 " + name + " TRAP TRIGGERED!");
+            notify("💥 " + name + " TRAP TRIGGERED!");
             int baseDamage = context.getDamage() > 0 ? context.getDamage() : 1800;
 
             boolean shouldDie = executeTrapEffect(
-                    name, context, targets, baseDamage, currentTick, plantCol, plantRow
+                name, context, targets, baseDamage, currentTick, plantCol, plantRow
             );
 
             if (shouldDie) {
@@ -72,7 +64,10 @@ public class TrapStrategy implements IPlantStrategy {
         if (!isArmed) {
             if ((currentTick - startTick) >= armingTimeTicks) {
                 isArmed = true;
-                notify("💣 " + name + " is now armed and ready!");
+                if (name.contains("Potato Mine")) {
+                    context.triggerAction("recover");
+                }
+                notify("🟢 " + name + " is now armed and ready!");
             } else {
                 return false;
             }
@@ -88,7 +83,7 @@ public class TrapStrategy implements IPlantStrategy {
         for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
             if (z.isDead()) continue;
 
-            double zColFloat = z.getX() / PhysicalConstants.TILE_UNIT_LENGTH;
+            double zColFloat = (z.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH ;
             double dist = Math.abs(zColFloat - plantCol);
 
             if (dist <= detectionRadius) {
@@ -106,27 +101,33 @@ public class TrapStrategy implements IPlantStrategy {
         boolean shouldDie = true;
 
         switch (name) {
-            case "Potato Mine" -> {
-                Zombie pmTarget = targets.getFirst();
-                pmTarget.takeDamage(baseDamage);
-                if (pmTarget.isDead()) context.onZombieDeath(pmTarget);
-            }
-            case "Primal Potato Mine" -> {
-                List<Zombie> aoeTargets = GameSession.getInstance().getArena()
+            case "Potato Mine", "Primal Potato Mine" -> {
+                context.triggerAction("attack");
+                if (name.equals("Primal Potato Mine")) {
+                    List<Zombie> aoeTargets = GameSession.getInstance().getArena()
                         .getZombiesInRadius((int) plantCol, plantRow, 1.5);
-                for (Zombie z : aoeTargets) {
-                    if (!z.isDead()) {
-                        z.takeDamage(Math.max(baseDamage, 2400));
-                        if (z.isDead()) context.onZombieDeath(z);
+                    for (Zombie z : aoeTargets) {
+                        if (!z.isDead()) {
+                            z.takeDamage(Math.max(baseDamage, 2400));
+                            if (z.isDead()) context.onZombieDeath(z);
+                        }
                     }
+                } else {
+                    Zombie pmTarget = targets.getFirst();
+                    pmTarget.takeDamage(baseDamage);
+                    if (pmTarget.isDead()) context.onZombieDeath(pmTarget);
                 }
-                notify("💥 Primal Potato Mine dealt massive AoE damage!");
             }
             case "Squash" -> {
                 Zombie squashTarget = targets.getFirst();
+
+                double zColFloat = (squashTarget.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH;
+                boolean jumpRight = zColFloat >= plantCol;
+                context.triggerAction(jumpRight ? "jump_down_right" : "jump_down_left");
+
                 squashTarget.takeDamage(baseDamage);
                 if (squashTarget.isDead()) context.onZombieDeath(squashTarget);
-                notify("🪨 Squash crushed " + squashTarget.getName() + "!");
+                notify("🎃 Squash crushed " + squashTarget.getName() + "!");
 
                 smashCount++;
                 int totalAllowedSmashes = 1 + extraSmashCharges;
@@ -135,6 +136,7 @@ public class TrapStrategy implements IPlantStrategy {
                 }
             }
             case "Tangle Kelp" -> {
+                context.triggerAction("attack");
                 for (Zombie z : targets) {
                     z.takeDamage(9999);
                     if (z.isDead()) context.onZombieDeath(z);
@@ -142,6 +144,7 @@ public class TrapStrategy implements IPlantStrategy {
                 }
             }
             case "Iceberg Lettuce" -> {
+                context.triggerAction("attack");
                 Zombie iceTarget = targets.getFirst();
                 iceTarget.addEffect(new ChillEffect(iceTarget, (int) (10 + freezeDurationBonus)));
                 notify("❄️ Iceberg Lettuce completely froze " + iceTarget.getName() + "!");
@@ -151,32 +154,11 @@ public class TrapStrategy implements IPlantStrategy {
         return shouldDie;
     }
 
-
-    public void setArmingTimeTicks(int armingTime) {
-        this.armingTimeTicks = armingTime;
-    }
-
-    public int getArmingTimeTicks() {
-        return armingTimeTicks;
-    }
-
-    public void setArmed(boolean armed) {
-        this.isArmed = armed;
-    }
-
-    public void increaseFreezeDuration(float value) {
-    }
-
-    public boolean isArmed() {
-        return isArmed;
-    }
-
-    public void increaseSmashCharges(int amount) {
-        this.extraSmashCharges += amount;
-    }
-
-    public void increaseMaxTargets(int amount) {
-        this.extraGrabTargets += amount;
-    }
-
+    public void setArmingTimeTicks(int armingTime) { this.armingTimeTicks = armingTime; }
+    public int getArmingTimeTicks() { return armingTimeTicks; }
+    public void setArmed(boolean armed) { this.isArmed = armed; }
+    public void increaseFreezeDuration(float value) { }
+    public boolean isArmed() { return isArmed; }
+    public void increaseSmashCharges(int amount) { this.extraSmashCharges += amount; }
+    public void increaseMaxTargets(int amount) { this.extraGrabTargets += amount; }
 }

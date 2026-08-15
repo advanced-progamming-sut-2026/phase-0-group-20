@@ -17,11 +17,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.AudioManager;
 import io.java.pvz.controllers.NotificationManager;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.enums.GameState;
+import io.java.pvz.models.game.GameSession;
 import io.java.pvz.views.sound.MusicType;
 
 public abstract class BaseScreen implements Screen {
@@ -50,7 +51,16 @@ public abstract class BaseScreen implements Screen {
         rootStack = new Stack();
         rootStack.setFillParent(true);
 
-        mainLayer = new Table();
+        mainLayer = new Table() {
+            @Override
+            public void act(float delta) {
+                GameSession session = GameSession.getInstance();
+                if (session != null && session.getState() == GameState.PAUSED)
+                    return;
+                float speed = (session != null) ? session.getSpeedMultiplier() : 1f;
+                super.act(delta * speed);
+            }
+        };
         modalLayer = new Table();
         toastLayer = new Table();
         hudLayer = new Table();

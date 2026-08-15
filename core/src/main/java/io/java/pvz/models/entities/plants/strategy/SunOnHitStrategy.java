@@ -4,20 +4,12 @@ import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.game.GameSession;
 
-/**
- * Sun On Hit Strategy:
- * Used for Sun Bean. Whenever a zombie damages this plant (e.g., takes a bite),
- * it generates a specific amount of sun (e.g., 5 sun per hit).
- */
-
 public class SunOnHitStrategy implements IPlantStrategy {
     private int lastRecordedHp = -1;
     private int sunPerHit = 5;
 
-
     @Override
     public void execute(Plant context, int currentTick) {
-        // Initialize the HP tracker on the first tick
         if (lastRecordedHp == -1) {
             lastRecordedHp = context.getCurrentHp();
             return;
@@ -25,8 +17,9 @@ public class SunOnHitStrategy implements IPlantStrategy {
 
         int currentHp = context.getCurrentHp();
 
-        // Check if the plant has taken damage since the last tick
         if (currentHp < lastRecordedHp) {
+
+            context.triggerAction("idle2");
 
             int spawnX = context.getPlacedTile().getCol();
             int spawnY = context.getPlacedTile().getRow();

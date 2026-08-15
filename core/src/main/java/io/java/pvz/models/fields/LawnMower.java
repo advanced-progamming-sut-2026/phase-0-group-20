@@ -8,12 +8,13 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LawnMower implements Ticker {
-    private static final float HORIZONTAL_SPEED = 30f;
+    private static final float HORIZONTAL_SPEED = 300f / TimeManager.TICKS_PER_SECOND;;
     private final int row;
     private final Arena arena;
     private boolean activate;

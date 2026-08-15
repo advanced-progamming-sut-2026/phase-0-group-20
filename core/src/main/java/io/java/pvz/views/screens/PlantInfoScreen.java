@@ -177,7 +177,7 @@ public class PlantInfoScreen extends BaseScreen {
                 .map(SunProductionStrategy.class::cast)
                 .findFirst()
                 .orElse(null);
-            int amount = strategy != null ? strategy.getSunTypeForPlant(plant.getName(), 0).getValue() : 0;
+            int amount = strategy != null ? strategy.getSunTypeForPlant(plant.getName(), 0, plant).getValue() : 0;
             statsTable.add(createStatBlock(textures, "IMAGE_UI_ALMANAC_ALMANAC_STAT_ICON_SUNPRODUCTION",
                     "SUN PRODUCTION", String.valueOf(amount)))
                 .width(blockWidth).pad(padY, padX, padY, padX).left().row();

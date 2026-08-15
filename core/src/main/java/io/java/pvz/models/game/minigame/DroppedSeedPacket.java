@@ -6,10 +6,11 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 
 public class DroppedSeedPacket implements Ticker {
 
-    private static final int TIMER = 150;
+    private static final int TIMER = 15 * TimeManager.TICKS_PER_SECOND;
 
     private final Plant plant;
     private final int row;

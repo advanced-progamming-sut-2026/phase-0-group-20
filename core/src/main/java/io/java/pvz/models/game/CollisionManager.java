@@ -296,7 +296,7 @@ public class CollisionManager {
 
         Tile targetTile = arena.getTile(row, targetCol);
 
-        if (targetTile != null) {
+        if (targetCol >= 0) {
             handleZombieEat(z, targetTile);
         } else if (targetCol < 0) {
             LawnMower lawnMower = arena.getLawnMowers()[row];

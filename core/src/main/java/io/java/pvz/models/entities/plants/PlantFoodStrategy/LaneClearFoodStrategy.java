@@ -36,7 +36,7 @@ public class LaneClearFoodStrategy implements PlantFoodStrategy {
                 false
             );
 
-            projectile.setSpawnDelayTicks(5);
+            projectile.setSpawnDelayTicks(0.5f);
         }
 
         notify(plant.getName() + " unleashed a lane-clearing attack: " + description);

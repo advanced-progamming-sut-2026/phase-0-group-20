@@ -4,12 +4,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
-
-/**
- * Mint Buff Strategy:
- * Applies a temporary Plant Food effect (or specific stat boost) to all plants
- * belonging to the same family as this mint across the entire board.
- */
+import io.java.pvz.utils.AnimationCatalog;
 
 public class MintBuffStrategy implements IPlantStrategy {
     private int lifespanInTicks = 10 * TimeManager.TICKS_PER_SECOND;
@@ -21,6 +16,8 @@ public class MintBuffStrategy implements IPlantStrategy {
     @Override
     public void execute(Plant context, int currentTick) {
         if (!isActivated) {
+            context.triggerAction("intro");
+
             String mintName = context.getName().toLowerCase();
             PlantCategory familyCategory = getMintCategory(mintName);
 
@@ -33,13 +30,22 @@ public class MintBuffStrategy implements IPlantStrategy {
             if (resetCooldowns && familyCategory != null) {
                 GameSession.getInstance().resetCooldownsForCategory(familyCategory);
                 notify("⏳ " + context.getName() +
-                        " instantly refreshed all " + familyCategory.name() + " seed packets!");
+                    " instantly refreshed all " + familyCategory.name() + " seed packets!");
             }
             isActivated = true;
             notify("🌿 " + context.getName() + " activated its family buff and reset cooldowns!");
         }
 
         aliveTicks++;
+
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(context);
+        if (anim != null && anim.hasClip("outro")) {
+            int outroTicks = (int) (anim.getDuration("outro") * TimeManager.TICKS_PER_SECOND);
+            if (aliveTicks == lifespanInTicks - outroTicks) {
+                context.triggerAction("outro");
+            }
+        }
+
         if (aliveTicks >= lifespanInTicks) {
             context.takeDamage(context.getCurrentHp());
         }

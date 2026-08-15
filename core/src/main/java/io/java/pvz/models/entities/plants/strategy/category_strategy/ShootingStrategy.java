@@ -41,7 +41,10 @@ public class ShootingStrategy implements IPlantStrategy {
             if (burstCooldownTicks > 0) {
                 burstCooldownTicks--;
             } else {
-                executeNewProjectile(context, currentShootForward, currentShootBackward, 5);
+                executeNewProjectile(context, currentShootForward, currentShootBackward, 0.5f);
+
+                playShootingAnimation(context);
+
                 pendingShots--;
                 burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
             }
@@ -84,7 +87,7 @@ public class ShootingStrategy implements IPlantStrategy {
                 if (rowDiff == colDiff && rowDiff > 0) return true;
             } else {
                 int zRow = z.getRow();
-                int zCol = (int) (z.getX() / PhysicalConstants.TILE_UNIT_LENGTH);
+                int zCol = (int) ((z.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH );
 
                 int rowDiff = zRow - plantRow;
                 int colDiff = zCol - plantCol;
@@ -130,10 +133,10 @@ public class ShootingStrategy implements IPlantStrategy {
             return;
         }
 
-        context.triggerAction("attack");
+        playShootingAnimation(context);
         notify(context.getName() + " fired a projectile!");
 
-        executeNewProjectile(context, shootForward, shootBackward, 5);
+        executeNewProjectile(context, shootForward, shootBackward, 0.5f);
 
         int baseVolley = ProjectileMechanism.getVolleyCount(context.getName());
         int stackBonus = Math.max(0, context.getStackCount() - 1);
@@ -148,6 +151,16 @@ public class ShootingStrategy implements IPlantStrategy {
 
         lastShotTick = currentTick;
     }
+
+    private void playShootingAnimation(Plant context) {
+        if (context.getName().equalsIgnoreCase("Pea Pod")) {
+            int stack = context.getStackCount();
+            context.triggerAction(stack <= 1 ? "attack" : "attack " + stack);
+        } else {
+            context.triggerAction("attack");
+        }
+    }
+
     public void increaseRange(int range) {
         this.rangeExtension += range;
     }

@@ -4,29 +4,17 @@ import io.java.pvz.models.entities.zombies.Zombie;
 
 public class FireEffect extends Effect {
 
-    private int damage;
-    private boolean isFinished;
+    private final int damage;
 
-    public FireEffect(Zombie zombie, int durationTicks, int damage) {
-        super(zombie, durationTicks);
+    public FireEffect(Zombie zombie, int damage) {
+        super(zombie, 1);
         this.damage = damage;
-        isFinished = false;
     }
-
 
     @Override
     public void onApply() {
+        zombie.setBurnedToAsh(true);
         zombie.takeDamage(damage);
-        isFinished = true;
-    }
-
-    @Override
-    public void execute() {
-        onApply();
-
-        if (isFinished) {
-            onRemove();
-        }
     }
 
     @Override

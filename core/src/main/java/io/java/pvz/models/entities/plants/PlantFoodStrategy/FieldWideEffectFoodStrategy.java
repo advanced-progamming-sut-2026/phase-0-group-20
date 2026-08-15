@@ -53,7 +53,7 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
             case "kernel-pult":
                 for (Zombie zombie : allZombies)
                     if (!zombie.isDead())
-                        ProjectileMechanism.executeTargetedProjectile(plant, zombie, 5);
+                        ProjectileMechanism.executeTargetedProjectile(plant, zombie, 0.5f);
                 break;
 
             case "garlic":
@@ -65,7 +65,7 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
             case "sweet potato":
                 plant.setCurrentHp(plant.getBaseHp());
                 List<Zombie> nearby = gameSession.getArena().getZombiesInRadius(
-                        plantCol, plantRow, PhysicalConstants.TILE_UNIT_LENGTH * 2);
+                        plantCol, plantRow, PhysicalConstants.TILE_WIDTH * 2);
                 for (Zombie zombie : nearby)
                     if (!zombie.isDead() && zombie.getRow() != plantRow)
                         zombie.setRow(plantRow);

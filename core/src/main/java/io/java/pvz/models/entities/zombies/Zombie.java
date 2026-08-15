@@ -19,6 +19,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,7 @@ public class Zombie implements Ticker {
     private boolean isHypnotized = false;
     private Zombie targetZombie = null;
     private boolean shiny = false;
+    private boolean burnedToAsh = false;
 
     private final Position position;
 
@@ -102,43 +104,33 @@ public class Zombie implements Ticker {
     public void takeDamage(int damage, Projectile projectile) {
         if (dead) return;
 
-        if (projectile == null) { // for lawn
+        if (projectile == null) {
             takeDamage(health);
             return;
         }
 
         ProjectileType projectileType = projectile.getType();
+        boolean isFire = ProjectileType.isFireProjectile(projectileType);
 
-        if (defenseBehavior != null && defenseBehavior.deflectProjectile(projectileType)) {
-            return;
-        }
+        if (defenseBehavior != null && defenseBehavior.deflectProjectile(projectileType)) return;
 
         int remaining = damage;
-        if (defenseBehavior != null) {
-            remaining = defenseBehavior.mitigateDamage(remaining, projectileType);
-        }
-
-        if (remaining <= 0) {
-            return;
-        }
+        if (defenseBehavior != null) remaining = defenseBehavior.mitigateDamage(remaining, projectileType);
+        if (remaining <= 0) return;
 
         if (isArmorBypassingProjectile(projectileType)) {
-            applyHealthDamage(remaining);
+            applyHealthDamage(remaining, isFire);
             return;
         }
 
         for (Armor a : armorPieces) {
             if (!a.isDestroyed()) {
-                notify(type.toString() + "'s armor(" + a.getData().getAlias() + ") take " + remaining +
-                    " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
+                notify(type.toString() + "'s armor(" + a.getData().getAlias() + ") take " + remaining + " in ...");
                 remaining = a.takeDamage(remaining);
-                if (remaining <= 0) {
-                    return;
-                }
+                if (remaining <= 0) return;
             }
         }
-
-        applyHealthDamage(remaining);
+        applyHealthDamage(remaining, isFire);
     }
 
     public void takeDamage(int damage) {
@@ -155,13 +147,14 @@ public class Zombie implements Ticker {
         return projectileType == ProjectileType.GOO_PEA;
     }
 
-    private void applyHealthDamage(int remaining) {
+    private void applyHealthDamage(int remaining, boolean isFire) {
         this.health -= remaining;
         notify(type.toString() + " take " + remaining + " in "
             + (position.getCol() + 1) + " " + (position.getRow() + 1));
         if (health <= 0) {
             health = 0;
             dead = true;
+            if (isFire) this.burnedToAsh = true;
             notify(type.toString() + " is dead by projectile");
         }
     }
@@ -498,5 +491,13 @@ public class Zombie implements Ticker {
 
     public void setShiny(boolean shiny) {
         this.shiny = shiny;
+    }
+
+    public boolean isBurnedToAsh() {
+        return burnedToAsh;
+    }
+
+    public void setBurnedToAsh(boolean burnedToAsh) {
+        this.burnedToAsh = burnedToAsh;
     }
 }

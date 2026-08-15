@@ -40,7 +40,7 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
                         plant.onZombieDeath(zombie);
                     }
 
-                    float pushBackDistance = PhysicalConstants.TILE_UNIT_LENGTH * 3;
+                    float pushBackDistance = PhysicalConstants.TILE_WIDTH * 3;
                     zombie.getPosition().moveX(pushBackDistance);
 
                     if (zombie.getCol() >= gameSession.getArena().getCols())

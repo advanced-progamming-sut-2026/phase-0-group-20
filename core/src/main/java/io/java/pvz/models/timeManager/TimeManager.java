@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TimeManager {
-    public static final int TICKS_PER_SECOND = 10;
+    public static final int TICKS_PER_SECOND = 60;
 
 
     private int currentTick;

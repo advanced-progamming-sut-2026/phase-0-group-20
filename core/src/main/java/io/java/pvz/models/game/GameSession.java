@@ -8,7 +8,6 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.enums.plants.PlantCategory;
 import io.java.pvz.models.fields.modifiers.SeasonModifier;
-import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.game.adventure.Chapter;
 import io.java.pvz.models.game.adventure.SeasonType;
@@ -23,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GameSession {
-    private static final float PLANT_COOLDOWN = 50f;
+
     private static GameSession instance;
     // for mew points
     private static BonusLevel pendingBonusLevel = null;
@@ -52,6 +51,7 @@ public class GameSession {
     private ProgressListener progressListener;
     private int imitaterTargetId = -1;
 
+    private float speedMultiplier = 1.0f;
 
     private GameSession(Chapter chapter, Level currentLevel,
                         Arena arena, List<Plant> chosenPlants, List<Zombie> chosenZombies) {
@@ -227,7 +227,7 @@ public class GameSession {
     }
 
     public void setCooldownForPlant(Plant plant) {
-        plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
+        plantsCooldown.computeIfPresent(plant, (key, value) -> plant.getRecharge() * TimeManager.TICKS_PER_SECOND);
     }
 
     public void update(int timeAmount) {
@@ -238,7 +238,13 @@ public class GameSession {
             if (currentMode != null)
                 currentMode.engineLoop(this, timeManager.getCurrentTick());
 
-            SeasonModifier currentModifier = currentChapter.getModifier();
+            SeasonModifier currentModifier = null;
+            if (currentMode instanceof Level levelMode) {
+                currentModifier = levelMode.getSeasonModifier();
+            } else if (currentChapter != null) {
+                currentModifier = currentChapter.getModifier();
+            }
+
             if (currentModifier != null)
                 currentModifier.updateEnvironment(timeManager.getCurrentTick(), arena);
 
@@ -380,9 +386,6 @@ public class GameSession {
         return false;
     }
 
-    public void setPlantCooldown(Plant plant) {
-        plantsCooldown.computeIfPresent(plant, (key, value) -> PLANT_COOLDOWN);
-    }
 
     public HashMap<Plant, Float> getPlantsCooldown() {
         return plantsCooldown;
@@ -439,4 +442,23 @@ public class GameSession {
         return state;
     }
 
+    public void setSpeedMultiplier(float speedMultiplier) {
+        this.speedMultiplier = speedMultiplier;
+    }
+
+    public float getSpeedMultiplier() {
+        return speedMultiplier;
+    }
+
+    public void pauseGame() {
+        if (this.state == GameState.RUNNING) {
+            this.state = GameState.PAUSED;
+        }
+    }
+
+    public void resumeGame() {
+        if (this.state == GameState.PAUSED) {
+            this.state = GameState.RUNNING;
+        }
+    }
 }

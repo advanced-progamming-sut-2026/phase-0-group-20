@@ -35,7 +35,8 @@ public class HomingStrategy implements IPlantStrategy {
                 burstCooldownTicks--;
             } else {
                 if (pendingTarget != null && !pendingTarget.isDead()) {
-                    ProjectileMechanism.executeTargetedProjectile(context, pendingTarget, 5);
+                    context.triggerAction("attack");
+                    ProjectileMechanism.executeTargetedProjectile(context, pendingTarget, 0.5f);
                 }
                 pendingBurstShots--;
                 burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
@@ -50,7 +51,8 @@ public class HomingStrategy implements IPlantStrategy {
             if (!validTargets.isEmpty()) {
                 Zombie target = selectTarget(context, validTargets);
                 if (target != null) {
-                    ProjectileMechanism.executeTargetedProjectile(context, target, 5);
+                    context.triggerAction("attack");
+                    ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
                     notify(context.getName() + " locked onto " + target.getName() + "!");
 
                     if (burstCount > 1) {
