@@ -35,6 +35,7 @@ public class HomingStrategy implements IPlantStrategy {
                 burstCooldownTicks--;
             } else {
                 if (pendingTarget != null && !pendingTarget.isDead()) {
+                    context.triggerAction("attack");
                     ProjectileMechanism.executeTargetedProjectile(context, pendingTarget, 0.5f);
                 }
                 pendingBurstShots--;
@@ -50,6 +51,7 @@ public class HomingStrategy implements IPlantStrategy {
             if (!validTargets.isEmpty()) {
                 Zombie target = selectTarget(context, validTargets);
                 if (target != null) {
+                    context.triggerAction("attack");
                     ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
                     notify(context.getName() + " locked onto " + target.getName() + "!");
 

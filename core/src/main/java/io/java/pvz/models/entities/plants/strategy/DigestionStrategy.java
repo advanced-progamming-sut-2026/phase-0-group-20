@@ -6,12 +6,6 @@ import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
-/**
- * Digestion Strategy:
- * Used for plants like Chomper. The plant instantly kills (swallows) a zombie in range,
- * then enters a long "digestion" state where it becomes vulnerable and inactive.
- */
-
 public class DigestionStrategy implements IPlantStrategy {
     private boolean isDigesting = false;
     private int digestionStartTick = -1;
@@ -44,6 +38,8 @@ public class DigestionStrategy implements IPlantStrategy {
             }
 
             if (target != null) {
+                context.triggerAction("bite");
+
                 notify("🦖 " + context.getName() + " swallowed " + target.getName() + " whole!");
                 target.takeDamage(9999);
                 if (target.isDead()) {

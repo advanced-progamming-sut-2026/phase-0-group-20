@@ -11,12 +11,6 @@ import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
 
-/**
- * Grave Buster Strategy:
- * This plant can only be planted on a tile containing a Grave.
- * It takes a few seconds to consume the grave, destroying both the grave and itself.
- */
-
 public class GraveBusterStrategy implements IPlantStrategy {
     private float eatTimeReduction = 0;
     private int startTick = -1;
@@ -25,7 +19,10 @@ public class GraveBusterStrategy implements IPlantStrategy {
 
     @Override
     public void execute(Plant context, int currentTick) {
-        if (startTick == -1) startTick = currentTick;
+        if (startTick == -1) {
+            startTick = currentTick;
+            context.triggerAction("attack");
+        }
 
         Tile currentTile = context.getPlacedTile();
 
@@ -41,9 +38,8 @@ public class GraveBusterStrategy implements IPlantStrategy {
 
         if (currentTick - startTick >= bustDelayTicks) {
             notify("🪦 Grave Buster successfully destroyed the grave!");
-            // change type of tile
             GameSession.getInstance().getArena().changeTile(currentTile.getRow(), currentTile.getCol(),
-                            new NormalTile(currentTile.getRow(), currentTile.getCol()));
+                new NormalTile(currentTile.getRow(), currentTile.getCol()));
             if (currentTile instanceof NecromanceTile necromanceTile) necromanceTile.removeGrave();
             else if (currentTile instanceof GraveStoneTile graveStoneTile) graveStoneTile.removeGrave();
 

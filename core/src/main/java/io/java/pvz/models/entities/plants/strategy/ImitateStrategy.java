@@ -9,7 +9,7 @@ import io.java.pvz.models.timeManager.TimeManager;
 public class ImitateStrategy implements IPlantStrategy {
     private static final int TRANSFORM_DELAY_TICKS = 2 * TimeManager.TICKS_PER_SECOND;
     private int startTick = -1;
-    private int targetPlantId = -1; // plant id
+    private int targetPlantId = -1;
 
     private boolean autoPlantFood = false;
 
@@ -17,14 +17,17 @@ public class ImitateStrategy implements IPlantStrategy {
     public void execute(Plant context, int currentTick) {
         if (targetPlantId == -1) return;
 
-        if (startTick == -1) startTick = currentTick;
+        if (startTick == -1) {
+            startTick = currentTick;
+            context.triggerAction("attack");
+        }
 
         if (currentTick - startTick >= TRANSFORM_DELAY_TICKS) {
             Tile currentTile = context.getPlacedTile();
 
             context.takeDamage(context.getCurrentHp());
 
-            Plant transformedPlant = PlantFactory.create(targetPlantId); //bug?
+            Plant transformedPlant = PlantFactory.create(targetPlantId);
 
             if (transformedPlant != null) {
                 transformedPlant.setPlacedTile(currentTile);
@@ -41,7 +44,6 @@ public class ImitateStrategy implements IPlantStrategy {
             context.takeDamage(context.getCurrentHp());
         }
     }
-
 
     public void setAutoPlantFood(boolean autoPlantFood) {
         this.autoPlantFood = autoPlantFood;
