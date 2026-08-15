@@ -16,5 +16,5 @@ public enum GameEvent {
     NEW_DAY_STARTED,
     PLANT_UNLOCKED,
     PROJECTILE_HIT,
-    SPAWN_EFFECT;
+    SPAWN_EFFECT,
 }
