@@ -825,44 +825,50 @@ public class BattlefieldRenderer implements GameEventListener {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
         if (anim == null) return CLIP_IDLE;
 
+        String action = plant.getCurrentAction();
+        if (action != null && anim.hasClip(action)) {
+            return action;
+        }
+
         if (plant.isBoosted()) {
-            if (anim.hasClip("plantfood_idle")) return "plantfood_idle";
-            if (anim.hasClip("plantfood_stage1")) return "plantfood_stage1";
-            if (anim.hasClip("plantfood_on")) return "plantfood_on";
+            if (anim.hasClip("plantfood_loop")) return "plantfood_loop";
             if (anim.hasClip("plantfood")) return "plantfood";
-            if (anim.hasClip("plantfood_start")) return "plantfood_start";
-
+            if (anim.hasClip("plantfood_on")) return "plantfood_on";
         }
 
-        TrapStrategy trap =
-            plant.getStrategy(TrapStrategy.class);
-        if (trap != null && !trap.isArmed()) {
-            if (anim.hasClip("plant_idle")) return "plant_idle";
-            if (anim.hasClip("plant")) return "plant";
-        }
-
-        DigestionStrategy digestion =
-            plant.getStrategy(DigestionStrategy.class);
+        DigestionStrategy digestion = plant.getStrategy(DigestionStrategy.class);
         if (digestion != null && digestion.isDigesting()) {
             if (anim.hasClip("special_idle")) return "special_idle";
             if (anim.hasClip("special")) return "special";
         }
 
-        SunProductionStrategy sunProductionStrategy = plant.getStrategy(SunProductionStrategy.class);
-        if (sunProductionStrategy != null && plant.getCurrentAction() != null && plant.getCurrentAction().equalsIgnoreCase("special")) {
-            if (anim.hasClip("special_stage2")) return "special_stage2";
-            if (anim.hasClip("special_idle")) return "special_idle";
-            if (anim.hasClip("special")) return "special";
+        TrapStrategy trap = plant.getStrategy(TrapStrategy.class);
+        if (trap != null && !trap.isArmed()) {
+            if (anim.hasClip("plant_idle")) return "plant_idle";
+            if (anim.hasClip("plant")) return "plant";
         }
 
-        String action = plant.getCurrentAction();
-        if (action != null && anim.hasClip(action))
-            return action;
+        if (plant.isAsleep() && anim.hasClip("sleep")) return "sleep";
 
+        int size = plant.getSize();
+        if (size > 1) {
+            String stageIdle = "idle_stage" + size;
+            String altStageIdle = "idle" + size;
+            if (anim.hasClip(stageIdle)) return stageIdle;
+            if (anim.hasClip(altStageIdle)) return altStageIdle;
+        }
 
-        if (plant.isAsleep() && anim.hasClip("sleep"))
-            return "sleep";
-
+        float hpRatio = (float) plant.getCurrentHp() / plant.getMaxHp();
+        if (hpRatio <= 0.33f) {
+            if (anim.hasClip("damage3")) return "damage3";
+            if (anim.hasClip("idle_damage3")) return "idle_damage3";
+            if (anim.hasClip("damage2")) return "damage2";
+        } else if (hpRatio <= 0.66f) {
+            if (anim.hasClip("damage2")) return "damage2";
+            if (anim.hasClip("idle_damage2")) return "idle_damage2";
+            if (anim.hasClip("damage")) return "damage";
+            if (anim.hasClip("idle_damage")) return "idle_damage";
+        }
 
         if (anim.hasClip("idle")) return "idle";
         if (anim.hasClip("loop")) return "loop";

@@ -39,11 +39,17 @@ public class SunProductionStrategy implements IPlantStrategy {
 
         if (intervalInTicks > 0 && (currentTick - lastProductionTick) >= intervalInTicks) {
 
-            SunType type = getSunTypeForPlant(plantName, aliveTicks);
+            SunType type = getSunTypeForPlant(plantName, aliveTicks, context);
+
+            if (plantName.equals("Sun-shroom")) {
+                context.triggerAction("special_stage" + context.getSize());
+            } else {
+                context.triggerAction("special");
+            }
+
             spawnSun(context, GameSession.getInstance(), type, currentTick);
 
-            if (doubleSunChance) { // for Upgrade
-                // we can use random to randomly spawn double sun
+            if (doubleSunChance) {
                 spawnSun(context, GameSession.getInstance(), type, currentTick);
             }
 
@@ -75,7 +81,7 @@ public class SunProductionStrategy implements IPlantStrategy {
         gameSession.getTimeManager().registerNewTicker(newSun);
     }
 
-    public SunType getSunTypeForPlant(String plantName, int aliveTicks) {
+    public SunType getSunTypeForPlant(String plantName, int aliveTicks, Plant context) {
         return switch (plantName) {
             case "Sunflower" -> SunType.NORMAL_SUN;
             case "Twin Sunflower" -> SunType.SPECIAL_SUN;
@@ -85,23 +91,27 @@ public class SunProductionStrategy implements IPlantStrategy {
                 int stage3Threshold = Math.max(0, 72 - growTimeReduction);
                 int stage2Threshold = Math.max(0, 24 - growTimeReduction);
 
-                if (secondsAlive >= stage3Threshold) yield SunType.LARGE_SUN;
-                if (secondsAlive >= stage2Threshold) yield SunType.NORMAL_SUN;
+                if (secondsAlive >= stage3Threshold) {
+                    if (context.getSize() < 3) {
+                        context.setSize(3);
+                        context.triggerAction("growth_stage2");
+                    }
+                    yield SunType.LARGE_SUN;
+                }
+                if (secondsAlive >= stage2Threshold) {
+                    if (context.getSize() < 2) {
+                        context.setSize(2);
+                        context.triggerAction("growth_stage1");
+                    }
+                    yield SunType.NORMAL_SUN;
+                }
                 yield SunType.TINY_SUN;
             }
             default -> SunType.NORMAL_SUN;
         };
     }
 
-    public void setDoubleSunChance(boolean doubleSunChance) {
-        this.doubleSunChance = doubleSunChance;
-    }
-
-    public void increaseSunAmount(float amount) {
-        this.extraSunAmount += (int) amount;
-    }
-
-    public void reduceGrowTime(float seconds) {
-        this.growTimeReduction += (int) seconds;
-    }
+    public void setDoubleSunChance(boolean doubleSunChance) { this.doubleSunChance = doubleSunChance; }
+    public void increaseSunAmount(float amount) { this.extraSunAmount += (int) amount; }
+    public void reduceGrowTime(float seconds) { this.growTimeReduction += (int) seconds; }
 }

@@ -39,6 +39,7 @@ public class StrikeThroughStrategy implements IPlantStrategy {
             }
 
             if (zombieFound) {
+                context.triggerAction("attack");
                 shootPiercingProjectile(context);
                 lastShotTick = currentTick;
             }
@@ -48,7 +49,7 @@ public class StrikeThroughStrategy implements IPlantStrategy {
     private void shootPiercingProjectile(Plant context) {
         String name = context.getName();
         int plantRow = context.getPlacedTile().getRow();
-        int plantCol = context.getPlacedTile().getCol();;
+        int plantCol = context.getPlacedTile().getCol();
 
         ProjectileType type = null;
         int damage = 0;

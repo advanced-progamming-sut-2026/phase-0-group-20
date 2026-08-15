@@ -37,8 +37,10 @@ public class MagnetStrategy implements IPlantStrategy {
                             armor.takeDamage(9999);
                             foundMetal = true;
 
+                            context.triggerAction("catch");
+
                             notify("🧲 " + context.getName() +
-                                    " magnetically stole a metallic armor from " + zombie.getName() + "!");
+                                " magnetically stole a metallic armor from " + zombie.getName() + "!");
                             break;
                         }
                     }

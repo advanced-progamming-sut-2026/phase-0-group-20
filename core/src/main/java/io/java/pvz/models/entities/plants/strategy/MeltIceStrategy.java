@@ -9,12 +9,6 @@ import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
 
-/**
- * Melt Ice Strategy:
- * Used for Hot Potato. Instantly melts ice blocks on the tile it is planted on,
- * freeing the frozen plant underneath, and then destroys itself.
- */
-
 public class MeltIceStrategy implements IPlantStrategy {
     private static final int MELT_DELAY = (int) (0.5 * TimeManager.TICKS_PER_SECOND);
     private int startTick = -1;
@@ -24,7 +18,10 @@ public class MeltIceStrategy implements IPlantStrategy {
 
     @Override
     public void execute(Plant context, int currentTick) {
-        if (startTick == -1) startTick = currentTick;
+        if (startTick == -1) {
+            startTick = currentTick;
+            context.triggerAction("attack");
+        }
 
         if (currentTick - startTick >= MELT_DELAY) {
             Tile currentTile = context.getPlacedTile();
@@ -95,7 +92,6 @@ public class MeltIceStrategy implements IPlantStrategy {
             }
         }
     }
-
 
     public void setExplodeOnFinish(boolean explode) {
         this.explodeOnFinish = explode;

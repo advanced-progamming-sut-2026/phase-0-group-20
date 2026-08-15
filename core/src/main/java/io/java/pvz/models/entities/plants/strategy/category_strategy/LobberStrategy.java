@@ -104,7 +104,12 @@ public class LobberStrategy implements IPlantStrategy {
             projectile.setSpawnDelayTicks(0.5f);
 
             Projectile.spawnCustom(projectile);
-            context.triggerAction("attack");
+
+            if (name.equals("Kernel-pult") && type == ProjectileType.BUTTER) {
+                context.triggerAction("attack2");
+            } else {
+                context.triggerAction("attack");
+            }
             notify("🥔 " + name + " lobbed a " + type.name() + "!");
         }
     }

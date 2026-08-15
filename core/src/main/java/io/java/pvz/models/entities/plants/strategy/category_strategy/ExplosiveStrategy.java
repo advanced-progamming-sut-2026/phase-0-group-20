@@ -26,6 +26,11 @@ public class ExplosiveStrategy implements IPlantStrategy {
     public void execute(Plant context, int currentTick) {
         if (startTick == -1) {
             startTick = currentTick;
+            if (context.getName().equalsIgnoreCase("Doom-shroom")) {
+                context.triggerAction("stage1_explode");
+            } else {
+                context.triggerAction("attack");
+            }
         }
 
         if (currentTick - startTick >= EXPLOSION_DELAY_TICKS) {

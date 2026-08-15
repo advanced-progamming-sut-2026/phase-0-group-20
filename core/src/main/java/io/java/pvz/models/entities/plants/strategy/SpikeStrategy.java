@@ -7,12 +7,6 @@ import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
 
-/**
- * Spike Strategy (Adapted for Endurian):
- * Defensive plants with this strategy act as a wall but also deal continuous
- * physical damage to zombies that are close enough to attack/eat them.
- */
-
 public class SpikeStrategy implements IPlantStrategy {
     private static final int DAMAGE_INTERVAL = TimeManager.TICKS_PER_SECOND;
     private int lastDamageTick = -1;
@@ -30,7 +24,7 @@ public class SpikeStrategy implements IPlantStrategy {
         if (currentTick - lastDamageTick >= DAMAGE_INTERVAL) {
             boolean dealtDamage = false;
             List<Zombie> attackingZombies =
-                    GameSession.getInstance().getArena().getZombiesOnTile(context.getPlacedTile());
+                GameSession.getInstance().getArena().getZombiesOnTile(context.getPlacedTile());
 
             for (Zombie z : attackingZombies) {
                 if (!z.isDead()) {
@@ -51,6 +45,12 @@ public class SpikeStrategy implements IPlantStrategy {
             }
 
             if (dealtDamage) {
+                if (context.getName().equals("Endurian")) {
+                    context.triggerAction("attack_loop");
+                } else {
+                    context.triggerAction("attack");
+                }
+
                 notify("🦔 " + context.getName() + " reflected damage to attacking zombies!");
                 lastDamageTick = currentTick;
             }
