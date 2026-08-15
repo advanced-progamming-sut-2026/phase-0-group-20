@@ -10,6 +10,7 @@ import io.java.pvz.models.entities.plants.strategy.TorchwoodStrategy;
 import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.zombies.zomboss.Zomboss;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.Brain;
@@ -42,6 +43,10 @@ public class CollisionManager {
 
         // for plants & zombies
         for (Zombie z : activeZombies) {
+            if (z instanceof Zomboss zomboss){
+                checkZombossCrush(zomboss);
+                continue;
+            }
             if (z.isHypnotized()) {
                 checkZombiesAndZombiesCollision(z);
             } else {
@@ -51,6 +56,28 @@ public class CollisionManager {
 
         for (Sun sun : arena.getActiveSuns()) {
             checkSunCollision(sun);
+        }
+    }
+
+    public void checkZombossCrush(Zomboss zomboss) {
+        float collisionThreshold = PhysicalConstants.TILE_UNIT_LENGTH * 0.8f;
+        int[] targetRows = {zomboss.getRow(), zomboss.getSecondRow()};
+
+        List<Plant> activePlants = new ArrayList<>(arena.getActivePlants());
+
+        for (Plant plant : activePlants) {
+            if (plant.isDead()) continue;
+
+            int pRow = plant.getPlacedTile().getRow();
+
+            if (pRow == targetRows[0] || pRow == targetRows[1]) {
+                float plantX = plant.getPlacedTile().getCol() * PhysicalConstants.TILE_WIDTH;
+
+                if (Math.abs(zomboss.getX() - plantX) < collisionThreshold) {
+                    plant.takeDamage(99999);
+                    GameSession.notify("Zomboss crushed " + plant.getName() + "!");
+                }
+            }
         }
     }
 
@@ -196,8 +223,12 @@ public class CollisionManager {
             double dx = projectile.getX() - z.getX();
             double dy = projectile.getY() - z.getY();
             double distanceSquared = (dx * dx) + (dy * dy);
+            float effectiveRadius = combinedRadius;
+            if(z instanceof Zomboss){
+                effectiveRadius = combinedRadius * 2.5f;
+            }
 
-            if (distanceSquared <= (combinedRadius * combinedRadius)) {
+            if (distanceSquared <= (effectiveRadius * effectiveRadius)) {
                 projectile.onHit(z);
                 if (!projectile.isPiercing() || projectile.isDestroyed()) break;
             }
@@ -290,6 +321,7 @@ public class CollisionManager {
     }
 
     private void handleZombieEat(Zombie z, Tile targetTile) {
+        if (z instanceof Zomboss) return;
         List<Plant> plantToEat = targetTile.getPlants();
         Plant eatingPlant = null;
         if (!plantToEat.isEmpty()) {
