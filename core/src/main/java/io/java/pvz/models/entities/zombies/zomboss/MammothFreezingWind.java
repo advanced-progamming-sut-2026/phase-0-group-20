@@ -83,7 +83,7 @@ public class MammothFreezingWind implements IZombossAttack{
             iceHolder.setIceBlock(iceBlock);
 
             session.getTimeManager().registerNewTicker(iceBlock);
-            session.getArena().getActiveObstacles().add(iceBlock); 
+            session.getArena().getActiveObstacles().add(iceBlock);
 
             zomboss.notify(plant.getName() + " is completely frozen inside an IceBlock by Zomboss!");
         }
