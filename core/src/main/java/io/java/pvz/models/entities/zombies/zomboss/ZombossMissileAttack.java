@@ -49,12 +49,10 @@ public class ZombossMissileAttack implements IZombossAttack{
     public void execute() {
         attackTimer++;
 
-        // فاز قبل از شلیک (مثلاً ۲ ثانیه طول می‌کشد تا زامباس موشک را شلیک کند)
         if (attackTimer == 2 * TimeManager.TICKS_PER_SECOND) {
             launchMissile();
         }
 
-        // اتمام حمله و بازگشت به استراحت (در ثانیه ۳)
         if (attackTimer >= 3 * TimeManager.TICKS_PER_SECOND) {
             this.onExit();
             idleState.onEnter();
@@ -65,14 +63,10 @@ public class ZombossMissileAttack implements IZombossAttack{
     private void launchMissile() {
         GameSession session = GameSession.getInstance();
 
-        float startX = zomboss.getX();
-        float startY = zomboss.getY() + 50f; // شلیک از پشت یا بالای سر زامباس
-
         float endX = targetCol * PhysicalConstants.TILE_UNIT_LENGTH;
         float endY = targetRow * PhysicalConstants.TILE_HEIGHT;
 
-        // ساخت موشک و پاس دادن رفتار برخورد به آن
-        ZombossMissile missile = new ZombossMissile(startX, startY, endX, endY, targetRow, targetCol, impactBehavior);
+        ZombossMissile missile = new ZombossMissile(endX, endY, targetRow, targetCol, impactBehavior);
         session.getTimeManager().registerNewTicker(missile);
     }
 
