@@ -71,15 +71,7 @@ public class ZombossFireball implements Ticker {
                 .pixelCoordinate(targetX, targetY)
                 .build());
 
-        if (targetTile != null) {
-            List<Plant> plantsToDestroy = new ArrayList<>(targetTile.getPlants());
-            for (Plant p : plantsToDestroy) {
-                p.takeDamage(99999);
-            }
-
-            targetTile.setCrater(true);
-            targetTile.setCraterTimer(4 * TimeManager.TICKS_PER_SECOND);
-        }
+        DragonScorchedEarthAttack.burnTheTile(targetTile);
 
         Zombie impDragon = ZombieFactory.create(ZombieType.IMP, targetRow);
         impDragon.setCol(targetCol);
