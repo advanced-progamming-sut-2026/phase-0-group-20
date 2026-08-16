@@ -49,11 +49,11 @@ public class DragonFireballAttack implements IZombossAttack {
             int targetCol = random.nextInt(cols);
             int targetRow = random.nextInt(rows);
 
-            float startX = zomboss.getX() - (PhysicalConstants.TILE_UNIT_LENGTH / 2f);
+            float startX = zomboss.getX() - (PhysicalConstants.TILE_WIDTH / 2f);
             float startY = zomboss.getY() + 40f;
 
-            float endX = targetCol * PhysicalConstants.TILE_UNIT_LENGTH;
-            float endY = targetRow * PhysicalConstants.TILE_HEIGHT;
+            float endX = targetCol * PhysicalConstants.TILE_WIDTH + PhysicalConstants.GRID_START_X;
+            float endY = targetRow * PhysicalConstants.TILE_HEIGHT  + PhysicalConstants.GRID_START_Y;
 
             ZombossFireball fireball = new ZombossFireball(startX, startY, endX, endY, targetCol, targetRow);
             session.getTimeManager().registerNewTicker(fireball);

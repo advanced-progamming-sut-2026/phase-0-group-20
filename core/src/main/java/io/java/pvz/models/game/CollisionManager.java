@@ -60,7 +60,7 @@ public class CollisionManager {
     }
 
     public void checkZombossCrush(Zomboss zomboss) {
-        float collisionThreshold = PhysicalConstants.TILE_UNIT_LENGTH * 0.8f;
+        float collisionThreshold = PhysicalConstants.TILE_WIDTH * 0.8f;
         int[] targetRows = {zomboss.getRow(), zomboss.getSecondRow()};
 
         List<Plant> activePlants = new ArrayList<>(arena.getActivePlants());

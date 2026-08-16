@@ -33,7 +33,8 @@ public class RobotDashAttack implements IZombossAttack {
             float newX = zomboss.getX() - DASH_SPEED_SCALE_PER_TICK;
             zomboss.setX(newX);
 
-            int newCol = (int) (newX / PhysicalConstants.TILE_UNIT_LENGTH);
+            int newCol = (int) (newX - PhysicalConstants.GRID_START_X/ PhysicalConstants.TILE_WIDTH);
+
             if (newCol != zomboss.getCol()) {
                 zomboss.setCol(newCol);
             }
@@ -51,7 +52,6 @@ public class RobotDashAttack implements IZombossAttack {
             // one second
             if (jumpTimer >= TimeManager.TICKS_PER_SECOND) {
                 zomboss.setCol(8);
-                zomboss.setX(8 * PhysicalConstants.TILE_UNIT_LENGTH);
 
                 zomboss.notify("Robot Zomboss landed on column 9!");
 
