@@ -45,7 +45,6 @@ public abstract class Zomboss extends Zombie {
         this.phaseHealth = this.getBaseHp() / 3;
         this.currentPhaseHealth = this.phaseHealth;
         this.setCol(8);
-        this.setX(8 * PhysicalConstants.TILE_UNIT_LENGTH);
         init();
     }
 

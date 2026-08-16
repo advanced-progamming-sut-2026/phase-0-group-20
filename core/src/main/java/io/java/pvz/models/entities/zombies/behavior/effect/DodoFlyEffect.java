@@ -35,7 +35,8 @@ public class DodoFlyEffect extends Effect {
 
         this.startX = zombie.getX();
 
-        this.targetX = (targetCol * PhysicalConstants.TILE_WIDTH) + PhysicalConstants.GRID_START_X + (PhysicalConstants.TILE_WIDTH / 2f);
+        this.targetX = (targetCol * PhysicalConstants.TILE_WIDTH) + PhysicalConstants.GRID_START_X +
+            (PhysicalConstants.TILE_WIDTH / 2f);
     }
 
     @Override

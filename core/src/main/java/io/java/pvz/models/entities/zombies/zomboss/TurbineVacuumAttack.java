@@ -95,7 +95,7 @@ public class TurbineVacuumAttack implements IZombossAttack {
                 float newX = z.getX() + pullSpeed;
                 z.setX(newX);
 
-                int newCol = (int) (newX / PhysicalConstants.TILE_UNIT_LENGTH);
+                int newCol = (int) (newX - PhysicalConstants.GRID_START_X/ PhysicalConstants.TILE_WIDTH);
                 if (newCol != z.getCol()) {
                     z.setCol(newCol);
                 }
