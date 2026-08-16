@@ -21,8 +21,7 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
-import io.java.pvz.views.GameMenu;
-import io.java.pvz.views.screens.GameFlowScreen;
+import io.java.pvz.views.screens.gameflow.GameFlowScreen;
 import pvz.skin.BorderedTable;
 
 public class ScoreLevelModal extends BorderedTable {

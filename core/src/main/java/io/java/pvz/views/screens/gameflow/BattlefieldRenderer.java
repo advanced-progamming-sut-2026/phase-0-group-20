@@ -1,4 +1,4 @@
-package io.java.pvz.views.screens;
+package io.java.pvz.views.screens.gameflow;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
 import io.java.pvz.models.game.Arena;

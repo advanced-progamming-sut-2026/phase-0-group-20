@@ -1,4 +1,4 @@
-package io.java.pvz.views.screens;
+package io.java.pvz.views.screens.gameflow;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
