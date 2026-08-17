@@ -10,7 +10,8 @@ import java.util.List;
 public class SpiderZomboss extends Zomboss {
 
     public SpiderZomboss(int row) {
-        super(ZombieType.NORMAL, row, null, null, null);
+        super(ZombieType.ZOMBOSS_EGYPT
+            , row, null, null, null);
     }
 
     @Override

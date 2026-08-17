@@ -46,7 +46,13 @@ public enum ZombieType {
     ZOMBOTANY_PEASHOOTER("ZombieZombotanyPeashooter", null),
     ZOMBOTANY_WALLNUT("ZombieZombotanyWallnut", null),
     ZOMBOTANY_JALAPENO("ZombieZombotanyJalapeno", null),
-    ZOMBOTANY_SQUASH("ZombieZombotanySquash", null);
+    ZOMBOTANY_SQUASH("ZombieZombotanySquash", null),
+
+    ZOMBOSS_EGYPT("ZombieZombossEgypt", SeasonType.ANCIENT_EGYPT),
+    ZOMBOSS_FROZEN_CAVES("ZombieZombossFrozenCaves", SeasonType.FROZEN_CAVES),
+    ZOMBOSS_DARK_AGES("ZombieZombossDarkAges", SeasonType.DARK_AGES),
+    ZOMBOSS_BEACH("ZombieZombossBeach", SeasonType.BIG_WAVE_BEACH);
+
 
     private final String jsonAlias;
     private final SeasonType type;

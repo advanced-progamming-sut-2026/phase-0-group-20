@@ -32,8 +32,7 @@ public class SharkBiteAttack implements IZombossAttack {
     @Override
     public void onEnter() {
         this.attackTimer = 0;
-
-        zomboss.setState(ZombieState.SPELL);
+        zomboss.setState(ZombieState.BOSS_SHARK);
         zomboss.notify("Zomboss is preparing to release a swarm of mechanical sharks!");
     }
 
@@ -43,8 +42,7 @@ public class SharkBiteAttack implements IZombossAttack {
 
         if (attackTimer == SHOOT_TICK) {
             shootSharks();
-        }
-        else if (attackTimer >= TOTAL_DURATION) {
+        } else if (attackTimer >= TOTAL_DURATION) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);
@@ -74,7 +72,7 @@ public class SharkBiteAttack implements IZombossAttack {
             Position spawnPos = new Position(row, zomboss.getCol());
             spawnPos.setPosition(startX, startY);
 
-            Projectile shark = Projectile.spawnZombieProjectile(
+            Projectile.spawnZombieProjectile(
                 zomboss,
                 ProjectileType.SHARK,
                 99999,

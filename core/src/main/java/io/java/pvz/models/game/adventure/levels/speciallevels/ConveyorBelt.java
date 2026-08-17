@@ -62,7 +62,7 @@ public class ConveyorBelt extends SpecialLevel {
         return 0;
     }
 
-    private void spawnPlantOnBelt() {
+    protected void spawnPlantOnBelt() {
         if (unlockedPlants == null || unlockedPlants.isEmpty()) return;
         Plant template;
        do{

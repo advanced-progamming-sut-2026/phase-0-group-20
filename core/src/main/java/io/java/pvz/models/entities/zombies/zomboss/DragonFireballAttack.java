@@ -1,5 +1,6 @@
 package io.java.pvz.models.entities.zombies.zomboss;
 
+import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
@@ -20,7 +21,7 @@ public class DragonFireballAttack implements IZombossAttack {
     @Override
     public void onEnter() {
         this.attackTimer = 0;
-        // change state
+        zomboss.setState(ZombieState.BOSS_FIREBOMB_START);
     }
 
     @Override
@@ -28,10 +29,11 @@ public class DragonFireballAttack implements IZombossAttack {
         attackTimer++;
 
         if (attackTimer == TimeManager.TICKS_PER_SECOND) {
+            zomboss.setState(ZombieState.BOSS_FIREBOMB_LOOP);
             launchFireballs();
-        }
-
-        if (attackTimer >= 3 * TimeManager.TICKS_PER_SECOND) {
+        } else if (attackTimer == 2 * TimeManager.TICKS_PER_SECOND) {
+            zomboss.setState(ZombieState.BOSS_FIREBOMB_END);
+        } else if (attackTimer >= 3 * TimeManager.TICKS_PER_SECOND) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);
@@ -53,13 +55,10 @@ public class DragonFireballAttack implements IZombossAttack {
             float startY = zomboss.getY() + 40f;
 
             float endX = targetCol * PhysicalConstants.TILE_WIDTH + PhysicalConstants.GRID_START_X;
-            float endY = targetRow * PhysicalConstants.TILE_HEIGHT  + PhysicalConstants.GRID_START_Y;
+            float endY = targetRow * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y;
 
             ZombossFireball fireball = new ZombossFireball(startX, startY, endX, endY, targetCol, targetRow);
             session.getTimeManager().registerNewTicker(fireball);
-
-            //add it to the arena
-            // session.getArena().addProjectile(fireball);
         }
     }
 
@@ -67,6 +66,4 @@ public class DragonFireballAttack implements IZombossAttack {
     public void onExit() {
         this.attackTimer = 0;
     }
-
-
 }

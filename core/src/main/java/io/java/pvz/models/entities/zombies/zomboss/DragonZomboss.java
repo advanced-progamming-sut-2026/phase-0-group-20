@@ -9,7 +9,8 @@ import java.util.List;
 public class DragonZomboss extends Zomboss {
 
     public DragonZomboss(int row) {
-        super(ZombieType.NORMAL, row, null, null, null);
+        super(ZombieType.ZOMBOSS_DARK_AGES
+            , row, null, null, null);
     }
 
     @Override

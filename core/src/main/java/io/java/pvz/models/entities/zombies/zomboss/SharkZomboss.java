@@ -9,7 +9,8 @@ import java.util.List;
 public class SharkZomboss extends Zomboss {
 
     public SharkZomboss(int row) {
-        super(ZombieType.NORMAL, row, null, null, null);
+        super(ZombieType.ZOMBOSS_BEACH
+            , row, null, null, null);
     }
 
     @Override

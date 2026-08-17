@@ -40,13 +40,15 @@ public class MammothFreezingColumn implements IZombossAttack {
         this.allowedZombies = allowedZombies;
     }
 
+    public int getTargetCol() {
+        return targetCol;
+    }
+
     @Override
     public void onEnter() {
         this.attackTimer = 0;
-
         this.targetCol = random.nextInt(6);
-
-        zomboss.setState(ZombieState.SPELL);
+        zomboss.setState(ZombieState.BOSS_GLACIER);
 
         GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
             new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
@@ -63,12 +65,9 @@ public class MammothFreezingColumn implements IZombossAttack {
 
         if (attackTimer == FREEZE_EXECUTION_TICKS) {
             zomboss.notify("Mammoth Zomboss logic is freezing column " + (targetCol + 1) + " now!");
-
             spawnFrozenZombiesInColumn();
-
             freezeTargetColumn();
-        }
-        else if (attackTimer >= TOTAL_DURATION_TICKS) {
+        } else if (attackTimer >= TOTAL_DURATION_TICKS) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);

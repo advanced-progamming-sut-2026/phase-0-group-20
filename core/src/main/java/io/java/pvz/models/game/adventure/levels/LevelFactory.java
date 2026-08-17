@@ -19,8 +19,7 @@ public class LevelFactory {
             case 0, 1 -> new NormalLevel("Level " + (chapterLevelIndex + 1),
                     season, waveCount, baseWaveBudget, chapterLevelIndex + 1);
             case 2 -> createSpecialLevel(season, (chapterLevelIndex + 1), waveCount, baseWaveBudget);
-            case 3 -> new BossLevel("Boss Level" + season.toString().toLowerCase(), season,
-                    waveCount + BOSS_WAVE_ADDITION, baseWaveBudget * BOSS_WAVE_ADDITION, (chapterLevelIndex + 1));
+            case 3 -> new BossLevel("Boss Level - " + season.getName(), season, (chapterLevelIndex + 1));
             default -> throw new IllegalArgumentException("Invalid chapter level index");
         };
     }

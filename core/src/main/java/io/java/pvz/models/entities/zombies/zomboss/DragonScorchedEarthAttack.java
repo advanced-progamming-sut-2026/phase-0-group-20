@@ -26,7 +26,7 @@ public class DragonScorchedEarthAttack implements IZombossAttack {
     @Override
     public void onEnter() {
         this.attackTimer = 0;
-        zomboss.setState(ZombieState.SPELL);
+        zomboss.setState(ZombieState.BOSS_FIRE_ROW);
         zomboss.notify("Dragon Zomboss takes a deep breath...");
     }
 
@@ -85,5 +85,4 @@ public class DragonScorchedEarthAttack implements IZombossAttack {
     public void onExit() {
         this.attackTimer = 0;
     }
-
 }

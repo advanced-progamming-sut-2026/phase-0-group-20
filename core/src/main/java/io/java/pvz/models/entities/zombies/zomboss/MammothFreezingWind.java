@@ -11,7 +11,8 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
-public class MammothFreezingWind implements IZombossAttack{
+
+public class MammothFreezingWind implements IZombossAttack {
     private final Zomboss zomboss;
     private final IdleZombossAttack idleState;
 
@@ -26,8 +27,7 @@ public class MammothFreezingWind implements IZombossAttack{
     @Override
     public void onEnter() {
         this.attackTimer = 0;
-
-        zomboss.setState(ZombieState.SPELL);
+        zomboss.setState(ZombieState.BOSS_WIND);
         zomboss.notify("Mammoth Zomboss is taking a deep breath of freezing air...");
     }
 
@@ -68,7 +68,6 @@ public class MammothFreezingWind implements IZombossAttack{
             }
         }
     }
-
 
     private void instantFreezePlant(Plant plant, Arena arena, GameSession session, Tile tile) {
         int row = tile.getRow();

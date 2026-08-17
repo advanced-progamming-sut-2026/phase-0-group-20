@@ -89,7 +89,9 @@ public class GameInitializer {
             System.out.println("Successfully loaded zombies into the Factory.");
 
             for (ZombieType type : ZombieType.values()) {
-
+                if(type == ZombieType.ZOMBOSS_BEACH || type == ZombieType.ZOMBOSS_EGYPT||
+                type == ZombieType.ZOMBOSS_DARK_AGES || type == ZombieType.ZOMBOSS_FROZEN_CAVES)
+                    continue;
                 Zombie testZombie = ZombieFactory.createTemplate(type);
                 loadedTestZombies.add(testZombie);
 

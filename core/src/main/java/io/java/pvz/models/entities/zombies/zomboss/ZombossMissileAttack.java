@@ -10,7 +10,7 @@ import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.Random;
 
-public class ZombossMissileAttack implements IZombossAttack{
+public class ZombossMissileAttack implements IZombossAttack {
     private final Zomboss zomboss;
     private final IdleZombossAttack idleState;
     private final MissileImpactBehavior impactBehavior;
@@ -32,9 +32,9 @@ public class ZombossMissileAttack implements IZombossAttack{
 
         GameSession session = GameSession.getInstance();
         this.targetRow = random.nextInt(session.getArena().getRows());
-        this.targetCol = random.nextInt(session.getArena().getCols()-2);
+        this.targetCol = random.nextInt(session.getArena().getCols() - 2);
 
-        zomboss.setState(ZombieState.SPECIAL);
+        zomboss.setState(ZombieState.BOSS_MISSILE);
 
         GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
             new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
@@ -63,10 +63,8 @@ public class ZombossMissileAttack implements IZombossAttack{
     private void launchMissile() {
         GameSession session = GameSession.getInstance();
 
-        float endX = targetCol * PhysicalConstants.TILE_WIDTH +
-            PhysicalConstants.GRID_START_X + PhysicalConstants.TILE_WIDTH/2 ;
-        float endY = targetRow * PhysicalConstants.TILE_HEIGHT +
-            PhysicalConstants.GRID_START_Y +  PhysicalConstants.TILE_HEIGHT/2;
+        float endX = targetCol * PhysicalConstants.TILE_WIDTH + PhysicalConstants.GRID_START_X + PhysicalConstants.TILE_WIDTH / 2f;
+        float endY = targetRow * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y + PhysicalConstants.TILE_HEIGHT / 2f;
 
         ZombossMissile missile = new ZombossMissile(endX, endY, targetRow, targetCol, impactBehavior);
         session.getTimeManager().registerNewTicker(missile);
@@ -76,6 +74,4 @@ public class ZombossMissileAttack implements IZombossAttack{
     public void onExit() {
         this.attackTimer = 0;
     }
-
-
 }

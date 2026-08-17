@@ -11,7 +11,8 @@ import java.util.List;
 public class MammothZomboss extends Zomboss {
 
     public MammothZomboss(int row) {
-        super(ZombieType.NORMAL, row, null, null, null);
+        super(ZombieType.ZOMBOSS_FROZEN_CAVES
+            , row, null, null, null);
     }
 
     @Override
