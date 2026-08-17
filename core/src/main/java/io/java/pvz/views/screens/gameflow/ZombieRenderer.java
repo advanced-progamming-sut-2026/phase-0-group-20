@@ -181,18 +181,24 @@ public class ZombieRenderer {
                 case BOSS_SUMMON_END -> pickClip(anim, "spawn", "zombie_portal_end", "slingshot", "summoning");
                 case BOSS_GLACIER -> {
                     if (zomboss.getAttackBehavior() instanceof MammothFreezingColumn colAttack) {
-                        int animIndex = colAttack.getTargetCol() + 1;
+                        int animIndex = ( 6 - colAttack.getTargetCol());
                         yield "glacier_column_" + animIndex;
                     }
                     yield "glacier_column_1";
                 }
-                case BOSS_MISSILE -> (zomboss instanceof MammothZomboss)? "slingshot" : "missile_start";
+                case BOSS_MISSILE_START -> (zomboss instanceof MammothZomboss)? "slingshot" : "missile_start";
+                case BOSS_MISSILE_LAUNCH -> "rocket_launch";
                 case BOSS_DASH -> "walk_forward";
-                case BOSS_JUMP -> "jump_start";
+                case BOSS_JUMP_START -> "jump_start";
+                case BOSS_JUMP_MID -> "jump_mid";
+                case BOSS_JUMP_LAND -> "jump_land";
                 case BOSS_WIND -> "wind_1";
-                case BOSS_FIRE_ROW -> "fire_attack";
+                case BOSS_FIRE_ROW_START -> "fire_attack";
+                case BOSS_FIRE_ROW_LOOP -> "fire_attack_idle";
+                case BOSS_FIRE_ROW_END -> "fire_attack_end";
                 case BOSS_SHARK -> "spawn";
                 case STUNNED -> pickClip(anim, "idle", "stun_loop", "stun");
+                case BOSS_IDLE -> "idle";
                 default -> pickClip(anim, "idle", "idle");
             };
         }

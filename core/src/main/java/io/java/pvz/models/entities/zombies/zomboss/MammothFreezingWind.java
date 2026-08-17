@@ -8,6 +8,9 @@ import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ public class MammothFreezingWind implements IZombossAttack {
 
         if (attackTimer == TimeManager.TICKS_PER_SECOND) {
             blowFreezingWind();
+
         }
 
         if (attackTimer >= totalDurationTicks) {
@@ -49,7 +53,11 @@ public class MammothFreezingWind implements IZombossAttack {
     private void blowFreezingWind() {
         GameSession session = GameSession.getInstance();
         Arena arena = session.getArena();
-
+        GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+            new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                .message("BOSS_WIND")
+                .coordinate(zomboss.getRow(), zomboss.getSecondRow())
+                .build());
         int[] targetRows = {zomboss.getRow(), zomboss.getSecondRow()};
 
         for (int row : targetRows) {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.entities.obstacle.GraveHolder;
 import io.java.pvz.models.fields.tiles.*;
 import io.java.pvz.models.game.Arena;
@@ -11,6 +12,7 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
+import io.java.pvz.utils.UiFactory;
 
 import java.util.*;
 
@@ -25,6 +27,7 @@ public class EnvironmentRenderer {
     private final Map<Tile, PamAnimatedActor> waterActors = new HashMap<>();
     private final Map<Tile, PamAnimatedActor> vaseActors = new HashMap<>();
 
+    private final Map<Tile, Image> firedActors = new HashMap<>();
     private PamAnimatedActor bigWaveForeground;
     PamAnimatedActor maxLineAnimation;
     private final Map<Tile, Image> darkOverlayActors = new HashMap<>();
@@ -38,6 +41,7 @@ public class EnvironmentRenderer {
         pixmap.fill();
         darkTexture = new Texture(pixmap);
         pixmap.dispose();
+
     }
 
     public void sync(Arena arena) {
@@ -49,6 +53,8 @@ public class EnvironmentRenderer {
         Set<Tile> activeVases = new HashSet<>();
         Set<Tile> activeDarkTiles = new HashSet<>();
 
+        Set<Tile> activeFiredTiles = new HashSet<>();
+
         List<Tile> allTiles = new ArrayList<>();
 
         for (Tile[] row : arena.getTiles()) {
@@ -56,6 +62,19 @@ public class EnvironmentRenderer {
                 allTiles.add(tile);
                 float pixelX = tile.getCol() * TILE_WIDTH + GRID_START_X;
                 float pixelY = tile.getRow() * TILE_HEIGHT + GRID_START_Y;
+
+                if (tile.isFired()) {
+                    activeFiredTiles.add(tile);
+                    Image firedImg = firedActors.computeIfAbsent(tile, t -> {
+                        Image img = UiFactory.imageFor(AssetLoader.getInstance().getTextures(),
+                            "IMAGE_ZOMBIE_ZOMBIE_DARK_ZOMBOSS_ZOMBIE_DARK_ZOMBOSS_177X196");
+                        img.setSize(TILE_WIDTH+60f, TILE_HEIGHT+80f);
+                        layerGroup.addActor(img);
+                        return img;
+                    });
+                    firedImg.setPosition(pixelX-30f, pixelY-40f);
+                    firedImg.toBack();
+                }
 
                 boolean shouldBeDark = tile instanceof NecromanceTile ||
                     (tile instanceof LowShoreTile lt && !lt.isFlooded());
@@ -66,10 +85,10 @@ public class EnvironmentRenderer {
                         Image img = new Image(darkTexture);
                         img.setSize(TILE_WIDTH, TILE_HEIGHT);
                         layerGroup.addActor(img);
-                        img.toBack();
                         return img;
                     });
                     overlay.setPosition(pixelX, pixelY);
+                    overlay.toBack();
                 }
 
                 Iterator<Map.Entry<Tile, Image>> darkIt = darkOverlayActors.entrySet().iterator();
@@ -78,6 +97,15 @@ public class EnvironmentRenderer {
                     if (!activeDarkTiles.contains(entry.getKey())) {
                         entry.getValue().remove();
                         darkIt.remove();
+                    }
+                }
+
+                Iterator<Map.Entry<Tile, Image>> firedIt = firedActors.entrySet().iterator();
+                while (firedIt.hasNext()) {
+                    Map.Entry<Tile, Image> entry = firedIt.next();
+                    if (!activeFiredTiles.contains(entry.getKey())) {
+                        entry.getValue().remove();
+                        firedIt.remove();
                     }
                 }
 
@@ -195,6 +223,7 @@ public class EnvironmentRenderer {
         slipperyActors.clear();
         waterActors.clear();
         vaseActors.clear();
+        firedActors.clear();
     }
 
     private String resolveGraveClip(int currentHp) {
@@ -219,4 +248,3 @@ public class EnvironmentRenderer {
         actor.setPosition(pixelX - actor.getWidth() / 2f, pixelY - actor.getHeight() / 2f);
     }
 }
-//IMAGE_BACKGROUNDS_WATER_TIDE_LINE_WATER_TIDE_LINE_161X397

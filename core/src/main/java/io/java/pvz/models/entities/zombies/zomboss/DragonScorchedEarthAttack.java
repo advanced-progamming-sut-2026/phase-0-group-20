@@ -16,7 +16,12 @@ public class DragonScorchedEarthAttack implements IZombossAttack {
     private final Zomboss zomboss;
     private final IdleZombossAttack idleState;
     private int attackTimer;
-    private final int totalDurationTicks = 3 * TimeManager.TICKS_PER_SECOND;
+
+    // زمان‌بندی دقیق منطبق با انیمیشن‌ها
+    private static final int START_DURATION_TICKS = (int) (1.83f * TimeManager.TICKS_PER_SECOND);
+    private static final int LOOP_DURATION_TICKS = (int) (0.85f * TimeManager.TICKS_PER_SECOND);
+    private static final int END_DURATION_TICKS = (int) (0.83f * TimeManager.TICKS_PER_SECOND);
+    private static final int TOTAL_DURATION_TICKS = START_DURATION_TICKS + LOOP_DURATION_TICKS + END_DURATION_TICKS;
 
     public DragonScorchedEarthAttack(Zomboss zomboss, IdleZombossAttack idleState) {
         this.zomboss = zomboss;
@@ -26,7 +31,7 @@ public class DragonScorchedEarthAttack implements IZombossAttack {
     @Override
     public void onEnter() {
         this.attackTimer = 0;
-        zomboss.setState(ZombieState.BOSS_FIRE_ROW);
+        zomboss.setState(ZombieState.BOSS_FIRE_ROW_START);
         zomboss.notify("Dragon Zomboss takes a deep breath...");
     }
 
@@ -34,11 +39,14 @@ public class DragonScorchedEarthAttack implements IZombossAttack {
     public void execute() {
         attackTimer++;
 
-        if (attackTimer == TimeManager.TICKS_PER_SECOND) {
+        if (attackTimer == START_DURATION_TICKS) {
+            zomboss.setState(ZombieState.BOSS_FIRE_ROW_LOOP);
             burnRows();
         }
-
-        if (attackTimer >= totalDurationTicks) {
+        else if (attackTimer == START_DURATION_TICKS + LOOP_DURATION_TICKS) {
+            zomboss.setState(ZombieState.BOSS_FIRE_ROW_END);
+        }
+        else if (attackTimer >= TOTAL_DURATION_TICKS) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);
@@ -62,7 +70,7 @@ public class DragonScorchedEarthAttack implements IZombossAttack {
             GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
                 new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
                     .message("SCORCHED_EARTH_ROW")
-                    .coordinate(r, 0)
+                    .coordinate(zomboss.getRow(), zomboss.getSecondRow())
                     .build());
         }
 
@@ -77,6 +85,7 @@ public class DragonScorchedEarthAttack implements IZombossAttack {
             }
 
             tile.setCrater(true);
+            tile.setFired(true);
             tile.setCraterTimer(4 * TimeManager.TICKS_PER_SECOND);
         }
     }

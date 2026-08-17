@@ -9,6 +9,9 @@ import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.game.GameMode;
+import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.levels.BossLevel;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.utils.Ids;
@@ -181,7 +184,128 @@ public class EffectRenderer {
             Actions.removeActor()
         ));
     }
+    public void spawnTargetMarker(int col, int row) {
+        String pamPath = "768/INITIAL/EFFECTS/ZOMBOSS_MISSILE_EXPLOSION_EGYPT/ZOMBOSS_MISSILE_EXPLOSION_EGYPT.PAM";
 
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
+            "missile_lock_reticle", pamPath);
+        actor.setSize(TILE_WIDTH, TILE_HEIGHT);
+        actor.setOrigin(Align.center);
+
+        float x = GRID_START_X + col * TILE_WIDTH;
+        float y = GRID_START_Y + row * TILE_HEIGHT +70f;
+        actor.setPosition(x, y);
+
+        effectLayer.addActor(actor);
+        actor.addAction(Actions.sequence(
+            Actions.delay(5.35f),
+            Actions.fadeOut(0.2f),
+            Actions.removeActor()
+        ));
+    }
+
+    public void spawnFallingMissile(int col, int row) {
+        GameMode mode = GameSession.getInstance().getCurrentMode();
+        String pamPath = " ";
+        if(mode instanceof BossLevel level){
+            switch(level.getSeason()){
+                case FROZEN_CAVES ->
+                    pamPath = "768/FULL/EFFECTS/ZOMBOSS_MISSILE_EXPLOSION_ICEAGE/ZOMBOSS_MISSILE_EXPLOSION_ICEAGE.PAM";
+                default ->
+                    pamPath = "768/INITIAL/EFFECTS/ZOMBOSS_MISSILE_EXPLOSION_EGYPT/ZOMBOSS_MISSILE_EXPLOSION_EGYPT.PAM";
+            }
+        }
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "missile", pamPath);
+        actor.setSize(80f, 150f);
+        actor.setOrigin(Align.center);
+
+        float targetX = col * TILE_WIDTH +
+            GRID_START_X + TILE_WIDTH / 2f;
+        float targetY = row * TILE_HEIGHT +
+            GRID_START_Y + TILE_HEIGHT / 2f;
+
+        float startY = targetY + 900f;
+        actor.setPosition(targetX - actor.getWidth() / 2f, startY);
+
+        effectLayer.addActor(actor);
+        actor.addAction(Actions.sequence(
+            Actions.delay(0.5f),
+            Actions.moveTo(targetX - actor.getWidth() / 2f, targetY, 1.5f, Interpolation.pow2In),
+            Actions.removeActor()
+        ));
+    }
+
+    public void spawnMissileExplosion(float x, float y) {
+        GameMode mode = GameSession.getInstance().getCurrentMode();
+        float delay = 1.7f;
+        String pamPath = " ";
+        if(mode instanceof BossLevel level){
+            switch(level.getSeason()){
+                case FROZEN_CAVES -> {
+                    pamPath = "768/FULL/EFFECTS/ZOMBOSS_MISSILE_EXPLOSION_ICEAGE/ZOMBOSS_MISSILE_EXPLOSION_ICEAGE.PAM";
+                    delay = 0.65f;
+                }
+                default ->
+                    pamPath = "768/INITIAL/EFFECTS/ZOMBOSS_MISSILE_EXPLOSION_EGYPT/ZOMBOSS_MISSILE_EXPLOSION_EGYPT.PAM";
+            }
+        }
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
+            "missile_explosion", pamPath);
+        actor.setSize(TILE_WIDTH * 2, TILE_HEIGHT * 2);
+        actor.setOrigin(Align.center);
+
+        actor.setPosition(x - actor.getWidth() / 2f, y - actor.getHeight() / 2f + 90f);
+
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(delay),
+            Actions.removeActor()
+        ));
+    }
+    public void spawnFallingFireball(int col, int row) {
+        String pamPath = "768/FULL/EFFECTS/ZOMBOSS_DARK_FIREBALL/ZOMBOSS_DARK_FIREBALL.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "fall", pamPath);
+        actor.setSize(80f, 150f);
+        actor.setOrigin(Align.center);
+
+        float targetX = col * TILE_WIDTH +
+            GRID_START_X + TILE_WIDTH / 2f;
+        float targetY = (5 - row) *TILE_HEIGHT +
+           GRID_START_Y +TILE_HEIGHT / 2f;
+
+        float startY = targetY + 900f;
+        actor.setPosition(targetX - actor.getWidth() / 2f, startY);
+
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.0f),
+            Actions.moveTo(targetX - actor.getWidth() / 2f, targetY, 1.0f, Interpolation.pow2In),
+            Actions.removeActor()
+        ));
+    }
+
+    public void spawnFireballExplosion(float x ,float y) {
+        String pamPath = "768/FULL/EFFECTS/ZOMBOSS_DARK_FIREBALL/ZOMBOSS_DARK_FIREBALL.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
+            "impact", pamPath);
+        actor.setSize(TILE_WIDTH * 2, TILE_HEIGHT * 2);
+        actor.setOrigin(Align.center);
+
+        actor.setPosition(x - actor.getWidth() / 2f, y - actor.getHeight() / 2f + 90f);
+
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.35f),
+            Actions.removeActor()
+        ));
+    }
     public void spawnHunterIceHitEffect(int col, int row) {
         String pamPath1 = "768/FULL/EFFECTS/ZOMBIE_HUNTER_SNOWBALL_SPLAT/ZOMBIE_HUNTER_SNOWBALL_SPLAT.PAM";
         String pamPath2 = "768/INITIAL/EFFECTS/ZOMBIE_HUNTER_SNOWBALL_SPLAT/ZOMBIE_HUNTER_SNOWBALL_SPLAT.PAM";

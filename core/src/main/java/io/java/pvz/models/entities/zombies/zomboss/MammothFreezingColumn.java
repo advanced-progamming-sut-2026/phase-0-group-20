@@ -98,11 +98,11 @@ public class MammothFreezingColumn implements IZombossAttack {
         List<Integer> selectedRows = new ArrayList<>();
 
         for (int r : emptyRows) {
-            if (selectedRows.size() < 2) selectedRows.add(r);
+            if (selectedRows.size() < 1) selectedRows.add(r);
         }
 
         for (int r : occupiedRows) {
-            if (selectedRows.size() < 2) selectedRows.add(r);
+            if (selectedRows.size() < 1) selectedRows.add(r);
         }
 
         int spawnedCount = 0;

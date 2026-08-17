@@ -416,7 +416,7 @@ public final class AnimationCatalog {
             "reveal",0.68f,"stun" , 1.0f,"die", 4.05f);
         registerZombie(table,ZombieType.ZOMBOSS_DARK_AGES,
             "768/FULL/ZOMBIE/ZOMBIE_DARK_ZOMBOSS/ZOMBIE_DARK_ZOMBOSS.PAM","intro",10.4f,"idle",3.35f,
-            "fire_attack",1.83f,"fire_attack_idle",0.85f,"fire_bomb", 1.85f,"fire_bomb_loop",0.53f,"fire_bomb_end",0.95f
+            "fire_attack",1.83f,"fire_attack_idle",0.85f,"fire_attack_end",0.83f,"fire_bomb", 1.85f,"fire_bomb_loop",0.53f,"fire_bomb_end",0.95f
         ,"summoning",2.15f,"stun_start",0.45f,"stun_loop",0.82f,"stun_end",0.5f,"die",5.7f);
         registerZombie(table,ZombieType.ZOMBOSS_BEACH,
             "768/FULL/ZOMBIE/ZOMBIE_BEACH_ZOMBOSS/ZOMBIE_BEACH_ZOMBOSS.PAM","intro",6.22f,"idle",4.0f,
