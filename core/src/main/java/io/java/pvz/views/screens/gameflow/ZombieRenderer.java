@@ -186,7 +186,8 @@ public class ZombieRenderer {
                     }
                     yield "glacier_column_1";
                 }
-                case BOSS_MISSILE -> (zomboss instanceof MammothZomboss)? "slingshot" : "missile_start";
+                case BOSS_MISSILE_START -> (zomboss instanceof MammothZomboss)? "slingshot" : "missile_start";
+                case BOSS_MISSILE_LAUNCH -> "rocket_launch";
                 case BOSS_DASH -> "walk_forward";
                 case BOSS_JUMP_START -> "jump_start";
                 case BOSS_JUMP_MID -> "jump_mid";

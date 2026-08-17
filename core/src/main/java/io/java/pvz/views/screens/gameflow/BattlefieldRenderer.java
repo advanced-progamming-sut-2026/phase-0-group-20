@@ -102,6 +102,12 @@ public class BattlefieldRenderer implements GameEventListener {
                 effectRenderer.spawnWindEffect(payload.getRow());
             } else if ("SANDSTORM_START".equals(payload.getMessage())) {
                 effectRenderer.spawnSandstormEffect(payload.getZombie());
+            } else if ("TARGET_LOCKED".equals(payload.getMessage())) {
+                effectRenderer.spawnTargetMarker(payload.getCol(), payload.getRow());
+            } else if ("MISSILE_LAUNCHED".equals(payload.getMessage())) {
+                effectRenderer.spawnFallingMissile(payload.getCol(), payload.getRow());
+            } else if ("MISSILE_EXPLOSION".equals(payload.getMessage())) {
+                effectRenderer.spawnMissileExplosion(payload.getPixelX(), payload.getPixelY());
             }
         } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
             String msg = String.valueOf(payload.getMessage());

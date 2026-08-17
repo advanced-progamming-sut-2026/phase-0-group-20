@@ -20,6 +20,10 @@ public class ZombossMissileAttack implements IZombossAttack {
     private int targetCol;
     private final Random random = new Random();
 
+    private static final int START_DURATION_TICKS = (int) (3.35f * TimeManager.TICKS_PER_SECOND);
+    private static final int LAUNCH_DURATION_TICKS = (int) (1.8f * TimeManager.TICKS_PER_SECOND);
+    private static final int TOTAL_DURATION_TICKS = START_DURATION_TICKS + LAUNCH_DURATION_TICKS;
+
     public ZombossMissileAttack(Zomboss zomboss, IdleZombossAttack idleState, MissileImpactBehavior impactBehavior) {
         this.zomboss = zomboss;
         this.idleState = idleState;
@@ -34,7 +38,7 @@ public class ZombossMissileAttack implements IZombossAttack {
         this.targetRow = random.nextInt(session.getArena().getRows());
         this.targetCol = random.nextInt(session.getArena().getCols() - 2);
 
-        zomboss.setState(ZombieState.BOSS_MISSILE);
+        zomboss.setState(ZombieState.BOSS_MISSILE_START);
 
         GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
             new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
@@ -42,18 +46,17 @@ public class ZombossMissileAttack implements IZombossAttack {
                 .coordinate(targetRow, targetCol)
                 .build());
 
-        zomboss.notify("Zomboss locked a missile on row " + (targetRow + 1) + "!");
+        zomboss.notify("Zomboss missile on row " + (targetRow + 1) +"and col " + (targetCol+1) + "!");
     }
 
     @Override
     public void execute() {
         attackTimer++;
 
-        if (attackTimer == 2 * TimeManager.TICKS_PER_SECOND) {
+        if (attackTimer == START_DURATION_TICKS) {
+            zomboss.setState(ZombieState.BOSS_MISSILE_LAUNCH);
             launchMissile();
-        }
-
-        if (attackTimer >= 3 * TimeManager.TICKS_PER_SECOND) {
+        } else if (attackTimer >= TOTAL_DURATION_TICKS) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);
@@ -63,9 +66,16 @@ public class ZombossMissileAttack implements IZombossAttack {
     private void launchMissile() {
         GameSession session = GameSession.getInstance();
 
-        float endX = targetCol * PhysicalConstants.TILE_WIDTH + PhysicalConstants.GRID_START_X + PhysicalConstants.TILE_WIDTH / 2f;
-        float endY = targetRow * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y + PhysicalConstants.TILE_HEIGHT / 2f;
-
+        float endX = targetCol * PhysicalConstants.TILE_WIDTH +
+            PhysicalConstants.GRID_START_X + PhysicalConstants.TILE_WIDTH / 2f;
+        float endY = (5- targetRow) * PhysicalConstants.TILE_HEIGHT +
+            PhysicalConstants.GRID_START_Y + PhysicalConstants.TILE_HEIGHT / 2f;
+        GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+            new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                .message("MISSILE_LAUNCHED")
+                .pixelCoordinate(endX, endY)
+                .coordinate(targetRow, targetCol)
+                .build());
         ZombossMissile missile = new ZombossMissile(endX, endY, targetRow, targetCol, impactBehavior);
         session.getTimeManager().registerNewTicker(missile);
     }

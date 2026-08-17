@@ -15,7 +15,7 @@ public class RobotDashAttack implements IZombossAttack {
 
     private static final int JUMP_START_TICKS = (int) (0.7f * TimeManager.TICKS_PER_SECOND);
     private static final int JUMP_MID_TICKS = (int) (0.45f * TimeManager.TICKS_PER_SECOND);
-    private static final int JUMP_LAND_TICKS = (int) (0.75f * TimeManager.TICKS_PER_SECOND);
+    private static final int JUMP_LAND_TICKS = (int) (0.7f * TimeManager.TICKS_PER_SECOND);
 
     private float jumpStartX;
     private float targetX;
