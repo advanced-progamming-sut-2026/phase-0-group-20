@@ -208,7 +208,12 @@ public class EnvironmentRenderer {
 
             bigWaveForeground.setScaleY(0.75f);
 
-            bigWaveForeground.setPosition((minWaterCol + 5) * TILE_WIDTH + GRID_START_X, gridCenterY);
+            float targetX = (minWaterCol + 5) * TILE_WIDTH + GRID_START_X;
+            float currentX = bigWaveForeground.getX();
+
+            if (currentX == 0) currentX = targetX;
+            currentX += (targetX - currentX) * 0.05f; //lerp
+            bigWaveForeground.setPosition(currentX, gridCenterY);
         }
 
         despawnMissingTiles(graveActors, activeGraves);

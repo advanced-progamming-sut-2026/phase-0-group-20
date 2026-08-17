@@ -1,7 +1,7 @@
 package io.java.pvz.models.entities.obstacle;
 
-import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.effect.FreezeEffect;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
@@ -70,9 +70,17 @@ public class IceBlock extends PushableObstacle implements Ticker {
         }
 
         if (frozenPlant != null) {
+            frozenPlant.setFrozen(false);
+            frozenPlant.getActiveEffects().removeIf(effect ->
+                effect instanceof FreezeEffect);
             if (thisTile != null) thisTile.addPlant(frozenPlant);
             session.getArena().addPlant(frozenPlant);
             session.getTimeManager().registerNewTicker(frozenPlant);
+            GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+                new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                    .message("REMOVE_ICE_OVERLAY")
+                    .plant(frozenPlant)
+                    .build());
             frozenPlant = null;
         }
 
@@ -101,5 +109,9 @@ public class IceBlock extends PushableObstacle implements Ticker {
             new GameEventPayload.Builder(GameEvent.NOTIFY)
                 .message("IceBlock melted at [" + position.getRow() + "][" + position.getCol() + "]!")
                 .build());
+    }
+
+    public Plant getFrozenPlant() {
+        return frozenPlant;
     }
 }

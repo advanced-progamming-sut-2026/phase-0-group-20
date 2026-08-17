@@ -14,10 +14,7 @@ import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
-import io.java.pvz.models.entities.obstacle.ArcadeMachine;
-import io.java.pvz.models.entities.obstacle.Barrel;
-import io.java.pvz.models.entities.obstacle.Piano;
-import io.java.pvz.models.entities.obstacle.PushableObstacle;
+import io.java.pvz.models.entities.obstacle.*;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.fields.Brain;
@@ -51,6 +48,7 @@ public class WorldItemRenderer {
     private final Map<LawnMower, PamAnimatedActor> lawnMowerActors = new HashMap<>();
     private final Map<PushableObstacle, PamAnimatedActor> obstacleActors = new HashMap<>();
     private final Map<Brain, Image> brainActors = new HashMap<>();
+    private final Map<IceBlock, PamAnimatedActor> fakePlantActors = new HashMap<>();
 
     private Image redLineActor;
     private final Texture redLineTexture;
@@ -392,8 +390,13 @@ public class WorldItemRenderer {
         Iterator<Map.Entry<PushableObstacle, PamAnimatedActor>> it = obstacleActors.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<PushableObstacle, PamAnimatedActor> entry = it.next();
-            if (!liveObstacles.contains(entry.getKey())) {
+            PushableObstacle obs = entry.getKey();
+            if (!liveObstacles.contains(obs)) {
                 entry.getValue().remove();
+                if (obs instanceof IceBlock ib && fakePlantActors.containsKey(ib)) {
+                    fakePlantActors.get(ib).remove();
+                    fakePlantActors.remove(ib);
+                }
                 it.remove();
             }
         }
@@ -408,7 +411,26 @@ public class WorldItemRenderer {
         } else if (obs instanceof Piano) {
             pamPath = "768/FULL/ZOMBIE/PIANO/PIANO.PAM";
             defaultClip = "play";
-        } else
+        } else if (obs instanceof IceBlock ib && ib.getFrozenPlant() != null) {
+            pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_PLANT/FROSTBITE_ICE_BLOCK_PLANT.PAM";
+            defaultClip = "freeze_idle";
+
+            String plantAnimName = UiFactory.getAnimationName(ib.getFrozenPlant());
+            AnimationCatalog.EntityAnimation plantAnim = AnimationCatalog.getPlantAnimation(plantAnimName);
+            if (plantAnim != null) {
+                PamAnimatedActor fakePlant = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "idle", plantAnim.path) {
+                    @Override
+                    public void act(float delta) {
+                        super.act(0f);
+                    }
+                };
+                fakePlant.setSize(TILE_WIDTH, TILE_HEIGHT);
+                fakePlant.setOrigin(Align.center);
+                zombieLayer.addActor(fakePlant);
+                fakePlantActors.put(ib, fakePlant);
+            }
+        }
+        else
             pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_ZOMBIE/FROSTBITE_ICE_BLOCK_ZOMBIE.PAM";
 
         PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, defaultClip);
@@ -423,11 +445,30 @@ public class WorldItemRenderer {
 
         if (obs instanceof Piano) offsetY = 40f;
 
-        centerOnPoint(actor, obs.getX(), obs.getPosition().getY() + actor.getHeight() / 2f + offsetY);
+        float targetX = obs.getX();
+        float targetY = obs.getPosition().getY() + actor.getHeight() / 2f + offsetY;
+
+        centerOnPoint(actor, targetX, targetY);
 
         if (obs instanceof Piano piano) {
             String targetClip = piano.isPlaying() ? "play" : "idle";
             if (!actor.getClip().equals(targetClip)) actor.setClip(targetClip);
+        }
+
+        if (obs instanceof IceBlock ib) {
+            if (ib.getFrozenPlant() != null) {
+                actor.getColor().a = 0.35f;
+
+                PamAnimatedActor fakePlant = fakePlantActors.get(ib);
+                if (fakePlant != null) {
+                    centerOnPoint(fakePlant, targetX, targetY);
+                    fakePlant.toBack();
+                }
+            } else {
+                actor.getColor().a = 1.0f;
+            }
+        } else {
+            actor.getColor().a = 1.0f;
         }
     }
 

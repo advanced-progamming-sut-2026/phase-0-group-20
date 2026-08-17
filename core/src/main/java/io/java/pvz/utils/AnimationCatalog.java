@@ -169,7 +169,7 @@ public final class AnimationCatalog {
             "idle", 2.1667f, "idle2", 3.7667f, "attack", 1.4667f, "water", 2.0333f);
         register(table, "JALAPENO", "768/INITIAL/PLANT/JALAPENO/JALAPENO.PAM",
             "idle", 0.6667f, "attack", 0.6667f, "water", 1.6667f);
-        register(table, "KERNELPULT", "768/INITIAL/PLANT/KERNALPULT/KERNALPULT.PAM",
+        register(table, "KERNALPULT", "768/INITIAL/PLANT/KERNALPULT/KERNALPULT.PAM",
             "idle", 2.0f, "attack", 1.8667f, "attack2", 1.8333f, "plantfood", 1.5667f, "water", 2.6f);
         register(table, "KIWIBEAST", "768/INITIAL/PLANT/KIWIBEAST/KIWIBEAST.PAM",
             "idle_stage1_", 1.0f, "idle_stage1_2", 1.0f, "idle_stage1_3", 1.7667f, "attack_stage1", 1.4333f,

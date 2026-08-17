@@ -24,12 +24,10 @@ public class FreezeEffect implements PlantEffect {
     public void addStack(Plant plant) {
         if (stacks < 3) {
             stacks++;
-            notify(plant.getName() + " got hit by ice! Stacks: " + stacks);
 
-            if (stacks >= 3) {
+            if (stacks >= 3)
                 plant.setFrozen(true);
-                notify(plant.getName() + " is FROZEN!");
-            }
+
             sendOverlayEvent(plant);
         }
     }

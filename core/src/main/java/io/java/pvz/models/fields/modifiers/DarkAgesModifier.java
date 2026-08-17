@@ -59,9 +59,9 @@ public class DarkAgesModifier implements SeasonModifier {
         int placed = 0;
 
         long remainTiles = Arrays.stream(arena.getTiles())
-                .flatMap(Arrays::stream)
-                .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
-                .count();
+            .flatMap(Arrays::stream)
+            .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
+            .count();
 
         while (placed < numberOfTiles && remainTiles > 0) {
             int randomRow = rand.nextInt(rows);
@@ -87,9 +87,9 @@ public class DarkAgesModifier implements SeasonModifier {
         int gravesToSpawn = rand.nextInt(2) + 1 + getCurrentLevelNumber();
 
         long remainTiles = Arrays.stream(arena.getTiles())
-                .flatMap(Arrays::stream)
-                .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
-                .count();
+            .flatMap(Arrays::stream)
+            .filter(t -> t instanceof NormalTile && t.getPlants().isEmpty() && t.getCol() >= cols / 2)
+            .count();
 
         int attempts = 0;
         int maxAttempts = 100;
@@ -142,10 +142,12 @@ public class DarkAgesModifier implements SeasonModifier {
                     hauntedTiles.add(necromanceTile);
 
         for (NecromanceTile tile : hauntedTiles) {
-            Zombie zombie = ZombieFactory.create(ZombieType.NORMAL, tile.getRow());
-            tile.spawnZombieFromBelow(zombie);
-            notify("A zombie crawled out from under the grave at row "
+            if (rand.nextDouble() < 0.5) {
+                Zombie zombie = ZombieFactory.create(ZombieType.NORMAL, tile.getRow());
+                tile.spawnZombieFromBelow(zombie);
+                notify("A zombie crawled out from under the grave at row "
                     + (tile.getRow() + 1) + ", col " + (tile.getCol() + 1) + "!");
+            }
         }
     }
 }

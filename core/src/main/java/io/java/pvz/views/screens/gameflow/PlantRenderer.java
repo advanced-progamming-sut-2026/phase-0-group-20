@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
+import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.DigestionStrategy;
 import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
@@ -73,10 +74,17 @@ public class PlantRenderer {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
         String clip = resolvePlantClip(plant);
 
-        PamAnimatedActor actor = anim != null
-            ? PamAnimatedActor.createEffectAnimated(anim.path, clip)
-            : PamAnimatedActor.createPlantAnimated(UiFactory.getAtlasName(plant), clip);
-
+        PamAnimatedActor actor;
+        if (anim != null) {
+            actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), clip, anim.path) {
+                @Override
+                public void act(float delta) {
+                    super.act(plant.isFrozen() ? 0f : delta);
+                }
+            };
+        } else {
+            actor = PamAnimatedActor.createPlantAnimated(UiFactory.getAtlasName(plant), clip);
+        }
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
         plantLayer.addActor(actor);
@@ -235,6 +243,8 @@ public class PlantRenderer {
                 plantLayer.addActor(freezeActor);
                 plantFreezeOverlays.put(plant, freezeActor);
             }
+
+            freezeActor.getColor().a = 0.4f;
             freezeActor.setPosition(targetX, targetY);
         }
     }

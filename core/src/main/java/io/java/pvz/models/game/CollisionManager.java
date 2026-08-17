@@ -235,13 +235,23 @@ public class CollisionManager {
     }
 
     private boolean checkProjectileForObstaclesCollision(Projectile proj) {
-        if (proj.canPassObstacles()) return false;
+        boolean isBowling = (proj.getType() == ProjectileType.WALLNUT_BOWL ||
+            proj.getType() == ProjectileType.EXPLODE_NUT_BOWL ||
+            proj.getType() == ProjectileType.GIANT_NUT_BOWL);
+
+        if (proj.canPassObstacles() && !isBowling) return false;
 
         int projectileRow = proj.getPosition().getRow();
         int projectileCol = (int) ((proj.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH);
+
+        if (projectileRow < 0 || projectileRow >= arena.getRows() || projectileCol < 0 || projectileCol >= arena.getCols())
+            return false;
+
+
         Tile currentTile = arena.getTile(projectileRow, projectileCol);
 
         if (currentTile == null) return false;
+        if (proj.getLastHitObstacleTile() == currentTile) return false;
 
         if (currentTile instanceof GraveHolder graveHolder && graveHolder.getGraveStone() != null) {
             graveHolder.takeDamage(proj.getDamage(), projectileRow, projectileCol);
