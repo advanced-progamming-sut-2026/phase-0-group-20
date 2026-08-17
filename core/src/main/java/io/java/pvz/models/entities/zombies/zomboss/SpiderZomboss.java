@@ -30,8 +30,8 @@ public class SpiderZomboss extends Zomboss {
         List<IZombossAttack> attacks = new ArrayList<>();
         IdleZombossAttack idleAttack = new IdleZombossAttack(this, attacks);
 
-//        attacks.add(new ZombossSpawnZombiesAttack(this, idleAttack, allowedZombies));
-//        attacks.add(new RobotDashAttack(this, idleAttack));
+        attacks.add(new ZombossSpawnZombiesAttack(this, idleAttack, allowedZombies));
+        attacks.add(new RobotDashAttack(this, idleAttack));
 
         MissileImpactBehavior egyptImpact = targetTile -> {
             DragonScorchedEarthAttack.burnTheTile(targetTile);

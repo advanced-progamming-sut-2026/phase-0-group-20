@@ -16,13 +16,44 @@ public class ZombossSpawnZombiesAttack implements IZombossAttack {
     private final List<ZombieType> allowedZombies;
 
     private int attackTimer;
-    private final int totalDurationTicks = 3 * TimeManager.TICKS_PER_SECOND;
+    private final int spawnTicks;
+    private final int endTicks;
+    private final int totalTicks;
+
     private final Random random = new Random();
 
     public ZombossSpawnZombiesAttack(Zomboss zomboss, IdleZombossAttack idleState, List<ZombieType> allowedZombies) {
         this.zomboss = zomboss;
         this.idleState = idleState;
         this.allowedZombies = allowedZombies;
+
+        switch (zomboss.getType()) {
+            case ZOMBOSS_EGYPT -> {
+                this.spawnTicks = (int) (2.2f * TimeManager.TICKS_PER_SECOND);
+                this.endTicks = (int) ((2.2f + 2.0f) * TimeManager.TICKS_PER_SECOND);
+                this.totalTicks = (int) ((2.3f + 2.0f + 1.5f) * TimeManager.TICKS_PER_SECOND);
+            }
+            case ZOMBOSS_FROZEN_CAVES -> {
+                this.spawnTicks = (int) (1.5f * TimeManager.TICKS_PER_SECOND);
+                this.endTicks = (int) (2.5f * TimeManager.TICKS_PER_SECOND);
+                this.totalTicks = (int) (3.5f * TimeManager.TICKS_PER_SECOND);
+            }
+            case ZOMBOSS_DARK_AGES -> {
+                this.spawnTicks = (int) (1.0f * TimeManager.TICKS_PER_SECOND);
+                this.endTicks = (int) (1.6f * TimeManager.TICKS_PER_SECOND);
+                this.totalTicks = (int) (2.15f * TimeManager.TICKS_PER_SECOND);
+            }
+            case ZOMBOSS_BEACH -> {
+                this.spawnTicks = (int) (1.5f * TimeManager.TICKS_PER_SECOND);
+                this.endTicks = (int) (2.2f * TimeManager.TICKS_PER_SECOND);
+                this.totalTicks = (int) (3.0f * TimeManager.TICKS_PER_SECOND);
+            }
+            default -> {
+                this.spawnTicks = 1 * TimeManager.TICKS_PER_SECOND;
+                this.endTicks = 2 * TimeManager.TICKS_PER_SECOND;
+                this.totalTicks = 3 * TimeManager.TICKS_PER_SECOND;
+            }
+        }
     }
 
     @Override
@@ -36,12 +67,12 @@ public class ZombossSpawnZombiesAttack implements IZombossAttack {
     public void execute() {
         attackTimer++;
 
-        if (attackTimer == TimeManager.TICKS_PER_SECOND) {
+        if (attackTimer == spawnTicks) {
             zomboss.setState(ZombieState.BOSS_SUMMON_LOOP);
             spawnZombies();
-        } else if (attackTimer == 2 * TimeManager.TICKS_PER_SECOND) {
+        } else if (attackTimer == endTicks) {
             zomboss.setState(ZombieState.BOSS_SUMMON_END);
-        } else if (attackTimer >= totalDurationTicks) {
+        } else if (attackTimer >= totalTicks) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);
