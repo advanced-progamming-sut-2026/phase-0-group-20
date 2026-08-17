@@ -27,8 +27,8 @@ public class DragonZomboss extends Zomboss {
         List<IZombossAttack> attacks = new ArrayList<>();
         IdleZombossAttack idleAttack = new IdleZombossAttack(this, attacks);
 
-        attacks.add(new ZombossSpawnZombiesAttack(this, idleAttack, allowedZombies));
-        attacks.add(new DragonFireballAttack(this, idleAttack));
+//        attacks.add(new ZombossSpawnZombiesAttack(this, idleAttack, allowedZombies));
+//        attacks.add(new DragonFireballAttack(this, idleAttack));
         attacks.add(new DragonScorchedEarthAttack(this, idleAttack));
 
         this.setAttackBehavior(idleAttack);

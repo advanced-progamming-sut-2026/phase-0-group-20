@@ -193,7 +193,9 @@ public class ZombieRenderer {
                 case BOSS_JUMP_MID -> "jump_mid";
                 case BOSS_JUMP_LAND -> "jump_land";
                 case BOSS_WIND -> "wind_1";
-                case BOSS_FIRE_ROW -> "fire_attack";
+                case BOSS_FIRE_ROW_START -> "fire_attack";
+                case BOSS_FIRE_ROW_LOOP -> "fire_attack_idle";
+                case BOSS_FIRE_ROW_END -> "fire_attack_end";
                 case BOSS_SHARK -> "spawn";
                 case STUNNED -> pickClip(anim, "idle", "stun_loop", "stun");
                 case BOSS_IDLE -> "idle";

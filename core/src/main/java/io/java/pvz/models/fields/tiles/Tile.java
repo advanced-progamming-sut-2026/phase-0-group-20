@@ -15,6 +15,7 @@ public abstract class Tile implements Ticker {
     protected ArrayList<Plant> plants = new ArrayList<>();
     protected Position position;
     protected boolean isCrater;
+    protected boolean isFired =false;
     protected int craterTimer = 0;
 
     public Tile(int row, int col) {
@@ -94,6 +95,7 @@ public abstract class Tile implements Ticker {
         if (isCrater && craterTimer > 0) {
             craterTimer--;
             if (craterTimer <= 0) {
+                isFired = false;
                 isCrater = false;
                 GameSession.notify("Creator is Back to Normal Tile.");
             }
@@ -103,5 +105,11 @@ public abstract class Tile implements Ticker {
     public Plant getStackPlant() {
         for (Plant plant : plants) if (plant.getTags().contains(PlantTag.STACK)) return plant;
         return null;
+    }
+
+    public void setFired(boolean isFired) {this.isFired = isFired;}
+
+    public boolean isFired() {
+        return isFired;
     }
 }
