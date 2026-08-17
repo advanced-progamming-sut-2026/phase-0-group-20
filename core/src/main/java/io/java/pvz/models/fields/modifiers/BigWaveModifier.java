@@ -3,12 +3,14 @@ package io.java.pvz.models.fields.modifiers;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.LowShoreTile;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.fields.tiles.WaterTile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ public class BigWaveModifier implements SeasonModifier {
 
     private static final int PERMANENT_WATER_COLS = 2; // the sea on the right edge
     private static final int MAX_WATER_COLS = 9; // the horizontal line the water never passes
-    private static final int TIDE_INTERVAL_TICKS = 150;
+    private static final int TIDE_INTERVAL_TICKS = 15 * TimeManager.TICKS_PER_SECOND;
     private static final double EMERGE_FROM_BELOW_CHANCE = 0.3;
 
     private final Random rand = new Random();
