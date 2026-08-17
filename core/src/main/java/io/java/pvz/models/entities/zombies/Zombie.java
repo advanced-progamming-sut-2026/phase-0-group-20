@@ -85,6 +85,11 @@ public class Zombie implements Ticker {
     public void onTick(int currentTick) {
         if (dead) return;
 
+        if (spawnEffect == SpawnEffect.SANDSTORM) { //  || spawnEffect == SpawnEffect.WATER_SPLASH
+            updateTile();
+            return;
+        }
+
         List<ZombieEffect> snapshot = new ArrayList<>(activeEffects);
         if (getCol() < 10) {
             for (ZombieEffect effect : snapshot) {
@@ -102,7 +107,7 @@ public class Zombie implements Ticker {
     }
 
     public void takeDamage(int damage, Projectile projectile) {
-        if (dead) return;
+        if (dead || spawnEffect == SpawnEffect.SANDSTORM) return;
 
         if (projectile == null) {
             takeDamage(health);
@@ -134,6 +139,8 @@ public class Zombie implements Ticker {
     }
 
     public void takeDamage(int damage) {
+        if (dead || spawnEffect == SpawnEffect.SANDSTORM) return;
+
         this.health -= damage;
         notify(type.toString() + " take " + damage + " in " + (position.getCol() + 1) + " " + (position.getRow() + 1));
         if (this.health <= 0) {

@@ -137,7 +137,6 @@ public class CollisionManager {
             if (frozenPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {
 
                 frozenPlantInTile.damageIceBlock(proj.getDamage());
-
                 proj.setDestroyed(true);
                 continue;
             }

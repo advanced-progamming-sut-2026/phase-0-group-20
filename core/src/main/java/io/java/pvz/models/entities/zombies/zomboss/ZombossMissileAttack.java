@@ -63,8 +63,10 @@ public class ZombossMissileAttack implements IZombossAttack{
     private void launchMissile() {
         GameSession session = GameSession.getInstance();
 
-        float endX = targetCol * PhysicalConstants.TILE_WIDTH + PhysicalConstants.GRID_START_X + PhysicalConstants.TILE_WIDTH/2 ;
-        float endY = targetRow * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y +  PhysicalConstants.TILE_HEIGHT/2;
+        float endX = targetCol * PhysicalConstants.TILE_WIDTH +
+            PhysicalConstants.GRID_START_X + PhysicalConstants.TILE_WIDTH/2 ;
+        float endY = targetRow * PhysicalConstants.TILE_HEIGHT +
+            PhysicalConstants.GRID_START_Y +  PhysicalConstants.TILE_HEIGHT/2;
 
         ZombossMissile missile = new ZombossMissile(endX, endY, targetRow, targetCol, impactBehavior);
         session.getTimeManager().registerNewTicker(missile);

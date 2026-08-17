@@ -159,7 +159,8 @@ public class EnvironmentRenderer {
             }
 
             maxLineAnimation.setScale(0.7f);
-            maxLineAnimation.setPosition((maxCol + 1) * TILE_WIDTH + GRID_START_X - TILE_WIDTH / 2f - 15, gridCenterY + 40);
+            maxLineAnimation.setPosition((maxCol + 1) * TILE_WIDTH + GRID_START_X - TILE_WIDTH / 2f - 15,
+                gridCenterY + 40);
 
             int minWaterCol = allTiles.stream()
                 .filter(t -> t instanceof WaterTile || (t instanceof LowShoreTile lt && lt.isFlooded()))
@@ -197,11 +198,10 @@ public class EnvironmentRenderer {
     }
 
     private String resolveGraveClip(int currentHp) {
-        if (currentHp > 560) return "undamaged";
-        if (currentHp > 420) return "damage1";
-        if (currentHp > 280) return "damage2";
-        if (currentHp > 140) return "damage3";
-        return "damage4";
+        if (currentHp > 525) return "undamaged";
+        if (currentHp > 350) return "damage1";
+        if (currentHp > 175) return "damage2";
+        return "damage3";
     }
 
     private void despawnMissingTiles(Map<Tile, PamAnimatedActor> actorMap, Set<Tile> activeTiles) {

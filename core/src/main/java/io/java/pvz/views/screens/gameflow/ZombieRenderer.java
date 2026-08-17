@@ -110,6 +110,8 @@ public class ZombieRenderer {
         centerOnPoint(actor, zombie.getPosition().getX(),
             zombie.getPosition().getY() + actor.getHeight() / 2f + 30);
 
+        actor.setVisible(zombie.getSpawnEffect() != Zombie.SpawnEffect.SANDSTORM);
+
         if (zombie.isHypnotized()) {
             actor.setScaleX(-1f);
         } else {

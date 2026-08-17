@@ -109,6 +109,7 @@ public class Arena {
         List<Zombie> zombies = new ArrayList<>();
         for (Zombie z : activeZombies) {
             if (z.getRow() == row && z.getCol() < 10) {
+                if (z.getSpawnEffect() == Zombie.SpawnEffect.SANDSTORM) continue;
                 zombies.add(z);
             }
         }

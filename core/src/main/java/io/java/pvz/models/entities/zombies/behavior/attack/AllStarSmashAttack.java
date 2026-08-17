@@ -41,7 +41,8 @@ public class AllStarSmashAttack implements AttackBehavior {
         GameSession session = GameSession.getInstance();
 
         for (Zombie z : session.getArena().getActiveZombies()) {
-            if (z.isHypnotized() && !z.isDead() && z.getRow() == zombie.getRow() && Math.abs(z.getX() - zombie.getX()) < 30) {
+            if (z.isHypnotized() && !z.isDead() && z.getRow() == zombie.getRow() &&
+                Math.abs(z.getX() - zombie.getX()) < 30) {
                 zombie.addEffect(new AllStarTackleEffect(zombie, context, z));
                 return;
             }
