@@ -85,7 +85,7 @@ public class MiniGameController {
         GameSession session = GameSession.getInstance();
         BowlingLevel level = (BowlingLevel) session.getCurrentMode();
 
-        if (!level.isBehindRedLine(col))
+        if (!level.isBehindRedLine(col - 1))
             return new Result(false, "You must plant behind the red line!");
 
         if (nut == null) return new Result(false, "No plant at this index!");
@@ -105,11 +105,11 @@ public class MiniGameController {
             nut,
             type,
             damage,
-            new Position(col, row-1),
+            new Position(col - 1, row-1),
             ProjectileTuning.BOWLING_SPEED_TILES_PER_SEC,
             0,
             false,
-            true
+            false
         );
 
         bowl.setBouncesLeft(Integer.MAX_VALUE);
