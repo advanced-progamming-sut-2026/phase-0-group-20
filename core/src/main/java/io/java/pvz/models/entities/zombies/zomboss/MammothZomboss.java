@@ -3,6 +3,9 @@ package io.java.pvz.models.entities.zombies.zomboss;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +32,6 @@ public class MammothZomboss extends Zomboss {
         List<IZombossAttack> attacks = new ArrayList<>();
         IdleZombossAttack idleAttack = new IdleZombossAttack(this, attacks);
 
-        attacks.add(new ZombossSpawnZombiesAttack(this, idleAttack, allowedZombies));
         attacks.add(new MammothFreezingWind(this, idleAttack));
         attacks.add(new MammothFreezingColumn(this, idleAttack, allowedZombies));
 
@@ -38,8 +40,12 @@ public class MammothZomboss extends Zomboss {
                 for (Plant p : new ArrayList<>(targetTile.getPlants())) {
                     p.takeDamage(150);
                 }
-                GameSession.notify("Ice Missile hit the target!");
             }
+            GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+                new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                    .message("MISSILE_EXPLOSION")
+                    .coordinate(targetTile.getRow(), targetTile.getCol())
+                    .build());
         };
         attacks.add(new ZombossMissileAttack(this, idleAttack, iceImpact));
 

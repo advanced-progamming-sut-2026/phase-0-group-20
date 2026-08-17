@@ -181,7 +181,7 @@ public class ZombieRenderer {
                 case BOSS_SUMMON_END -> pickClip(anim, "spawn", "zombie_portal_end", "slingshot", "summoning");
                 case BOSS_GLACIER -> {
                     if (zomboss.getAttackBehavior() instanceof MammothFreezingColumn colAttack) {
-                        int animIndex = colAttack.getTargetCol() + 1;
+                        int animIndex = ( 6 - colAttack.getTargetCol());
                         yield "glacier_column_" + animIndex;
                     }
                     yield "glacier_column_1";
