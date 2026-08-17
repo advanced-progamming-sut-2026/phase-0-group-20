@@ -14,6 +14,7 @@ import io.java.pvz.models.game.RedLineCapable;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.minigame.minigameCondition.IZombieLoseCondition;
+import io.java.pvz.models.game.minigame.minigameCondition.IZombieTimeLimitLoseCondition;
 import io.java.pvz.models.game.minigame.minigameCondition.IZombieWinCondition;
 import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
@@ -25,11 +26,24 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
     private final Random rand = new Random();
     private int redLineCol = 6;
+    private IZombieTimeLimitLoseCondition timeLimitCondition;
 
     public IZombieLevel(String name, SeasonType seasonType, int waveCount, int levelNumber) {
         super(name, seasonType, waveCount, -1, levelNumber);
         this.addWinCondition(new IZombieWinCondition());
         this.addLoseCondition(new IZombieLoseCondition());
+        this.timeLimitCondition = new IZombieTimeLimitLoseCondition();
+        this.addLoseCondition(this.timeLimitCondition);
+    }
+
+    public void setSurvivalTimeLimitSeconds(int seconds) {
+        this.loseConditions.remove(this.timeLimitCondition);
+        this.timeLimitCondition = new IZombieTimeLimitLoseCondition(seconds);
+        this.addLoseCondition(this.timeLimitCondition);
+    }
+
+    public int getSurvivalTimeLimitTicks() {
+        return timeLimitCondition.getTimeLimitTicks();
     }
 
     @Override
@@ -79,13 +93,13 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
         int numPlants = rand.nextInt(6) + 4 + levelNumber; // min: 4 different types
         List<Plant> availableTemplates = App.getActiveUser().getUnlockedPlants().stream()
-                .filter(plant -> {
-                    String plantName = plant.getName().toLowerCase();
-                    return !plantName.contains("sun") && !plantName.equals("gold bloom") &&
-                            !plantName.equals("grave buster") && !plantName.equals("hot potato") &&
-                            !plantName.equals("lily pad") && !plantName.equals("tangle kelp") &&
-                            !plantName.equals("sea-shroom") && !plantName.contains("mint");
-                }).toList();
+            .filter(plant -> {
+                String plantName = plant.getName().toLowerCase();
+                return !plantName.contains("sun") && !plantName.equals("gold bloom") &&
+                    !plantName.equals("grave buster") && !plantName.equals("hot potato") &&
+                    !plantName.equals("lily pad") && !plantName.equals("tangle kelp") &&
+                    !plantName.equals("sea-shroom") && !plantName.contains("mint");
+            }).toList();
         List<Plant> selectedTemplates = availableTemplates.subList(0, Math.min(numPlants, availableTemplates.size()));
 
         for (int i = 0; i < redLineCol; i++) {
@@ -133,13 +147,13 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     public List<ZombieType> getZombiesForThisLevel() {
         return switch (levelNumber) {
             case 1 -> List.of(
-                    ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.IMP, ZombieType.ALL_STAR);
+                ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET, ZombieType.IMP, ZombieType.ALL_STAR);
             case 2 -> List.of(ZombieType.NORMAL,
-                    ZombieType.CONE, ZombieType.BUCKET, ZombieType.NEWSPAPER, ZombieType.DARK_ARMOR);
+                ZombieType.CONE, ZombieType.BUCKET, ZombieType.NEWSPAPER, ZombieType.DARK_ARMOR);
             case 3 -> List.of(ZombieType.NORMAL,
-                    ZombieType.NEWSPAPER, ZombieType.BRICK, ZombieType.PROSPECTOR, ZombieType.GARGANTUAR);
+                ZombieType.NEWSPAPER, ZombieType.BRICK, ZombieType.PROSPECTOR, ZombieType.GARGANTUAR);
             default -> List.of(ZombieType.CONE,
-                    ZombieType.BUCKET, ZombieType.ALL_STAR, ZombieType.DARK_ARMOR, ZombieType.GARGANTUAR);
+                ZombieType.BUCKET, ZombieType.ALL_STAR, ZombieType.DARK_ARMOR, ZombieType.GARGANTUAR);
         };
     }
 }
