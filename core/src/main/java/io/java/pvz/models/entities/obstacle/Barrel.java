@@ -18,7 +18,8 @@ public class Barrel extends PushableObstacle {
     public void takeDamage(int damage) {
         if (isDestroyed) return;
         health -= damage;
-        GameSession.notify("Barrel in (" + (position.getCol() + 1) + "," + (position.getRow() + 1) + ") took " + damage + " damage.");
+        GameSession.notify("Barrel in (" + (position.getCol() + 1) + "," +
+            (position.getRow() + 1) + ") took " + damage + " damage.");
 
         if (health <= 0) {
             health = 0;

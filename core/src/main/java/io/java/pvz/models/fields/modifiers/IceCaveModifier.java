@@ -212,7 +212,8 @@ public class IceCaveModifier implements SeasonModifier {
                         Plant templatePlant = plants.get(rand.nextInt(plants.size()));
                         Plant freshPlant = InGameEntityGenerator.getPlantForGame(templatePlant, false);
                         iceBlock = new IceBlock(freshPlant, randomRow, randomCol);
-                        System.out.println("A pre-frozen Plant was placed at row " + (randomRow + 1) + ", col " + (randomCol + 1));
+                        System.out.println("A pre-frozen Plant was placed at row " +
+                            (randomRow + 1) + ", col " + (randomCol + 1));
                     }
                 } else {
                     List<Zombie> zombies = GameSession.getInstance().getChosenZombies();
@@ -221,7 +222,8 @@ public class IceCaveModifier implements SeasonModifier {
                         Zombie newZombie = InGameEntityGenerator.getZombieForGame(randomZombie.getType(), randomRow);
                         newZombie.setCol(randomCol);
                         iceBlock = new IceBlock(newZombie, randomRow, randomCol);
-                        System.out.println("A pre-frozen Zombie was placed at row " + (randomRow + 1) + ", col " + (randomCol + 1));
+                        System.out.println("A pre-frozen Zombie was placed at row " +
+                            (randomRow + 1) + ", col " + (randomCol + 1));
                     }
                 }
 

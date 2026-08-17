@@ -114,7 +114,8 @@ public class BeghouledLevel extends Level implements IMinigame {
         }
     }
 
-    private boolean isValidBoardGenerated(GameSession session, int rows, int cols, Arena arena, boolean validBoardGenerated) {
+    private boolean isValidBoardGenerated(GameSession session,
+                                          int rows, int cols, Arena arena, boolean validBoardGenerated) {
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols - 1; c++) {
                 Tile tile = arena.getTile(r, c);

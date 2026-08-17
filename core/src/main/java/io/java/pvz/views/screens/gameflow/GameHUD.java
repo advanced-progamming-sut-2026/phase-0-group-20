@@ -50,7 +50,8 @@ public class GameHUD {
 
     private Table seedBankTable;
 
-    public GameHUD(Group mainLayer, Group modalLayer, Viewport viewport, GameInputHandler inputHandler, GameFlowController gameFlowController) {
+    public GameHUD(Group mainLayer, Group modalLayer, Viewport viewport,
+                   GameInputHandler inputHandler, GameFlowController gameFlowController) {
         this.mainLayer = mainLayer;
         this.modalLayer = modalLayer;
         this.viewport = viewport;
@@ -81,14 +82,16 @@ public class GameHUD {
     private void setupPlantSelectionMenu() {
         if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
             buildBeghouledSeedBank();
-        } else if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof IZombieLevel) {
+        } else if (GameSession.getInstance() != null &&
+            GameSession.getInstance().getCurrentMode() instanceof IZombieLevel) {
             buildSeedBank();
         } else if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin, () -> {
                 buildSeedBank();
             });
             plantSelectionModal.show(modalLayer, viewport);
-        } else if (GameSession.getInstance() != null && !(GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel)) {
+        } else if (GameSession.getInstance() != null &&
+            !(GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel)) {
             belt = new ConveyorBeltUI(skin, textures,
                 (plant) -> createSeedPacket(plant, false));
             belt.setSize(200f, 700);
@@ -378,7 +381,8 @@ public class GameHUD {
                     "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
 
                 flagImage.setSize(40f, 45f);
-                float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction) - (flagImage.getWidth() / 2f);
+                float x = waveProgressBar.getX() +
+                    (waveProgressBar.getWidth() * fraction) - (flagImage.getWidth() / 2f);
                 float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (flagImage.getHeight() / 2f);
 
                 flagImage.setPosition(x, y);
@@ -408,7 +412,8 @@ public class GameHUD {
             if (progressHeadIcon != null && waveProgressBar != null) {
                 float targetX = waveProgressBar.getX() + (waveProgressBar.getWidth() *
                     visualWaveProgress) - (progressHeadIcon.getWidth() / 2f);
-                float targetY = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (progressHeadIcon.getHeight() / 2f);
+                float targetY = waveProgressBar.getY() +
+                    (waveProgressBar.getHeight() / 2f) - (progressHeadIcon.getHeight() / 2f);
                 progressHeadIcon.setPosition(targetX, targetY);
             }
         }

@@ -2,9 +2,14 @@ package io.java.pvz.models.fields.modifiers;
 
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.fields.tiles.GraveStoneTile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.timeManager.Ticker;
 
 import java.util.Random;
 
@@ -31,15 +36,43 @@ public class EgyptModifier implements SeasonModifier {
             if (Math.random() < 0.5) {
                 int randColAhead = (int) (Math.random() * 4) + 1;
                 int startCol = arena.getCols() - 1;
-                int targetCol = Math.max(0, startCol - randColAhead);
+                final int targetCol = Math.max(0, startCol - randColAhead);
 
-                zombie.setCol(targetCol);
+                final float targetX = PhysicalConstants.GRID_START_X +
+                    (targetCol * PhysicalConstants.TILE_WIDTH) + (PhysicalConstants.TILE_WIDTH / 2f);
 
-                zombie.setSpawnEffect(Zombie.SpawnEffect.SANDSTORM); //for graphic phase
+                final float startX = PhysicalConstants.GRID_START_X + (13 * PhysicalConstants.TILE_WIDTH);
+                // lazem bood taghir bedim 13 ro
 
-                notify("A zombie was spawned by a tornado to column " + targetCol + "!");
+                zombie.setX(startX);
+                zombie.setSpawnEffect(Zombie.SpawnEffect.SANDSTORM);
+
+                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                    .message("SANDSTORM_START")
+                    .zombie(zombie)
+                    .build();
+                GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT, payload);
+
+                GameSession.getInstance().getTimeManager().registerNewTicker(new Ticker() {
+                    @Override
+                    public void onTick(int currentTick) {
+                        if (zombie.isDead()) {
+                            GameSession.getInstance().getTimeManager().unregisterTicker(this);
+                            return;
+                        }
+
+                        float currentX = zombie.getX();
+                        currentX += (targetX - currentX) * 0.05f;
+                        zombie.setX(currentX);
+
+                        if (Math.abs(targetX - currentX) < 3.0f) {
+                            zombie.setX(targetX);
+                            zombie.setSpawnEffect(Zombie.SpawnEffect.NORMAL);
+                            GameSession.getInstance().getTimeManager().unregisterTicker(this);
+                        }
+                    }
+                });
             }
-
         }
     }
 

@@ -250,6 +250,34 @@ public class EffectRenderer {
         ));
     }
 
+    public void spawnSandstormEffect(Zombie zombie) {
+        if (zombie == null) return;
+
+        PamAnimatedActor tornado = new PamAnimatedActor(
+            AssetLoader.getInstance().getPlayer(),
+            "loop",
+            Ids.ArenaEffects.SANDSTORM
+        );
+
+        tornado.setSize(TILE_WIDTH * 1.2f, TILE_HEIGHT * 2.3f);
+        tornado.setOrigin(Align.center);
+
+        effectLayer.addActor(tornado);
+
+        tornado.addAction(Actions.forever(Actions.run(() -> {
+            if (zombie.isDead() || zombie.getSpawnEffect() != Zombie.SpawnEffect.SANDSTORM) {
+                tornado.clearActions();
+                tornado.remove();
+                return;
+            }
+
+            float x = zombie.getX() - (tornado.getWidth() / 2f);
+            float y = GRID_START_Y + ((zombie.getRow() + 1) * TILE_HEIGHT) + 20f;
+
+            tornado.setPosition(x, y);
+        })));
+    }
+
     private static Map<ProjectileType, HitAnim> buildHitAnimMap() {
         Map<ProjectileType, HitAnim> map = new EnumMap<>(ProjectileType.class);
         map.put(ProjectileType.PEA, new HitAnim(Ids.ProjectileHits.PEA, "animation", 0.8333f));
