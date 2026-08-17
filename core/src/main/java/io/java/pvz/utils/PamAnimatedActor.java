@@ -143,6 +143,7 @@ public class PamAnimatedActor extends Actor {
             float drawY = getY();
 
             Matrix4 originalMatrix = batch.getTransformMatrix().cpy();
+            com.badlogic.gdx.graphics.Color originalColor = batch.getColor().cpy();
 
             Matrix4 scaledMatrix = originalMatrix.cpy()
                 .translate(drawX, drawY, 0)
@@ -150,6 +151,7 @@ public class PamAnimatedActor extends Actor {
                 .translate(-drawX, -drawY, 0);
 
             batch.setTransformMatrix(scaledMatrix);
+            batch.setColor(getColor().r, getColor().g, getColor().b, getColor().a * parentAlpha);
 
             try {
                 if (visibilityMap != null) {
@@ -162,6 +164,7 @@ public class PamAnimatedActor extends Actor {
                 isLoaded = false;
             } finally {
                 batch.setTransformMatrix(originalMatrix);
+                batch.setColor(originalColor);
             }
         }
     }

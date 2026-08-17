@@ -14,6 +14,7 @@ import io.java.pvz.models.fields.tiles.SlipperyTile;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.levels.BossLevel;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
@@ -187,6 +188,7 @@ public class IceCaveModifier implements SeasonModifier {
     }
 
     private void setupInitialIceBlocks(Arena arena) {
+        if (GameSession.getInstance().getCurrentMode() instanceof BossLevel) return;
         int rows = arena.getRows();
         int cols = arena.getCols();
         int numberOfIceBlocks = rand.nextInt(3) + getCurrentLevelNumber();
@@ -197,7 +199,15 @@ public class IceCaveModifier implements SeasonModifier {
         while (placed < numberOfIceBlocks) {
             int randomRow = rand.nextInt(rows);
             int randomCol = rand.nextInt(cols / 2) + 2;
-            int rnd = rand.nextInt(2);
+            int rnd;
+
+            if (placed == 0)
+                rnd = 1;
+            else if (placed == 1)
+                rnd = 0;
+            else
+                rnd = rand.nextInt(2);
+
             randomCol = (rnd == 1) ? randomCol : arena.getCols() - randomCol;
 
             Tile tile = arena.getTile(randomRow, randomCol);
@@ -211,9 +221,15 @@ public class IceCaveModifier implements SeasonModifier {
                     if (!plants.isEmpty()) {
                         Plant templatePlant = plants.get(rand.nextInt(plants.size()));
                         Plant freshPlant = InGameEntityGenerator.getPlantForGame(templatePlant, false);
+
+                        freshPlant.setPlacedTile(tile);
+                        io.java.pvz.models.entities.plants.effect.FreezeEffect freezeEffect =
+                            new io.java.pvz.models.entities.plants.effect.FreezeEffect();
+                        freshPlant.addEffect(freezeEffect);
+                        freezeEffect.addStack(freshPlant);
+                        freezeEffect.addStack(freshPlant);
+
                         iceBlock = new IceBlock(freshPlant, randomRow, randomCol);
-                        System.out.println("A pre-frozen Plant was placed at row " +
-                            (randomRow + 1) + ", col " + (randomCol + 1));
                     }
                 } else {
                     List<Zombie> zombies = GameSession.getInstance().getChosenZombies();
@@ -222,8 +238,6 @@ public class IceCaveModifier implements SeasonModifier {
                         Zombie newZombie = InGameEntityGenerator.getZombieForGame(randomZombie.getType(), randomRow);
                         newZombie.setCol(randomCol);
                         iceBlock = new IceBlock(newZombie, randomRow, randomCol);
-                        System.out.println("A pre-frozen Zombie was placed at row " +
-                            (randomRow + 1) + ", col " + (randomCol + 1));
                     }
                 }
 
