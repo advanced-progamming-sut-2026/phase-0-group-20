@@ -1,5 +1,6 @@
 package io.java.pvz.models.entities.zombies.zomboss;
 
+import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class IdleZombossAttack implements IZombossAttack {
     @Override
     public void onEnter() {
         this.cooldownTicks = (4 + random.nextInt(5)) * TimeManager.TICKS_PER_SECOND;
+        zomboss.setState(ZombieState.BOSS_IDLE);
 
-        // zomboss.triggerAction("idle");
     }
 
     @Override

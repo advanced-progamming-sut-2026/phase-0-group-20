@@ -33,7 +33,9 @@ public enum ZombieState {
     BOSS_SUMMON_END,
     BOSS_MISSILE,
     BOSS_DASH,
-    BOSS_JUMP,
+    BOSS_JUMP_START,
+    BOSS_JUMP_MID,
+    BOSS_JUMP_LAND,
     BOSS_WIND,
     BOSS_GLACIER,
     BOSS_FIREBOMB_START,
@@ -43,5 +45,6 @@ public enum ZombieState {
     BOSS_VACUUM_START,
     BOSS_VACUUM_LOOP,
     BOSS_VACUUM_END,
-    BOSS_SHARK
+    BOSS_SHARK,
+    BOSS_IDLE;
 }

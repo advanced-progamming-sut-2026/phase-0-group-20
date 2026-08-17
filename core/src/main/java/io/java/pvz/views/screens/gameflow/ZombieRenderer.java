@@ -188,11 +188,14 @@ public class ZombieRenderer {
                 }
                 case BOSS_MISSILE -> (zomboss instanceof MammothZomboss)? "slingshot" : "missile_start";
                 case BOSS_DASH -> "walk_forward";
-                case BOSS_JUMP -> "jump_start";
+                case BOSS_JUMP_START -> "jump_start";
+                case BOSS_JUMP_MID -> "jump_mid";
+                case BOSS_JUMP_LAND -> "jump_land";
                 case BOSS_WIND -> "wind_1";
                 case BOSS_FIRE_ROW -> "fire_attack";
                 case BOSS_SHARK -> "spawn";
                 case STUNNED -> pickClip(anim, "idle", "stun_loop", "stun");
+                case BOSS_IDLE -> "idle";
                 default -> pickClip(anim, "idle", "idle");
             };
         }
