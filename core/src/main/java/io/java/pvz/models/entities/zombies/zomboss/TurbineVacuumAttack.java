@@ -33,8 +33,7 @@ public class TurbineVacuumAttack implements IZombossAttack {
     @Override
     public void onEnter() {
         this.attackTimer = 0;
-
-        zomboss.setState(ZombieState.SPELL);
+        zomboss.setState(ZombieState.BOSS_VACUUM_START);
         dispatchTurbineEvent("TURBINE_START");
         zomboss.notify("Zomboss is powering up the Turbine Vacuum!");
     }
@@ -44,31 +43,24 @@ public class TurbineVacuumAttack implements IZombossAttack {
         attackTimer++;
 
         if (attackTimer == PHASE_1_START_TICKS) {
+            zomboss.setState(ZombieState.BOSS_VACUUM_LOOP);
             dispatchTurbineEvent("TURBINE_LOOP");
             zomboss.notify("Turbine Vacuum is active! Sucking everything in its path!");
-        }
-
-        else if (attackTimer > PHASE_1_START_TICKS && attackTimer <= PHASE_2_END_TICKS) {
-
+        } else if (attackTimer > PHASE_1_START_TICKS && attackTimer <= PHASE_2_END_TICKS) {
             vacuumZombiesContinuous();
-
             if ((attackTimer - PHASE_1_START_TICKS) % 3 == 0) {
                 vacuumPlantsForward();
             }
-        }
-
-        else if (attackTimer == PHASE_2_END_TICKS + 1) {
+        } else if (attackTimer == PHASE_2_END_TICKS + 1) {
+            zomboss.setState(ZombieState.BOSS_VACUUM_END);
             dispatchTurbineEvent("TURBINE_END");
             zomboss.notify("Turbine Vacuum is powering down...");
-        }
-
-        else if (attackTimer >= TOTAL_DURATION_TICKS) {
+        } else if (attackTimer >= TOTAL_DURATION_TICKS) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);
         }
     }
-
 
     private void vacuumZombiesContinuous() {
         GameSession session = GameSession.getInstance();
@@ -95,7 +87,7 @@ public class TurbineVacuumAttack implements IZombossAttack {
                 float newX = z.getX() + pullSpeed;
                 z.setX(newX);
 
-                int newCol = (int) (newX - PhysicalConstants.GRID_START_X/ PhysicalConstants.TILE_WIDTH);
+                int newCol = (int) ((newX - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH);
                 if (newCol != z.getCol()) {
                     z.setCol(newCol);
                 }
@@ -106,7 +98,6 @@ public class TurbineVacuumAttack implements IZombossAttack {
             }
         }
     }
-
 
     private void vacuumPlantsForward() {
         GameSession session = GameSession.getInstance();
@@ -153,6 +144,4 @@ public class TurbineVacuumAttack implements IZombossAttack {
     public void onExit() {
         this.attackTimer = 0;
     }
-
-
 }

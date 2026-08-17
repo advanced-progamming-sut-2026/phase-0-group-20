@@ -23,7 +23,7 @@ public class RobotDashAttack implements IZombossAttack {
         this.isDashing = true;
         this.jumpTimer = 0;
 
-        zomboss.setState(ZombieState.SMASH);
+        zomboss.setState(ZombieState.BOSS_DASH);
         zomboss.notify("Robot Zomboss is dashing forward!");
     }
 
@@ -33,23 +33,20 @@ public class RobotDashAttack implements IZombossAttack {
             float newX = zomboss.getX() - DASH_SPEED_SCALE_PER_TICK;
             zomboss.setX(newX);
 
-            int newCol = (int) (newX - PhysicalConstants.GRID_START_X/ PhysicalConstants.TILE_WIDTH);
+            int newCol = (int) ((newX - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH);
 
             if (newCol != zomboss.getCol()) {
                 zomboss.setCol(newCol);
             }
 
-
             if (newX <= 0) {
                 isDashing = false;
                 zomboss.notify("Robot Zomboss reached the end and is jumping back!");
-
-                zomboss.setState(ZombieState.FLY_START);
+                zomboss.setState(ZombieState.BOSS_JUMP);
             }
 
         } else {
             jumpTimer++;
-            // one second
             if (jumpTimer >= TimeManager.TICKS_PER_SECOND) {
                 zomboss.setCol(8);
 
@@ -67,5 +64,4 @@ public class RobotDashAttack implements IZombossAttack {
         this.isDashing = false;
         this.jumpTimer = 0;
     }
-
 }

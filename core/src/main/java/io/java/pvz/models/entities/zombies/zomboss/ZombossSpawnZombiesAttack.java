@@ -28,7 +28,7 @@ public class ZombossSpawnZombiesAttack implements IZombossAttack {
     @Override
     public void onEnter() {
         this.attackTimer = 0;
-        zomboss.setState(ZombieState.SPECIAL);
+        zomboss.setState(ZombieState.BOSS_SUMMON_START);
         zomboss.notify("Zomboss is summoning guards!");
     }
 
@@ -37,10 +37,11 @@ public class ZombossSpawnZombiesAttack implements IZombossAttack {
         attackTimer++;
 
         if (attackTimer == TimeManager.TICKS_PER_SECOND) {
+            zomboss.setState(ZombieState.BOSS_SUMMON_LOOP);
             spawnZombies();
-        }
-
-        if (attackTimer >= totalDurationTicks) {
+        } else if (attackTimer == 2 * TimeManager.TICKS_PER_SECOND) {
+            zomboss.setState(ZombieState.BOSS_SUMMON_END);
+        } else if (attackTimer >= totalDurationTicks) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);
@@ -56,7 +57,6 @@ public class ZombossSpawnZombiesAttack implements IZombossAttack {
         int maxRows = session.getArena().getRows();
 
         int centerRow = zomboss.getRow();
-
         int[] targetRows = {centerRow - 1, centerRow, centerRow + 1};
 
         int spawnCol = zomboss.getCol();
@@ -66,7 +66,6 @@ public class ZombossSpawnZombiesAttack implements IZombossAttack {
         for (int targetRow : targetRows) {
             if (targetRow >= 0 && targetRow < maxRows) {
                 ZombieType randomType = allowedZombies.get(random.nextInt(allowedZombies.size()));
-
                 Zombie newZombie = InGameEntityGenerator.getZombieForGame(randomType, targetRow);
 
                 newZombie.setCol(spawnCol);
@@ -88,5 +87,4 @@ public class ZombossSpawnZombiesAttack implements IZombossAttack {
     public void onExit() {
         this.attackTimer = 0;
     }
-
 }

@@ -40,13 +40,13 @@ public class BowlingLevel extends ConveyorBelt implements IMinigame, RedLineCapa
         super.engineLoop(session, currentTick);
         if (currentTick > 0 && currentTick % (BELT_SPEED_SECONDS * TimeManager.TICKS_PER_SECOND) == 0) {
             if (belt.size() < BELT_CAPACITY) {
-                spawnPlantOnBelt();
+                spawnPlantOnBowlingBelt();
             }
         }
     }
 
 
-    private void spawnPlantOnBelt() {
+    private void spawnPlantOnBowlingBelt() {
         int rnd = random.nextInt(100);
 
         Plant template;

@@ -295,6 +295,7 @@ public final class AnimationCatalog {
         registerZombiesPart1(table);
         registerZombiesPart2(table);
         registerZombiesPart3(table);
+        registerZombiesZomboss(table);
     }
 
     private static void registerZombiesPart1(Map<ZombieType, EntityAnimation> table) {
@@ -401,6 +402,29 @@ public final class AnimationCatalog {
 
     }
 
+    private static void registerZombiesZomboss(Map<ZombieType , EntityAnimation> table){
+        registerZombie(table , ZombieType.ZOMBOSS_EGYPT,
+            "768/INITIAL/ZOMBIE/ZOMBIE_EGYPT_ZOMBOSS/ZOMBIE_EGYPT_ZOMBOSS.PAM","intro",2.6f,"idle",5.30f,
+            "walk_forward" , 1.25f , "walk_backwards",1.25f,"walk_down",1.25f,"walk_up",1.25f,"jump_start",0.7f,
+            "jump_mid", 0.45f , "jump_land",0.75f,"zombie_portal_start", 2.3f, "zombie_portal_loop", 2.0f ,
+            "zombie_portal_end" , 1.6f , "missile_start",3.35f,"rocket_launch",1.85f,"die",0.3f,"die_idle",4.95f,
+            "stun_start", 0.5f,"stun_loop", 1.3f ,"stun_end",0.11f);
+        registerZombie(table,ZombieType.ZOMBOSS_FROZEN_CAVES,
+            "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_ZOMBOSS/ZOMBIE_ICEAGE_ZOMBOSS.PAM","intro",4.7f ,"idle",3.35f
+        ,"wind_1",2.85f,"wind_3" ,2.85f,"slingshot",3.5f,"glacier_column_1",6.30f,"glacier_column_2",6.30f,
+            "glacier_column_3",6.30f,"glacier_column_4",6.30f,"glacier_column_5",6.30f,"glacier_column_6",6.30f,
+            "reveal",0.68f,"stun" , 1.0f,"die", 4.05f);
+        registerZombie(table,ZombieType.ZOMBOSS_DARK_AGES,
+            "768/FULL/ZOMBIE/ZOMBIE_DARK_ZOMBOSS/ZOMBIE_DARK_ZOMBOSS.PAM","intro",10.4f,"idle",3.35f,
+            "fire_attack",1.83f,"fire_attack_idle",0.85f,"fire_bomb", 1.85f,"fire_bomb_loop",0.53f,"fire_bomb_end",0.95f
+        ,"summoning",2.15f,"stun_start",0.45f,"stun_loop",0.82f,"stun_end",0.5f,"die",5.7f);
+        registerZombie(table,ZombieType.ZOMBOSS_BEACH,
+            "768/FULL/ZOMBIE/ZOMBIE_BEACH_ZOMBOSS/ZOMBIE_BEACH_ZOMBOSS.PAM","intro",6.22f,"idle",4.0f,
+            "spawn",3.0f,"suction_on",2.15f,"suction_loop",2.0f,"suction_off",2.52f,"stun_start",0.15f,
+            "stun_loop",1.85f,"stun_end",1.12f,"die",5.1f);
+
+    }
+
     private static void registerMowers(Map<String, EntityAnimation> table) {
         register(table, "MOWER_BEACH", "768/FULL/MOWERS/MOWER_BEACH/MOWER_BEACH.PAM",
             "idle", 0.33f, "transition", 0.33f, "attack", 0.37f);
@@ -466,7 +490,7 @@ public final class AnimationCatalog {
     }
 
     public static EntityAnimation getPlantAnimation(Plant plant) {
-        return getPlantAnimation(UiFactory.getAtlasName(plant));
+        return getPlantAnimation(UiFactory.getAnimationName(plant));
     }
 
     public static boolean hasPlantAnimation(String exactName) {

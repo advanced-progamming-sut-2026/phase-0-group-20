@@ -121,9 +121,9 @@ public final class UiFactory {
         String name = plant.getName();
         return switch (name) {
             case "Rotobaga" -> "XSHOT";
-            case "Goo Peashooter" -> "GOOPEASHOOTER";
+            case "Goo Peashooter" -> "POISONPEASHOOTER";
             case "Mega Gatling Pea" -> "MEGAGATLING";
-            case "Cherry Bomb" -> "CHERRYBOMB";
+            case "Cherry Bomb" -> "CHERRY_BOMB";
             case "Iceberg Lettuce" -> "ICEBURG";
             case "Pierce-mint" -> "SPEARMINT";
             default -> name.replace("-", "").replace(" ", "");
@@ -247,6 +247,9 @@ public final class UiFactory {
 
             // Minigame / Zombotany
             case ZOMBOTANY_PEASHOOTER, ZOMBOTANY_WALLNUT, ZOMBOTANY_JALAPENO, ZOMBOTANY_SQUASH -> {
+                yield "TUTORIAL";
+            }
+            default -> {
                 yield "TUTORIAL";
             }
         };

@@ -10,6 +10,9 @@ import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.entities.zombies.behavior.effect.*;
 import io.java.pvz.models.entities.zombies.behavior.move.BarrelRollerMove;
+import io.java.pvz.models.entities.zombies.zomboss.MammothFreezingColumn;
+import io.java.pvz.models.entities.zombies.zomboss.MammothZomboss;
+import io.java.pvz.models.entities.zombies.zomboss.Zomboss;
 import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.PamAnimatedActor;
 
@@ -59,7 +62,6 @@ public class ZombieRenderer {
             PamAnimatedActor actor = entry.getValue();
 
             if (!stillAlive.contains(zombie)) {
-
                 if (zombie.isBurnedToAsh()) {
                     spawnAshEffect(zombie);
                     actor.remove();
@@ -72,6 +74,10 @@ public class ZombieRenderer {
 
                     if (anim != null && anim.hasClip(deathClip)) {
                         lingerTime = anim.getDuration(deathClip);
+                    }
+
+                    if (zombie instanceof Zomboss) {
+                        lingerTime = Math.max(lingerTime, 4.0f);
                     }
 
                     despawn(actor, lingerTime - 0.5f);
@@ -92,14 +98,16 @@ public class ZombieRenderer {
     private PamAnimatedActor spawnZombie(Zombie zombie) {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
         String clip = resolveZombieClip(zombie);
-
         PamAnimatedActor actor = anim != null
             ? PamAnimatedActor.createEffectAnimated(anim.path, clip)
             : PamAnimatedActor.createZombieAnimated(zombie.getType(), clip);
 
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
+
         actor.setScale(1f, 1f);
+
+
         if (zombie.getCurrentSpeed() < 0) actor.setScaleX(-1);
         zombieLayer.addActor(actor);
         return actor;
@@ -107,8 +115,11 @@ public class ZombieRenderer {
 
     private void updateZombieActor(Zombie zombie, PamAnimatedActor actor) {
         actor.setClip(resolveZombieClip(zombie));
-        centerOnPoint(actor, zombie.getPosition().getX(),
-            zombie.getPosition().getY() + actor.getHeight() / 2f + 30);
+
+        float yOffset = (zombie instanceof Zomboss) ? actor.getHeight() + 40f : actor.getHeight() / 2f + 30f;
+        float xOffset = (zombie instanceof Zomboss) ? 40f : 0f;
+
+        centerOnPoint(actor, zombie.getPosition().getX() - xOffset, zombie.getPosition().getY() + yOffset);
 
         actor.setVisible(zombie.getSpawnEffect() != Zombie.SpawnEffect.SANDSTORM);
 
@@ -154,6 +165,38 @@ public class ZombieRenderer {
     private String resolveZombieClip(Zombie zombie) {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie.getType());
 
+        if (zombie instanceof Zomboss zomboss) {
+            if (zomboss.isDead()) return "die";
+            if (zomboss.getState() == ZombieState.INTRO) return "intro";
+
+            return switch (zomboss.getState()) {
+                case BOSS_VACUUM_START -> "suction_on";
+                case BOSS_VACUUM_LOOP -> "suction_loop";
+                case BOSS_VACUUM_END -> "suction_off";
+                case BOSS_FIREBOMB_START -> "fire_bomb";
+                case BOSS_FIREBOMB_LOOP -> "fire_bomb_loop";
+                case BOSS_FIREBOMB_END -> "fire_bomb_end";
+                case BOSS_SUMMON_START -> pickClip(anim, "spawn", "zombie_portal_start", "slingshot", "summoning");
+                case BOSS_SUMMON_LOOP -> pickClip(anim, "spawn", "zombie_portal_loop", "slingshot", "summoning");
+                case BOSS_SUMMON_END -> pickClip(anim, "spawn", "zombie_portal_end", "slingshot", "summoning");
+                case BOSS_GLACIER -> {
+                    if (zomboss.getAttackBehavior() instanceof MammothFreezingColumn colAttack) {
+                        int animIndex = colAttack.getTargetCol() + 1;
+                        yield "glacier_column_" + animIndex;
+                    }
+                    yield "glacier_column_1";
+                }
+                case BOSS_MISSILE -> (zomboss instanceof MammothZomboss)? "slingshot" : "missile_start";
+                case BOSS_DASH -> "walk_forward";
+                case BOSS_JUMP -> "jump_start";
+                case BOSS_WIND -> "wind_1";
+                case BOSS_FIRE_ROW -> "fire_attack";
+                case BOSS_SHARK -> "spawn";
+                case STUNNED -> pickClip(anim, "idle", "stun_loop", "stun");
+                default -> pickClip(anim, "idle", "idle");
+            };
+        }
+
         if (zombie.getType() == ZombieType.BARREL_ROLLER) {
             boolean hasBarrel = zombieHasBarrel(zombie);
             if (zombie.isDead()) {
@@ -169,16 +212,13 @@ public class ZombieRenderer {
         }
 
         if (zombie.isDead()) return pickClip(anim, CLIP_WALK, "die");
-
         if (zombie.getState() == ZombieState.TOSS) return pickClip(anim, CLIP_IDLE, "toss");
-
         if (zombie.getState() == ZombieState.INTRO) return pickClip(anim, "idle", "intro");
 
         if (zombie.getType() == ZombieType.ALL_STAR) {
             if (zombie.getState() == ZombieState.SPECIAL) {
                 return pickClip(anim, CLIP_WALK, "tackle");
             }
-
             if (zombie.getState() == ZombieState.WALKING && zombie.getCurrentSpeed() > zombie.getBaseSpeed() * 1.5f) {
                 return pickClip(anim, CLIP_WALK, "run");
             }
@@ -199,29 +239,22 @@ public class ZombieRenderer {
         }
 
         if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, "idle", "special");
-
         if (zombie.getState() == ZombieState.CAST) return pickClip(anim, CLIP_IDLE, "cast");
         if (zombie.getState() == ZombieState.CAST_LOOP) return pickClip(anim, CLIP_IDLE, "cast_loop");
         if (zombie.getState() == ZombieState.REEL) return pickClip(anim, CLIP_IDLE, "reel");
-
         if (zombie.getState() == ZombieState.SMASH) return pickClip(anim, "eat", "smash_left");
         if (zombie.getState() == ZombieState.THROW_IMP) return pickClip(anim, "idle", "fire", "cannon_fire");
-
         if (zombie.getState() == ZombieState.FLYING_IMP) return pickClip(anim, "walk", "fly");
         if (zombie.getState() == ZombieState.LANDING) return pickClip(anim, "idle", "land");
-
         if (zombie.getState() == ZombieState.FLY_START) return pickClip(anim, CLIP_WALK, "fly_start");
         if (zombie.getState() == ZombieState.FLYING) return pickClip(anim, CLIP_WALK, "fly_loop", "fly");
         if (zombie.getState() == ZombieState.FLY_END) return pickClip(anim, CLIP_WALK, "fly_end", "land");
 
         if (zombie.getType() == ZombieType.NEWSPAPER) {
-
             if (zombie.getState() == ZombieState.ENRAGING) {
                 return pickClip(anim, CLIP_WALK, "newspaper_defeat");
             }
-
             boolean isEnraged = zombie.getActiveEffects().stream().anyMatch(e -> e instanceof RageEffect);
-
             if (isEnraged) {
                 if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
                 return pickClip(anim, CLIP_WALK, "walk");
@@ -231,13 +264,7 @@ public class ZombieRenderer {
             }
         }
 
-        if (zombie.getType() == ZombieType.TROGLOBITE) {
-            if (zombie.getState() == ZombieState.PUSH) {
-                return pickClip(anim, CLIP_WALK, "push");
-            }
-        }
-
-        if (zombie.getType() == ZombieType.ARCADE) {
+        if (zombie.getType() == ZombieType.TROGLOBITE || zombie.getType() == ZombieType.ARCADE) {
             if (zombie.getState() == ZombieState.PUSH) {
                 return pickClip(anim, CLIP_WALK, "push");
             }
@@ -246,15 +273,11 @@ public class ZombieRenderer {
         if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
         if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
         if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
-
         if (zombie.getState() == ZombieState.THROW) return pickClip(anim, CLIP_WALK, "throw");
-
         if (zombie.getState() == ZombieState.SPIN_UP) return pickClip(anim, CLIP_IDLE, "spinup");
         if (zombie.getState() == ZombieState.SPINNING) return pickClip(anim, CLIP_WALK, "spin_walk", "spin");
         if (zombie.getState() == ZombieState.SPIN_DOWN) return pickClip(anim, CLIP_IDLE, "spindown");
-
         if (zombie.getState() == ZombieState.SPELL) return pickClip(anim, "idle", "sheep");
-
         if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
         if (zombie.getState() == ZombieState.STUNNED) return pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop");
 
@@ -317,6 +340,10 @@ public class ZombieRenderer {
             ashActor.setScaleX(-1f);
         }
 
+        if (zombie instanceof Zomboss) {
+            ashActor.setScale(1.75f, 1.75f);
+        }
+
         zombieLayer.addActor(ashActor);
 
         ashActor.addAction(Actions.sequence(
@@ -328,7 +355,8 @@ public class ZombieRenderer {
 
     private String resolveAshPamPath(ZombieType type) {
         return switch (type) {
-            case GARGANTUAR -> "768/INITIAL/EFFECTS/ZOMBIE_GARGANTUAR_ASH/ZOMBIE_GARGANTUAR_ASH.PAM";
+            case GARGANTUAR, ZOMBOSS_EGYPT, ZOMBOSS_FROZEN_CAVES, ZOMBOSS_DARK_AGES, ZOMBOSS_BEACH ->
+                "768/INITIAL/EFFECTS/ZOMBIE_GARGANTUAR_ASH/ZOMBIE_GARGANTUAR_ASH.PAM";
             case IMP, IMP_DRAGON -> "768/INITIAL/EFFECTS/ZOMBIE_IMP_ASH/ZOMBIE_IMP_ASH.PAM";
             case KING, ALL_STAR -> "768/INITIAL/EFFECTS/ZOMBIE_BIG_ASH/ZOMBIE_BIG_ASH.PAM";
             case JANE -> "768/FULL/EFFECTS/ZOMBIE_LOSTCITY_JANE_ASH/ZOMBIE_LOSTCITY_JANE_ASH.PAM";
