@@ -26,7 +26,7 @@ import java.util.Random;
 
 public class IceCaveModifier implements SeasonModifier {
 
-    private static final double FREEZING_WIND_CHANCE = 1;
+    private static final double FREEZING_WIND_CHANCE = 0.4;
     private static final double SLIPPERY_STAGE_CHANCE = 0.5;
 
     //for chance of slippery tile:
@@ -50,7 +50,7 @@ public class IceCaveModifier implements SeasonModifier {
 
     @Override
     public void onWaveStart(Wave wave) {
-        double currentWindChance = Math.min(1, FREEZING_WIND_CHANCE + 0.05 * getCurrentLevelNumber());
+        double currentWindChance = Math.min(0.8, FREEZING_WIND_CHANCE + 0.05 * getCurrentLevelNumber());
 
         if (rand.nextDouble() < currentWindChance) {
             Arena arena = GameSession.getInstance().getArena();
