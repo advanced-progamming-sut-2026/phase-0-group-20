@@ -86,6 +86,10 @@ public class GameSession {
         return instance;
     }
 
+    public static void bindInstance(GameSession session) {
+        instance = session;
+    }
+
     public static GameSession getInstance(Chapter chapter, Level currentLevel, Arena arena,
                                           List<Plant> chosenPlants, List<Zombie> chosenZombies) {
         if (instance == null) {
