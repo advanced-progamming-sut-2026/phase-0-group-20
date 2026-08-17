@@ -100,7 +100,10 @@ public class BattlefieldRenderer implements GameEventListener {
                 effectRenderer.spawnPianoBreakEffect(payload.getPixelX(), payload.getPixelY());
             } else if ("FREEZING_WIND".equals(payload.getMessage())) {
                 effectRenderer.spawnWindEffect(payload.getRow());
-            } else if ("SANDSTORM_START".equals(payload.getMessage())) {
+            }else if ("BOSS_WIND".equals(payload.getMessage())){
+                effectRenderer.spawnWindEffect(payload.getRow());
+                effectRenderer.spawnWindEffect(payload.getCol());
+            }else if ("SANDSTORM_START".equals(payload.getMessage())) {
                 effectRenderer.spawnSandstormEffect(payload.getZombie());
             } else if ("TARGET_LOCKED".equals(payload.getMessage())) {
                 effectRenderer.spawnTargetMarker(payload.getCol(), payload.getRow());
