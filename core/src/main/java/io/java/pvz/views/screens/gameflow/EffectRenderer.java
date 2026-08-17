@@ -265,6 +265,47 @@ public class EffectRenderer {
             Actions.removeActor()
         ));
     }
+    public void spawnFallingFireball(int col, int row) {
+        String pamPath = "768/FULL/EFFECTS/ZOMBOSS_DARK_FIREBALL/ZOMBOSS_DARK_FIREBALL.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "fall", pamPath);
+        actor.setSize(80f, 150f);
+        actor.setOrigin(Align.center);
+
+        float targetX = col * TILE_WIDTH +
+            GRID_START_X + TILE_WIDTH / 2f;
+        float targetY = (5 - row) *TILE_HEIGHT +
+           GRID_START_Y +TILE_HEIGHT / 2f;
+
+        float startY = targetY + 900f;
+        actor.setPosition(targetX - actor.getWidth() / 2f, startY);
+
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.0f),
+            Actions.moveTo(targetX - actor.getWidth() / 2f, targetY, 1.0f, Interpolation.pow2In),
+            Actions.removeActor()
+        ));
+    }
+
+    public void spawnFireballExplosion(float x ,float y) {
+        String pamPath = "768/FULL/EFFECTS/ZOMBOSS_DARK_FIREBALL/ZOMBOSS_DARK_FIREBALL.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
+            "impact", pamPath);
+        actor.setSize(TILE_WIDTH * 2, TILE_HEIGHT * 2);
+        actor.setOrigin(Align.center);
+
+        actor.setPosition(x - actor.getWidth() / 2f, y - actor.getHeight() / 2f + 90f);
+
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.35f),
+            Actions.removeActor()
+        ));
+    }
     public void spawnHunterIceHitEffect(int col, int row) {
         String pamPath1 = "768/FULL/EFFECTS/ZOMBIE_HUNTER_SNOWBALL_SPLAT/ZOMBIE_HUNTER_SNOWBALL_SPLAT.PAM";
         String pamPath2 = "768/INITIAL/EFFECTS/ZOMBIE_HUNTER_SNOWBALL_SPLAT/ZOMBIE_HUNTER_SNOWBALL_SPLAT.PAM";

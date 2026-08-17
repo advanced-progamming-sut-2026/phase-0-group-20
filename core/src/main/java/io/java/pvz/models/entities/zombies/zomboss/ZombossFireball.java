@@ -68,12 +68,12 @@ public class ZombossFireball implements Ticker {
         GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
             new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
                 .message("FIREBALL_EXPLOSION")
-                .pixelCoordinate(targetX, targetY)
+                .coordinate(targetRow, targetCol)
                 .build());
 
         DragonScorchedEarthAttack.burnTheTile(targetTile);
 
-        Zombie impDragon = ZombieFactory.create(ZombieType.IMP, targetRow);
+        Zombie impDragon = ZombieFactory.create(ZombieType.IMP_DRAGON, targetRow);
         impDragon.setCol(targetCol);
         impDragon.setX(targetX);
         session.getArena().addZombie(impDragon);
