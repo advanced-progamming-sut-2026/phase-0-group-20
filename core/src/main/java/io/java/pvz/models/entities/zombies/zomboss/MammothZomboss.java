@@ -52,11 +52,6 @@ public class MammothZomboss extends Zomboss {
         this.setAttackBehavior(idleAttack);
         idleAttack.onEnter();
 
-        SwitchLaneZombossMove switchMove = new SwitchLaneZombossMove(this);
-        IdleZombossMove idleMove = new IdleZombossMove(this, switchMove);
-        switchMove.setIdleMove(idleMove);
-
-        this.setMoveBehavior(idleMove);
-        idleMove.onEnter();
+        this.setMoveBehavior(null);
     }
 }

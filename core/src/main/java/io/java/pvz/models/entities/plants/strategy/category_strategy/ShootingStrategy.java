@@ -92,8 +92,8 @@ public class ShootingStrategy implements IPlantStrategy {
                 int rowDiff = zRow - plantRow;
                 int colDiff = zCol - plantCol;
 
-                boolean isBackward = (rowDiff == 0 && colDiff < 0);
-                boolean isUpOrDown = (colDiff == 0 && rowDiff != 0);
+                boolean isBackward = (z.isOccupyingRow(plantRow) && colDiff < 0);
+                boolean isUpOrDown = (colDiff == 0 && !z.isOccupyingRow(plantRow));
                 boolean isDiagonalForward = (colDiff > 0 && Math.abs(rowDiff) == colDiff);
 
                 if (isBackward || isUpOrDown || isDiagonalForward) return true;

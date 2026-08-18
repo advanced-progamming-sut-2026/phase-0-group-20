@@ -174,6 +174,7 @@ public class WorldItemRenderer {
         map.put(ProjectileType.WALLNUT_BOWL, new ProjectileAnim(Ids.Projectiles.WALLNUT_BOWL, "animation"));
         map.put(ProjectileType.EXPLODE_NUT_BOWL, new ProjectileAnim(Ids.Projectiles.EXPLODE_NUT_BOWL, "animation"));
         map.put(ProjectileType.GIANT_NUT_BOWL, new ProjectileAnim(Ids.Projectiles.GIANT_NUT_BOWL, "animation"));
+        map.put(ProjectileType.SHARK,new ProjectileAnim(Ids.Projectiles.SHARK,"walk"));
         return map;
     }
 

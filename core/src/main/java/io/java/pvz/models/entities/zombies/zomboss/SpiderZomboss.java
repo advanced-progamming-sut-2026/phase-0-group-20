@@ -43,15 +43,11 @@ public class SpiderZomboss extends Zomboss {
             GameSession.notify("Spider Zomboss missile exploded and cratered the tile!");
         };
         attacks.add(new ZombossMissileAttack(this, idleAttack, egyptImpact));
+        attacks.add(new SwitchLaneZombossAttack(this, idleAttack));
 
         this.setAttackBehavior(idleAttack);
         idleAttack.onEnter();
 
-        SwitchLaneZombossMove switchMove = new SwitchLaneZombossMove(this);
-        IdleZombossMove idleMove = new IdleZombossMove(this, switchMove);
-        switchMove.setIdleMove(idleMove);
-
-        this.setMoveBehavior(idleMove);
-        idleMove.onEnter();
+        this.setMoveBehavior(null);
     }
 }

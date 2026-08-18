@@ -422,6 +422,7 @@ public class EffectRenderer {
         map.put(ProjectileType.PLASMA_BALL, new HitAnim(Ids.ProjectileHits.PLASMA_BALL, "animation", 1.3f));
         map.put(ProjectileType.EXPLODE_NUT_BOWL, new HitAnim(Ids.ProjectileHits.EXPLODE_NUT_BOWL,
             "explosion", 1.6667f));
+        map.put(ProjectileType.SHARK,new HitAnim(Ids.ProjectileHits.SHARK,"attack", 2.1f));
         return map;
     }
 }

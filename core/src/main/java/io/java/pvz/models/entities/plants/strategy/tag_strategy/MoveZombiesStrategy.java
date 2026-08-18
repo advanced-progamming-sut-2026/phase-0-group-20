@@ -33,7 +33,7 @@ public class MoveZombiesStrategy implements IPlantStrategy {
                         .getZombiesInRadius((int) plantCol, plantRow, 0.8);
 
                 for (Zombie z : attackers) {
-                    if (!z.isDead() && z.getRow() == plantRow) {
+                    if (!z.isDead() && z.isOccupyingRow(plantRow)) {
                         moveZombieToAdjacentLane(z, plantRow, GameSession.getInstance());
                         notify("🧄 Garlic forced " + z.getName() + " to switch lanes!");
                     }

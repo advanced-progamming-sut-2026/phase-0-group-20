@@ -5,6 +5,7 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.effect.SlideCooldownEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.SlideEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.ZombieEffect;
+import io.java.pvz.models.entities.zombies.zomboss.Zomboss;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
 
@@ -50,7 +51,7 @@ public class SlipperyTile extends Tile {
     }
 
     public void slide(Zombie zombie) {
-        if (zombie == null) return;
+        if (zombie == null || zombie instanceof Zomboss) return;
 
         int targetRow = (direction == SlideDirection.UP) ? position.getRow() - 1 : position.getRow() + 1;
         if (targetRow < 0 || targetRow >= GameSession.getInstance().getArena().getRows()) return;

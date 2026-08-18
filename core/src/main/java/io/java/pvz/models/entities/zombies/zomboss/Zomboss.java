@@ -31,7 +31,7 @@ public abstract class Zomboss extends Zombie {
                    DefenseBehavior defenseBehavior) {
         ZombieData data = new ZombieData (
             "Zomboss"
-            ,3000
+            ,5100
             ,0.3f
             ,1000
             ,1000
@@ -41,7 +41,7 @@ public abstract class Zomboss extends Zombie {
             , null
             );
         super(type, data, row, moveBehavior, attackBehavior, defenseBehavior);
-        this.secondRow = row + 1;
+        this.secondRow = row +1;
         this.phaseHealth = this.getBaseHp() / 3;
         this.currentPhaseHealth = this.phaseHealth;
         this.setCol(8);
@@ -107,6 +107,11 @@ public abstract class Zomboss extends Zombie {
         this.phase--;
         this.currentPhaseHealth = this.phaseHealth;
         notify(this.getName() + " is STUNNED! Phase " + phase + " started.");
+    }
+
+    @Override
+    public boolean isOccupyingRow(int targetRow) {
+        return this.getRow() == targetRow || this.getSecondRow() == targetRow;
     }
 
     public void reducePhaseHealth(int amount) {

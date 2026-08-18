@@ -17,9 +17,11 @@ import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.zombies.zomboss.Zomboss;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.Level;
+import io.java.pvz.models.game.adventure.levels.BossLevel;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.models.game.minigame.IZombieLevel;
@@ -66,16 +68,62 @@ public class GameHUD {
         setupIndicators();
         setupActionButtons();
 
+        boolean isBossLevel = GameSession.getInstance() != null &&
+            GameSession.getInstance().getCurrentMode() instanceof BossLevel;
+
+        if (isBossLevel) {
+            buildBossProgressBar();
+        } else {
+            buildNormalProgressBar();
+        }
+    }
+
+    private void buildNormalProgressBar() {
         waveProgressBar = new ProgressBar(0f, 1f, 0.001f, false, skin, "xp_green");
         waveProgressBar.setSize(400, 45);
         waveProgressBar.setPosition(1400f, 30f);
         waveProgressBar.setValue(0f);
+        visualWaveProgress = 0f;
         mainLayer.addActor(waveProgressBar);
 
-        setupWaveMarkers();
+        if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof Level level) {
+            int waveCount = level.getWaveCount();
+            for (int i = 1; i <= waveCount; i++) {
+                float fraction = (float) i / waveCount;
+                Image flagImage = UiFactory.imageFor(textures, "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
+                flagImage.setSize(40f, 45f);
+                float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction) - (flagImage.getWidth() / 2f);
+                float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (flagImage.getHeight() / 2f);
+                flagImage.setPosition(x, y);
+                mainLayer.addActor(flagImage);
+            }
+        }
 
         progressHeadIcon = UiFactory.imageFor(textures, "IMAGE_UI_PERKS_RIFT_ICON_SAPMPLE_5");
         progressHeadIcon.setSize(55f, 55f);
+        mainLayer.addActor(progressHeadIcon);
+    }
+
+    private void buildBossProgressBar() {
+        waveProgressBar = new ProgressBar(0f, 1f, 0.001f, false, skin, "xp_fuschia");
+        waveProgressBar.setSize(450, 50);
+        waveProgressBar.setPosition(1350f, 30f);
+        waveProgressBar.setValue(1f);
+        visualWaveProgress = 1f;
+        mainLayer.addActor(waveProgressBar);
+
+        for (int i = 1; i <= 2; i++) {
+            float fraction = i / 3f;
+            Image phaseMarker = UiFactory.imageFor(textures, "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
+            phaseMarker.setSize(35f, 40f);
+            float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction) - (phaseMarker.getWidth() / 2f);
+            float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (phaseMarker.getHeight() / 2f);
+            phaseMarker.setPosition(x, y);
+            mainLayer.addActor(phaseMarker);
+        }
+
+        progressHeadIcon = UiFactory.imageFor(textures, "IMAGE_UI_HUD_INGAME_PROGRESS_METER_ZOMBOSS_HEAD");
+        progressHeadIcon.setSize(65f, 65f);
         mainLayer.addActor(progressHeadIcon);
     }
 
@@ -369,28 +417,6 @@ public class GameHUD {
         return card;
     }
 
-    private void setupWaveMarkers() {
-        if (waveProgressBar == null || GameSession.getInstance() == null) return;
-
-        if (GameSession.getInstance().getCurrentMode() instanceof Level level) {
-            int waveCount = level.getWaveCount();
-
-            for (int i = 1; i <= waveCount; i++) {
-                float fraction = (float) i / waveCount;
-                Image flagImage = UiFactory.imageFor(textures,
-                    "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
-
-                flagImage.setSize(40f, 45f);
-                float x = waveProgressBar.getX() +
-                    (waveProgressBar.getWidth() * fraction) - (flagImage.getWidth() / 2f);
-                float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (flagImage.getHeight() / 2f);
-
-                flagImage.setPosition(x, y);
-                mainLayer.addActor(flagImage);
-            }
-        }
-    }
-
     public void update(float delta) {
         if (belt != null && GameSession.getInstance() != null &&
             GameSession.getInstance().getCurrentMode() instanceof ConveyorBelt beltLevel) {
@@ -401,8 +427,20 @@ public class GameHUD {
     }
 
     private void calculateProgressBar(float delta) {
-        if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof Level level) {
-            float targetProgress = getTargetProgress(level);
+        if (GameSession.getInstance() != null) {
+            float targetProgress = 0f;
+
+            if (GameSession.getInstance().getCurrentMode() instanceof BossLevel) {
+                Zomboss zomboss = findZomboss();
+                if (zomboss != null) {
+                    float healthFraction = (float) Math.max(0, zomboss.getHealth()) / Math.max(1, zomboss.getBaseHp());
+                    targetProgress = Math.max(0f, Math.min(1f, healthFraction));
+                } else {
+                    targetProgress = 1f;
+                }
+            } else if (GameSession.getInstance().getCurrentMode() instanceof Level level) {
+                targetProgress = getNormalWaveProgress(level);
+            }
 
             visualWaveProgress += (targetProgress - visualWaveProgress) * delta * 1.5f;
 
@@ -419,7 +457,18 @@ public class GameHUD {
         }
     }
 
-    private float getTargetProgress(Level level) {
+    private Zomboss findZomboss() {
+        if (GameSession.getInstance() != null && GameSession.getInstance().getArena() != null) {
+            for (Zombie z : GameSession.getInstance().getArena().getActiveZombies()) {
+                if (z instanceof Zomboss zomboss) {
+                    return zomboss;
+                }
+            }
+        }
+        return null;
+    }
+
+    private float getNormalWaveProgress(Level level) {
         float targetProgress = 0f;
         int waveCount = level.getWaveCount();
 

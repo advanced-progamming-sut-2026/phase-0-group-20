@@ -21,9 +21,13 @@ public class TurbineVacuumAttack implements IZombossAttack {
 
     private int attackTimer;
 
-    private static final int PHASE_1_START_TICKS = 2 * TimeManager.TICKS_PER_SECOND;
-    private static final int PHASE_2_END_TICKS = 5 * TimeManager.TICKS_PER_SECOND;
-    private static final int TOTAL_DURATION_TICKS = (int) (7.5 * TimeManager.TICKS_PER_SECOND);
+    private static final int START_DURATION_TICKS = (int) (2.15f * TimeManager.TICKS_PER_SECOND);
+    private static final int LOOP_DURATION_TICKS = (int) (2.0f * TimeManager.TICKS_PER_SECOND);
+    private static final int END_DURATION_TICKS = (int) (2.52f * TimeManager.TICKS_PER_SECOND);
+
+    private static final int PHASE_1_END = START_DURATION_TICKS;
+    private static final int PHASE_2_END = START_DURATION_TICKS + LOOP_DURATION_TICKS;
+    private static final int TOTAL_DURATION_TICKS = START_DURATION_TICKS + LOOP_DURATION_TICKS + END_DURATION_TICKS;
 
     public TurbineVacuumAttack(Zomboss zomboss, IdleZombossAttack idleState) {
         this.zomboss = zomboss;
@@ -42,20 +46,23 @@ public class TurbineVacuumAttack implements IZombossAttack {
     public void execute() {
         attackTimer++;
 
-        if (attackTimer == PHASE_1_START_TICKS) {
+        if (attackTimer == PHASE_1_END) {
             zomboss.setState(ZombieState.BOSS_VACUUM_LOOP);
             dispatchTurbineEvent("TURBINE_LOOP");
             zomboss.notify("Turbine Vacuum is active! Sucking everything in its path!");
-        } else if (attackTimer > PHASE_1_START_TICKS && attackTimer <= PHASE_2_END_TICKS) {
+        }
+        else if (attackTimer > PHASE_1_END && attackTimer <= PHASE_2_END) {
             vacuumZombiesContinuous();
-            if ((attackTimer - PHASE_1_START_TICKS) % 3 == 0) {
+            if ((attackTimer - PHASE_1_END) % 6 == 0) {
                 vacuumPlantsForward();
             }
-        } else if (attackTimer == PHASE_2_END_TICKS + 1) {
+        }
+        else if (attackTimer == PHASE_2_END + 1) {
             zomboss.setState(ZombieState.BOSS_VACUUM_END);
             dispatchTurbineEvent("TURBINE_END");
             zomboss.notify("Turbine Vacuum is powering down...");
-        } else if (attackTimer >= TOTAL_DURATION_TICKS) {
+        }
+        else if (attackTimer >= TOTAL_DURATION_TICKS) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);
