@@ -337,6 +337,11 @@ public class User {
             .anyMatch(plant1 -> plant1.getName().equals(plant.getName()));
     }
 
+    public boolean isZombieUnlocked(Zombie zombie) {
+        return progress.getUnlockedZombies().stream()
+            .anyMatch(zombie1 -> zombie1.getName().equals(zombie.getName()));
+    }
+
     @JsonIgnore
     public Map<MiniGameType, Integer> getUnlockedMinigames() {
         return progress.getUnlockedMinigames();

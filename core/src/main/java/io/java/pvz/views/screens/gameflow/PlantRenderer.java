@@ -85,8 +85,12 @@ public class PlantRenderer {
         } else {
             actor = PamAnimatedActor.createPlantAnimated(UiFactory.getAtlasName(plant), clip);
         }
+
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
+
+        actor.setUserObject(plant);
+
         plantLayer.addActor(actor);
         return actor;
     }
