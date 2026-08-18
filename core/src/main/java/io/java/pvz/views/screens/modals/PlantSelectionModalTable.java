@@ -82,7 +82,17 @@ public class PlantSelectionModalTable extends Table {
 
         if (availablePlants != null) {
             for (Plant plant : availablePlants) {
-                PlantCardButton card = createPlantCard(textures, plant);
+                PlantCardButton card;
+                if(App.getActiveUser().isItUnlocked(plant)) {
+                    Plant foundPlant = App.getActiveUser().getUnlockedPlants().stream()
+                        .filter(p -> p.getName().equals(plant.getName()))
+                        .findFirst()
+                        .orElse(null);
+                         card = createPlantCard(textures,foundPlant);
+
+                }else{
+                     card = createPlantCard(textures, plant);
+                }
                 if (card != null) {
                     cardMap.put(plant, card);
                     gridTable.add(card).size(140, 105).pad(8);

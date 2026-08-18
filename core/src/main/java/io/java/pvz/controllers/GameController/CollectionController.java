@@ -98,7 +98,6 @@ public class CollectionController {
 
     public Result upgradePlant(String name) {
         User activeUser = App.getActiveUser();
-        String capitalName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
         ArrayList<Plant> plants = activeUser.getUnlockedPlants();
         Plant foundPlant = plants.stream()
                 .filter(plant -> plant.getName().equalsIgnoreCase(name))
@@ -115,7 +114,7 @@ public class CollectionController {
         int cost = BASE_COST * foundPlant.getLevel();
         int mathPower = (int) Math.pow(2, foundPlant.getLevel());
         int seedPacketCost = BASE_SEED_PACKETS * mathPower;
-        if (!seeds.containsKey(capitalName) || seedPacketCost > seeds.get(capitalName)) {
+        if (!seeds.containsKey(foundPlant.getName()) || seedPacketCost > seeds.get(foundPlant.getName())) {
             GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
                     .message("Not Enough Seed Packets")
@@ -138,7 +137,7 @@ public class CollectionController {
         }
         foundPlant.upgrade();
         activeUser.costCoin(cost);
-        seeds.computeIfPresent(capitalName, (k, v) -> Math.max(0, v - seedPacketCost));
+        seeds.computeIfPresent(foundPlant.getName(), (k, v) -> Math.max(0, v - seedPacketCost));
         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
             new GameEventPayload.Builder(GameEvent.NOTIFY)
                 .message("Successfully upgraded to LVL " + foundPlant.getLevel())
