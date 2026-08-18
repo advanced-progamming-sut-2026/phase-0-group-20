@@ -70,7 +70,6 @@ public class Zombie implements Ticker {
         this.eatDPS = data.getEatDps();
         this.waveCost = data.getWaveCost();
         this.position = new Position(9, row); // we will randomly choose the exact x due to map
-//        this.position.setX(10.0f);
         this.moveBehavior = moveBehavior;
         this.defenseBehavior = defenseBehavior;
         this.attackBehavior = attackBehavior;
@@ -385,14 +384,13 @@ public class Zombie implements Ticker {
 
     public void move() {
         if (this.isHypnotized()) {
-            if (this.currentSpeed < 0) currentSpeed *= -1;
+            this.position.moveX(this.currentSpeed);
             if (this.getCol() >= GameSession.getInstance().getArena().getCols()) {
                 this.setDead(true);
             }
+        } else {
+            this.position.moveX(-this.currentSpeed);
         }
-
-        this.position.moveX(-this.currentSpeed);
-
     }
 
     public Tile getTile() {

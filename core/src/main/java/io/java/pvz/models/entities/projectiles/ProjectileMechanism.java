@@ -146,6 +146,6 @@ public class ProjectileMechanism {
     }
 
     private static boolean canPassObstacles(Plant plant) {
-        return plant.getCategory() == PlantCategory.LOBBER;
+        return plant.getCategory() == PlantCategory.LOBBER || plant.getName().equalsIgnoreCase("caulipower");
     }
 }

@@ -53,13 +53,6 @@ public class Plant implements IPlant, Ticker {
     protected boolean frozen = false;
     protected boolean stunned = false;
 
-//    private int iceStacks = 0;
-//    private int iceBlockHp = 0;
-//    private static final int MAX_ICE_HP = 600;
-//
-//    private int octopusHp = 0;
-//    private static final int MAX_OCTOPUS_HP = 800;
-
     protected int size = 1;
     protected boolean boosted = false;
     protected int boostTimer = 0;
@@ -582,7 +575,15 @@ public class Plant implements IPlant, Ticker {
     }
 
     public String getCurrentAction() {
-        return actionTimer > 0 ? currentAction : null;
+        if (actionTimer > 0) {
+            return currentAction;
+        }
+
+        if (getStackCount() > 1 && getName().equalsIgnoreCase("Pea Pod")) {
+            return "idle" + getStackCount();
+        }
+
+        return null;
     }
 
     public <T extends IPlantStrategy> T getStrategy(Class<T> strategyClass) {
