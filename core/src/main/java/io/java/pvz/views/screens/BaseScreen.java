@@ -19,10 +19,16 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.AudioManager;
+import io.java.pvz.controllers.GameController.MatchmakingController;
 import io.java.pvz.controllers.NotificationManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.views.screens.modals.IncomingChallengeTable;
+import io.java.pvz.views.screens.modals.MatchFoundTable;
 import io.java.pvz.views.sound.MusicType;
 
 public abstract class BaseScreen implements Screen {
@@ -80,6 +86,31 @@ public abstract class BaseScreen implements Screen {
         }
         AudioManager.getInstance().playMusic(MusicType.MENU_BGM);
         getNotificationManager();
+        registerDefaultMultiplayerHandlers();
+    }
+
+    private void registerDefaultMultiplayerHandlers() {
+        MatchmakingController matchmaking = MatchmakingController.getInstance();
+
+        matchmaking.setOnIncomingChallenge(challenge -> {
+            if (AssetLoader.getInstance().getSkin() == null) return;
+            new IncomingChallengeTable(AssetLoader.getInstance().getSkin(), challenge.inviteId, challenge.fromUsername)
+                .show(modalLayer, viewport);
+        });
+
+        matchmaking.setOnChallengeDeclined(reason ->
+            notify("Challenge Denied: " + reason));
+
+        matchmaking.setOnMatchFound(info -> {
+            if (AssetLoader.getInstance().getSkin() == null) return;
+            new MatchFoundTable(AssetLoader.getInstance().getSkin(), info.opponentUsername, info.role)
+                .show(modalLayer, viewport);
+        });
+    }
+
+    protected void notify(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+            new GameEventPayload.Builder(GameEvent.NOTIFY).message(message).build());
     }
 
     protected boolean showsCurrencyBar() {
