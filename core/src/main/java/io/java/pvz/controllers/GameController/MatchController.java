@@ -26,6 +26,8 @@ public class MatchController {
     private volatile PlayerRole currentRole;
     private volatile boolean isOnlineMatch = false;
 
+    private volatile boolean isCouchPlay = false;
+
     public static synchronized MatchController getInstance() {
         if (instance == null) instance = new MatchController();
         return instance;
@@ -142,5 +144,17 @@ public class MatchController {
 
     public io.java.pvz.net.server.PlayerRole getCurrentRole() {
         return currentRole;
+    }
+
+    public boolean isCouchPlay() {
+        return isCouchPlay;
+    }
+
+    public void setCouchPlay(boolean couchPlay) {
+        this.isCouchPlay = couchPlay;
+    }
+
+    public void setOnlineMatch(boolean onlineMatch) {
+        this.isOnlineMatch = onlineMatch;
     }
 }

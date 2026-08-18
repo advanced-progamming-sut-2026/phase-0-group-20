@@ -53,15 +53,13 @@ public class MinigameItemUi extends Table {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (type == MiniGameType.I_ZOMBIE) {
-                    if (NetworkController.getInstance().isAuthenticated()) {
-                        ScreenManager.getInstance().pushScreen(
-                            new MultiplayerLobbyScreen(ScreenManager.getInstance().getGame()));
-                    } else {
-                        ScreenManager.getInstance().pushScreen(
-                            new LevelSelectionScreen(ScreenManager.getInstance().getGame(), type, travelLogController));
-                    }
+                    ScreenManager.getInstance().pushScreen(
+                        new MultiplayerLobbyScreen(ScreenManager.getInstance().getGame())
+                    );
                 } else {
-                    ScreenManager.getInstance().pushScreen(new LevelSelectionScreen(ScreenManager.getInstance().getGame(), type, travelLogController));
+                    ScreenManager.getInstance().pushScreen(
+                        new LevelSelectionScreen(ScreenManager.getInstance().getGame(), type, travelLogController)
+                    );
                 }
             }
         });

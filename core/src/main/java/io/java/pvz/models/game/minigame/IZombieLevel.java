@@ -1,5 +1,6 @@
 package io.java.pvz.models.game.minigame;
 
+import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.entities.Sun;
@@ -53,12 +54,19 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
         redLineCol = rand.nextInt(2) + 2 + levelNumber;
 
+        boolean isMultiplayer = MatchController.getInstance().isOnlineMatch() ||
+            MatchController.getInstance().isCouchPlay();
+
         for (int row = 0; row < session.getArena().getRows(); row++) {
             Brain brain = new Brain(row);
             session.getArena().setBrainInRow(row, brain);
-            spawnPrePlacedPlants(session, row, redLineCol);
-        }
 
+            if (isMultiplayer) {
+                spawnOnlySunZombie(session, row, session.getArena().getCols());
+            } else {
+                spawnPrePlacedPlants(session, row, redLineCol);
+            }
+        }
     }
 
     private void spawnPrePlacedPlants(GameSession session, int row, int redLineCol) {
@@ -142,7 +150,9 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     }
 
     @Override
-    public boolean skipsPlantSelection() { return true; }
+    public boolean skipsPlantSelection() {
+        return true;
+    }
 
     public List<ZombieType> getZombiesForThisLevel() {
         return switch (levelNumber) {
@@ -156,6 +166,35 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
                 ZombieType.BUCKET, ZombieType.ALL_STAR, ZombieType.DARK_ARMOR, ZombieType.GARGANTUAR);
         };
     }
+
+    private void spawnOnlySunZombie(GameSession session, int row, int cols) {
+        Zombie sunZombie = InGameEntityGenerator.getZombieForGame(ZombieType.BUCKET, row);
+        sunZombie.setCol(cols - 1);
+        sunZombie.setBaseSpeed(0);
+        session.getArena().addZombie(sunZombie);
+
+        session.getTimeManager().registerNewTicker(new Ticker() {
+            int ticksPassed = 0;
+            int currentInterval = 12 * TimeManager.TICKS_PER_SECOND;
+
+            @Override
+            public void onTick(int currentTick) {
+                if (sunZombie.isDead()) {
+                    session.getTimeManager().unregisterTicker(this);
+                    return;
+                }
+
+                ticksPassed++;
+                if (ticksPassed >= currentInterval) {
+                    session.getArena().addSun(new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow()));
+                    ticksPassed = 0;
+                    if (currentInterval > 4 * TimeManager.TICKS_PER_SECOND)
+                        currentInterval -= TimeManager.TICKS_PER_SECOND;
+                }
+            }
+        });
+    }
+
     @Override
     public String toString() {
         return "Don't Let Plants Destroy Your Zombies-Destroy All Of The Plants";

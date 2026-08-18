@@ -6,12 +6,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.controllers.GameController.MatchController;
+import io.java.pvz.controllers.GameController.ReactionController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
@@ -78,6 +80,11 @@ public class GameHUD {
             buildBossProgressBar();
         } else {
             buildNormalProgressBar();
+        }
+
+        if (MatchController.getInstance().isOnlineMatch()) {
+            buildReactionUI();
+            setupReactionListener();
         }
     }
 
@@ -270,6 +277,9 @@ public class GameHUD {
         boolean isZombieUI = false;
         if (MatchController.getInstance().isOnlineMatch()) {
             isZombieUI = (MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE);
+        } else if (MatchController.getInstance().isCouchPlay()) {
+            isZombieUI = true;
+            MatchController.getInstance().setCouchPlay(false);
         } else {
             isZombieUI = (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel);
         }
@@ -525,5 +535,75 @@ public class GameHUD {
         if (plantFoodBankUI != null) {
             plantFoodBankUI.updateFood(App.getActiveUser().getPlantFoodCount());
         }
+    }
+
+    private void buildReactionUI() {
+        Table reactionTable = new Table();
+        reactionTable.setPosition(250f, 950f);
+        reactionTable.top().left();
+
+        String[] texts = {"Good Luck", "Oops!", "Well Played"};
+        for (int i = 0; i < texts.length; i++) {
+            final int index = i;
+            TextButton btn = new TextButton(texts[i], skin);
+            btn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    ReactionController.getInstance().sendReaction(ReactionController.Category.TEXT, index, null);
+                }
+            });
+            reactionTable.add(btn).padRight(5f);
+        }
+
+        String[] emojis = {"[Smile]", "[Sad]", "[Angry]"};
+        for (int i = 0; i < emojis.length; i++) {
+            final int index = i;
+            TextButton btn = new TextButton(emojis[i], skin);
+            btn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    ReactionController.getInstance().sendReaction(ReactionController.Category.EMOJI, index, null);
+                }
+            });
+            reactionTable.add(btn).padRight(5f);
+        }
+
+        mainLayer.addActor(reactionTable);
+    }
+
+    private void setupReactionListener() {
+        ReactionController.getInstance().setOnReactionReceived(reaction -> {
+            showIncomingReaction(reaction.fromUsername, reaction.category, reaction.index);
+        });
+    }
+
+    private void showIncomingReaction(String opponentName, ReactionController.Category category, int index) {
+        String displayStr = "";
+
+        if (category == ReactionController.Category.TEXT) {
+            String[] texts = {"Good Luck!", "Oops!", "Well Played!"};
+            displayStr = texts[Math.min(index, 2)];
+        } else if (category == ReactionController.Category.EMOJI) {
+            String[] emojis = {"[Smile]", "[Sad]", "[Angry]"};
+            displayStr = emojis[Math.min(index, 2)];
+        } else if (category == ReactionController.Category.STICKER) {
+            displayStr = "(Animated Sticker " + index + ")";
+        }
+
+        Label popupLabel = new Label(opponentName + " says: " + displayStr, skin);
+        popupLabel.setColor(Color.YELLOW);
+        popupLabel.setFontScale(1.5f);
+
+        popupLabel.setPosition(1200f, 800f);
+
+        popupLabel.getColor().a = 0f;
+        popupLabel.addAction(Actions.sequence(
+            Actions.fadeIn(0.3f),
+            Actions.delay(3.0f),
+            Actions.fadeOut(0.5f),
+            Actions.removeActor()
+        ));
+
+        mainLayer.addActor(popupLabel);
     }
 }

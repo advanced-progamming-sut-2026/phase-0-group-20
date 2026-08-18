@@ -13,6 +13,7 @@ public class AuthHandler {
         String username = request.getString("username");
         String password = request.getString("password");
         boolean stayLoggedIn = Boolean.TRUE.equals(request.getBoolean("stayLoggedIn"));
+        boolean isHash = Boolean.TRUE.equals(request.getBoolean("isHash")); // 🌟 فیکس مهم: چک کردن هش بودن پسورد
 
         if (username == null || password == null) {
             return NetworkMessage.failure(request, "username and password are required");
@@ -23,7 +24,16 @@ public class AuthHandler {
             return NetworkMessage.failure(request, "username does not exist");
         }
 
-        User user = DataBaseManager.authenticateUser(username, password);
+        User user;
+        if (isHash) {
+            String finalUsername = username;
+            user = DataBaseManager.getAllUsers().stream()
+                .filter(u -> u.getUsername().equals(finalUsername) && u.getPasswordHash().equals(password))
+                .findFirst().orElse(null);
+        } else {
+            user = DataBaseManager.authenticateUser(username, password);
+        }
+
         if (user == null) {
             return NetworkMessage.failure(request, "incorrect password");
         }
