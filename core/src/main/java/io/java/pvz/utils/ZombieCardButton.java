@@ -1,8 +1,6 @@
 package io.java.pvz.utils;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -24,8 +22,8 @@ public class ZombieCardButton extends Group {
     private final Zombie zombie;
     private final Label costLabel;
 
-    public ZombieCardButton(Image background, Image zombieImage, Zombie zombie) {
-        this(background, zombieImage, zombie, -1, null);
+    public ZombieCardButton(Image background, Image zombieImage, Zombie zombie, Skin skin) {
+        this(background, zombieImage, zombie, -1, skin);
     }
 
     public ZombieCardButton(Image background, Image zombieImage, Zombie zombie, int slotNumber, Skin skin) {
