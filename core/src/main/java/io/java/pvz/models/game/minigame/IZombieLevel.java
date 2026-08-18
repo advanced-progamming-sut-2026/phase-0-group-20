@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Random;
 
 public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
-
+    private static final int TIME_LIMIT = 120;
     private final Random rand = new Random();
     private int redLineCol = 6;
     private IZombieTimeLimitLoseCondition timeLimitCondition;
@@ -158,6 +158,7 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     }
     @Override
     public String toString() {
-        return "Don't Let Plants Destroy Your Zombies-Destroy All Of The Plants";
+        return "Don't Let Plants Destroy Your Zombies-Destroy All Of The Plants-" +
+            "Win The Game in Under "+TIME_LIMIT+" Seconds";
     }
 }
