@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
@@ -27,6 +28,7 @@ import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.*;
 import io.java.pvz.views.screens.modals.LevelIntroModalTable;
 import io.java.pvz.views.screens.modals.PauseMenuTable;
@@ -265,23 +267,30 @@ public class GameHUD {
             seedBankTable.clear();
         }
 
-        List<Plant> selectedPlants = GameSession.getInstance().getChosenPlants();
-
-        List<Zombie> selectedZombie = new ArrayList<>();
-        if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel)
-            iZombieLevel.getZombiesForThisLevel()
-                .forEach(s -> selectedZombie.add(InGameEntityGenerator.getZombieForGame(s, 0)));
+        boolean isZombieUI = false;
+        if (MatchController.getInstance().isOnlineMatch()) {
+            isZombieUI = (MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE);
+        } else {
+            isZombieUI = (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel);
+        }
 
         int maxSlots = 8;
 
-        if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel) {
-            for (int i = 0; i < maxSlots; i++) {
+        if (isZombieUI) {
+            List<Zombie> selectedZombie = new ArrayList<>();
+            if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel) {
+                iZombieLevel.getZombiesForThisLevel()
+                    .forEach(s -> selectedZombie.add(InGameEntityGenerator.getZombieForGame(s, 0)));
+            }
+
+            for (int i = 0; i < 5; i++) {
                 if (i < selectedZombie.size()) {
                     ZombieCardButton zombieCardButton = createZombiePacket(selectedZombie.get(i));
                     seedBankTable.add(zombieCardButton).size(180f, 85f).padBottom(75).row();
                 }
             }
         } else {
+            List<Plant> selectedPlants = GameSession.getInstance().getChosenPlants();
             for (int i = 0; i < maxSlots; i++) {
                 if (i < selectedPlants.size()) {
                     PlantCardButton plantButton = createSeedPacket(selectedPlants.get(i), true);

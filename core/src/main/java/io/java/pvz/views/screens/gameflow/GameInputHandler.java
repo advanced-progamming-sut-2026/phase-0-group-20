@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.controllers.GameController.MiniGameController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
@@ -28,6 +29,7 @@ import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.models.game.minigame.BowlingLevel;
 import io.java.pvz.models.game.minigame.DroppedSeedPacket;
 import io.java.pvz.models.game.minigame.VaseBreakerLevel;
+import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.UiFactory;
@@ -54,7 +56,7 @@ public class GameInputHandler {
 
     private boolean isPlantFoodSelected = false;
     private Image floatingPlantFoodImage = null;
-    private final HashMap<Tile,PamAnimatedActor> plantFoodAnimations = new HashMap<>();
+    private final HashMap<Tile, PamAnimatedActor> plantFoodAnimations = new HashMap<>();
 
     private Vector2 selectedGridPos = null;
 
@@ -124,12 +126,20 @@ public class GameInputHandler {
     }
 
     public void onZombieCardClicked(Zombie zombie, Image zombieIcon) {
+        if (MatchController.getInstance().isOnlineMatch() &&
+            MatchController.getInstance().getCurrentRole() == PlayerRole.PLANT)
+            return;
+
         clearAllSelections();
         selectedZombieToPlace = zombie;
         floatingPlantImage = createFloatingImage(zombieIcon.getDrawable(), 80);
     }
 
     public void onPlantCardClicked(Plant plant, Image plantIcon) {
+        if (MatchController.getInstance().isOnlineMatch() &&
+            MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE)
+            return;
+
         clearAllSelections();
         selectedPlantToPlace = plant;
         floatingPlantImage = createFloatingImage(plantIcon.getDrawable(), 80);
@@ -157,6 +167,10 @@ public class GameInputHandler {
     }
 
     public void onShovelClicked() {
+        if (MatchController.getInstance().isOnlineMatch() &&
+            MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE)
+            return;
+
         boolean wasSelected = isShovelSelected;
         clearAllSelections();
         if (!wasSelected) {
@@ -168,6 +182,10 @@ public class GameInputHandler {
     }
 
     public void onPlantFoodClicked() {
+        if (MatchController.getInstance().isOnlineMatch() &&
+            MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE)
+            return;
+
         boolean wasSelected = isPlantFoodSelected;
         clearAllSelections();
         if (!wasSelected && App.getActiveUser().getPlantFoodCount() > 0) {
@@ -225,10 +243,10 @@ public class GameInputHandler {
                     float centerX = tileX + (TILE_WIDTH / 2f) + offsetX;
                     float centerY = tileY + (TILE_HEIGHT / 2f) + offsetY;
                     PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated
-                        ("768/INITIAL/EFFECTS/PLANTFOOD_FX/PLANTFOOD_FX.PAM","plantfood");
+                        ("768/INITIAL/EFFECTS/PLANTFOOD_FX/PLANTFOOD_FX.PAM", "plantfood");
                     actor.setPosition(centerX, centerY);
                     mainLayer.addActor(actor);
-                    Tile tile = GameSession.getInstance().getArena().getTile(row-1, col-1);
+                    Tile tile = GameSession.getInstance().getArena().getTile(row - 1, col - 1);
                     plantFoodAnimations.put(tile, actor);
                     clearAllSelections();
                     if (gameHUD != null) gameHUD.updatePlantFoodCount();
@@ -271,14 +289,14 @@ public class GameInputHandler {
         }
     }
 
-    public void sickAnimations(){
-        if(plantFoodAnimations.isEmpty()) return;
+    public void sickAnimations() {
+        if (plantFoodAnimations.isEmpty()) return;
         GameSession session = GameSession.getInstance();
         if (session == null) return;
         for (Tile tile : plantFoodAnimations.keySet()) {
-            if(tile.getPlants().isEmpty())return;
+            if (tile.getPlants().isEmpty()) return;
             for (Plant plant : tile.getPlants()) {
-                if(!plant.isBoosted()){
+                if (!plant.isBoosted()) {
                     PamAnimatedActor actor = plantFoodAnimations.get(tile);
                     mainLayer.removeActor(actor);
                     break;
@@ -304,15 +322,27 @@ public class GameInputHandler {
 
     private void handleZombiePlacement(int col, int row) {
         String alias = selectedZombieToPlace.getType().getJsonAlias();
-        Result result = miniGameController.handlePutZombie(alias, String.valueOf(col), String.valueOf(row));
 
-        System.out.println(result.message());
-
-        if (result.isSuccessful())
-            clearAllSelections();
+        if (MatchController.getInstance().isOnlineMatch()) {
+            MatchController.getInstance().releaseZombie(alias, col, row, response -> {
+                if (response.isSuccess()) clearAllSelections();
+                else GameSession.notify("Error: " + response.getErrorMessage());
+            });
+        } else {
+            Result result = miniGameController.handlePutZombie(alias, String.valueOf(col), String.valueOf(row));
+            if (result.isSuccessful()) clearAllSelections();
+            else System.out.println(result.message());
+        }
     }
 
     private void handlePlanting(int col, int row) {
+        if (MatchController.getInstance().isOnlineMatch() && selectedPacketToPlace == null) {
+            MatchController.getInstance().placePlant(selectedPlantToPlace.getName(), col, row, response -> {
+                if (response.isSuccess()) clearAllSelections();
+                else GameSession.notify("Error: " + response.getErrorMessage());
+            });
+            return;
+        }
         Result result;
         if (selectedPacketToPlace != null) {
             result = miniGameController.plantFromVase(

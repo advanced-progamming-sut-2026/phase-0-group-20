@@ -24,6 +24,7 @@ public enum MessageType {
 
     MATCH_STATE_SYNC,
     MATCH_ACTION,
+    MATCH_ACTION_BROADCAST,
     MATCH_END,
 
     REACTION_SEND,

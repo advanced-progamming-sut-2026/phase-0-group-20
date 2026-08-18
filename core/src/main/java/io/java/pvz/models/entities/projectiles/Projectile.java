@@ -12,6 +12,7 @@ import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.net.NetworkIdGenerator;
 
 import java.util.List;
 import java.util.Random;
@@ -57,6 +58,8 @@ public class Projectile implements Ticker {
     private Tile lastHitObstacleTile = null;
     private Zombie lastHitZombie = null;
 
+    private String networkId;
+
     public Projectile(Plant plant,
                       ProjectileType type,
                       ProjectileEffect effect,
@@ -77,6 +80,12 @@ public class Projectile implements Ticker {
         this.piercing = piercing;
         this.canPassObstacles = canPassObstacles;
         this.isDestroyed = false;
+        if (GameSession.getInstance() != null) {
+            String ownerId = (plant != null) ? plant.getNetworkId() : (zombie != null ? zombie.getNetworkId() : "SKY");
+            this.networkId = NetworkIdGenerator.generateProjectileId(
+                ownerId, GameSession.getInstance().getTimeManager().getCurrentTick()
+            );
+        }
     }
 
     public Projectile(Zombie zombie,
@@ -99,6 +108,12 @@ public class Projectile implements Ticker {
         this.piercing = piercing;
         this.canPassObstacles = canPassObstacles;
         this.isDestroyed = false;
+        if (GameSession.getInstance() != null) {
+            String ownerId = (plant != null) ? plant.getNetworkId() : (zombie != null ? zombie.getNetworkId() : "SKY");
+            this.networkId = NetworkIdGenerator.generateProjectileId(
+                ownerId, GameSession.getInstance().getTimeManager().getCurrentTick()
+            );
+        }
     }
 
     public static Projectile spawnNewProjectile(Plant plant,
@@ -263,11 +278,11 @@ public class Projectile implements Ticker {
             type == ProjectileType.EXPLODE_NUT_BOWL) {
             int maxRow = GameSession.getInstance().getArena().getRows() - 1;
 
-            if (position.getRow() >= maxRow && speedY > 0) {
+            if (position.getRow() > maxRow && speedY > 0) {
                 speedY = -Math.abs(speedY);
                 lastHitZombie = null;
                 lastHitObstacleTile = null;
-            } else if (position.getRow() <= 0 && speedY < 0) {
+            } else if (position.getRow() < 0 && speedY < 0) {
                 speedY = Math.abs(speedY);
                 lastHitZombie = null;
                 lastHitObstacleTile = null;
@@ -668,6 +683,14 @@ public class Projectile implements Ticker {
 
     public Tile getLastHitObstacleTile() {
         return lastHitObstacleTile;
+    }
+
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
     }
 
 }

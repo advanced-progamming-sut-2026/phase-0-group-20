@@ -44,7 +44,7 @@ public final class MatchStateSnapshotBuilder {
 
     private static Map<String, Object> plant(Plant p) {
         Map<String, Object> m = new HashMap<>();
-        m.put("id", System.identityHashCode(p));
+        m.put("id", p.getNetworkId());
         m.put("name", p.getName());
         m.put("row", p.getPlacedTile() != null ? p.getPlacedTile().getRow() : -1);
         m.put("col", p.getPlacedTile() != null ? p.getPlacedTile().getCol() : -1);
@@ -56,7 +56,7 @@ public final class MatchStateSnapshotBuilder {
 
     private static Map<String, Object> zombie(Zombie z) {
         Map<String, Object> m = new HashMap<>();
-        m.put("id", System.identityHashCode(z));
+        m.put("id", z.getNetworkId());
         m.put("type", z.getType() != null ? z.getType().name() : z.getName());
         m.put("row", z.getRow());
         m.put("x", z.getX());
@@ -68,7 +68,7 @@ public final class MatchStateSnapshotBuilder {
 
     private static Map<String, Object> projectile(Projectile p) {
         Map<String, Object> m = new HashMap<>();
-        m.put("id", System.identityHashCode(p));
+        m.put("id", p.getNetworkId());
         m.put("type", p.getType() != null ? p.getType().name() : null);
         m.put("x", p.getX());
         m.put("y", p.getY());
@@ -77,7 +77,7 @@ public final class MatchStateSnapshotBuilder {
 
     private static Map<String, Object> sun(Sun s) {
         Map<String, Object> m = new HashMap<>();
-        m.put("id", System.identityHashCode(s));
+        m.put("id", s.getNetworkId());
         m.put("row", s.getRow());
         m.put("col", s.getCol());
         m.put("value", s.getType() != null ? s.getType().getValue() : 0);
