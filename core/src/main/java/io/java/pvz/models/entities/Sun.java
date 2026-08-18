@@ -6,6 +6,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.net.NetworkIdGenerator;
 
 public class Sun implements Ticker {
     private int amountProduced;
@@ -22,16 +23,28 @@ public class Sun implements Ticker {
     private int absorbedTicksCounter = 0;
     private boolean producedByPlant = false;
 
+    private String networkId;
+
     public Sun(SunType type, int col, int row) {
         this.type = type;
         this.position = new Position(col, row);
         this.amountProduced = type.getValue();
+        if (GameSession.getInstance() != null) {
+            this.networkId = NetworkIdGenerator.generateSunId(
+                col, row, GameSession.getInstance().getTimeManager().getCurrentTick()
+            );
+        }
     }
 
     public Sun(int amount, int col, int row) {
         this.type = null;
         this.position = new Position(col, row);
         this.amountProduced = amount;
+        if (GameSession.getInstance() != null) {
+            this.networkId = NetworkIdGenerator.generateSunId(
+                col, row, GameSession.getInstance().getTimeManager().getCurrentTick()
+            );
+        }
     }
 
     @Override
@@ -138,5 +151,13 @@ public class Sun implements Ticker {
         if (producedByPlant) {
             this.isFalling = false;
         }
+    }
+
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
     }
 }

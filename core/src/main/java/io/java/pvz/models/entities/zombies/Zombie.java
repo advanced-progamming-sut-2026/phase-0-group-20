@@ -19,7 +19,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
-import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.net.NetworkIdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +57,8 @@ public class Zombie implements Ticker {
     private boolean burnedToAsh = false;
 
     private final Position position;
+
+    protected String networkId;
 
     public Zombie(
         ZombieType type, ZombieData data, int row,
@@ -299,6 +301,7 @@ public class Zombie implements Ticker {
     public boolean isOccupyingRow(int targetRow) {
         return this.position.getRow() == targetRow;
     }
+
     public void setRow(int row) {
         position.setRow(row);
     }
@@ -409,6 +412,12 @@ public class Zombie implements Ticker {
 
     public void setCol(int col) {
         position.setCol(col);
+        if (GameSession.getInstance() != null && this.networkId == null) {
+            this.networkId = NetworkIdGenerator.generateZombieId(
+                getType().name(), col, getRow(),
+                GameSession.getInstance().getTimeManager().getCurrentTick()
+            );
+        }
     }
 
     public int getWeight() {
@@ -509,5 +518,13 @@ public class Zombie implements Ticker {
 
     public void setBurnedToAsh(boolean burnedToAsh) {
         this.burnedToAsh = burnedToAsh;
+    }
+
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
     }
 }

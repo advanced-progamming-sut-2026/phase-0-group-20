@@ -6,11 +6,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.controllers.GameController.MatchController;
+import io.java.pvz.controllers.GameController.ReactionController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
@@ -27,6 +30,7 @@ import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.*;
 import io.java.pvz.views.screens.modals.LevelIntroModalTable;
 import io.java.pvz.views.screens.modals.PauseMenuTable;
@@ -52,6 +56,7 @@ public class GameHUD {
     private float visualWaveProgress = 0f;
 
     private Table seedBankTable;
+    private Table zombieTopBar;
 
     public GameHUD(Group mainLayer, Group modalLayer, Viewport viewport,
                    GameInputHandler inputHandler, GameFlowController gameFlowController) {
@@ -76,6 +81,11 @@ public class GameHUD {
             buildBossProgressBar();
         } else {
             buildNormalProgressBar();
+        }
+
+        if (MatchController.getInstance().isOnlineMatch()) {
+            buildReactionUI();
+            setupReactionListener();
         }
     }
 
@@ -140,7 +150,14 @@ public class GameHUD {
 
         } else if (GameSession.getInstance() != null &&
             GameSession.getInstance().getCurrentMode() instanceof IZombieLevel) {
-            buildSeedBank();
+            boolean isMultiplayerIZombie = MatchController.getInstance().isOnlineMatch() ||
+                MatchController.getInstance().isCouchPlay();
+
+            if (isMultiplayerIZombie) {
+                buildAsymmetricEconomyUI();
+            } else {
+                buildSeedBank();
+            }
             new LevelIntroModalTable(skin).show(modalLayer,viewport);
         } else if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin, () -> {
@@ -265,23 +282,32 @@ public class GameHUD {
             seedBankTable.clear();
         }
 
-        List<Plant> selectedPlants = GameSession.getInstance().getChosenPlants();
-
-        List<Zombie> selectedZombie = new ArrayList<>();
-        if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel)
-            iZombieLevel.getZombiesForThisLevel()
-                .forEach(s -> selectedZombie.add(InGameEntityGenerator.getZombieForGame(s, 0)));
+        boolean isZombieUI = false;
+        if (MatchController.getInstance().isOnlineMatch()) {
+            isZombieUI = (MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE);
+        } else if (MatchController.getInstance().isCouchPlay()) {
+            isZombieUI = true;
+        } else {
+            isZombieUI = (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel);
+        }
 
         int maxSlots = 8;
 
-        if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel) {
-            for (int i = 0; i < maxSlots; i++) {
+        if (isZombieUI) {
+            List<Zombie> selectedZombie = new ArrayList<>();
+            if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel) {
+                iZombieLevel.getZombiesForThisLevel()
+                    .forEach(s -> selectedZombie.add(InGameEntityGenerator.getZombieForGame(s, 0)));
+            }
+
+            for (int i = 0; i < 5; i++) {
                 if (i < selectedZombie.size()) {
-                    ZombieCardButton zombieCardButton = createZombiePacket(selectedZombie.get(i));
-                    seedBankTable.add(zombieCardButton).size(180f, 85f).padBottom(75).row();
+                    ZombieCardButton zombieCardButton = createZombiePacket(selectedZombie.get(i), i + 1);
+                    seedBankTable.add(zombieCardButton).size(180f, 85f).padTop(100).padRight(50);
                 }
             }
         } else {
+            List<Plant> selectedPlants = GameSession.getInstance().getChosenPlants();
             for (int i = 0; i < maxSlots; i++) {
                 if (i < selectedPlants.size()) {
                     PlantCardButton plantButton = createSeedPacket(selectedPlants.get(i), true);
@@ -417,11 +443,11 @@ public class GameHUD {
         return plantButton;
     }
 
-    private ZombieCardButton createZombiePacket(Zombie zombie) {
+    private ZombieCardButton createZombiePacket(Zombie zombie, int slotNumber) {
         Image background = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_READY");
         String zombiePath = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_" + UiFactory.getZombieAddress(zombie);
         Image zombieImage = UiFactory.imageFor(textures, zombiePath);
-        ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie,skin);
+        ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie, slotNumber, skin);
         card.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -432,10 +458,18 @@ public class GameHUD {
     }
 
     public void update(float delta) {
-        if (belt != null && GameSession.getInstance() != null &&
-            GameSession.getInstance().getCurrentMode() instanceof ConveyorBelt beltLevel) {
-            List<Plant> currentConveyorPlants = beltLevel.getBelt();
-            belt.updateConveyor(delta, currentConveyorPlants);
+        if (belt != null && GameSession.getInstance() != null) {
+            List<Plant> currentConveyorPlants = null;
+
+            if (GameSession.getInstance().getCurrentMode() instanceof ConveyorBelt beltLevel) {
+                currentConveyorPlants = beltLevel.getBelt();
+            } else if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel) {
+                currentConveyorPlants = iZombieLevel.getBelt();
+            }
+
+            if (currentConveyorPlants != null) {
+                belt.updateConveyor(delta, currentConveyorPlants);
+            }
         }
         calculateProgressBar(delta);
     }
@@ -515,6 +549,124 @@ public class GameHUD {
     public void updatePlantFoodCount() {
         if (plantFoodBankUI != null) {
             plantFoodBankUI.updateFood(App.getActiveUser().getPlantFoodCount());
+        }
+    }
+
+    private void buildReactionUI() {
+        Table reactionTable = new Table();
+        reactionTable.setPosition(250f, 950f);
+        reactionTable.top().left();
+
+        String[] texts = {"Good Luck", "Oops!", "Well Played"};
+        for (int i = 0; i < texts.length; i++) {
+            final int index = i;
+            TextButton btn = new TextButton(texts[i], skin);
+            btn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    ReactionController.getInstance().sendReaction(ReactionController.Category.TEXT, index, null);
+                }
+            });
+            reactionTable.add(btn).padRight(5f);
+        }
+
+        String[] emojis = {"[Smile]", "[Sad]", "[Angry]"};
+        for (int i = 0; i < emojis.length; i++) {
+            final int index = i;
+            TextButton btn = new TextButton(emojis[i], skin);
+            btn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    ReactionController.getInstance().sendReaction(ReactionController.Category.EMOJI, index, null);
+                }
+            });
+            reactionTable.add(btn).padRight(5f);
+        }
+
+        mainLayer.addActor(reactionTable);
+    }
+
+    private void setupReactionListener() {
+        ReactionController.getInstance().setOnReactionReceived(reaction -> {
+            showIncomingReaction(reaction.fromUsername, reaction.category, reaction.index);
+        });
+    }
+
+    private void showIncomingReaction(String opponentName, ReactionController.Category category, int index) {
+        String displayStr = "";
+
+        if (category == ReactionController.Category.TEXT) {
+            String[] texts = {"Good Luck!", "Oops!", "Well Played!"};
+            displayStr = texts[Math.min(index, 2)];
+        } else if (category == ReactionController.Category.EMOJI) {
+            String[] emojis = {"[Smile]", "[Sad]", "[Angry]"};
+            displayStr = emojis[Math.min(index, 2)];
+        } else if (category == ReactionController.Category.STICKER) {
+            displayStr = "(Animated Sticker " + index + ")";
+        }
+
+        Label popupLabel = new Label(opponentName + " says: " + displayStr, skin);
+        popupLabel.setColor(Color.YELLOW);
+        popupLabel.setFontScale(1.5f);
+
+        popupLabel.setPosition(1200f, 800f);
+
+        popupLabel.getColor().a = 0f;
+        popupLabel.addAction(Actions.sequence(
+            Actions.fadeIn(0.3f),
+            Actions.delay(3.0f),
+            Actions.fadeOut(0.5f),
+            Actions.removeActor()
+        ));
+
+        mainLayer.addActor(popupLabel);
+    }
+
+    private void buildZombieTopBar() {
+        if (zombieTopBar == null) {
+            zombieTopBar = new Table();
+            zombieTopBar.setSize(viewport.getWorldWidth(), 100f);
+            zombieTopBar.setPosition(-200, viewport.getWorldHeight() - 200);
+            mainLayer.addActor(zombieTopBar);
+        } else {
+            zombieTopBar.clear();
+        }
+
+        List<Zombie> selectedZombie = new ArrayList<>();
+        if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel) {
+            iZombieLevel.getZombiesForThisLevel()
+                .forEach(s -> selectedZombie.add(InGameEntityGenerator.getZombieForGame(s, 0)));
+        }
+
+        for (int i = 0; i < selectedZombie.size(); i++) {
+            ZombieCardButton zombieCardButton = createZombiePacket(selectedZombie.get(i), i + 1);
+            zombieTopBar.add(zombieCardButton).size(90f, 85f).padRight(40f);
+        }
+    }
+
+    private void buildAsymmetricEconomyUI() {
+        boolean isCouch = MatchController.getInstance().isCouchPlay();
+        boolean showZombieUI;
+        boolean showPlantUI;
+
+        if (isCouch) {
+            showZombieUI = true;
+            showPlantUI = true;
+        } else {
+            PlayerRole role = MatchController.getInstance().getCurrentRole();
+            showZombieUI = (role == PlayerRole.ZOMBIE);
+            showPlantUI = (role == PlayerRole.PLANT);
+        }
+
+        if (showZombieUI) {
+            buildZombieTopBar();
+        }
+
+        if (showPlantUI) {
+            belt = new ConveyorBeltUI(skin, textures, (plant) -> createSeedPacket(plant, false));
+            belt.setSize(200f, 700);
+            belt.setPosition(20f, 250);
+            mainLayer.addActor(belt);
         }
     }
 }

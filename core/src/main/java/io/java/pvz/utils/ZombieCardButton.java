@@ -1,10 +1,12 @@
 package io.java.pvz.utils;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -20,7 +22,11 @@ public class ZombieCardButton extends Group {
     private final Zombie zombie;
     private final Label costLabel;
 
-    public ZombieCardButton(Image background, Image zombieImage, Zombie zombie , Skin skin ) {
+    public ZombieCardButton(Image background, Image zombieImage, Zombie zombie, Skin skin) {
+        this(background, zombieImage, zombie, -1, skin);
+    }
+
+    public ZombieCardButton(Image background, Image zombieImage, Zombie zombie, int slotNumber, Skin skin) {
         this.zombie = zombie;
         this.skin  = skin;
         setSize(background.getWidth(), background.getHeight());
@@ -40,6 +46,16 @@ public class ZombieCardButton extends Group {
         }else costLabel = null;
 
 
+
+        if (slotNumber > 0 && skin != null) {
+            Label numberLabel = new Label(String.valueOf(slotNumber), skin);
+            numberLabel.setFontScale(1.1f);
+            numberLabel.setColor(Color.YELLOW);
+            numberLabel.setAlignment(Align.center);
+            numberLabel.setSize(24f, 24f);
+            numberLabel.setPosition(4f, getHeight() - 26f);
+            addActor(numberLabel);
+        }
 
         setTouchable(Touchable.enabled);
     }

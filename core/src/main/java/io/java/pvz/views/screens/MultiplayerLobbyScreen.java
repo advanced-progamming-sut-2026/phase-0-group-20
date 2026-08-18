@@ -3,19 +3,28 @@ package io.java.pvz.views.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Timer;
+import io.java.pvz.controllers.GameController.GameMenuController;
+import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.controllers.GameController.MatchmakingController;
-import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.App;
+import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.levels.Level;
+import io.java.pvz.models.game.minigame.MiniGameFactory;
+import io.java.pvz.models.game.minigame.MiniGameType;
+import io.java.pvz.models.users.User;
+import io.java.pvz.net.client.NetworkClient;
+import io.java.pvz.net.client.ServerConfig;
+import io.java.pvz.net.protocol.MessageType;
+import io.java.pvz.net.protocol.NetworkMessage;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
+import io.java.pvz.views.screens.gameflow.GameFlowScreen;
 import io.java.pvz.views.screens.modals.MatchFoundTable;
 import io.java.pvz.views.screens.modals.WaitingTable;
 import pvz.libpvz.textures.TextureBank;
@@ -40,7 +49,46 @@ public class MultiplayerLobbyScreen extends BaseScreen {
         backgroundRegion = textures.region(Ids.MainMenu.BACKGROUND);
 
         registerLobbyHandlers();
-        showIdleState();
+        checkServerAndShowUI();
+    }
+
+    private void checkServerAndShowUI() {
+        mainLayer.clear();
+        mainLayer.setFillParent(true);
+
+        Label checkingLabel = new Label("Connecting to Server...", skin, "big");
+        checkingLabel.setColor(Color.valueOf("#4A3018"));
+        mainLayer.add(checkingLabel).center();
+
+        new Thread(() -> {
+            boolean online = false;
+            try {
+                if (!NetworkClient.getInstance().isConnected()) {
+                    NetworkClient.getInstance().connect(ServerConfig.DEFAULT_HOST, ServerConfig.DEFAULT_PORT);
+
+                    User user = App.getActiveUser();
+                    if (user != null) {
+                        NetworkMessage loginReq = NetworkMessage.request(MessageType.LOGIN);
+                        loginReq.put("username", user.getUsername());
+                        loginReq.put("password", user.getPassword());
+                        loginReq.put("stayLoggedIn", true);
+                        loginReq.put("isHash", true);
+
+                        NetworkMessage res = NetworkClient.getInstance().sendAndWait(loginReq, 5);
+                        online = res.isSuccess();
+                    }
+                } else {
+                    online = true;
+                }
+            } catch (Exception e) {
+                online = false;
+            }
+
+            final boolean finalOnline = online;
+            com.badlogic.gdx.Gdx.app.postRunnable(() -> {
+                showIdleState(finalOnline);
+            });
+        }, "ServerPingThread").start();
     }
 
     private void registerLobbyHandlers() {
@@ -54,7 +102,15 @@ public class MultiplayerLobbyScreen extends BaseScreen {
             outgoingInviteId = null;
             waitingInQueue = false;
             closeWaitingModal();
+            MatchController.getInstance().setCouchPlay(false);
             new MatchFoundTable(skin, info.opponentUsername, info.role).show(modalLayer, viewport);
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    String mapId = new GameMenuController().getCurrentMapTextureId();
+                    ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+                }
+            }, 2.0f);
         });
     }
 
@@ -65,7 +121,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
         }
     }
 
-    private void showIdleState() {
+    private void showIdleState(boolean isServerOnline) {
         mainLayer.clear();
         mainLayer.setFillParent(true);
         mainLayer.top();
@@ -76,43 +132,62 @@ public class MultiplayerLobbyScreen extends BaseScreen {
         topBar.add().expandX();
         mainLayer.add(topBar).growX().padTop(20).padLeft(30).row();
 
-        mainLayer.add(UiFactory.screenTitle("IZombie", skin, 1.5f))
-            .padTop(10).padBottom(50).row();
+        mainLayer.add(UiFactory.screenTitle("I, Zombie - Select Mode", skin, 1.5f))
+            .padTop(10).padBottom(40).row();
 
         BorderedTable card = new BorderedTable();
-        card.pad(50);
-        card.defaults().pad(12).width(520);
+        card.pad(40);
+        card.defaults().pad(10).width(520);
 
-        if (!NetworkController.getInstance().isAuthenticated()) {
-            Label warn = new Label(
-                "You are currently offline.\nPlay Single Player or Login for Multiplayer.",
-                skin);
+        TextButton singleBtn = UiFactory.textButton("1-Player (vs Bot)", skin, "green_small", 1.05f, 0.95f,
+            this::startSinglePlayer);
+        singleBtn.getLabel().setFontScale(1.2f);
+        card.add(singleBtn).height(80).row();
+
+        TextButton couchBtn = UiFactory.textButton("2-Player (Couch Play)", skin, "green_small", 1.05f, 0.95f,
+            this::startCouchPlay);
+        couchBtn.getLabel().setFontScale(1.2f);
+        card.add(couchBtn).height(80).row();
+
+        if (isServerOnline) {
+            TextButton specificBtn = UiFactory.textButton("Play With Friend (Online)", skin, "purple", 1.05f, 0.95f,
+                this::showSpecificOpponentState);
+            specificBtn.getLabel().setFontScale(1.2f);
+            card.add(specificBtn).height(80).padTop(15).row();
+
+            TextButton randomBtn = UiFactory.textButton("Play Random (Online)", skin, "purple", 1.05f, 0.95f,
+                this::joinRandomMatch);
+            randomBtn.getLabel().setFontScale(1.2f);
+            card.add(randomBtn).height(80).row();
+        } else {
+            Label warn = new Label("(Game Server is Offline - Local Play Only)", skin);
             warn.setColor(Color.valueOf("#4A3018"));
-            warn.setFontScale(1.15f);
+            warn.setFontScale(1.1f);
             warn.setAlignment(Align.center);
-            warn.setWrap(true);
-            card.add(warn).height(100).row();
-
-            TextButton goLoginBtn = UiFactory.textButton("Return to Login Page", skin, "purple", 1.05f, 0.95f,
-                () -> ScreenManager.getInstance().setRootScreen(new LoginScreen(game)));
-            goLoginBtn.getLabel().setFontScale(1.1f);
-            card.add(goLoginBtn).height(70).row();
-
-            mainLayer.add(card).expand().center();
-            return;
+            card.add(warn).padTop(15).row();
         }
 
-        TextButton specificBtn = UiFactory.textButton("Play With specific Player", skin, "purple", 1.05f, 0.95f,
-            this::showSpecificOpponentState);
-        specificBtn.getLabel().setFontScale(1.2f);
-        card.add(specificBtn).height(90).row();
-
-        TextButton randomBtn = UiFactory.textButton("Play Random", skin, "green_small", 1.05f, 0.95f,
-            this::joinRandomMatch);
-        randomBtn.getLabel().setFontScale(1.2f);
-        card.add(randomBtn).height(90).row();
-
         mainLayer.add(card).expand().center();
+    }
+
+    private void startSinglePlayer() {
+        MatchController.getInstance().setOnlineMatch(false);
+        MatchController.getInstance().setCouchPlay(false);
+
+        Level izombie = MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, 1);
+        GameSession.startMiniGame(izombie, null);
+        String mapId = new GameMenuController().getCurrentMapTextureId();
+        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+    }
+
+    private void startCouchPlay() {
+        MatchController.getInstance().setOnlineMatch(false);
+        MatchController.getInstance().setCouchPlay(true);
+
+        Level izombie = MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, 1);
+        GameSession.startMiniGame(izombie, null);
+        String mapId = new GameMenuController().getCurrentMapTextureId();
+        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
     }
 
     private void onBackPressed() {
@@ -132,7 +207,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
 
         Table topBar = new Table();
         topBar.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.BACK_ICON, 100, 100,
-            this::showIdleState)).left();
+            this::checkServerAndShowUI)).left();
         topBar.add().expandX();
         mainLayer.add(topBar).growX().padTop(20).padLeft(30).row();
 
@@ -171,8 +246,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
 
         matchmaking.sendChallenge(username, response -> {
             if (response == null || !response.isSuccess()) {
-                assert response != null;
-                notify(response.getErrorMessage());
+                notify(response != null ? response.getErrorMessage() : "Error sending challenge");
                 return;
             }
             outgoingInviteId = response.getString("inviteId");
@@ -192,8 +266,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
     private void joinRandomMatch() {
         matchmaking.joinRandomQueue(response -> {
             if (response == null || !response.isSuccess()) {
-                assert response != null;
-                notify(response.getErrorMessage());
+                notify(response != null ? response.getErrorMessage() : "Error joining queue");
                 return;
             }
 

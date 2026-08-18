@@ -417,4 +417,9 @@ public class User {
     public void addMessage(Message message) {
         inbox.add(message);
     }
+
+    @JsonIgnore
+    public String getPassword() {
+        return account.getPasswordHash();
+    }
 }

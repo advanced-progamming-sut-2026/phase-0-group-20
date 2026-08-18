@@ -8,7 +8,6 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.game.minigame.MiniGameFactory;
 import io.java.pvz.models.game.minigame.MiniGameType;
-import io.java.pvz.models.users.User;
 import io.java.pvz.net.protocol.MessageType;
 import io.java.pvz.net.protocol.NetworkMessage;
 import io.java.pvz.net.server.ClientConnection;
@@ -96,6 +95,18 @@ public class MatchGameEngine {
                 callback.onResult(result.isSuccessful(), result.message());
 
                 if (result.isSuccessful()) {
+                    NetworkMessage broadcast = NetworkMessage.request(MessageType.MATCH_ACTION_BROADCAST);
+                    broadcast.put("action", request.getString("action"));
+                    broadcast.put("plantName", request.getString("plantName"));
+                    broadcast.put("zombieAlias", request.getString("zombieAlias"));
+                    broadcast.put("col", request.getInt("col"));
+                    broadcast.put("row", request.getInt("row"));
+
+                    ClientConnection plantConn = match.getPlantConnection();
+                    ClientConnection zombieConn = match.getZombieConnection();
+                    if (plantConn != null) plantConn.send(broadcast);
+                    if (zombieConn != null) zombieConn.send(broadcast);
+
                     broadcast(match, MatchStateSnapshotBuilder.build(match));
                 }
 

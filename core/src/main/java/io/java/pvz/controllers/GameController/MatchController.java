@@ -2,12 +2,17 @@ package io.java.pvz.controllers.GameController;
 
 import com.badlogic.gdx.Gdx;
 import io.java.pvz.net.client.NetworkClient;
+import io.java.pvz.net.client.NetworkStateSyncer;
 import io.java.pvz.net.protocol.MessageType;
 import io.java.pvz.net.protocol.NetworkMessage;
+import io.java.pvz.net.server.PlayerRole;
 
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+
+import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.controllers.GameController.MiniGameController;
 
 public class MatchController {
 
@@ -18,6 +23,10 @@ public class MatchController {
     private Consumer<NetworkMessage> onMatchEnd;
 
     private volatile String currentMatchId;
+    private volatile PlayerRole currentRole;
+    private volatile boolean isOnlineMatch = false;
+
+    private volatile boolean isCouchPlay = false;
 
     public static synchronized MatchController getInstance() {
         if (instance == null) instance = new MatchController();
@@ -36,11 +45,39 @@ public class MatchController {
 
         client.onPush(MessageType.MATCH_STATE_SYNC, message -> Gdx.app.postRunnable(() -> {
             if (onStateSync != null) onStateSync.accept(message.getData());
+            if (isOnlineMatch)
+                NetworkStateSyncer.syncWithServer(message.getData());
         }));
 
         client.onPush(MessageType.MATCH_END, message -> Gdx.app.postRunnable(() -> {
             currentMatchId = null;
+            isOnlineMatch = false;
+            currentRole = null;
             if (onMatchEnd != null) onMatchEnd.accept(message);
+        }));
+
+        client.onPush(MessageType.MATCH_FOUND, message -> Gdx.app.postRunnable(() -> {
+            currentMatchId = message.getString("matchId");
+            isOnlineMatch = true;
+            currentRole = PlayerRole.valueOf(message.getString("role"));
+        }));
+
+        client.onPush(MessageType.MATCH_ACTION_BROADCAST, message -> Gdx.app.postRunnable(() -> {
+            String action = message.getString("action");
+            int col = message.getInt("col");
+            int row = message.getInt("row");
+
+            if ("PLACE_PLANT".equals(action)) {
+                String plantName = message.getString("plantName");
+                new GameFlowController().plantPlant(plantName, String.valueOf(col), String.valueOf(row));
+            }
+            else if ("RELEASE_ZOMBIE".equals(action)) {
+                String zombieAlias = message.getString("zombieAlias");
+                new MiniGameController().handlePutZombie(zombieAlias, String.valueOf(col), String.valueOf(row));
+            }
+            else if ("COLLECT_SUN".equals(action)) {
+                new GameFlowController().collectSun(col, row);
+            }
         }));
     }
 
@@ -99,5 +136,25 @@ public class MatchController {
         }, "match-action-request");
         worker.setDaemon(true);
         worker.start();
+    }
+
+    public boolean isOnlineMatch() {
+        return isOnlineMatch;
+    }
+
+    public io.java.pvz.net.server.PlayerRole getCurrentRole() {
+        return currentRole;
+    }
+
+    public boolean isCouchPlay() {
+        return isCouchPlay;
+    }
+
+    public void setCouchPlay(boolean couchPlay) {
+        this.isCouchPlay = couchPlay;
+    }
+
+    public void setOnlineMatch(boolean onlineMatch) {
+        this.isOnlineMatch = onlineMatch;
     }
 }

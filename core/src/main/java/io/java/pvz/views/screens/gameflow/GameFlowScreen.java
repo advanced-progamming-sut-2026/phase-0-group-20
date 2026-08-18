@@ -110,6 +110,7 @@ public class GameFlowScreen extends BaseScreen {
         }
         gameHUD.update(simDelta);
         inputHandler.handleTileClick();
+        inputHandler.handleCouchPlayKeyboard();
         inputHandler.sickAnimations();
         handleCameraMovement(delta);
         inputHandler.updatePlantingHighlights();

@@ -19,12 +19,11 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.game.minigame.BeghouledLevel;
-import io.java.pvz.models.game.minigame.BeghouledManager;
 import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.net.NetworkIdGenerator;
 import io.java.pvz.utils.AnimationCatalog;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -67,6 +66,7 @@ public class Plant implements IPlant, Ticker {
     protected int actionTimer = 0;
     protected String currentAction = null;
 
+    protected String networkId;
 
     public Plant(PlantData data) {
         this.data = data;
@@ -187,9 +187,9 @@ public class Plant implements IPlant, Ticker {
         }
 
         if (isDead()) {
-            if(GameSession.getInstance() != null
-                && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel){
-                if(placedTile != null)
+            if (GameSession.getInstance() != null
+                && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
+                if (placedTile != null)
                     placedTile.setCrater(true);
             }
             GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,
@@ -297,6 +297,13 @@ public class Plant implements IPlant, Ticker {
     public void setPlacedTile(Tile placedTile) {
         this.placedTile = placedTile;
         position = new Position(placedTile.getCol(), placedTile.getRow());
+
+        if (GameSession.getInstance() != null) {
+            this.networkId = NetworkIdGenerator.generatePlantId(
+                getName(), placedTile.getCol(), placedTile.getRow(),
+                GameSession.getInstance().getTimeManager().getCurrentTick()
+            );
+        }
     }
 
     public void setFrozen(boolean frozen) {
@@ -590,5 +597,13 @@ public class Plant implements IPlant, Ticker {
             if (strategyClass.isInstance(s))
                 return strategyClass.cast(s);
         return null;
+    }
+
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
     }
 }
