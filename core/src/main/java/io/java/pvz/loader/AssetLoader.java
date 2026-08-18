@@ -2,9 +2,11 @@ package io.java.pvz.loader;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import io.java.pvz.views.sound.MusicType;
 import pvz.libpvz.pam.PamPlayer;
 import pvz.libpvz.textures.TextureBank;
 import pvz.skin.PvzSkin;
@@ -33,7 +35,7 @@ public class AssetLoader {
             assetManager = new AssetManager();
         }
         assetManager.load("background/zen_garden.png", Texture.class);
-
+        loadMusics();
 
         assetManager.finishLoading();
     }
@@ -74,5 +76,11 @@ public class AssetLoader {
 
     public AssetManager getAssetManager() {
         return assetManager;
+    }
+
+    private void loadMusics() {
+        for (MusicType musicType : MusicType.values()) {
+            assetManager.load(musicType.getPath(), Music.class);
+        }
     }
 }

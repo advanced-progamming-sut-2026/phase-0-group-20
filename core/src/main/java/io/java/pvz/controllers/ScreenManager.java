@@ -5,6 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import io.java.pvz.models.App;
 import io.java.pvz.models.database.DataBaseManager;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.views.screens.ZenGarden;
+import io.java.pvz.views.screens.gameflow.GameFlowScreen;
 
 import java.util.Stack;
 
@@ -38,6 +43,11 @@ public class ScreenManager {
         }
 
         screenStack.push(newScreen);
+        if(newScreen instanceof ZenGarden){
+            GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_ZEN_GARDEN,
+                new GameEventPayload.Builder(GameEvent.ENTERED_ZEN_GARDEN)
+                    .build());
+        }
         game.setScreen(newScreen);
     }
 
@@ -46,6 +56,11 @@ public class ScreenManager {
 
         Screen current = screenStack.pop();
         current.dispose();
+        if(current instanceof GameFlowScreen || current instanceof ZenGarden){
+            GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_MENUS,new GameEventPayload
+                .Builder(GameEvent.ENTERED_MENUS)
+                .build());
+        }
         if(App.getActiveUser() != null)
             DataBaseManager.saveOrUpdateUser(App.getActiveUser());
         if (!screenStack.isEmpty()) {

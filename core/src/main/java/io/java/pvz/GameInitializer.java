@@ -52,7 +52,6 @@ public class GameInitializer {
 
         AssetManager am = AssetLoader.getInstance().getAssetManager();
 
-        am.load(MusicType.MENU_BGM.getPath(), Music.class);
 
         am.finishLoading();
 
