@@ -107,6 +107,7 @@ public class ZombieRenderer {
 
         actor.setScale(1f, 1f);
 
+        actor.setUserObject(zombie);
 
         if (zombie.getCurrentSpeed() < 0) actor.setScaleX(-1);
         zombieLayer.addActor(actor);
@@ -116,16 +117,16 @@ public class ZombieRenderer {
     private void updateZombieActor(Zombie zombie, PamAnimatedActor actor) {
         actor.setClip(resolveZombieClip(zombie));
 
-        float yOffset= 0;
-        if(!(zombie instanceof Zomboss boss)){
+        float yOffset = 0f;
+        if (!(zombie instanceof Zomboss boss)) {
            yOffset =  actor.getHeight() / 2f + 30f;
-        }else {
+        } else {
             ZombieType type = boss.getType();
-            switch (type){
+            switch (type) {
                 case ZOMBOSS_BEACH -> yOffset = actor.getHeight();
-                case ZOMBOSS_FROZEN_CAVES ->  yOffset = actor.getHeight()+60f;
-                case ZOMBOSS_EGYPT ->  yOffset = actor.getHeight()-20f;
-                case ZOMBOSS_DARK_AGES ->   yOffset = actor.getHeight();
+                case ZOMBOSS_FROZEN_CAVES -> yOffset = actor.getHeight() + 60f;
+                case ZOMBOSS_EGYPT -> yOffset = actor.getHeight() - 20f;
+                case ZOMBOSS_DARK_AGES -> yOffset = actor.getHeight();
             }
         }
         float xOffset = (zombie instanceof Zomboss) ? 40f : 0f;
@@ -138,32 +139,6 @@ public class ZombieRenderer {
             actor.setScaleX(-1f);
         } else {
             actor.setScaleX(1f);
-        }
-
-        if (zombie.isHypnotized()) {
-            actor.setColor(1f, 0.4f, 1f, 1f);
-        } else {
-            boolean isPoisoned = false;
-            boolean isChilled = false;
-            boolean isFrozen = false;
-
-            if (zombie.getActiveEffects() != null) {
-                for (ZombieEffect effect : zombie.getActiveEffects()) {
-                    if (effect instanceof PoisonEffect) isPoisoned = true;
-                    if (effect instanceof ChillEffect) isChilled = true;
-                    if (effect instanceof FreezeEffect) isFrozen = true;
-                }
-            }
-
-            if (isFrozen) {
-                actor.setColor(0.3f, 0.6f, 1f, 1f);
-            } else if (isChilled) {
-                actor.setColor(0.7f, 0.9f, 1f, 1f);
-            } else if (isPoisoned) {
-                actor.setColor(0.6f, 1f, 0.2f, 1f);
-            } else {
-                actor.setColor(1f, 1f, 1f, 1f);
-            }
         }
 
         if (!zombie.isDead()) {
