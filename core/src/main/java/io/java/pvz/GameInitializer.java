@@ -19,6 +19,7 @@ import io.java.pvz.models.game.events.DailyResetListener;
 import io.java.pvz.models.users.User;
 import io.java.pvz.views.sound.MusicType;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +27,16 @@ import java.util.Map;
 
 public class GameInitializer {
 
-    private static final String PLANTS_JSON_PATH = "resources/plants.json";
-    private static final String ZOMBIES_JSON_PATH = "resources/zombies.json";
+    private static final String PLANTS_JSON_RELATIVE = "resources/plants.json";
+    private static final String ZOMBIES_JSON_RELATIVE = "resources/zombies.json";
 
-    public static void loadAllResources() {
+    public static void loadGameData() {
         initPlants();
         initZombies();
+    }
+
+    public static void loadAllResources() {
+        loadGameData();
         DailyResetListener dailyResetListener = new DailyResetListener();
         User stayedUser = DataBaseManager.getLoggedInUser();
         if (stayedUser == null) {
@@ -56,7 +61,8 @@ public class GameInitializer {
 
     private static void initPlants() {
         System.out.println("Loading plants...");
-        List<PlantData> loadedPlants = PlantLoader.loadAll(PLANTS_JSON_PATH);
+        String plantsPath = resolveResourcePath(PLANTS_JSON_RELATIVE);
+        List<PlantData> loadedPlants = PlantLoader.loadAll(plantsPath);
         ArrayList<Plant> plants = new ArrayList<>();
 
         if (loadedPlants.isEmpty()) {
@@ -80,17 +86,57 @@ public class GameInitializer {
         System.out.println("Successfully loaded " + App.getAllPlants().size() + " plants.");
     }
 
+    private static String resolveResourcePath(String relativePath) {
+        String override = System.getProperty("pvz.resourcesDir");
+        if (override != null) {
+            File candidate = new File(override, relativePath);
+            if (candidate.isFile()) return candidate.getPath();
+        }
+
+        File direct = new File(relativePath);
+        if (direct.isFile()) return relativePath;
+
+        List<File> searchRoots = new ArrayList<>();
+        searchRoots.add(new File(".").getAbsoluteFile());
+        try {
+            File codeSource = new File(GameInitializer.class.getProtectionDomain()
+                .getCodeSource().getLocation().toURI());
+            searchRoots.add(codeSource.getAbsoluteFile());
+        } catch (Exception ignored) {
+
+        }
+
+        List<String> tried = new ArrayList<>();
+        for (File root : searchRoots) {
+            File dir = root.isFile() ? root.getParentFile() : root;
+            for (int depth = 0; dir != null && depth < 6; depth++, dir = dir.getParentFile()) {
+                File candidate = new File(dir, relativePath);
+                tried.add(candidate.getPath());
+                if (candidate.isFile()) return candidate.getPath();
+
+                File assetsCandidate = new File(dir, "assets/" + relativePath);
+                tried.add(assetsCandidate.getPath());
+                if (assetsCandidate.isFile()) return assetsCandidate.getPath();
+            }
+        }
+
+        throw new RuntimeException("Could not find '" + relativePath + "'. Tried:\n  "
+            + String.join("\n  ", tried)
+            + "\nRun with -Dpvz.resourcesDir=<path to the folder containing 'resources/'> "
+            + "or launch the process with the project root as its working directory.");
+    }
+
     private static void initZombies() {
         ArrayList <Zombie> loadedTestZombies = new ArrayList<>();
         System.out.println("Loading zombies...");
 
         try {
-            ZombieFactory.init(ZOMBIES_JSON_PATH);
+            ZombieFactory.init(resolveResourcePath(ZOMBIES_JSON_RELATIVE));
             System.out.println("Successfully loaded zombies into the Factory.");
 
             for (ZombieType type : ZombieType.values()) {
                 if(type == ZombieType.ZOMBOSS_BEACH || type == ZombieType.ZOMBOSS_EGYPT||
-                type == ZombieType.ZOMBOSS_DARK_AGES || type == ZombieType.ZOMBOSS_FROZEN_CAVES)
+                    type == ZombieType.ZOMBOSS_DARK_AGES || type == ZombieType.ZOMBOSS_FROZEN_CAVES)
                     continue;
                 Zombie testZombie = ZombieFactory.createTemplate(type);
                 loadedTestZombies.add(testZombie);

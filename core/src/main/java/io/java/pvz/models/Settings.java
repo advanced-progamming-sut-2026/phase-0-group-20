@@ -5,7 +5,7 @@ import com.badlogic.gdx.Preferences;
 
 public class Settings {
     private static Settings instance;
-    private final Preferences prefs;
+    private Preferences prefs;
 
     private float musicVolume;
     private float sfxVolume;
@@ -15,12 +15,20 @@ public class Settings {
     private boolean isDebug;
 
     private Settings() {
-        prefs = Gdx.app.getPreferences("pvz_settings");
+        if (Gdx.app != null) {
+            prefs = Gdx.app.getPreferences("pvz_settings");
 
-        musicVolume = prefs.getFloat("musicVolume", 5f);
-        sfxVolume = prefs.getFloat("sfxVolume", 5f);
-        isGrid = prefs.getBoolean("isGrid", false);
-        isDebug = prefs.getBoolean("isDebug", false);
+            musicVolume = prefs.getFloat("musicVolume", 5f);
+            sfxVolume = prefs.getFloat("sfxVolume", 5f);
+            isGrid = prefs.getBoolean("isGrid", false);
+            isDebug = prefs.getBoolean("isDebug", false);
+        } else {
+            prefs = null;
+            musicVolume = 5f;
+            sfxVolume = 5f;
+            isGrid = false;
+            isDebug = false;
+        }
     }
 
     public static Settings getInstance() {
@@ -37,8 +45,10 @@ public class Settings {
 
     public void setMusicVolume(float musicVolume) {
         this.musicVolume = musicVolume;
-        prefs.putFloat("musicVolume", musicVolume);
-        prefs.flush();
+        if (prefs != null) {
+            prefs.putFloat("musicVolume", musicVolume);
+            prefs.flush();
+        }
     }
 
     public float getSfxVolume() {
@@ -47,8 +57,10 @@ public class Settings {
 
     public void setSfxVolume(float sfxVolume) {
         this.sfxVolume = sfxVolume;
-        prefs.putFloat("sfxVolume", sfxVolume);
-        prefs.flush();
+        if (prefs != null) {
+            prefs.putFloat("sfxVolume", sfxVolume);
+            prefs.flush();
+        }
     }
 
     public int getDifficulty() {
@@ -68,8 +80,10 @@ public class Settings {
 
     public void setGrid(boolean grid) {
         this.isGrid = grid;
-        prefs.putBoolean("isGrid", grid);
-        prefs.flush();
+        if (prefs != null) {
+            prefs.putBoolean("isGrid", grid);
+            prefs.flush();
+        }
     }
 
     public boolean isDebug() {
@@ -78,8 +92,10 @@ public class Settings {
 
     public void setDebug(boolean debug) {
         this.isDebug = debug;
-        prefs.putBoolean("isDebug", debug);
-        prefs.flush();
+        if (prefs != null) {
+            prefs.putBoolean("isDebug", debug);
+            prefs.flush();
+        }
     }
 
     public float getZombieHealthMultiplier() {

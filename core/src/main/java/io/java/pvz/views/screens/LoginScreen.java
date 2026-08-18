@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.MenuController.LoginMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
@@ -101,6 +102,7 @@ public class LoginScreen extends BaseScreen {
                     new GameEventPayload.Builder(GameEvent.NOTIFY)
                         .message("Login Success: " + result.message())
                         .build());
+                authenticateWithServer(user, pass);
                 ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
             } else {
                 System.out.println("Login Failed: " + result.message());
@@ -123,6 +125,17 @@ public class LoginScreen extends BaseScreen {
                 ScreenManager.getInstance().pushScreen(new SignupScreen(game));
             });
         baseTable.add(gotoSignupBtn).width(300).height(50).padTop(5).row();
+    }
+
+    private void authenticateWithServer(String username, String password) {
+        NetworkController.getInstance().login(username, password, response -> {
+            if (response != null && response.isSuccess()) {
+                System.out.println("Connected to game server as " + username + " (online features enabled)");
+            } else {
+                String reason = response != null ? response.getErrorMessage() : "server unreachable";
+                System.out.println("Online features unavailable: " + reason);
+            }
+        });
     }
 
     @Override

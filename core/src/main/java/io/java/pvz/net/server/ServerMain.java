@@ -1,5 +1,6 @@
 package io.java.pvz.net.server;
 
+import io.java.pvz.GameInitializer;
 import io.java.pvz.models.database.DataBaseManager;
 
 public class ServerMain {
@@ -15,6 +16,8 @@ public class ServerMain {
                 System.err.println("Invalid port '" + args[0] + "', using default " + DEFAULT_PORT);
             }
         }
+
+        GameInitializer.loadGameData();
 
         DataBaseManager.initializeDatabase();
 

@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.GameController.LeaderBoardController;
+import io.java.pvz.controllers.GameController.NetworkController;
+import io.java.pvz.controllers.GameController.NetworkLeaderboardController;
 import io.java.pvz.controllers.GameMenuController;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
@@ -14,6 +16,7 @@ import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
 
 import java.util.List;
+import java.util.Map;
 
 
 public class LeaderboardMenu extends Table {
@@ -22,9 +25,12 @@ public class LeaderboardMenu extends Table {
     private static final Color LIGHT_BROWN = Color.valueOf("#8B5A2B");
 
     private final LeaderBoardController controller = new LeaderBoardController();
+    private final NetworkLeaderboardController networkController = new NetworkLeaderboardController();
     private final Skin skin;
     private final TextureBank textures;
     private final Table rowsTable;
+
+    private int requestToken = 0;
 
     public static Table build(GameMenuController menuController, TextureBank texture, Skin skin) {
         return new LeaderboardMenu(menuController, texture, skin);
@@ -89,31 +95,80 @@ public class LeaderboardMenu extends Table {
     }
 
     private void refreshRows() {
+        int token = ++requestToken;
+        String sortType = controller.getCurrentSortType();
+
+        if (NetworkController.getInstance().isAuthenticated()) {
+            showLoadingRow();
+            networkController.fetchLeaderboard(sortType, response -> {
+                if (token != requestToken) return; // a newer refresh already superseded this one
+
+                if (response != null && response.isSuccess()) {
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> rows = (List<Map<String, Object>>) response.getData().get("rows");
+                    renderNetworkRows(rows != null ? rows : List.of(), sortType);
+                } else {
+                    renderLocalRows(sortType);
+                }
+            });
+        } else {
+            renderLocalRows(sortType);
+        }
+    }
+
+    private void showLoadingRow() {
+        rowsTable.clear();
+        Label loadingLabel = new Label("Loading leaderboard...", skin);
+        loadingLabel.setColor(LIGHT_BROWN);
+        loadingLabel.setFontScale(1.3f);
+        rowsTable.add(loadingLabel).colspan(3).padTop(20);
+    }
+
+    private void renderLocalRows(String sortType) {
         rowsTable.clear();
         List<User> sortedUsers = controller.getSortedUsers();
-        String sortType = controller.getCurrentSortType();
 
         for (int i = 0; i < sortedUsers.size(); i++) {
             User user = sortedUsers.get(i);
-
-            Label rankLabel = new Label((i + 1) + ".", skin);
-            rankLabel.setColor(BROWN);
-            rankLabel.setFontScale(1.6f);
-
-            Label nameLabel = new Label(user.getUsername(), skin);
-            nameLabel.setColor(Color.ORANGE);
-            nameLabel.setFontScale(1.6f);
-
-            Label valueLabel = new Label(valueFor(user, sortType), skin);
-            valueLabel.setColor(LIGHT_BROWN);
-            valueLabel.setFontScale(1.4f);
-            valueLabel.setAlignment(Align.right);
-
-            rowsTable.add(rankLabel).width(60).left();
-            rowsTable.add(nameLabel).expandX().left().padLeft(15);
-            rowsTable.add(valueLabel).width(260).right().padRight(15);
-            rowsTable.row().padTop(14);
+            addRow(i, user.getUsername(), valueFor(user, sortType));
         }
+    }
+
+    private void renderNetworkRows(List<Map<String, Object>> rows, String sortType) {
+        rowsTable.clear();
+
+        for (int i = 0; i < rows.size(); i++) {
+            Map<String, Object> row = rows.get(i);
+            String username = String.valueOf(row.get("username"));
+            addRow(i, username, valueFor(row, sortType));
+        }
+
+        if (rows.isEmpty()) {
+            Label emptyLabel = new Label("No players yet.", skin);
+            emptyLabel.setColor(LIGHT_BROWN);
+            emptyLabel.setFontScale(1.3f);
+            rowsTable.add(emptyLabel).colspan(3).padTop(20);
+        }
+    }
+
+    private void addRow(int index, String username, String value) {
+        Label rankLabel = new Label((index + 1) + ".", skin);
+        rankLabel.setColor(BROWN);
+        rankLabel.setFontScale(1.6f);
+
+        Label nameLabel = new Label(username, skin);
+        nameLabel.setColor(Color.ORANGE);
+        nameLabel.setFontScale(1.6f);
+
+        Label valueLabel = new Label(value, skin);
+        valueLabel.setColor(LIGHT_BROWN);
+        valueLabel.setFontScale(1.4f);
+        valueLabel.setAlignment(Align.right);
+
+        rowsTable.add(rankLabel).width(60).left();
+        rowsTable.add(nameLabel).expandX().left().padLeft(15);
+        rowsTable.add(valueLabel).width(260).right().padRight(15);
+        rowsTable.row().padTop(14);
     }
 
     private String valueFor(User user, String sortType) {
@@ -124,5 +179,24 @@ public class LeaderboardMenu extends Table {
             case "quests" -> user.getQuestManager().getCompletedQuestsCount() + " quests";
             default -> "Score: " + user.getHighestBonusScore();
         };
+    }
+
+    private String valueFor(Map<String, Object> row, String sortType) {
+        return switch (sortType) {
+            case "season" -> "Ch " + asInt(row.get("chapter")) + " - Lv " + asInt(row.get("level"));
+            case "minigame" -> asInt(row.get("minigameLevelsUnlocked")) + " levels";
+            case "quests" -> asInt(row.get("questsCompleted")) + " quests";
+            default -> "Score: " + asInt(row.get("myPoint"));
+        };
+    }
+
+    private int asInt(Object value) {
+        if (value instanceof Number number) return number.intValue();
+        if (value == null) return 0;
+        try {
+            return Integer.parseInt(String.valueOf(value));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 }
