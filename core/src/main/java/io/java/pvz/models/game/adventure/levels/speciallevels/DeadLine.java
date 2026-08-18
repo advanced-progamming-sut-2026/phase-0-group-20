@@ -23,4 +23,9 @@ public class DeadLine extends SpecialLevel implements RedLineCapable {
     public int getRedLineCol() {
         return LOSE_COL + 1;
     }
+
+    @Override
+    public String toString() {
+        return "Don't Let Zombies Pass the Dead Line on Col "+(LOSE_COL + 1) + ".";
+    }
 }

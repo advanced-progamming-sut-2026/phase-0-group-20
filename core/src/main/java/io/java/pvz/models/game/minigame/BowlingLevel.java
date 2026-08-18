@@ -105,4 +105,9 @@ public class BowlingLevel extends ConveyorBelt implements IMinigame, RedLineCapa
     public int getRedLineCol() {
         return RED_LINE_COL;
     }
+
+    @Override
+    public String toString() {
+        return "Don't Let Zombies Eat Your Brain-Bowl The Bowlings Behind Col "+(RED_LINE_COL+1);
+    }
 }

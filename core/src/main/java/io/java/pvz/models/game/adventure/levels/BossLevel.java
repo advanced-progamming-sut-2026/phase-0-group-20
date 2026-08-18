@@ -61,4 +61,9 @@ public class BossLevel extends ConveyorBelt {
     public Zomboss getZomboss() {
         return zomboss;
     }
+
+    @Override
+    public String toString() {
+        return "Don't Let Zombies Eat Your Brain-Defeat The Zomboss";
+    }
 }

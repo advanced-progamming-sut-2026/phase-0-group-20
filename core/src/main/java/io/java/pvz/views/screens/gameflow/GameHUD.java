@@ -28,6 +28,7 @@ import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.*;
+import io.java.pvz.views.screens.modals.LevelIntroModalTable;
 import io.java.pvz.views.screens.modals.PauseMenuTable;
 import io.java.pvz.views.screens.modals.PlantSelectionModalTable;
 import pvz.libpvz.textures.TextureBank;
@@ -90,9 +91,10 @@ public class GameHUD {
             int waveCount = level.getWaveCount();
             for (int i = 1; i <= waveCount; i++) {
                 float fraction = (float) i / waveCount;
-                Image flagImage = UiFactory.imageFor(textures, "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
+                Image flagImage = UiFactory.imageFor(textures,
+                    "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
                 flagImage.setSize(40f, 45f);
-                float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction) - (flagImage.getWidth() / 2f);
+                float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction)-(flagImage.getWidth() / 2f);
                 float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (flagImage.getHeight() / 2f);
                 flagImage.setPosition(x, y);
                 mainLayer.addActor(flagImage);
@@ -114,7 +116,8 @@ public class GameHUD {
 
         for (int i = 1; i <= 2; i++) {
             float fraction = i / 3f;
-            Image phaseMarker = UiFactory.imageFor(textures, "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
+            Image phaseMarker = UiFactory.imageFor(textures,
+                "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
             phaseMarker.setSize(35f, 40f);
             float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction) - (phaseMarker.getWidth() / 2f);
             float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (phaseMarker.getHeight() / 2f);
@@ -128,14 +131,23 @@ public class GameHUD {
     }
 
     private void setupPlantSelectionMenu() {
+        if(GameSession.getInstance() !=  null){
+            GameSession.getInstance().pauseGame();
+        }
         if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
             buildBeghouledSeedBank();
+            new LevelIntroModalTable(skin).show(modalLayer,viewport);
+
         } else if (GameSession.getInstance() != null &&
             GameSession.getInstance().getCurrentMode() instanceof IZombieLevel) {
             buildSeedBank();
+            new LevelIntroModalTable(skin).show(modalLayer,viewport);
         } else if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin, () -> {
                 buildSeedBank();
+                new LevelIntroModalTable(skin).show(modalLayer,viewport);
+                GameSession.getInstance().pauseGame();
+
             });
             plantSelectionModal.show(modalLayer, viewport);
         } else if (GameSession.getInstance() != null &&
@@ -145,6 +157,8 @@ public class GameHUD {
             belt.setSize(200f, 700);
             belt.setPosition(20f, 250);
             mainLayer.addActor(belt);
+            new LevelIntroModalTable(skin).show(modalLayer,viewport);
+            GameSession.getInstance().pauseGame();
         }
     }
 

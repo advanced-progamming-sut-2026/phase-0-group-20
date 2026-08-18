@@ -100,4 +100,5 @@ public class LockedPlants extends SpecialLevel {
     public int getLockedSlots() {
         return lockedSlots;
     }
+
 }

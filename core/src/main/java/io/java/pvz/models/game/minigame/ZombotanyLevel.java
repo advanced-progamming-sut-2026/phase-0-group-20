@@ -67,4 +67,9 @@ public class ZombotanyLevel extends Level implements IMinigame {
     public MiniGameType getMiniGameType() {
         return MiniGameType.ZOMBOTANY;
     }
+
+    @Override
+    public String toString() {
+        return "Don't Let Zombies Eat Your Brain-Defend Against Zombotany Zombies.";
+    }
 }

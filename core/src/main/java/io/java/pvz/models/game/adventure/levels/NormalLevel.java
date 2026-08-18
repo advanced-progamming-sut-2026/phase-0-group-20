@@ -18,5 +18,8 @@ public class NormalLevel extends Level {
         // Empty for now
     }
 
-
+    @Override
+    public String toString() {
+        return "Don't Let Zombies Eat Your Brain";
+    }
 }
