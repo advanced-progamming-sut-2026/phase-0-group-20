@@ -30,8 +30,6 @@ import io.java.pvz.views.screens.modals.WaitingTable;
 import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
 
-import static com.badlogic.gdx.Gdx.app;
-
 public class MultiplayerLobbyScreen extends BaseScreen {
 
     private final Skin skin;
@@ -51,7 +49,6 @@ public class MultiplayerLobbyScreen extends BaseScreen {
         backgroundRegion = textures.region(Ids.MainMenu.BACKGROUND);
 
         registerLobbyHandlers();
-
         checkServerAndShowUI();
     }
 
@@ -59,7 +56,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
         mainLayer.clear();
         mainLayer.setFillParent(true);
 
-        Label checkingLabel = new Label("Checking Server Status...", skin, "big");
+        Label checkingLabel = new Label("Connecting to Server...", skin, "big");
         checkingLabel.setColor(Color.valueOf("#4A3018"));
         mainLayer.add(checkingLabel).center();
 
@@ -75,6 +72,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
                         loginReq.put("username", user.getUsername());
                         loginReq.put("password", user.getPassword());
                         loginReq.put("stayLoggedIn", true);
+                        loginReq.put("isHash", true);
 
                         NetworkMessage res = NetworkClient.getInstance().sendAndWait(loginReq, 5);
                         online = res.isSuccess();

@@ -341,11 +341,18 @@ public class GameInputHandler {
     private void handlePlanting(int col, int row) {
         if (MatchController.getInstance().isOnlineMatch() && selectedPacketToPlace == null) {
             MatchController.getInstance().placePlant(selectedPlantToPlace.getName(), col, row, response -> {
-                if (response.isSuccess()) clearAllSelections();
-                else GameSession.notify("Error: " + response.getErrorMessage());
+                if (response.isSuccess()) {
+                    if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel) {
+                        iZombieLevel.getBelt().remove(selectedPlantToPlace);
+                    }
+                    clearAllSelections();
+                } else {
+                    GameSession.notify("Error: " + response.getErrorMessage());
+                }
             });
             return;
         }
+
         Result result;
         if (selectedPacketToPlace != null) {
             result = miniGameController.plantFromVase(
@@ -365,6 +372,8 @@ public class GameInputHandler {
         if (result.isSuccessful()) {
             if (GameSession.getInstance().getCurrentMode() instanceof ConveyorBelt beltLevel) {
                 beltLevel.getBelt().remove(selectedPlantToPlace);
+            } else if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel) {
+                iZombieLevel.getBelt().remove(selectedPlantToPlace);
             }
             clearAllSelections();
         }

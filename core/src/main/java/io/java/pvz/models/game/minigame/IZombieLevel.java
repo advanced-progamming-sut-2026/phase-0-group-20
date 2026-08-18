@@ -20,6 +20,7 @@ import io.java.pvz.models.game.minigame.minigameCondition.IZombieWinCondition;
 import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -28,6 +29,12 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     private final Random rand = new Random();
     private int redLineCol = 6;
     private IZombieTimeLimitLoseCondition timeLimitCondition;
+
+    private final List<Plant> belt = new ArrayList<>();
+    private static final int BELT_MAX_CAPACITY = 10;
+    private static final int BELT_SPAWN_INTERVAL_TICKS = 7 * TimeManager.TICKS_PER_SECOND;
+    private int beltTicksPassed = 0;
+    private List<Plant> beltPlantTemplates;
 
     public IZombieLevel(String name, SeasonType seasonType, int waveCount, int levelNumber) {
         super(name, seasonType, waveCount, -1, levelNumber);
@@ -49,6 +56,8 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
     @Override
     public void onLevelStart(GameSession session) {
+        belt.clear();
+        beltTicksPassed = 0;
 
         session.getArena().removeLawnMowers();
 
@@ -122,7 +131,39 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
     @Override
     public void engineLoop(GameSession session, int currentTick) {
-        // we don't have spawn wave
+        boolean isMultiplayer = MatchController.getInstance().isOnlineMatch() ||
+            MatchController.getInstance().isCouchPlay();
+
+        if (!isMultiplayer) return;
+
+        beltTicksPassed++;
+        if (beltTicksPassed < BELT_SPAWN_INTERVAL_TICKS) return;
+        beltTicksPassed = 0;
+
+        if (belt.size() >= BELT_MAX_CAPACITY) return;
+
+        Plant newPlant = generateRandomBeltPlant();
+        if (newPlant != null) {
+            belt.add(newPlant);
+        }
+    }
+
+    private Plant generateRandomBeltPlant() {
+        if (beltPlantTemplates == null) {
+            beltPlantTemplates = App.getActiveUser().getUnlockedPlants().stream()
+                .filter(plant -> {
+                    String plantName = plant.getName().toLowerCase();
+                    return !plantName.contains("sun") && !plantName.equals("gold bloom") &&
+                        !plantName.equals("grave buster") && !plantName.equals("hot potato") &&
+                        !plantName.equals("lily pad") && !plantName.equals("tangle kelp") &&
+                        !plantName.equals("sea-shroom") && !plantName.contains("mint");
+                }).toList();
+        }
+
+        if (beltPlantTemplates.isEmpty()) return null;
+
+        Plant template = beltPlantTemplates.get(rand.nextInt(beltPlantTemplates.size()));
+        return PlantFactory.create(template.getId());
     }
 
     public boolean isValidZombiePlacement(int col) {
@@ -198,5 +239,9 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     @Override
     public String toString() {
         return "Don't Let Plants Destroy Your Zombies-Destroy All Of The Plants";
+    }
+
+    public List<Plant> getBelt() {
+        return belt;
     }
 }
