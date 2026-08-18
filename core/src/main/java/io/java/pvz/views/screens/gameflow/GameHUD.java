@@ -322,7 +322,8 @@ public class GameHUD {
     }
 
     private PlantCardButton createSeedPacket(Plant plant, boolean lockIncluded) {
-        Image bgCard = UiFactory.imageFor(textures, Ids.PlantCards.BG_CARD);
+        Image bgCard = UiFactory.imageFor(textures,(plant.isBoosted())? Ids.PlantCards.BOOSTED_BG_CARD
+            : Ids.PlantCards.BG_CARD);
         String plantName = UiFactory.getAtlasName(plant);
         String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();
         Image plantIcon = UiFactory.imageFor(textures, plantTextureKey);

@@ -33,8 +33,6 @@ public class PlantSelectionMenu implements AppMenu {
             }
         } else if ((matcher = PlantSelectionCommands.REMOVE_PLANT.getMatcher(input)) != null) {
             System.out.println(controller.removePlant(matcher.group("type")));
-        } else if ((matcher = PlantSelectionCommands.BOOST_PLANT.getMatcher(input)) != null) {
-            System.out.println(controller.boostPlant(matcher.group("type")));
         } else if (PlantSelectionCommands.START_GAME.getMatcher(input) != null) {
             System.out.println(controller.startGame());
         } else {

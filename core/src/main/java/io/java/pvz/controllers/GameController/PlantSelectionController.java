@@ -154,17 +154,18 @@ public class PlantSelectionController {
         return new Result(false, "Plant not found in your current selection.");
     }
 
-    public Result boostPlant(String name) {
+    public Result boostPlant(Plant plant) {
+        String name =  plant.getName();
         User activeUser = App.getActiveUser();
 
-        if (boostedPlantNames.contains(name.trim().toLowerCase())) {
+        if (boostedPlantNames.contains(name)) {
 
             return new Result(false, "This plant is already boosted for this level!");
         }
 
         if (activeUser.getDiamond() >= 2) { // cost for boost (it can be different)
             activeUser.costDiamond(2);
-            boostedPlantNames.add(name.trim().toLowerCase());
+            boostedPlantNames.add(name);
 
             return new Result(true, name + " is BOOSTED for the upcoming level! (-2 Diamonds)");
         } else {
