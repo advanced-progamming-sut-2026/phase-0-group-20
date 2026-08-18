@@ -4,13 +4,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.java.pvz.models.users.PasswordUtils;
 import io.java.pvz.models.users.User;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-
 public class UserRepository extends JsonRepository<User, String> {
 
-    private static final String FILE_PATH = "data/users.json";
+    private static final String FILE_PATH = determineFilePath();
+
+    private static String determineFilePath() {
+        if (new File("assets").exists()) {
+            return "assets/data/users.json";
+        }
+        return "data/users.json";
+    }
 
     public UserRepository() {
         this(FILE_PATH);
@@ -32,12 +39,12 @@ public class UserRepository extends JsonRepository<User, String> {
     public Optional<User> authenticate(String username, String password) {
         String inputHash = PasswordUtils.hashPassword(password);
         return findByUsername(username)
-                .filter(user -> user.getPasswordHash().equals(inputHash));
+            .filter(user -> user.getPasswordHash().equals(inputHash));
     }
 
     public Optional<User> findForRecovery(String username, String email) {
         return findOne(user -> user.getUsername().equals(username)
-                && user.getEmail().equals(email));
+            && user.getEmail().equals(email));
     }
 
     public void logout(String id) {

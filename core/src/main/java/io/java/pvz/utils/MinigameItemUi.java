@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
+import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.GameController.TravelLogController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.models.game.GameSession;
@@ -19,6 +20,7 @@ import io.java.pvz.models.game.minigame.MiniGameFactory;
 import io.java.pvz.models.game.minigame.MiniGameType;
 import io.java.pvz.views.screens.ChapterSelectionScreen;
 import io.java.pvz.views.screens.LevelSelectionScreen;
+import io.java.pvz.views.screens.MultiplayerLobbyScreen;
 import pvz.libpvz.textures.TextureBank;
 
 public class MinigameItemUi extends Table {
@@ -48,10 +50,20 @@ public class MinigameItemUi extends Table {
 
         TextButton playBtn = new TextButton("PLAY", skin, "purple");
         playBtn.addListener(new ClickListener() {
-           @Override
-           public void clicked(InputEvent event, float x, float y) {
-               ScreenManager.getInstance().pushScreen(new LevelSelectionScreen(ScreenManager.getInstance().getGame(), type, travelLogController));
-           }
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (type == MiniGameType.I_ZOMBIE) {
+                    if (NetworkController.getInstance().isAuthenticated()) {
+                        ScreenManager.getInstance().pushScreen(
+                            new MultiplayerLobbyScreen(ScreenManager.getInstance().getGame()));
+                    } else {
+                        ScreenManager.getInstance().pushScreen(
+                            new LevelSelectionScreen(ScreenManager.getInstance().getGame(), type, travelLogController));
+                    }
+                } else {
+                    ScreenManager.getInstance().pushScreen(new LevelSelectionScreen(ScreenManager.getInstance().getGame(), type, travelLogController));
+                }
+            }
         });
 
         contentTable.add(nameLabel).left().expandX();
