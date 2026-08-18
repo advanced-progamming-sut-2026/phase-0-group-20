@@ -200,7 +200,13 @@ public class GameFlowController {
         GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
         session.setCooldownForPlant(plant);
         if (session.getCurrentMode() instanceof ConveyorBelt conveyorBelt) {
-            conveyorBelt.getBelt().remove(plant);
+            var belt = conveyorBelt.getBelt();
+            for (int i = 0; i < belt.size(); i++) {
+                if (belt.get(i).getName().equalsIgnoreCase(plant.getName())) {
+                    belt.remove(i);
+                    break;
+                }
+            }
         }
         return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +
             " with the name of " + newPlant.getName() + ".");

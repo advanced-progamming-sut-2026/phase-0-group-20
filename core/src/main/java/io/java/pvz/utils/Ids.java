@@ -96,6 +96,7 @@ public final class Ids {
             "768/FULL/EFFECTS/BOWLINGBULB_PROJECTILE2/BOWLINGBULB_PROJECTILE2.PAM";
         public static final String GIANT_NUT_BOWL =
             "768/FULL/EFFECTS/BOWLINGBULB_PROJECTILE3/BOWLINGBULB_PROJECTILE3.PAM";
+        public static final String SHARK = "768/FULL/EFFECTS/ZOMBOSS_SHARK_PROJECTILE/ZOMBOSS_SHARK_PROJECTILE.PAM";
     }
 
     public static final class ProjectileHits {
@@ -120,6 +121,7 @@ public final class Ids {
         public static final String PLASMA_BALL = "768/FULL/EFFECTS/CITRON_CITRUS_ORB_HIT/CITRON_CITRUS_ORB_HIT.PAM";
         public static final String EXPLODE_NUT_BOWL =
             "768/FULL/EFFECTS/BOWLINGBULB_PLANTFOOD_PROJECTILE/BOWLINGBULB_PLANTFOOD_PROJECTILE.PAM";
+        public static final String SHARK = "768/FULL/EFFECTS/ZOMBOSS_SHARK_PROJECTILE/ZOMBOSS_SHARK_PROJECTILE.PAM";
     }
 
     public static final class Shop {

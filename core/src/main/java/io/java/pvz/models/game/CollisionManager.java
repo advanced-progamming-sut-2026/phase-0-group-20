@@ -60,23 +60,17 @@ public class CollisionManager {
     }
 
     public void checkZombossCrush(Zomboss zomboss) {
-        float collisionThreshold = PhysicalConstants.TILE_WIDTH * 0.8f;
-        int[] targetRows = {zomboss.getRow(), zomboss.getSecondRow()};
-
         List<Plant> activePlants = new ArrayList<>(arena.getActivePlants());
 
         for (Plant plant : activePlants) {
             if (plant.isDead()) continue;
 
             int pRow = plant.getPlacedTile().getRow();
+            int pCol = plant.getPlacedTile().getCol();
 
-            if (pRow == targetRows[0] || pRow == targetRows[1]) {
-                float plantX = plant.getPlacedTile().getCol() * PhysicalConstants.TILE_WIDTH;
-
-                if (Math.abs(zomboss.getX() - plantX) < collisionThreshold) {
-                    plant.takeDamage(99999);
-                    GameSession.notify("Zomboss crushed " + plant.getName() + "!");
-                }
+            if (zomboss.isOccupyingRow(pRow) && zomboss.getCol() == pCol) {
+                plant.takeDamage(99999);
+                GameSession.notify("Zomboss crushed " + plant.getName() + "!");
             }
         }
     }
@@ -182,7 +176,6 @@ public class CollisionManager {
             if (!obstacle.isDestroyed() && obstacle.getRow() == projectile.getPosition().getRow()) {
 
                 if (Math.abs(projectile.getPosition().getX() - obstacle.getX()) < 20) {
-
                     obstacle.takeDamage(projectile.getDamage());
                     projectile.setDestroyed(true);
                     hitObstacle = true;
@@ -221,11 +214,19 @@ public class CollisionManager {
 
             double dx = projectile.getX() - z.getX();
             double dy = projectile.getY() - z.getY();
-            double distanceSquared = (dx * dx) + (dy * dy);
             float effectiveRadius = combinedRadius;
-            if(z instanceof Zomboss){
+
+
+            if (z instanceof Zomboss zomboss) {
                 effectiveRadius = combinedRadius * 2.5f;
+
+                if (projectile.getPosition().getRow() == zomboss.getSecondRow()) {
+                    float secondRowY = zomboss.getSecondRow() * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y;
+                    dy = projectile.getY() - secondRowY;
+                }
             }
+
+            double distanceSquared = (dx * dx) + (dy * dy);
 
             if (distanceSquared <= (effectiveRadius * effectiveRadius)) {
                 projectile.onHit(z);

@@ -116,7 +116,18 @@ public class ZombieRenderer {
     private void updateZombieActor(Zombie zombie, PamAnimatedActor actor) {
         actor.setClip(resolveZombieClip(zombie));
 
-        float yOffset = (zombie instanceof Zomboss) ? actor.getHeight() + 40f : actor.getHeight() / 2f + 30f;
+        float yOffset= 0;
+        if(!(zombie instanceof Zomboss boss)){
+           yOffset =  actor.getHeight() / 2f + 30f;
+        }else {
+            ZombieType type = boss.getType();
+            switch (type){
+                case ZOMBOSS_BEACH -> yOffset = actor.getHeight();
+                case ZOMBOSS_FROZEN_CAVES ->  yOffset = actor.getHeight()+60f;
+                case ZOMBOSS_EGYPT ->  yOffset = actor.getHeight()-20f;
+                case ZOMBOSS_DARK_AGES ->   yOffset = actor.getHeight();
+            }
+        }
         float xOffset = (zombie instanceof Zomboss) ? 40f : 0f;
 
         centerOnPoint(actor, zombie.getPosition().getX() - xOffset, zombie.getPosition().getY() + yOffset);

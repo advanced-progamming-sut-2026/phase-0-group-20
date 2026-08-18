@@ -1,29 +1,28 @@
 package io.java.pvz.models.entities.zombies.zomboss;
 
+import io.java.pvz.models.entities.zombies.ZombieState;
+import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.Random;
 
-public class SwitchLaneZombossMove implements IZombossMove {
+public class SwitchLaneZombossAttack implements IZombossAttack {
     private final Zomboss zomboss;
-    private IdleZombossMove idleMove;
+    private final IdleZombossAttack idleState;
     private int moveTimer;
     private final Random random = new Random();
 
-    public SwitchLaneZombossMove(Zomboss zomboss) {
+    public SwitchLaneZombossAttack(Zomboss zomboss, IdleZombossAttack idleState) {
         this.zomboss = zomboss;
-    }
-
-    public void setIdleMove(IdleZombossMove idleMove) {
-        this.idleMove = idleMove;
+        this.idleState = idleState;
     }
 
     @Override
     public void onEnter() {
         this.moveTimer = 0;
+        zomboss.setState(ZombieState.WALKING);
         zomboss.notify("Zomboss is preparing to switch lanes...");
-
     }
 
     @Override
@@ -41,22 +40,23 @@ public class SwitchLaneZombossMove implements IZombossMove {
 
             zomboss.setRow(newRow);
             zomboss.setSecondRow(newRow + 1);
+
+            float newY = newRow * PhysicalConstants.TILE_HEIGHT +
+                PhysicalConstants.GRID_START_Y;
+            zomboss.setY(newY);
+
             zomboss.notify("Zomboss switched to rows " + (newRow + 1) + " and " + (newRow + 2) + "!");
         }
 
         if (moveTimer >= 2 * TimeManager.TICKS_PER_SECOND) {
             this.onExit();
-            idleMove.onEnter();
-            zomboss.setMoveBehavior(idleMove);
+            idleState.onEnter();
+            zomboss.setAttackBehavior(idleState);
         }
     }
 
     @Override
     public void onExit() {
-    }
-
-    @Override
-    public void reset() {
         this.moveTimer = 0;
     }
 }

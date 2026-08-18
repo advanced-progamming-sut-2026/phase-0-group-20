@@ -296,6 +296,9 @@ public class Zombie implements Ticker {
         return position.getRow();
     }
 
+    public boolean isOccupyingRow(int targetRow) {
+        return this.position.getRow() == targetRow;
+    }
     public void setRow(int row) {
         position.setRow(row);
     }

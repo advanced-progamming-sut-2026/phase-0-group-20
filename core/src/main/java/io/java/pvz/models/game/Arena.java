@@ -22,8 +22,8 @@ import java.util.List;
 public class Arena {
     private static final int ROWS = 5;
     private static final int COLS = 9;
-    private final List<Plant> activePlants;// these are the plants that are already in the arena.(placed and not dead)
-    private final List<Zombie> activeZombies;//these are the zombies that are already in the arena and moving/attacking.
+    private final List<Plant> activePlants;
+    private final List<Zombie> activeZombies;
     private final List<Projectile> activeProjectiles = new ArrayList<>();
     private final LawnMower[] lawnMowers;
     private final Brain[] brains;
@@ -33,7 +33,6 @@ public class Arena {
     private final List<Wave> spawnedWaves = new ArrayList<>();
     private List<PushableObstacle> activeObstacles = new ArrayList<>();
     private final List<DroppedSeedPacket> droppedSeedPackets = new ArrayList<>();
-
 
     public Arena() {
         this.tiles = new Tile[ROWS][COLS];
@@ -53,7 +52,6 @@ public class Arena {
             GameSession.getInstance().getTimeManager().registerNewTicker(lawnMowers[i]);
         }
     }
-
 
     public void addZombie(Zombie zombie) {
         activeZombies.add(zombie);
@@ -77,7 +75,6 @@ public class Arena {
         return result;
     }
 
-
     public Zombie getNearestZombie(int column, int lane) {
         if (activeZombies.isEmpty()) return null;
         for (float i = 0; i < PhysicalConstants.TILE_WIDTH * COLS; i += 0.05f) {
@@ -92,8 +89,7 @@ public class Arena {
             if (z == attacker || z.isDead()) continue;
 
             if (attacker.isHypnotized() != z.isHypnotized()) {
-
-                if (z.getRow() == attacker.getRow()) {
+                if (z.isOccupyingRow(attacker.getRow()) || attacker.isOccupyingRow(z.getRow())) {
                     float distance = Math.abs(attacker.getX() - z.getX());
                     if (distance <= collisionRadius) {
                         return z;
@@ -104,11 +100,11 @@ public class Arena {
         return null;
     }
 
-
     public List<Zombie> zombieInRow(int row) {
         List<Zombie> zombies = new ArrayList<>();
         for (Zombie z : activeZombies) {
-            if (z.getRow() == row && z.getCol() < 10) {
+
+            if (z.isOccupyingRow(row) && z.getCol() < 10) {
                 if (z.getSpawnEffect() == Zombie.SpawnEffect.SANDSTORM) continue;
                 zombies.add(z);
             }
@@ -132,7 +128,6 @@ public class Arena {
         return target;
     }
 
-
     public List<Tile> getRandomEmptyTiles(int count) {
         List<Tile> emptyTiles = new ArrayList<>();
         for (Tile[] row : tiles)
@@ -141,13 +136,13 @@ public class Arena {
                     emptyTiles.add(tile);
 
         Collections.shuffle(emptyTiles);
-        return emptyTiles.subList(0, Math.min(count, emptyTiles.size()));//Hossein karo dary ya chi?
+        return emptyTiles.subList(0, Math.min(count, emptyTiles.size()));
     }
 
     public List<Zombie> getZombiesOnTile(Tile tile) {
         List<Zombie> zombies = new ArrayList<>();
         for (Zombie z : activeZombies)
-            if (z.getRow() == tile.getRow() && z.getCol() == tile.getCol())
+            if (z.isOccupyingRow(tile.getRow()) && z.getCol() == tile.getCol())
                 zombies.add(z);
 
         return zombies;
@@ -169,7 +164,6 @@ public class Arena {
     public void addProjectile(Projectile p) {
         activeProjectiles.add(p);
     }
-
 
     public List<Plant> getActivePlants() {
         return activePlants;
