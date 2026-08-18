@@ -237,10 +237,12 @@ public class CollectionScreen extends BaseScreen {
         for (Zombie zombie : App.getAllZombies()) {
             Image background = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_READY");
             String zombiePath = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_" + UiFactory.getZombieAddress(zombie);
-            Image zombieImage = UiFactory.imageFor(textures, zombiePath);
+            Image zombieImage =(App.getActiveUser().isZombieUnlocked(zombie))?
+                UiFactory.imageFor(textures, zombiePath):
+                null;
 
-            if (background != null && zombieImage != null) {
-                ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie);
+            if (background != null) {
+                ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie,skin);
 
                 table.add(card)
                     .size(card.getWidth(), card.getHeight())

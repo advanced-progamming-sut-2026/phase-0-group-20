@@ -421,7 +421,7 @@ public class GameHUD {
         Image background = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_READY");
         String zombiePath = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_" + UiFactory.getZombieAddress(zombie);
         Image zombieImage = UiFactory.imageFor(textures, zombiePath);
-        ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie);
+        ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie,skin);
         card.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
