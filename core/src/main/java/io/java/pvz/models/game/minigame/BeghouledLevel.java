@@ -303,4 +303,9 @@ public class BeghouledLevel extends Level implements IMinigame {
     public BeghouledManager getManager() {
         return manager;
     }
+
+    @Override
+    public String toString() {
+        return "Don't Let Zombies Eat Your Brain-Make "+targetMatches +"Matches To Win.";
+    }
 }

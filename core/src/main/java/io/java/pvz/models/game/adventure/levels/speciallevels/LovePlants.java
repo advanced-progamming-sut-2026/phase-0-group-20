@@ -31,4 +31,9 @@ public class LovePlants extends SpecialLevel {
     public void destroyLevelFields() {
         GameEventMessenger.getInstance().removeListener(GameEvent.PLANT_LOST, loseCondition);
     }
+
+    @Override
+    public String toString() {
+        return "Don't Let Zombies Eat Your Brain-Don't Lose Over "+limit+" Plants.";
+    }
 }

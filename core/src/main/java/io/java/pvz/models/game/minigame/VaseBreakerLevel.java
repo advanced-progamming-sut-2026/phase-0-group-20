@@ -74,4 +74,9 @@ public class VaseBreakerLevel extends Level implements IMinigame {
     public MiniGameType getMiniGameType() {
         return MiniGameType.VASE_BREAKER;
     }
+
+    @Override
+    public String toString() {
+        return "Don't Let Zombies Eat Your Brain-Break All the Vases To Win.";
+    }
 }

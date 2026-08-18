@@ -85,4 +85,9 @@ public class ConveyorBelt extends SpecialLevel {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Don't Let Zombies Eat Your Brain";
+    }
 }

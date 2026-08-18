@@ -156,4 +156,8 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
                 ZombieType.BUCKET, ZombieType.ALL_STAR, ZombieType.DARK_ARMOR, ZombieType.GARGANTUAR);
         };
     }
+    @Override
+    public String toString() {
+        return "Don't Let Plants Destroy Your Zombies-Destroy All Of The Plants";
+    }
 }
