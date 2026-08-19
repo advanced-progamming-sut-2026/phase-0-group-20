@@ -26,6 +26,7 @@ public class EnvironmentRenderer {
     private final Map<Tile, PamAnimatedActor> slipperyActors = new HashMap<>();
     private final Map<Tile, PamAnimatedActor> waterActors = new HashMap<>();
     private final Map<Tile, PamAnimatedActor> vaseActors = new HashMap<>();
+    private final Map<Tile, PamAnimatedActor> craterActors = new HashMap<>();
 
     private final Map<Tile, Image> firedActors = new HashMap<>();
     private PamAnimatedActor bigWaveForeground;
@@ -52,6 +53,7 @@ public class EnvironmentRenderer {
         Set<Tile> activeWater = new HashSet<>();
         Set<Tile> activeVases = new HashSet<>();
         Set<Tile> activeDarkTiles = new HashSet<>();
+        Set<Tile> activeCraters = new HashSet<>();
 
         Set<Tile> activeFiredTiles = new HashSet<>();
 
@@ -62,6 +64,21 @@ public class EnvironmentRenderer {
                 allTiles.add(tile);
                 float pixelX = tile.getCol() * TILE_WIDTH + GRID_START_X;
                 float pixelY = tile.getRow() * TILE_HEIGHT + GRID_START_Y;
+
+                if (tile.isCrater()) {
+                    activeCraters.add(tile);
+                    PamAnimatedActor actor = craterActors.computeIfAbsent(tile, t -> {
+                        PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
+                            "768/FULL/BACKGROUNDS/GOLDTILE/GOLDTILE.PAM", "active_idle"
+                        );
+
+                        animatedActor.setSize(TILE_WIDTH * 1.3f, TILE_HEIGHT * 1.3f);
+                        layerGroup.addActor(animatedActor);
+                        animatedActor.toBack();
+                        return animatedActor;
+                    });
+                    centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f + TILE_HEIGHT);
+                }
 
                 if (tile.isFired()) {
                     activeFiredTiles.add(tile);
@@ -220,6 +237,7 @@ public class EnvironmentRenderer {
         despawnMissingTiles(slipperyActors, activeSlippery);
         despawnMissingTiles(waterActors, activeWater);
         despawnMissingTiles(vaseActors, activeVases);
+        despawnMissingTiles(craterActors, activeCraters);
     }
 
     public void clear() {
@@ -229,6 +247,7 @@ public class EnvironmentRenderer {
         waterActors.clear();
         vaseActors.clear();
         firedActors.clear();
+        craterActors.clear();
     }
 
     private String resolveGraveClip(int currentHp) {

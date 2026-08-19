@@ -2,6 +2,7 @@ package io.java.pvz.models.entities.plants.strategy;
 
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
 import io.java.pvz.models.game.GameSession;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class DeathExplosionStrategy implements IPlantStrategy {
             List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5f);
             for (Zombie z : targets) {
                 if (!z.isDead()) {
-                    z.takeDamage(finalDamage);
+                    z.addEffect(new FireEffect(z, finalDamage));
                     if (z.isDead()) {
                         context.onZombieDeath(z);
                     }

@@ -15,6 +15,11 @@ public class ImitateStrategy implements IPlantStrategy {
 
     @Override
     public void execute(Plant context, int currentTick) {
+
+        if (targetPlantId == -1 && GameSession.getInstance() != null) {
+            targetPlantId = GameSession.getInstance().getImitaterTargetId();
+        }
+
         if (targetPlantId == -1) return;
 
         if (startTick == -1) {

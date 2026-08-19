@@ -19,7 +19,7 @@ public class HypnotizeAttack implements AttackBehavior {
     public void execute() {
         if (zombie.isDead()) return;
 
-        Zombie targetZombie = findTargetZombie();
+        Zombie targetZombie = zombie.getTargetZombie();
 
         if (targetZombie != null) {
             int damage = zombie.getEatDps() / TimeManager.TICKS_PER_SECOND;
@@ -27,19 +27,5 @@ public class HypnotizeAttack implements AttackBehavior {
             zombie.notify("Hypnotized Zombie at (" + zombie.getCol() + ", " + zombie.getRow() +
                     ") attacked another zombie for " + damage + " damage!");
         }
-    }
-
-    private Zombie findTargetZombie() {
-        Tile currentTile = GameSession.getInstance().getArena().getTile(zombie.getRow(), zombie.getCol());
-
-        if (currentTile != null) {
-            List<Zombie> zombiesInTile = GameSession.getInstance().getArena().getZombiesOnTile(currentTile);
-            for (Zombie otherZombie : zombiesInTile) {
-                if (otherZombie != this.zombie && !otherZombie.isDead() && !otherZombie.isHypnotized()) {
-                    return otherZombie;
-                }
-            }
-        }
-        return null;
     }
 }
