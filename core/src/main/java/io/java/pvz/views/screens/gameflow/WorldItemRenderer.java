@@ -3,10 +3,7 @@ package io.java.pvz.views.screens.gameflow;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
@@ -14,6 +11,7 @@ import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
+import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.obstacle.*;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.enums.plants.ProjectileType;
@@ -184,7 +182,7 @@ public class WorldItemRenderer {
 
     private void syncSuns(List<Sun> liveSuns) {
         for (Sun sun : liveSuns) {
-            if (sun.isCollected()) continue;
+            if (sun.isCollected() || sun.isExploded()) continue;
 
             PamAnimatedActor actor = sunActors.get(sun);
             if (actor == null) {
@@ -199,11 +197,23 @@ public class WorldItemRenderer {
         while (it.hasNext()) {
             Map.Entry<Sun, PamAnimatedActor> entry = it.next();
             Sun sun = entry.getKey();
-            if (!stillAlive.contains(sun) || sun.isCollected()) {
-                entry.getValue().addAction(Actions.sequence(
-                    Actions.fadeOut(0.4f),
-                    Actions.removeActor()
-                ));
+
+            if (!stillAlive.contains(sun) || sun.isCollected() || sun.isExploded()) {
+                PamAnimatedActor sunActor = entry.getValue();
+
+                if (sun.isExploded() || (sun.getType() == SunType.RADIOACTIVE_SUN && sun.isFalling())) {
+                    sunActor.clearActions();
+                    sunActor.setClip("attack");
+                    sunActor.addAction(Actions.sequence(
+                        Actions.delay(2.26f),
+                        Actions.removeActor()
+                    ));
+                } else {
+                    sunActor.addAction(Actions.sequence(
+                        Actions.fadeOut(0.4f),
+                        Actions.removeActor()
+                    ));
+                }
                 it.remove();
             }
         }
@@ -212,10 +222,9 @@ public class WorldItemRenderer {
     private PamAnimatedActor spawnSun(Sun sun) {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getSunAnimation(sun.getType());
 
-        String pamPath2 = anim != null ? anim.path.replace("FULL", "INITIAL") :
-            "768/INITIAL/EFFECTS/SUN/SUN.PAM";
+        String defaultClip = (sun.getType() == SunType.RADIOACTIVE_SUN) ? "animation2" : "animation";
 
-        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "animation", pamPath2);
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), defaultClip, anim.path);
 
         actor.setSize(80, 80);
         actor.setOrigin(Align.center);
@@ -240,8 +249,8 @@ public class WorldItemRenderer {
 
             actor.setPosition(targetX, targetY + 10f);
             actor.addAction(Actions.sequence(
-                Actions.moveTo(targetX, targetY + 60f, 0.35f, Interpolation.sineOut),
-                Actions.moveTo(targetX, targetY, 0.35f, Interpolation.bounceOut)
+                Actions.moveTo(targetX, targetY + 60f, 0.35f,Interpolation.sineOut),
+                Actions.moveTo(targetX, targetY, 0.35f,Interpolation.bounceOut)
             ));
 
             sun.getPosition().setX(baseX + offsetX + actor.getWidth() / 2f);
@@ -252,20 +261,38 @@ public class WorldItemRenderer {
         }
 
         float finalScale = scale;
+        actor.setTouchable(Touchable.enabled);
         actor.addListener(new InputListener() {
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                tryCollectSun();
+                return true;
+            }
+
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                if (!sun.isCollected() && pointer == -1) {
-                    Result result = gameFlowController.collectSun(sun.getCol(), sun.getRow());
+
+                if (pointer == -1 || pointer == 0) {
+                    tryCollectSun();
+                }
+            }
+
+            private void tryCollectSun() {
+                if (!sun.isCollected()) {
+                    Result result = gameFlowController.collectSun(sun);
 
                     if (result.isSuccessful()) {
-                        actor.addAction(Actions.sequence(
-                            Actions.parallel(
-                                Actions.scaleTo(finalScale * 1.5f, finalScale * 1.5f, 0.2f),
-                                Actions.fadeOut(0.2f)
-                            ),
-                            Actions.removeActor()
-                        ));
+                        if (sun.isExploded() || (sun.getType() == SunType.RADIOACTIVE_SUN && sun.isFalling())) {
+                        } else {
+                            actor.addAction(Actions.sequence(
+                                Actions.parallel(
+                                    Actions.scaleTo(finalScale * 1.5f, finalScale * 1.5f, 0.2f),
+                                    Actions.fadeOut(0.2f)
+                                ),
+                                Actions.removeActor()
+                            ));
+                        }
                     }
                 }
             }
@@ -280,15 +307,27 @@ public class WorldItemRenderer {
             actor.clearActions();
 
             AnimationCatalog.EntityAnimation anim = AnimationCatalog.getSunAnimation(sun.getType());
-            float transitionDuration = (anim != null && anim.hasClip("transition_red"))
-                ? anim.getDuration("transition_red") : 0.33f;
+            float transitionDuration = 0.33f;
+
+            if (sun.getType() == SunType.RADIOACTIVE_SUN && anim != null && anim.hasClip("transition")) {
+                transitionDuration = anim.getDuration("transition");
+            } else if (anim != null && anim.hasClip("transition_red")) {
+                transitionDuration = anim.getDuration("transition_red");
+            }
 
             float currentAbsorbTime = sun.getAbsorbedTicksCounter() / (float) TimeManager.TICKS_PER_SECOND;
 
-            if (currentAbsorbTime < transitionDuration)
-                if (!actor.getClip().equals("transition_red")) actor.setClip("transition_red");
-                else if (!actor.getClip().equals("red")) actor.setClip("red");
-        } else if (!actor.getClip().equals("animation")) actor.setClip("animation");
+            if (currentAbsorbTime < transitionDuration) {
+                String transClip = (sun.getType() == SunType.RADIOACTIVE_SUN) ? "transition" : "transition_red";
+                if (!actor.getClip().equals(transClip)) actor.setClip(transClip);
+            } else {
+                String finalClip = (sun.getType() == SunType.RADIOACTIVE_SUN) ? "attack" : "red";
+                if (!actor.getClip().equals(finalClip)) actor.setClip(finalClip);
+            }
+        } else {
+            String idleClip = (sun.getType() ==SunType.RADIOACTIVE_SUN) ? "animation2" : "animation";
+            if (!actor.getClip().equals(idleClip)) actor.setClip(idleClip);
+        }
 
         if (!sun.isFalling() || sun.isBeingAbsorbed()) {
             float targetX = sun.getPosition().getX() - actor.getWidth() / 2f;

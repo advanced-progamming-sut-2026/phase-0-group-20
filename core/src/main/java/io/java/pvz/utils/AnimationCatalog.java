@@ -447,7 +447,7 @@ public final class AnimationCatalog {
     }
 
     private static void registerSuns(Map<SunType, EntityAnimation> table) {
-        String defaultSunPath = "768/FULL/EFFECTS/SUN/SUN.PAM";
+        String defaultSunPath = "768/INITIAL/EFFECTS/SUN/SUN.PAM";
         registerSun(table, SunType.NORMAL_SUN, defaultSunPath,
             "animation", 1.0f, "transition_red", 0.5333f, "red", 1.0f);
         registerSun(table, SunType.TINY_SUN, defaultSunPath,
@@ -458,8 +458,8 @@ public final class AnimationCatalog {
             "animation", 1.0f, "transition_red", 0.5333f, "red", 1.0f);
         registerSun(table, SunType.SPECIAL_SUN, defaultSunPath,
             "animation", 1.0f, "transition_red", 0.5333f, "red", 1.0f);
-        registerSun(table, SunType.RADIOACTIVE_SUN, defaultSunPath,
-            "animation", 1.0f);
+        registerSun(table, SunType.RADIOACTIVE_SUN, "768/FULL/EFFECTS/SUN_BOMB/SUN_BOMB.PAM",
+            "animation2", 1.0f,"attack",2.26f,"transition",0.52f);
     }
 
     private static void registerSun(Map<SunType, EntityAnimation> table,

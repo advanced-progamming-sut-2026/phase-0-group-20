@@ -6,6 +6,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.net.NetworkIdGenerator;
 
 public class Sun implements Ticker {
@@ -15,7 +16,7 @@ public class Sun implements Ticker {
 
     private SunType type;
     private Position position;
-    private int fallTicksLeft = 50;
+    private int fallTicksLeft = 5 * TimeManager.TICKS_PER_SECOND;
     private boolean isFalling = true;
     private boolean isCollected = false;
     private boolean exploded = false;
