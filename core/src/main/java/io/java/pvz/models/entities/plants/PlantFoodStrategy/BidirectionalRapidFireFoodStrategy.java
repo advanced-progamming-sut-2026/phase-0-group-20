@@ -2,6 +2,8 @@ package io.java.pvz.models.entities.plants.PlantFoodStrategy;
 
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
+import io.java.pvz.models.fields.tiles.Tile;
+import io.java.pvz.models.timeManager.TimeManager;
 
 /**
  * Fires a rapid barrage simultaneously forward and backward.
@@ -10,7 +12,7 @@ import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 
 public class BidirectionalRapidFireFoodStrategy implements PlantFoodStrategy {
 
-    private final int durationTicks = 60;
+    private final int durationTicks = 6 * TimeManager.TICKS_PER_SECOND;
     private int tickTimer = 0;
 
     @Override
@@ -19,7 +21,7 @@ public class BidirectionalRapidFireFoodStrategy implements PlantFoodStrategy {
 
         if (tickTimer <= durationTicks) {
 
-            if (tickTimer % 2 == 0)
+            if (tickTimer % TimeManager.TICKS_PER_SECOND/5 == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, true, 0.1f);
         }
     }

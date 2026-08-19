@@ -7,18 +7,17 @@ import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.timeManager.TimeManager;
 
 public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
 
-    private final int durationTicks = 60;
-    private int tickTimer = 0;
+    private final int durationTicks = 6 * TimeManager.TICKS_PER_SECOND;
 
     private int currentRow = 0;
     private int directionCoeff = 1;
 
     @Override
     public void executeStrategy(Plant plant) {
-        tickTimer++;
         GameSession session = GameSession.getInstance();
 
         ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
@@ -50,7 +49,6 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
 
     @Override
     public void reset() {
-        this.tickTimer = 0;
         this.currentRow = 0;
         this.directionCoeff = 1;
     }

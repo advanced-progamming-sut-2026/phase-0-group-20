@@ -6,11 +6,12 @@ import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.timeManager.TimeManager;
 
 
 public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
-    private final int durationTicks = 60;
+    private final int durationTicks = 6 * TimeManager.TICKS_PER_SECOND;
     private final int extraGiantShots;
     private final boolean doesRapidFire;
     private int tickTimer = 0;
@@ -40,13 +41,13 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
 
         if (doesRapidFire && tickTimer <= durationTicks) {
-            if (tickTimer % 2 == 0)
+            if (tickTimer % TimeManager.TICKS_PER_SECOND / 5 == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, false, 0.1f);
         }
 
         if (giantShotsFired < totalGiantShots) {  //shoot giant pea if needed
 
-            if (tickTimer % 5 == 0) { //giant shots take more time
+            if (tickTimer % TimeManager.TICKS_PER_SECOND / 2 == 0) { //giant shots take more time
                 ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
                 int giantDamage = plant.getDamage() * 20;
                 int col = plant.getPlacedTile().getCol();
