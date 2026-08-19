@@ -43,8 +43,6 @@ public class ShootingStrategy implements IPlantStrategy {
             } else {
                 executeNewProjectile(context, currentShootForward, currentShootBackward, 0.5f);
 
-                playShootingAnimation(context);
-
                 pendingShots--;
                 burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
             }

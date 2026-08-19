@@ -22,6 +22,8 @@ public class GraveBusterStrategy implements IPlantStrategy {
         if (startTick == -1) {
             startTick = currentTick;
             context.triggerAction("attack");
+        } else if (context.getCurrentAction() == null) {
+            context.triggerAction("attack1");
         }
 
         Tile currentTile = context.getPlacedTile();
@@ -33,6 +35,7 @@ public class GraveBusterStrategy implements IPlantStrategy {
                 return;
             }
         }
+
         float finalDelaySeconds = Math.max(0, 4.0f - eatTimeReduction);
         int bustDelayTicks = (int) (finalDelaySeconds * TimeManager.TICKS_PER_SECOND);
 

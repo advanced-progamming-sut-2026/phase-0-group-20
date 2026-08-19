@@ -21,6 +21,9 @@ public enum ProjectileType {
     WALLNUT_BOWL,
     EXPLODE_NUT_BOWL,
     GIANT_NUT_BOWL,
+    BOWLING_BULB_CYAN,
+    BOWLING_BULB_BLUE,
+    BOWLING_BULB_ORANGE,
     SHARK;
 
     public static final int NORMAL_PEA_DAMAGE = 40;
