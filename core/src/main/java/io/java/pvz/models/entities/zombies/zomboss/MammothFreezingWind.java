@@ -14,6 +14,7 @@ import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MammothFreezingWind implements IZombossAttack {
     private final Zomboss zomboss;
@@ -53,15 +54,21 @@ public class MammothFreezingWind implements IZombossAttack {
     private void blowFreezingWind() {
         GameSession session = GameSession.getInstance();
         Arena arena = session.getArena();
+
+        int maxRows = arena.getRows();
+        int firstRow = new Random().nextInt(maxRows - 1);
+        int secondRow = firstRow + 1;
+
+        int[] targetRows = {firstRow, secondRow};
+
         GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
             new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
                 .message("BOSS_WIND")
-                .coordinate(zomboss.getRow(), zomboss.getSecondRow())
+                .coordinate(firstRow, secondRow)
                 .build());
-        int[] targetRows = {zomboss.getRow(), zomboss.getSecondRow()};
 
         for (int row : targetRows) {
-            if (row < 0 || row >= arena.getRows()) continue;
+            if (row < 0 || row >= maxRows) continue;
 
             zomboss.notify("A massive freezing wind sweeps through lane " + (row + 1) + "!");
 

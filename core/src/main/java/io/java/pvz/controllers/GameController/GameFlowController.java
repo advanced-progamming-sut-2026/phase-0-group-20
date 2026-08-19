@@ -12,15 +12,20 @@ import io.java.pvz.models.entities.plants.strategy.ImitateStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
+import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.Chapter;
+import io.java.pvz.models.game.adventure.SeasonType;
+import io.java.pvz.models.game.adventure.levels.BonusLevel;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.game.minigame.BowlingLevel;
 import io.java.pvz.models.users.User;
 
 import java.util.ArrayList;
@@ -357,6 +362,50 @@ public class GameFlowController {
             user.addPlantFoodCount(1);
         }
         return new Result(true, "You successfully gained a food plant");
+    }
+
+    public Result restartLevel() {
+        GameSession session = GameSession.getInstance();
+        if (session == null || !(session.getCurrentMode() instanceof Level levelToRestart)) {
+            return new Result(false, "No active level to restart!");
+        }
+
+        Chapter currentChapter = session.getCurrentChapter();
+
+        GameSession.destroyInstance();
+
+        if (levelToRestart instanceof BonusLevel bonusLevel) {
+            GameSession.setPendingBonusLevel(bonusLevel);
+        } else if (levelToRestart.getSeason() == SeasonType.MINI_GAME) {
+            GameSession.setMinigameLevel(levelToRestart);
+        } else {
+            GameSession.setPendingLevel(levelToRestart);
+            if (currentChapter != null) {
+                GameSession.setPendingChapter(currentChapter);
+            }
+        }
+
+        if (levelToRestart.skipsPlantSelection()) {
+            if (levelToRestart instanceof BowlingLevel bowlingLevel) {
+                if (levelToRestart.getSeason() == SeasonType.MINI_GAME) {
+                    GameSession.startMiniGame(levelToRestart, bowlingLevel.getBelt());
+                } else {
+                    GameSession.startNewGame(bowlingLevel.getBelt());
+                }
+            }else if (levelToRestart instanceof ConveyorBelt conveyorBelt) {
+                conveyorBelt.getBelt().clear();
+                if (levelToRestart.getSeason() == SeasonType.MINI_GAME) {
+                    GameSession.startMiniGame(levelToRestart, conveyorBelt.getBelt());
+                } else {
+                    GameSession.startNewGame(conveyorBelt.getBelt());
+                }
+            }
+            App.setActiveMenu(Menu.GAME_FLOW_MENU);
+        } else {
+            App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
+        }
+
+        return new Result(true, "Level restarted successfully.");
     }
 
     private int getPlantLevel(Plant plant) {

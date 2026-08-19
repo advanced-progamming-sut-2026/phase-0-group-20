@@ -56,12 +56,6 @@ public class GargantuarThrowImpEffect extends Effect {
         session.getTimeManager().registerNewTicker(imp);
         session.getArena().addZombie(imp);
 
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-            new GameEventPayload.Builder(GameEvent.NOTIFY)
-                .message("IMP_THROWN")
-                .zombie(imp)
-                .pixelCoordinate(zombie.getPosition().getX(), zombie.getPosition().getY())
-                .build());
     }
 
     @Override
