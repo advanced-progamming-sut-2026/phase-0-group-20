@@ -89,6 +89,24 @@ public class GameFlowController {
         return new Result(true, "You collected a " + sun.getType().getLabel().toLowerCase() + " sun.");
     }
 
+    public Result collectSun(Sun sun) {
+        if (sun == null) {
+            return new Result(false, "There is no sun to collect.");
+        }
+
+        if (sun.isCollected()) {
+            return new Result(false, "Sun is already collected.");
+        }
+
+        sun.collect();
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.SUN_COLLECTED)
+            .amount(sun.getType().getValue())
+            .build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.SUN_COLLECTED, payload);
+
+        return new Result(true, "You collected a " + sun.getType().getLabel().toLowerCase() + " sun.");
+    }
+
     public Result cheatAddSun(String amount) {
         Integer sunAmount = parsePositiveInt(amount);
         if(!App.getSettings().isDebug()){

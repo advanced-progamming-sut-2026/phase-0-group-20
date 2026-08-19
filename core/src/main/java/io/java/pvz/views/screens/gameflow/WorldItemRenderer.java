@@ -3,10 +3,7 @@ package io.java.pvz.views.screens.gameflow;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
@@ -264,15 +261,29 @@ public class WorldItemRenderer {
         }
 
         float finalScale = scale;
+        actor.setTouchable(Touchable.enabled);
         actor.addListener(new InputListener() {
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                tryCollectSun();
+                return true;
+            }
+
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                if (!sun.isCollected() && pointer == -1) {
-                    Result result = gameFlowController.collectSun(sun.getCol(), sun.getRow());
+
+                if (pointer == -1 || pointer == 0) {
+                    tryCollectSun();
+                }
+            }
+
+            private void tryCollectSun() {
+                if (!sun.isCollected()) {
+                    Result result = gameFlowController.collectSun(sun);
 
                     if (result.isSuccessful()) {
                         if (sun.isExploded() || (sun.getType() == SunType.RADIOACTIVE_SUN && sun.isFalling())) {
-                            // Do nothing specific here to let the attack clip play smoothly
                         } else {
                             actor.addAction(Actions.sequence(
                                 Actions.parallel(
