@@ -200,10 +200,10 @@ public class Zombie implements Ticker {
     }
 
     public void notify(String message) {
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-            new GameEventPayload.Builder(GameEvent.NOTIFY)
-                .message(message)
-                .build());
+//        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+//            new GameEventPayload.Builder(GameEvent.NOTIFY)
+//                .message(message)
+//                .build());
     }
 
     public String getInGameDetails() {

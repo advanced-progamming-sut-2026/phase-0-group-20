@@ -199,10 +199,10 @@ public class GameSession {
     }
 
     public static void notify(String message) {
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-            new GameEventPayload.Builder(GameEvent.NOTIFY)
-                .message(message)
-                .build());
+//        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+//            new GameEventPayload.Builder(GameEvent.NOTIFY)
+//                .message(message)
+//                .build());
     }
 
     public static BonusLevel getPendingBonusLevel() {

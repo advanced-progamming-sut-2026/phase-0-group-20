@@ -30,10 +30,6 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
                     ProjectileMechanism.executeNewProjectile(plant, true, false, 0.1f);
 
             }
-
-            if (tickTimer == 2)
-                notify(plant.getName() + " unleashed a targeted rapid-fire barrage!");
-
         }
     }
 

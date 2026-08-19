@@ -20,10 +20,10 @@ public interface SeasonModifier {
     void updateEnvironment(int currentTick, Arena arena);
 
     default void notify(String message) {
-//        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-//                new GameEventPayload.Builder(GameEvent.NOTIFY)
-//                        .message(message)
-//                        .build());
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message(message)
+                        .build());
     }
 
     default int getCurrentLevelNumber() {

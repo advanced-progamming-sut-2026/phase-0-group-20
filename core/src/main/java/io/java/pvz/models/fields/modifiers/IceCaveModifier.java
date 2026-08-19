@@ -120,8 +120,6 @@ public class IceCaveModifier implements SeasonModifier {
             if (tile instanceof NormalTile && tile.getPlants().isEmpty()) {
                 SlipperyTile.SlideDirection direction = pickDirection(randomRow, rows);
                 arena.changeTile(randomRow, randomCol, new SlipperyTile(randomRow, randomCol, direction));
-                notify("An ice floe sliding " + direction
-                    + " covers row " + (randomRow + 1) + ", col " + (randomCol + 1) + ".");
                 placed++;
                 remainTiles--;
             }

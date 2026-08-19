@@ -21,9 +21,6 @@ public class BidirectionalRapidFireFoodStrategy implements PlantFoodStrategy {
 
             if (tickTimer % 2 == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, true, 0.1f);
-
-            if (tickTimer == 2)
-                notify(plant.getName() + " fired a rapid barrage forward AND backward!");
         }
     }
 

@@ -37,11 +37,6 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
             if (targets.size() >= hits) break;
         }
 
-        if (targets.isEmpty()) {
-            notify(plant.getName() + " found no zombies to target with its Plant Food effect!");
-            return;
-        }
-
         boolean isLobbedProjectile = plant.getName().equalsIgnoreCase("Cabbage-pult")
                 || plant.getName().equalsIgnoreCase("Melon-pult")
                 || plant.getName().equalsIgnoreCase("Winter Melon")
@@ -54,8 +49,6 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
             else
                 applyDirectEffect(target, plant);
         }
-
-        notify(plant.getName() + " targeted " + hits + " random zombie(s) and applied effect: " + effectDescription);
     }
 
     private void applyDirectEffect(Zombie target, Plant plant) {
@@ -75,9 +68,7 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
             }
             case "caulipower" -> {
                 target.hypnotize();
-                notify(target.getName() + " was hypnotized!");
             }
-            default -> notify(target.getName() + " was hit by an unmapped random-target Plant Food effect.");
         }
     }
 }

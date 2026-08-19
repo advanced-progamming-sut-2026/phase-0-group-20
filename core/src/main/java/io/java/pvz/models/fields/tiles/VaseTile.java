@@ -10,9 +10,9 @@ public interface VaseTile {
     boolean isBroken();
 
     default void notify(String message) {
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
+//        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+//                new GameEventPayload.Builder(GameEvent.NOTIFY)
+//                        .message(message)
+//                        .build());
     }
 }

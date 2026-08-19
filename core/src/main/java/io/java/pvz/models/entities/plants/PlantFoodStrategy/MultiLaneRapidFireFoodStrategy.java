@@ -41,10 +41,6 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
 
         currentRow += directionCoeff;
 
-
-        if (tickTimer == 2)
-            notify(plant.getName() + " fired a fan-shaped rapid barrage across all its lanes!");
-
     }
 
     @Override

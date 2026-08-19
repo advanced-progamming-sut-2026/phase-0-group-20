@@ -9,9 +9,9 @@ public interface IPlantStrategy {
     void execute(Plant context, int currentTick);
 
     default void notify(String message) {
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
+//        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+//                new GameEventPayload.Builder(GameEvent.NOTIFY)
+//                        .message(message)
+//                        .build());
     }
 }

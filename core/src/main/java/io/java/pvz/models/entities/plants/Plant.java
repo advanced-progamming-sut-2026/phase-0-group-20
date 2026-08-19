@@ -183,11 +183,6 @@ public class Plant implements IPlant, Ticker {
                 if (placedTile != null)
                     placedTile.setCrater(true);
             }
-            GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_LOST,
-                new GameEventPayload.Builder(GameEvent.PLANT_LOST)
-                    .message(getName() + " has lost!")
-                    .build()
-            );
             GameSession.getInstance().getTimeManager().unregisterTicker(this);
 
 

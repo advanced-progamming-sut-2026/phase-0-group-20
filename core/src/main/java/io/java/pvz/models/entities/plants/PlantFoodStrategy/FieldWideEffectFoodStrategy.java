@@ -70,12 +70,8 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
                     if (!zombie.isDead() && zombie.getRow() != plantRow)
                         zombie.setRow(plantRow);
                 break;
-
-            default:
-                notify("WARNING: Unmapped field-wide effect for: " + plant.getName());
         }
 
-        notify(plant.getName() + " triggered a field-wide effect: " + description);
     }
 
     private void shiftZombieToAdjacentLane(Zombie zombie, GameSession gameSession) {

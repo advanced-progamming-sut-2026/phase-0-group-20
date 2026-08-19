@@ -20,6 +20,5 @@ public class SunBurstFoodStrategy implements PlantFoodStrategy {
     @Override
     public void executeStrategy(Plant plant) {
         GameSession.getInstance().addSun(sunAmount);
-        notify(plant.getName() + " instantly produced " + sunAmount + " sun!");
     }
 }

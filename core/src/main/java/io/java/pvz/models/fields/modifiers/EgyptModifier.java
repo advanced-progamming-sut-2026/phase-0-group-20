@@ -99,6 +99,5 @@ public class EgyptModifier implements SeasonModifier {
                 gravesPlanted++;
             }
         }
-        notify(numberOfGraves + " graves generated for Egypt!");
     }
 }
