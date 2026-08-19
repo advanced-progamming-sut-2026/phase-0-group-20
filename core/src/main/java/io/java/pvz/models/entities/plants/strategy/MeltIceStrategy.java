@@ -4,14 +4,16 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.Tile;
+import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.utils.AnimationCatalog;
 
 import java.util.List;
 
 public class MeltIceStrategy implements IPlantStrategy {
-    private static final int MELT_DELAY = (int) (0.5 * TimeManager.TICKS_PER_SECOND);
     private int startTick = -1;
+    private int meltDelayTicks = 0;
 
     private boolean explodeOnFinish = false;
     private boolean meltArea3x3 = false;
@@ -21,9 +23,14 @@ public class MeltIceStrategy implements IPlantStrategy {
         if (startTick == -1) {
             startTick = currentTick;
             context.triggerAction("attack");
+
+            float animDuration = AnimationCatalog.getPlantAnimation(context).getDuration("attack");
+            meltDelayTicks = (int) (animDuration * TimeManager.TICKS_PER_SECOND);
+
+            if (meltDelayTicks <= 0) meltDelayTicks = (int) (1.0f * TimeManager.TICKS_PER_SECOND);
         }
 
-        if (currentTick - startTick >= MELT_DELAY) {
+        if (currentTick - startTick >= meltDelayTicks) {
             Tile currentTile = context.getPlacedTile();
             int centerRow = currentTile.getRow();
             int centerCol = currentTile.getCol();
@@ -49,19 +56,26 @@ public class MeltIceStrategy implements IPlantStrategy {
             if (explodeOnFinish) {
                 triggerExplosion(context);
             }
+
             context.takeDamage(context.getCurrentHp());
         }
     }
 
     private boolean meltIceOnTile(int row, int col) {
-        Tile tile = GameSession.getInstance().getArena().getTile(row, col);
+        Arena arena = GameSession.getInstance().getArena();
+
+        if (row < 0 || row >= arena.getRows() || col < 0 || col >= arena.getCols()) {
+            return false;
+        }
+
+        Tile tile = arena.getTile(row, col);
         if (tile == null) return false;
 
         boolean melted = false;
 
         if (tile instanceof IceHolder iceHolder) {
             if (iceHolder.hasIceBlock()) {
-                iceHolder.removeIceBlock();
+                iceHolder.takeIceDamage(99999);
                 melted = true;
             }
         }

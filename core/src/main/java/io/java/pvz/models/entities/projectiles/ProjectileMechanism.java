@@ -102,6 +102,7 @@ public class ProjectileMechanism {
             case "Electric Blueberry" -> ProjectileType.LIGHTNING_CLOUD;
             case "Citron" -> ProjectileType.PLASMA_BALL;
             case "Kernel-pult" -> ProjectileType.BUTTER;
+            case "Puff-shroom" -> ProjectileType.PUFF_SPORE;
             default -> ProjectileType.PEA;
         };
     }

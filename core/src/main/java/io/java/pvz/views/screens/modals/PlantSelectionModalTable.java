@@ -46,6 +46,9 @@ public class PlantSelectionModalTable extends Table {
     private Actor blocker;
     private final Level currentLevel;
 
+    private Group modalLayer;
+    private Viewport viewport;
+
     public PlantSelectionModalTable(Skin skin, Runnable onComplete) {
         super();
         this.skin = skin;
@@ -326,6 +329,54 @@ public class PlantSelectionModalTable extends Table {
         boolean isSelected = activeCard != null && activeCard.getColor().equals(Color.DARK_GRAY);
         TextButton selectBtn = new TextButton(isSelected ? "DESELECT" : "SELECT", skin, "green");
 
+        if (isBanned) {
+            selectBtn = new TextButton("BANNED", skin, "green");
+            selectBtn.setDisabled(true);
+            selectBtn.setTouchable(Touchable.disabled);
+        } else if (isForced) {
+            selectBtn = new TextButton("FORCED", skin, "green");
+            selectBtn.setDisabled(true);
+            selectBtn.setTouchable(Touchable.disabled);
+        } else {
+            selectBtn = new TextButton(isSelected ? "DESELECT" : "SELECT", skin, "green");
+            selectBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (isSelected) {
+                        Result res = controller.removePlant(clickedPlant.getName());
+                        if (res != null && res.isSuccessful()) {
+                            if (activeCard != null) {
+                                activeCard.setColor(Color.WHITE);
+                            }
+                            updateSelectedSlots(textures);
+                            updateTopInfo(textures);
+                        }
+                    } else {
+                        if (clickedPlant.getName().equalsIgnoreCase("Imitater")) {
+                            ImitaterSelectionModalTable imitaterModal = new ImitaterSelectionModalTable(skin, selectedTarget -> {
+
+                                System.out.println(controller.addImitater(selectedTarget.getName()));
+
+                                System.out.println("Imitater target saved: " + selectedTarget.getName() + " ID: " + selectedTarget.getId());
+
+                                Result res = controller.addPlant(clickedPlant.getName());
+                                if (res != null && res.isSuccessful()) {
+                                    if (activeCard != null) activeCard.setColor(Color.DARK_GRAY);
+                                    updateSelectedSlots(textures);
+                                    updateTopInfo(textures);
+                                }
+                            });
+                            imitaterModal.show(modalLayer, viewport);
+                        } else {
+                            Result res = controller.addPlant(clickedPlant.getName());
+                            if (res != null && res.isSuccessful()) {
+                                if (activeCard != null) {
+                                    activeCard.setColor(Color.DARK_GRAY);
+                                }
+                                updateSelectedSlots(textures);
+                                updateTopInfo(textures);
+                            }
+                        }
         selectBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -453,6 +504,9 @@ public class PlantSelectionModalTable extends Table {
     }
 
     public void show(Group modalLayer, Viewport viewport) {
+        this.modalLayer = modalLayer;
+        this.viewport = viewport;
+
         float width = viewport.getWorldWidth();
         float height = viewport.getWorldHeight();
 

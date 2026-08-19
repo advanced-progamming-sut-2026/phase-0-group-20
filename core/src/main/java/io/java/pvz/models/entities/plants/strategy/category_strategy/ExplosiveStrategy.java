@@ -7,13 +7,18 @@ import io.java.pvz.models.entities.projectiles.NormalEffect;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
 import io.java.pvz.models.enums.plants.ProjectileType;
 import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.TimeManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExplosiveStrategy implements IPlantStrategy {
@@ -62,7 +67,18 @@ public class ExplosiveStrategy implements IPlantStrategy {
     }
 
     private void handleCherryBombAndGrapeshot(String name, Plant context, int plantCol, int plantRow, int damage) {
-        applyAreaDamage(plantCol, plantRow, 1.5f, damage, context);
+
+        if ("Cherry Bomb".equals(name)) {
+            GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+                new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                    .message("CHERRYBOMB_EXPLODE")
+                    .coordinate(plantRow, plantCol)
+                    .build()
+            );
+        }
+
+
+        applyAreaDamage(plantCol, plantRow, 2f, damage, context);
 
         if ("Grapeshot".equals(name)) {
             spawnGrapeshotProjectiles(context, plantCol, plantRow);
@@ -101,11 +117,18 @@ public class ExplosiveStrategy implements IPlantStrategy {
     private void handleJalapeno(Plant context, int plantRow, int damage) {
         Arena arena = GameSession.getInstance().getArena();
 
+        GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+            new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                .message("JALAPENO_EXPLODE")
+                .coordinate(plantRow, context.getPlacedTile().getCol())
+                .build()
+        );
+
         for (Zombie z : arena.zombieInRow(plantRow)) {
             if (!z.isDead()) {
                 z.removeChillEffect();
                 z.removeFreezeEffect();
-                z.takeDamage(damage);
+                z.addEffect(new FireEffect(z, damage));
 
                 if (z.isDead()) {
                     context.onZombieDeath(z);
@@ -124,7 +147,18 @@ public class ExplosiveStrategy implements IPlantStrategy {
     }
 
     private void handleDoomShroom(Plant context, int plantCol, int plantRow, int damage) {
-        applyAreaDamage(plantCol, plantRow, 3.5f, damage, context);
+        List<Zombie> actives = GameSession.getInstance().getArena().getActiveZombies()
+            .stream()
+            .filter(z -> !z.isDead() && z.getCol() < GameSession.getInstance().getArena().getCols()).toList();
+
+        for (Zombie z : actives) {
+
+            z.addEffect(new FireEffect(z, damage));
+
+            if (z.isDead()) {
+                context.onZombieDeath(z);
+            }
+        }
 
         Tile doomedTile = GameSession.getInstance().getArena().getTile(plantRow, plantCol);
         if (doomedTile != null) {
@@ -138,7 +172,13 @@ public class ExplosiveStrategy implements IPlantStrategy {
         List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(col, row, radius);
         for (Zombie z : targets) {
             if (!z.isDead()) {
-                z.takeDamage(damage);
+
+                if (plant.getName().equalsIgnoreCase("Cherry Bomb")) {
+                    z.addEffect(new FireEffect(z, damage));
+                } else {
+                    z.takeDamage(damage);
+                }
+
                 if (z.isDead()) {
                     plant.onZombieDeath(z);
                 }

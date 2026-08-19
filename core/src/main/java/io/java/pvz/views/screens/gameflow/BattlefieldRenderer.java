@@ -250,6 +250,14 @@ public class BattlefieldRenderer implements GameEventListener {
                 effectRenderer.spawnFallingFireball(payload.getCol(), payload.getRow());
             } else if ("FIREBALL_EXPLOSION".equals(payload.getMessage())) {
                 effectRenderer.spawnFireballExplosion(payload.getCol(), payload.getRow());
+            } else if ("POTATOMINE_EXPLODE".equals(payload.getMessage())) {
+                effectRenderer.spawnPotatoMineExplosion(payload.getCol(), payload.getRow());
+            } else if ("PRIMAL_POTATOMINE_EXPLODE".equals(payload.getMessage())) {
+                effectRenderer.spawnPrimalPotatoMineExplosion(payload.getCol(), payload.getRow());
+            } else if ("CHERRYBOMB_EXPLODE".equals(payload.getMessage())) {
+                effectRenderer.spawnCherryBombExplosion(payload.getCol(), payload.getRow());
+            } else if ("JALAPENO_EXPLODE".equals(payload.getMessage())) {
+                effectRenderer.spawnJalapenoFire(payload.getRow());
             }
         } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
             String msg = String.valueOf(payload.getMessage());

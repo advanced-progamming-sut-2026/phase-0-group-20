@@ -37,7 +37,7 @@ public class Sun implements Ticker {
     }
 
     public Sun(int amount, int col, int row) {
-        this.type = null;
+        this.type = SunType.SPECIAL_SUN;
         this.position = new Position(col, row);
         this.amountProduced = amount;
         if (GameSession.getInstance() != null) {

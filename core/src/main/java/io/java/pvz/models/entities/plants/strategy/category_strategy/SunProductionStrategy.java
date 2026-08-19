@@ -12,12 +12,10 @@ public class SunProductionStrategy implements IPlantStrategy {
     private int lastProductionTick = 0;
     private int aliveTicks = 0;
 
-    // 🌟 متغیرهای زمان‌بندی برای تأخیر در تولید خورشید (سینک با انیمیشن)
     private int pendingSunSpawnTick = -1;
     private SunType pendingSunType = null;
 
-    // 🌟 وضعیت اختصاصی برای Gold Bloom
-    private int goldBloomState = 0; // 0: idling, 1: attacking, 2: dead
+    private int goldBloomState = 0;
     private int actionDelayTick = -1;
 
     private boolean doubleSunChance = false;
