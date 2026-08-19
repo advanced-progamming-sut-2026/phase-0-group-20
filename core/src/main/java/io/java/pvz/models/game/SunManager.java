@@ -7,6 +7,7 @@ import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
 
+import java.lang.classfile.instruction.ReturnInstruction;
 import java.util.Random;
 
 public class SunManager implements Ticker {
@@ -56,11 +57,12 @@ public class SunManager implements Ticker {
     }
 
     private SunType randomSunType() {
-        int chance = rand.nextInt(100);
-        if (chance <= 80) {
-            return SunType.NORMAL_SUN;
-        } else if (chance <= 95) {
-            return SunType.SPECIAL_SUN;
-        } else return SunType.RADIOACTIVE_SUN;
+//        int chance = rand.nextInt(100);
+//        if (chance <= 80) {
+//            return SunType.NORMAL_SUN;
+//        } else if (chance <= 95) {
+//            return SunType.SPECIAL_SUN;
+//        } else return SunType.RADIOACTIVE_SUN;
+        return SunType.RADIOACTIVE_SUN;
     }
 }

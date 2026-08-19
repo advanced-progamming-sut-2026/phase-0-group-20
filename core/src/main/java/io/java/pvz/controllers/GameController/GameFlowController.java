@@ -12,6 +12,7 @@ import io.java.pvz.models.entities.plants.strategy.ImitateStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
+import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
