@@ -16,6 +16,7 @@ import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.controllers.GameController.MiniGameController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
+import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
@@ -66,8 +67,11 @@ public class GameInputHandler {
     private static final int ROWS = 5;
 
     private int couchZombieRow = 0;
-    private int couchZombieCol = 8;
-    private int couchSelectedZombieIndex = 0;
+    private int couchZombieCol = 7;
+    private int couchSelectedZombieIndex = -1;
+
+    private Image couchFloatingZombieImage = null;
+    private int lastCouchFloatingZombieIndex = -1;
 
     public GameInputHandler(Group mainLayer, Viewport viewport, Group highlightLayer,
                             GameFlowController gameFlowController, MiniGameController miniGameController) {
@@ -124,6 +128,23 @@ public class GameInputHandler {
         };
         image.setSize(size, size);
         image.setTouchable(Touchable.disabled);
+        mainLayer.addActor(image);
+        return image;
+    }
+
+    private Image createCouchGridFollowerImage(Drawable drawable, float size) {
+        Image image = new Image(drawable) {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                float tileX = GRID_START_X + (couchZombieCol * TILE_WIDTH) + (TILE_WIDTH / 2f);
+                float tileY = GRID_START_Y + (couchZombieRow * TILE_HEIGHT) + (TILE_HEIGHT / 2f);
+                setPosition(tileX - getWidth() / 2f, tileY - getHeight() / 2f);
+            }
+        };
+        image.setSize(size, size * 1.6f);
+        image.setTouchable(Touchable.disabled);
+        image.getColor().a = 0.8f;
         mainLayer.addActor(image);
         return image;
     }
@@ -339,6 +360,13 @@ public class GameInputHandler {
     }
 
     private void handlePlanting(int col, int row) {
+
+        if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel) {
+            int zeroBasedCol = col - 1;
+            if (!iZombieLevel.isValidPlantPlacement(zeroBasedCol))
+                return;
+        }
+
         if (MatchController.getInstance().isOnlineMatch() && selectedPacketToPlace == null) {
             MatchController.getInstance().placePlant(selectedPlantToPlace.getName(), col, row, response -> {
                 if (response.isSuccess()) {
@@ -402,22 +430,28 @@ public class GameInputHandler {
 
     public void handleCouchPlayKeyboard() {
         if (!MatchController.getInstance().isCouchPlay()) return;
-        if (!(GameSession.getInstance().getCurrentMode() instanceof IZombieLevel)) return;
+        if ( GameSession.getInstance() != null &&
+            !(GameSession.getInstance().getCurrentMode() instanceof IZombieLevel)) return;
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.W)) couchZombieRow = Math.max(0, couchZombieRow - 1);
-        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) couchZombieRow = Math.min(ROWS - 1, couchZombieRow + 1);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) couchZombieRow = Math.max(0, couchZombieRow - 1);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.W)) couchZombieRow = Math.min(ROWS - 1, couchZombieRow + 1);
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) couchZombieCol = Math.max(5, couchZombieCol - 1);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) couchZombieCol = Math.max(3, couchZombieCol - 1);
         if (Gdx.input.isKeyJustPressed(Input.Keys.D)) couchZombieCol = Math.min(COLS - 1, couchZombieCol + 1);
 
         for (int i = 0; i < 5; i++) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1 + i)) {
                 couchSelectedZombieIndex = i;
-                GameSession.notify("Zombie Card " + (i + 1) + " Selected!");
+                if (gameHUD != null)
+                    gameHUD.highlightSelectedZombieCard(couchSelectedZombieIndex);
+                updateCouchFloatingZombie();
             }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            if (couchSelectedZombieIndex < 0)
+                return;
+
             IZombieLevel level = (IZombieLevel) GameSession.getInstance().getCurrentMode();
             List<ZombieType> availableZombies = level.getZombiesForThisLevel();
 
@@ -426,9 +460,18 @@ public class GameInputHandler {
                 Result res = miniGameController.handlePutZombie(type.getJsonAlias(),
                     String.valueOf(couchZombieCol + 1), String.valueOf(couchZombieRow + 1));
 
-                if (!res.isSuccessful()) GameSession.notify(res.message());
+                if (res.isSuccessful()) {
+                    couchSelectedZombieIndex = -1;
+                    if (gameHUD != null) {
+                        gameHUD.highlightSelectedZombieCard(couchSelectedZombieIndex);
+                    }
+                    updateCouchFloatingZombie();
+                } else {
+                    GameSession.notify(res.message());
+                }
             }
         }
+
 
         rowHighlight.setSize(COLS * TILE_WIDTH, TILE_HEIGHT);
         rowHighlight.setPosition(GRID_START_X, GRID_START_Y + (couchZombieRow * TILE_HEIGHT));
@@ -437,5 +480,29 @@ public class GameInputHandler {
         colHighlight.setSize(TILE_WIDTH, ROWS * TILE_HEIGHT);
         colHighlight.setPosition(GRID_START_X + (couchZombieCol * TILE_WIDTH), GRID_START_Y);
         colHighlight.setVisible(true);
+
+    }
+
+    private void updateCouchFloatingZombie() {
+        if (couchFloatingZombieImage != null) {
+            couchFloatingZombieImage.remove();
+            couchFloatingZombieImage = null;
+        }
+
+        if (couchSelectedZombieIndex < 0 || GameSession.getInstance() == null) return;
+        if (!(GameSession.getInstance().getCurrentMode() instanceof IZombieLevel level)) return;
+
+        List<ZombieType> availableZombies = level.getZombiesForThisLevel();
+        if (couchSelectedZombieIndex >= availableZombies.size()) return;
+
+        ZombieType type = availableZombies.get(couchSelectedZombieIndex);
+        Zombie sampleZombie = InGameEntityGenerator.getZombieForGame(type, 0);
+
+        TextureBank textures = AssetLoader.getInstance().getTextures();
+        String zombiePath = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_" + UiFactory.getZombieAddress(sampleZombie);
+        Image zombieIcon = UiFactory.imageFor(textures, zombiePath);
+        couchFloatingZombieImage = createCouchGridFollowerImage(zombieIcon.getDrawable(), 80);
+
+        lastCouchFloatingZombieIndex = couchSelectedZombieIndex;
     }
 }

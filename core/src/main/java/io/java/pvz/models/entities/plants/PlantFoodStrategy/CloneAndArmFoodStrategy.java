@@ -49,7 +49,5 @@ public class CloneAndArmFoodStrategy implements PlantFoodStrategy {
                 }
             }
         }
-
-        notify(plant.getName() + " instantly armed itself and threw " + cloneCount + " clone(s) onto the field!");
     }
 }

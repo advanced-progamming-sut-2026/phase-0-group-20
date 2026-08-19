@@ -32,15 +32,11 @@ public class ArmorFoodStrategy implements PlantFoodStrategy {
 
         int maxHpWithArmor = plant.getBaseHp() + armorAmount;
         plant.setCurrentHp(maxHpWithArmor);
-        notify(plant.getName() + "gained " + armorAmount +
-                " permanent armor! (Total HP: " + plant.getCurrentHp() + ")");
 
         if (boostsReflectDamage) {
             for (IPlantStrategy strategy : plant.getStrategies())
                 if (strategy instanceof SpikeStrategy spikeStrategy)
                     spikeStrategy.setHasArmor(true);
-
-            notify(plant.getName() + " also gained increased damage reflection!");
         }
     }
 }

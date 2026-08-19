@@ -17,7 +17,6 @@ public class ExplorerDefense implements DefenseBehavior {
         if (ProjectileType.isIceProjectile(damageType)) {
             if (context.isTorchLit()) {
                 context.setTorchLit(false);
-                GameSession.notify("Explorer's torch was extinguished by ice!");
             }
         } else if (ProjectileType.isFireProjectile(damageType)) {
             if (!context.isTorchLit()) {

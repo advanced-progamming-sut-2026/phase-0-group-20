@@ -16,10 +16,4 @@ public interface PlantFoodStrategy {
     default void reset() {
     }
 
-    default void notify(String message) {
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
-    }
 }

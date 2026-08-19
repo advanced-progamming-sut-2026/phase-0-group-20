@@ -20,7 +20,6 @@ public class ProspectorContext {
 
     public void extinguishDynamite() {
         isDynamiteLit = false;
-        GameSession.notify("Prospector's dynamite was extinguished by ice!");
     }
 
     public void triggerJump() {

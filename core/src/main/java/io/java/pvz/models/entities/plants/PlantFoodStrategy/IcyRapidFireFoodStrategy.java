@@ -5,6 +5,7 @@ import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.timeManager.TimeManager;
 
 /**
  * Instantly freezes every zombie currently in the lane, then fires a rapid
@@ -14,7 +15,7 @@ import io.java.pvz.models.game.GameSession;
 
 public class IcyRapidFireFoodStrategy implements PlantFoodStrategy {
 
-    private final int durationTicks = 60;
+    private final int durationTicks = 6 * TimeManager.TICKS_PER_SECOND;
     private int tickTimer;
 
     public IcyRapidFireFoodStrategy() {
@@ -32,14 +33,12 @@ public class IcyRapidFireFoodStrategy implements PlantFoodStrategy {
 
                 for (Zombie zombie : gameSession.getArena().zombieInRow(row))
                     if (!zombie.isDead())
-                        zombie.addEffect(new FreezeEffect(zombie, 150));
+                        zombie.addEffect(new FreezeEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
             }
 
             if (tickTimer % 2 == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, false, 0.1f);
 
-            if (tickTimer == 2)
-                notify(plant.getName() + " froze the entire lane and unleashed an icy barrage!");
         }
     }
 

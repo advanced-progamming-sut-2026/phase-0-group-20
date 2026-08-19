@@ -82,6 +82,13 @@ public class ZombieCardButton extends Group {
         return zombie;
     }
 
+    public void setSelectedVisual(boolean selected) {
+        if (selected)
+            this.getColor().a = 0.5f;
+        else
+            this.getColor().a = 1f;
+    }
+
     @Override
     public void setSize(float width, float height) {
         super.setSize(width, height);

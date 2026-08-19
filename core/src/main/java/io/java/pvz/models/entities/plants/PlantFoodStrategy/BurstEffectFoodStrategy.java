@@ -57,7 +57,5 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
                 }
             }
         }
-
-        notify(plant.getName() + " unleashed an area burst: " + description);
     }
 }

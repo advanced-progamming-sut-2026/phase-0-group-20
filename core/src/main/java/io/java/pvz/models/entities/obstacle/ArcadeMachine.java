@@ -15,8 +15,6 @@ public class ArcadeMachine extends PushableObstacle {
     public void takeDamage(int damage) {
         if (isDestroyed) return;
         health -= damage;
-        GameSession.notify("Arcade Machine took " + damage + " damage.");
-
         if (health <= 0) {
             health = 0;
             destroyMachine();
@@ -36,7 +34,6 @@ public class ArcadeMachine extends PushableObstacle {
 
     @Override
     public void onDestroy() {
-        GameSession.notify("Arcade Machine destroyed!");
 
         GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
             new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)

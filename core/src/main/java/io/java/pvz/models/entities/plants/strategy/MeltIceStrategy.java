@@ -47,11 +47,6 @@ public class MeltIceStrategy implements IPlantStrategy {
                 if (meltIceOnTile(centerRow, centerCol)) meltedAnything = true;
             }
 
-            if (meltedAnything) {
-                GameSession.notify("🔥 " + context.getName() + " melted the ice!");
-            } else {
-                GameSession.notify("🔥 " + context.getName() + " was planted, but there was no ice to melt!");
-            }
 
             if (explodeOnFinish) {
                 triggerExplosion(context);

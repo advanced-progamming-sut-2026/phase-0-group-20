@@ -21,7 +21,6 @@ public class SleepStrategy implements IPlantStrategy {
             if (t != SeasonType.DARK_AGES) isDay = true;
             if (isDay) {
                 context.setAsleep(true);
-                GameSession.notify(context.getName() + " fell asleep!");
             }
             isInitialized = true;
         }

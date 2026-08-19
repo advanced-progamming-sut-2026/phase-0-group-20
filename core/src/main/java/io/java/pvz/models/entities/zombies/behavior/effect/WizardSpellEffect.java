@@ -113,8 +113,6 @@ public class WizardSpellEffect extends Effect {
             Plant target = validTargets.get(random.nextInt(validTargets.size()));
 
             target.addEffect(new SheepEffect(zombie));
-
-            GameSession.notify("Wizard transformed " + target.getName() + "!");
         }
     }
 

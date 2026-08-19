@@ -18,8 +18,6 @@ public class Barrel extends PushableObstacle {
     public void takeDamage(int damage) {
         if (isDestroyed) return;
         health -= damage;
-        GameSession.notify("Barrel in (" + (position.getCol() + 1) + "," +
-            (position.getRow() + 1) + ") took " + damage + " damage.");
 
         if (health <= 0) {
             health = 0;
@@ -61,7 +59,5 @@ public class Barrel extends PushableObstacle {
                 .message("BARREL_BREAK")
                 .pixelCoordinate(this.getX(), this.getPosition().getY())
                 .build());
-
-        GameSession.notify("Barrel destroyed! Spawning 2 Imps...");
     }
 }

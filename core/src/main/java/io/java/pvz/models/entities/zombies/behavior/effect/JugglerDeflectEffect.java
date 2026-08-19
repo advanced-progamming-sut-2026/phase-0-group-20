@@ -32,10 +32,8 @@ public class JugglerDeflectEffect extends Effect {
             if (targetPlant != null && !targetPlant.isDead()) {
                 if (type == ProjectileType.ICE_PEA) {
                     targetPlant.receiveIceHit();
-                    GameSession.notify("Juggler reflected ICE to " + targetPlant.getName() + "!");
                 } else {
                     targetPlant.takeDamage(20);
-                    GameSession.notify("Juggler reflected projectile to " + targetPlant.getName() + "!");
                 }
             }
             zombie.getActiveEffects().remove(this);

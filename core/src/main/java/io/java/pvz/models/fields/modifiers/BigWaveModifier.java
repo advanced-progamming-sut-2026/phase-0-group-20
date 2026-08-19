@@ -83,8 +83,6 @@ public class BigWaveModifier implements SeasonModifier {
                     arena.changeTile(r, c, new LowShoreTile(r, c));
             }
         }
-        notify("The " + PERMANENT_WATER_COLS + " rightmost columns are open sea;"
-                + " the tide can reach up to column " + (arena.getCols() - MAX_WATER_COLS) + ".");
     }
 
     private void changeTide(Arena arena) {
@@ -122,8 +120,6 @@ public class BigWaveModifier implements SeasonModifier {
         if (plantsOnTile.get(0).getTags().contains(PlantTag.WATER)) return;
 
         for (Plant plant : new ArrayList<>(plantsOnTile)) {
-            notify(plant.getName() + " at row " + (shore.getRow() + 1)
-                    + ", col " + (shore.getCol() + 1) + " was swallowed by the water!");
             plant.takeDamage(plant.getCurrentHp());
             plantsOnTile.remove(plant);
         }

@@ -4,11 +4,12 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.timeManager.TimeManager;
 
 
 public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
 
-    private final int durationTicks = 60;
+    private final int durationTicks = 6 * TimeManager.TICKS_PER_SECOND;
     private int tickTimer = 0;
 
 
@@ -18,7 +19,7 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
         GameSession session = GameSession.getInstance();
 
         if (tickTimer <= durationTicks) {
-            if (tickTimer % 2 == 0) {
+            if (tickTimer % TimeManager.TICKS_PER_SECOND/5 == 0) {
                 int col = plant.getPlacedTile().getCol();
                 int row = plant.getPlacedTile().getRow();
 
@@ -30,10 +31,6 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
                     ProjectileMechanism.executeNewProjectile(plant, true, false, 0.1f);
 
             }
-
-            if (tickTimer == 2)
-                notify(plant.getName() + " unleashed a targeted rapid-fire barrage!");
-
         }
     }
 

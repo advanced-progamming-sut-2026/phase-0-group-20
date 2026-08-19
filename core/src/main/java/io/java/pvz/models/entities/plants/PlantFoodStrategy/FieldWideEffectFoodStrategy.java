@@ -9,6 +9,7 @@ import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.SeasonType;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
 import java.util.Random;
@@ -45,9 +46,9 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
                 for (Zombie zombie : allZombies)
                     if (!zombie.isDead())
                         if (gameSession.getCurrentChapter().getSeasonType() == SeasonType.FROZEN_CAVES)
-                            zombie.addEffect(new ChillEffect(zombie, 150));
+                            zombie.addEffect(new ChillEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
                         else
-                            zombie.addEffect(new FreezeEffect(zombie, 150));
+                            zombie.addEffect(new FreezeEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
                 break;
 
             case "kernel-pult":
@@ -70,12 +71,8 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
                     if (!zombie.isDead() && zombie.getRow() != plantRow)
                         zombie.setRow(plantRow);
                 break;
-
-            default:
-                notify("WARNING: Unmapped field-wide effect for: " + plant.getName());
         }
 
-        notify(plant.getName() + " triggered a field-wide effect: " + description);
     }
 
     private void shiftZombieToAdjacentLane(Zombie zombie, GameSession gameSession) {
