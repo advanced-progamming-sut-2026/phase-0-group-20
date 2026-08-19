@@ -154,8 +154,6 @@ public abstract class Level implements GameMode {
                 seasonModifier.onZombieSpawn(newZombie, session.getArena());
             }
 
-            notify("Zombie " + newZombie.getType().name() +
-                " spawned in lane " + (lane + 1) + " (Cost: " + newZombie.getWaveCost() + ").");
         }
     }
 

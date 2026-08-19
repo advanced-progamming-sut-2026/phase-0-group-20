@@ -171,8 +171,6 @@ public class Plant implements IPlant, Ticker {
         }
 
         this.currentHp -= amount;
-        GameSession.notify(getName() + " Taking " + amount + " damage in " +
-            (placedTile.getCol() + 1) + "," + (placedTile.getRow() + 1));
 
         if (currentHp <= 0) {
             this.currentHp = -1;
@@ -191,7 +189,6 @@ public class Plant implements IPlant, Ticker {
                     .build()
             );
             GameSession.getInstance().getTimeManager().unregisterTicker(this);
-            GameSession.notify("Plant " + getName() + " has been Destroyed!");
 
 
         }

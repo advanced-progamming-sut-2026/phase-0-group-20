@@ -1,5 +1,7 @@
 package io.java.pvz.views.screens.modals;
 
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -10,12 +12,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.controllers.GameController.SettingController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.models.App;
+import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.utils.UiFactory;
+import io.java.pvz.views.screens.gameflow.GameFlowScreen;
 import pvz.skin.BorderedTable;
 
 import java.util.function.Consumer;
@@ -102,6 +108,19 @@ public class PauseMenuTable extends BorderedTable {
 
         TextButton restartBtn = UiFactory.textButton("RESTART", skin, "brown", 1.05f, 0.95f, () -> {
             System.out.println("Restarting Level...");
+            GameFlowController flowController = new GameFlowController();
+            Result res = flowController.restartLevel();
+
+            if (res.isSuccessful()) {
+                app.postRunnable(() -> {
+                    Game game = (Game) Gdx.app.getApplicationListener();
+                    String mapId = new GameMenuController().getCurrentMapTextureId();
+
+                    ScreenManager.getInstance().popScreen();
+
+                    ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+                });
+            }
             this.remove();
         });
         restartBtn.getLabel().setFontScale(1.1f);

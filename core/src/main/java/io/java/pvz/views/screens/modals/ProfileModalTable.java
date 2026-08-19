@@ -17,6 +17,7 @@ import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
+import org.jspecify.annotations.NonNull;
 import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
 
@@ -214,6 +215,17 @@ public class ProfileModalTable extends BorderedTable {
         repeatPassField.setAlignment(Align.center);
         passTable.add(repeatPassField).width(400).height(60).row();
 
+        TextButton changePassBtn = generatePassChange(oldPassField, newPassField, repeatPassField);
+        passTable.add();
+        passTable.add(changePassBtn).width(200).height(60).padTop(10).center().row();
+
+        parent.add(passTable).growX().pad(10, 20, 40, 20).row();
+
+    }
+
+    private @NonNull TextButton generatePassChange(TextField oldPassField,
+                                                   TextField newPassField,
+                                                   TextField repeatPassField) {
         TextButton changePassBtn = UiFactory.textButton("Change Password", skin, "purple", 1.05f, 0.95f, () -> {
             Result result = controller.changePassword(
                 oldPassField.getText(),
@@ -227,11 +239,7 @@ public class ProfileModalTable extends BorderedTable {
                 repeatPassField.setText("");
             }
         });
-        passTable.add();
-        passTable.add(changePassBtn).width(200).height(60).padTop(10).center().row();
-
-        parent.add(passTable).growX().pad(10, 20, 40, 20).row();
-
+        return changePassBtn;
     }
 
     private Label createStatLabel(String text) {
