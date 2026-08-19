@@ -99,6 +99,12 @@ public class AssetLoaderScreen extends BaseScreen {
         GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_ZEN_GARDEN, audioListener);
         GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_DARK_AGES, audioListener);
         GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_BIG_WAVE_BEACH, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.LAWNMOWER_TRIGGERED, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_PLACED, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_TAKING_DAMAGE, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_LOST, audioListener);
+
         if (isInitFinished && virtualProgress >= 1f) {
             User stayedUser = DataBaseManager.getLoggedInUser();
             GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_MENUS,

@@ -375,10 +375,16 @@ public class CollisionManager {
         if (eatingPlant != null) {
             if (!z.isAttacking()) {
                 z.setAttacking(true);
+                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_TAKING_DAMAGE,new GameEventPayload
+                    .Builder(GameEvent.PLANT_TAKING_DAMAGE)
+                    .build());
             }
         } else if (targetZombie != null) {
             if (!z.isAttacking()) {
                 z.setAttacking(true);
+                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_TAKING_DAMAGE,new GameEventPayload
+                    .Builder(GameEvent.PLANT_TAKING_DAMAGE)
+                    .build());
             }
         } else if (z.isAttacking()) {
             z.setAttacking(false);

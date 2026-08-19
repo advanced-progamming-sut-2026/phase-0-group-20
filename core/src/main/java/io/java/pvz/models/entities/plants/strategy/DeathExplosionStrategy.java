@@ -4,6 +4,9 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 
 import java.util.List;
 
@@ -26,7 +29,9 @@ public class DeathExplosionStrategy implements IPlantStrategy {
             int finalDamage = baseDamage + extraExplosionDamage;
 
             notify("💥 " + context.getName() + " was eaten and DETONATED!");
-
+            GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_EXPLODED,new GameEventPayload
+                .Builder(GameEvent.PLANT_EXPLODED)
+                .build());
             List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5f);
             for (Zombie z : targets) {
                 if (!z.isDead()) {
