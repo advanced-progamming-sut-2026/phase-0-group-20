@@ -80,6 +80,7 @@ public class GameSession {
 
         this.progressListener = new ProgressListener();
         this.currentMode = currentLevel;
+        playTheme(currentMode);
     }
 
     public static GameSession getInstance() {
@@ -463,6 +464,25 @@ public class GameSession {
     public void resumeGame() {
         if (this.state == GameState.PAUSED) {
             this.state = GameState.RUNNING;
+        }
+    }
+
+    private void playTheme(GameMode gameMode) {
+        if(!(gameMode instanceof Level level) )return;
+        SeasonType seasonType = level.getSeason();
+        switch (seasonType) {
+            case DARK_AGES ->
+                GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_DARK_AGES,
+                    new GameEventPayload.Builder(GameEvent.ENTERED_DARK_AGES).build());
+            case FROZEN_CAVES ->
+                GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_FROZEN_CAVES,
+                    new GameEventPayload.Builder(GameEvent.ENTERED_FROZEN_CAVES).build());
+            case ANCIENT_EGYPT ,MINI_GAME->
+                GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_EGYPT,
+                    new GameEventPayload.Builder(GameEvent.ENTERED_EGYPT).build());
+            case BIG_WAVE_BEACH ->
+                GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_BIG_WAVE_BEACH,
+                    new GameEventPayload.Builder(GameEvent.ENTERED_BIG_WAVE_BEACH).build());
         }
     }
 }

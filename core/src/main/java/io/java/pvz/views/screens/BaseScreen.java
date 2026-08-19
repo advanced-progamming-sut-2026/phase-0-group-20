@@ -84,7 +84,6 @@ public abstract class BaseScreen implements Screen {
             currencyBar = new CurrencyBar(AssetLoader.getInstance().getTextures(), AssetLoader.getInstance().getSkin());
             hudLayer.add(currencyBar).padTop(40).padLeft(1200);
         }
-        AudioManager.getInstance().playMusic(MusicType.MENU_BGM);
         getNotificationManager();
         registerDefaultMultiplayerHandlers();
     }

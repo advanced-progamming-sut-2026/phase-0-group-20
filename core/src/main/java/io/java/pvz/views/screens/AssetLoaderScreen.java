@@ -16,6 +16,10 @@ import io.java.pvz.models.App;
 import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.adventure.Adventure;
+import io.java.pvz.models.game.events.AudioListener;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import pvz.libpvz.textures.TextureBank;
@@ -86,11 +90,20 @@ public class AssetLoaderScreen extends BaseScreen {
         }
 
         if (!isInitFinished && virtualProgress < 0.9f) virtualProgress += delta * 0.2f;
-        else if (isInitFinished && virtualProgress < 1f) virtualProgress += delta/2;
+        else if (isInitFinished && virtualProgress < 1f) virtualProgress += delta / 2;
         progressBar.setValue(virtualProgress);
-
+        AudioListener audioListener = new AudioListener();
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_MENUS, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_EGYPT, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_FROZEN_CAVES, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_ZEN_GARDEN, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_DARK_AGES, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_BIG_WAVE_BEACH, audioListener);
         if (isInitFinished && virtualProgress >= 1f) {
             User stayedUser = DataBaseManager.getLoggedInUser();
+            GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_MENUS,
+                new GameEventPayload.Builder(GameEvent.ENTERED_MENUS)
+                    .build());
             if (stayedUser == null) {
                 App.setActiveAdventure(new Adventure());
                 ScreenManager.getInstance().setRootScreen(new SignupScreen(game));

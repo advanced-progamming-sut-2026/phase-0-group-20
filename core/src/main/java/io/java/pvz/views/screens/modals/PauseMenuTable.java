@@ -102,7 +102,6 @@ public class PauseMenuTable extends BorderedTable {
 
         TextButton restartBtn = UiFactory.textButton("RESTART", skin, "brown", 1.05f, 0.95f, () -> {
             System.out.println("Restarting Level...");
-            // TODO:restart
             this.remove();
         });
         restartBtn.getLabel().setFontScale(1.1f);

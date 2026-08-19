@@ -197,6 +197,7 @@ public final class Ids {
 
     public static final class PlantCards {
         public static final String BG_CARD = "IMAGE_UI_PACKETS_MODERNDAY";
+        public static final String BOOSTED_BG_CARD ="IMAGE_UI_PACKETS_BOOST";
         public static final String FILTER_UNCLICKED = "IMAGE_UI_ALMANAC_FILTER_BUTTON_UP";
         public static final String FILTER_CLICKED = "IMAGE_UI_ALMANAC_FILTER_BUTTON_DOWN";
     }

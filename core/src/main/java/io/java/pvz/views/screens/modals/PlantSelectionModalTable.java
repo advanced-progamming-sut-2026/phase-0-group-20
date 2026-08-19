@@ -82,7 +82,17 @@ public class PlantSelectionModalTable extends Table {
 
         if (availablePlants != null) {
             for (Plant plant : availablePlants) {
-                PlantCardButton card = createPlantCard(textures, plant);
+                PlantCardButton card;
+                if(App.getActiveUser().isItUnlocked(plant)) {
+                    Plant foundPlant = App.getActiveUser().getUnlockedPlants().stream()
+                        .filter(p -> p.getName().equals(plant.getName()))
+                        .findFirst()
+                        .orElse(null);
+                         card = createPlantCard(textures,foundPlant);
+
+                }else{
+                     card = createPlantCard(textures, plant);
+                }
                 if (card != null) {
                     cardMap.put(plant, card);
                     gridTable.add(card).size(140, 105).pad(8);
@@ -291,7 +301,8 @@ public class PlantSelectionModalTable extends Table {
 
     private @NonNull TextButton generateBoostBtn(TextureBank textures) {
         List<String> boostedPlants = controller.getBoostedPlantNames();
-        boolean isAlreadyBoosted = boostedPlants != null && boostedPlants.contains(clickedPlant.getName());
+        boolean isAlreadyBoosted =( boostedPlants != null && boostedPlants.contains(clickedPlant.getName()))||
+            clickedPlant.isBoosted();
         TextButton boostBtn;
         if (isAlreadyBoosted) {
             boostBtn = new TextButton("BOOSTED", skin, "green");
@@ -308,7 +319,7 @@ public class PlantSelectionModalTable extends Table {
             boostBtn.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Result result = controller.boostPlant(clickedPlant.getName());
+                    Result result = controller.boostPlant(clickedPlant);
                     if (result != null && result.isSuccessful()) {
                         PlantCardButton card = cardMap.get(clickedPlant);
                         if (card != null) {
