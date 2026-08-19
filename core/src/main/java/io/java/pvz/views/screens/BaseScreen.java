@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import io.java.pvz.controllers.AudioManager;
 import io.java.pvz.controllers.GameController.MatchmakingController;
 import io.java.pvz.controllers.NotificationManager;
 import io.java.pvz.loader.AssetLoader;
@@ -29,13 +29,14 @@ import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.views.screens.modals.IncomingChallengeTable;
 import io.java.pvz.views.screens.modals.MatchFoundTable;
-import io.java.pvz.views.sound.MusicType;
 
 public abstract class BaseScreen implements Screen {
 
     protected final Game game;
     protected SpriteBatch batch;
     protected OrthographicCamera camera;
+
+
     protected Viewport viewport;
     protected Stage stage;
 

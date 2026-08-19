@@ -72,17 +72,14 @@ public class Sun implements Ticker {
             this.type = SunType.NORMAL_SUN;
             this.amountProduced = this.type.getValue();
         }
-        notify(String.format("Sun reached the ground at position (%d, %d)\n", getCol() + 1, getRow() + 1));
+//        notify(String.format("Sun reached the ground at position (%d, %d)\n", getCol() + 1, getRow() + 1));
     }
 
     public void collect() {
         this.isCollected = true;
 
-        if (isFalling && type == SunType.RADIOACTIVE_SUN) {
-            notify("Radioactive sun exploded mid-air!");
-        } else {
-            GameSession.getInstance().addSun(amountProduced);
-        }
+        GameSession.getInstance().addSun(amountProduced);
+
     }
 
     public void notify(String message) {

@@ -63,6 +63,9 @@ public class ExplosiveStrategy implements IPlantStrategy {
             }
 
             context.takeDamage(context.getCurrentHp());
+            GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_EXPLODED,new GameEventPayload
+                .Builder(GameEvent.PLANT_EXPLODED)
+                .build());
         }
     }
 
