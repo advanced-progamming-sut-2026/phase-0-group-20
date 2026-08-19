@@ -151,9 +151,17 @@ public class ShootingStrategy implements IPlantStrategy {
     }
 
     private void playShootingAnimation(Plant context) {
-        if (context.getName().equalsIgnoreCase("Pea Pod")) {
+        String name = context.getName();
+        if (name.equalsIgnoreCase("Pea Pod")) {
             int stack = context.getStackCount();
             context.triggerAction(stack <= 1 ? "attack" : "attack " + stack);
+        } else if (name.equalsIgnoreCase("Puff-shroom") || name.equalsIgnoreCase("Sea-shroom")) {
+            int size = context.getSize();
+            if (size >= 1 && size <= 3) {
+                context.triggerAction("special_stage" + size);
+            } else {
+                context.triggerAction("special_stage1");
+            }
         } else {
             context.triggerAction("attack");
         }

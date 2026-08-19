@@ -178,6 +178,7 @@ public class WorldItemRenderer {
         map.put(ProjectileType.BOWLING_BULB_CYAN, new ProjectileAnim(Ids.Projectiles.WALLNUT_BOWL, "animation"));
         map.put(ProjectileType.BOWLING_BULB_BLUE, new ProjectileAnim(Ids.Projectiles.EXPLODE_NUT_BOWL, "animation"));
         map.put(ProjectileType.BOWLING_BULB_ORANGE, new ProjectileAnim(Ids.Projectiles.GIANT_NUT_BOWL, "animation"));
+        map.put(ProjectileType.PUFF_SPORE, new ProjectileAnim("768/INITIAL/EFFECTS/T_PUFFSHROOM_PROJECTILE/T_PUFFSHROOM_PROJECTILE.PAM", "animation"));
         map.put(ProjectileType.SHARK,new ProjectileAnim(Ids.Projectiles.SHARK,"walk"));
         return map;
     }

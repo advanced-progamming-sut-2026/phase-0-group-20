@@ -136,7 +136,6 @@ public class ZombieFactory {
             case NEWSPAPER -> new NewspaperMove(zombie);
             case TROGLOBITE -> new TroglobiteMove(zombie);
             case DODO -> new DodoMove(zombie);
-            case PIANIST -> createPianistMove(zombie);
             case FISHERMAN, KING -> new StationaryMove(zombie);
 
             case ZOMBOTANY_PEASHOOTER -> new PeriodicActionMove(zombie, 1.5f, true,
@@ -144,26 +143,6 @@ public class ZombieFactory {
 
             default -> new NormalMove(zombie);
         };
-    }
-
-    private static MoveBehavior createPianistMove(Zombie zombie) {
-        return new PeriodicActionMove(zombie, 4, true, () -> {
-            GameSession session = GameSession.getInstance();
-            Random rand = new Random();
-            int maxRows = session.getArena().getRows();
-
-            for (Zombie z : session.getArena().getActiveZombies()) {
-                if (z == zombie || z.isDead() || z.isHypnotized()) continue;
-
-                List<Integer> possibleRows = new ArrayList<>();
-                if (z.getRow() > 0) possibleRows.add(z.getRow() - 1);
-                if (z.getRow() < maxRows - 1) possibleRows.add(z.getRow() + 1);
-
-                if (!possibleRows.isEmpty()) {
-                    z.setRow(possibleRows.get(rand.nextInt(possibleRows.size())));
-                }
-            }
-        });
     }
 
     private static AttackBehavior getAttackAI(ZombieType type, Zombie zombie, ZombieData data) {

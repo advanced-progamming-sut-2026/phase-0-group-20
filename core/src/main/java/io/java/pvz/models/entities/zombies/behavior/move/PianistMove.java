@@ -25,7 +25,7 @@ public class PianistMove implements MoveBehavior, GameEventListener {
     private static final float PIANO_OFFSET_X = 45f;
 
     private static final int PLAY_DURATION_TICKS = 20;
-    private static final int IDLE_DURATION_TICKS = 25;
+    private static final int IDLE_DURATION_TICKS = 80;
 
     private boolean isPlaying = false;
     private int phaseTimer = 0;

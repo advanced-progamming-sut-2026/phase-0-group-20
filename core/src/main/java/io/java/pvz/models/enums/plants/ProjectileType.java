@@ -24,6 +24,7 @@ public enum ProjectileType {
     BOWLING_BULB_CYAN,
     BOWLING_BULB_BLUE,
     BOWLING_BULB_ORANGE,
+    PUFF_SPORE,
     SHARK;
 
     public static final int NORMAL_PEA_DAMAGE = 40;
@@ -37,7 +38,7 @@ public enum ProjectileType {
             case PEA, ICE_PEA, ROTOBAGA_SEED, FIRE_PEA, GOO_PEA,
                  CABBAGE, CORN, BUTTER, MELON, WINTER_MELON,
                  PEPPER, GRAPE, SPIKE, WALLNUT_BOWL, EXPLODE_NUT_BOWL, GIANT_NUT_BOWL -> true;
-            case MAGIC_BEAM, LIGHTNING_CLOUD, FUME, PLASMA_BALL -> false;
+            case MAGIC_BEAM, LIGHTNING_CLOUD, FUME, PLASMA_BALL, PUFF_SPORE -> false;
             default -> false;
         };
     }

@@ -190,7 +190,7 @@ public class Projectile implements Ticker {
 
     private static ProjectileEffect projectileEffect(ProjectileType projectileType, int damage) {
         return switch (projectileType) {
-            case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE -> new NormalEffect();
+            case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE, PUFF_SPORE-> new NormalEffect();
             case ICE_PEA -> new IceEffect();
             case FIRE_PEA -> new FireEffect();
             case GOO_PEA, FUME -> new PoisonProjectileEffect();

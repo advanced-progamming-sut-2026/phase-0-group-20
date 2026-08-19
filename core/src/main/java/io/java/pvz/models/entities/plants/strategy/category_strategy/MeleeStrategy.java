@@ -25,9 +25,19 @@ public class MeleeStrategy implements IPlantStrategy {
 
         if (name.equals("Chomper")) return;
 
+        if (name.equals("Kiwibeast")) {
+            handleKiwibeastState(context);
+        }
+
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
 
         if (intervalInTicks > 0 && (currentTick - lastAttackTick) >= intervalInTicks) {
+
+            if (name.equals("Kiwibeast") && context.getCurrentAction() != null &&
+                (context.getCurrentAction().contains("growth") || context.getCurrentAction().contains("plantfood"))) {
+                return;
+            }
+
             int plantRow = context.getPlacedTile().getRow();
             int plantCol = context.getPlacedTile().getCol();
             boolean attacked = false;
@@ -44,6 +54,34 @@ public class MeleeStrategy implements IPlantStrategy {
                 lastAttackTick = currentTick;
                 attackCount++;
             }
+        }
+    }
+
+    private void handleKiwibeastState(Plant context) {
+        int stage = context.getSize();
+        int secondsAlive = aliveTicks / TimeManager.TICKS_PER_SECOND;
+
+        if (context.isBoosted()) {
+            if (stage < 3) {
+                context.setSize(3);
+            }
+            if (context.getCurrentAction() == null || !context.getCurrentAction().contains("plantfood")) {
+                context.triggerAction("plantfood_stage3");
+            }
+        } else {
+            if (stage == 1 && secondsAlive >= 24) {
+                context.setSize(2);
+                context.triggerAction(rand.nextBoolean() ? "growth_stage1" : "growth_stage1_2");
+            } else if (stage == 2 && secondsAlive >= 72) {
+                context.setSize(3);
+                context.triggerAction("growth_stage2");
+            }
+        }
+
+        if (context.getCurrentAction() == null && !context.isBoosted()) {
+            int r = rand.nextInt(3) + 1;
+            String idleAnim = (r == 1) ? "idle_stage" + context.getSize() + "_" : "idle_stage" + context.getSize() + "_" + r;
+            context.triggerAction(idleAnim);
         }
     }
 
@@ -98,10 +136,10 @@ public class MeleeStrategy implements IPlantStrategy {
             int finalDamage = baseDamage;
 
             if (name.equals("Kiwibeast")) {
-                int secondsAlive = aliveTicks / TimeManager.TICKS_PER_SECOND;
-                if (secondsAlive >= 72) {
+                int stage = context.getSize();
+                if (stage == 3) {
                     finalDamage = baseDamage * 3;
-                } else if (secondsAlive >= 24) {
+                } else if (stage == 2) {
                     finalDamage = 30;
                 }
             } else {
@@ -122,7 +160,11 @@ public class MeleeStrategy implements IPlantStrategy {
             }
 
             if (attacked) {
-                context.triggerAction("attack");
+                if (name.equals("Kiwibeast")) {
+                    context.triggerAction("attack_stage" + context.getSize());
+                } else {
+                    context.triggerAction("attack");
+                }
                 notify("🔊 " + name + " slammed a 3x3 area, hitting " + targets.size() + " zombies!");
             }
         }

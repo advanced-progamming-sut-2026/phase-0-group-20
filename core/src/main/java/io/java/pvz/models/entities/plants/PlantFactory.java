@@ -47,7 +47,13 @@ public class PlantFactory {
                         }
                     }
                     case LOBBER -> plant.addStrategy(new LobberStrategy());
-                    case STRIKE_THROUGH -> plant.addStrategy(new StrikeThroughStrategy());
+                    case STRIKE_THROUGH -> {
+                        if (nameKey.equals("cactus")) {
+                            plant.addStrategy(new CactusStrategy());
+                        } else {
+                            plant.addStrategy(new StrikeThroughStrategy());
+                        }
+                    }
                     default -> {
                         if (!data.tags().contains(PlantTag.CHARGE)) plant.addStrategy(new ShootingStrategy());
                     }
@@ -103,7 +109,6 @@ public class PlantFactory {
             case "tall-nut" -> plant.addStrategy(new AntiJumpStrategy());
             case "ice-shroom" -> plant.addStrategy(new GlobalEffectStrategy());
             case "grave buster" -> plant.addStrategy(new GraveBusterStrategy());
-            case "doom-shroom" -> plant.addStrategy(new CraterStrategy());
             case "hot potato" -> plant.addStrategy(new MeltIceStrategy());
             case "torchwood" -> plant.addStrategy(new TorchwoodStrategy());
             case "lily pad" -> plant.addStrategy(new LilyPadStrategy());
