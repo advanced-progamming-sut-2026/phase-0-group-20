@@ -23,7 +23,6 @@ public class SheepEffect implements PlantEffect {
                 .plant(plant)
                 .build());
 
-        notify(plant.getName() + " was transformed into a SHEEP by " + wizardZombie.getName() + "!");
     }
 
     @Override
