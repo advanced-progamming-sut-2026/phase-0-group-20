@@ -50,8 +50,7 @@ public class IceBlock extends PushableObstacle implements Ticker {
     @Override
     public void takeDamage(int damage) {
         health -= damage;
-        GameSession.notify("IceBlock in " + (position.getCol() + 1) + ","
-            + (position.getRow() + 1) + "take " + damage + " damage");
+
         if (health <= 0) {
             health = 0;
             melt();

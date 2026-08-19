@@ -121,7 +121,6 @@ public class PianistMove implements MoveBehavior, GameEventListener {
                 }
             }
         }
-        GameSession.notify("Pianist Zombie played music! Zombies switched rows!");
     }
 
     private void crushEntitiesInFrontOfPiano(Piano piano) {
@@ -155,7 +154,6 @@ public class PianistMove implements MoveBehavior, GameEventListener {
                 }
                 session.getArena().getActivePlants().remove(plant);
                 session.getTimeManager().unregisterTicker(plant);
-                GameSession.notify("Piano crushed " + plant.getName() + "!");
             }
         }
 
@@ -172,7 +170,6 @@ public class PianistMove implements MoveBehavior, GameEventListener {
         for (Zombie z : zombiesToCrush) {
             if (z != null && !z.isDead()) {
                 z.takeDamage(99999);
-                GameSession.notify("Piano crushed a hypnotized zombie!");
             }
         }
     }

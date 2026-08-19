@@ -29,6 +29,5 @@ public class JalapenoTimerEffect extends Effect {
                 p.takeDamage(Integer.MAX_VALUE);
 
         zombie.takeDamage(Integer.MAX_VALUE);
-        GameSession.notify("Zombotany: Jalapeno Zombie exploded in row " + row + "!");
     }
 }

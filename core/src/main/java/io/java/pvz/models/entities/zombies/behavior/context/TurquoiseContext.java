@@ -31,7 +31,6 @@ public class TurquoiseContext implements GameEventListener {
                 int sunToDrop = stolenSuns / 2;
                 if (sunToDrop > 0) {
                     GameSession.getInstance().addSun(sunToDrop);
-                    GameSession.notify("Turquoise Skull Zombie died and dropped " + sunToDrop + " suns!");
                 }
             }
 

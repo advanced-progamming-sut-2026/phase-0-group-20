@@ -31,7 +31,6 @@ public class JugglerDefense implements DefenseBehavior {
     public boolean deflectProjectile(ProjectileType projectileType) {
         if (ProjectileType.isDeflectByJuggler(projectileType)) {
             context.triggerSpin();
-            GameSession.notify("Juggler started spinning!");
 
             reflectToPlant(projectileType);
 

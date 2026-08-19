@@ -25,7 +25,6 @@ public class ZombieDropListener implements GameEventListener {
                 user.addPlantFoodCount(1);
                 message.append(" you have ").append(user.getPlantFoodCount()).append(" plant foods now.\n");
             }
-            GameSession.notify(message.toString());
         }
 
         ZombieDrop type = getDropType();
@@ -37,11 +36,9 @@ public class ZombieDropListener implements GameEventListener {
             }
             case DIAMOND -> {
                 user.earnDiamond(1);
-                GameSession.notify("A zombie dropped a diamond; you have " + user.getDiamond() + " diamonds now.");
             }
             case COIN -> {
                 user.earnCoin(50);
-                GameSession.notify("A zombie dropped 50 coins; you have " + user.getCoin() + " coins now.");
             }
         }
     }
@@ -61,7 +58,6 @@ public class ZombieDropListener implements GameEventListener {
                         pot.setPotCondition(PotCondition.EMPTY);
                         totalUnlockedPots++;
                         unlockedOne = true;
-                        GameSession.notify("A zombie dropped a pot; you have " + totalUnlockedPots + " pots now.");
                         break searchLoop;
                     }
                 }

@@ -25,7 +25,6 @@ public class ScoreManager implements GameEventListener, Ticker {
         if (killsThisTick >= 2) {
             int comboBonus = killsThisTick * 25;
             totalMewpoints += comboBonus;
-            GameSession.notify("Simultaneous Kill Combo! +" + comboBonus + " Mewpoints");
         }
 
 
@@ -33,8 +32,6 @@ public class ScoreManager implements GameEventListener, Ticker {
             if (entry.getValue() > 1) {
                 int multiKillBonus = entry.getValue() * 50;
                 totalMewpoints += multiKillBonus;
-                GameSession.notify("Multikill! One plant killed " + entry.getValue() +
-                        " zombies! +" + multiKillBonus + " Mewpoints");
             }
         }
 

@@ -196,7 +196,6 @@ public class Plant implements IPlant, Ticker {
     public boolean addStack() {
         if (this.getTags().contains(PlantTag.STACK) && stackCount < 5) {
             stackCount++;
-            GameSession.notify("Plant " + getName() + " has been Stacked! stack count: " + stackCount);
             return true;
         }
         return false;

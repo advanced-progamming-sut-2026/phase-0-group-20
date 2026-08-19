@@ -242,6 +242,10 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
             "Win The Game in Under "+TIME_LIMIT+" Seconds";
     }
 
+    public boolean isValidPlantPlacement(int col) {
+        return col < redLineCol;
+    }
+
     public List<Plant> getBelt() {
         return belt;
     }

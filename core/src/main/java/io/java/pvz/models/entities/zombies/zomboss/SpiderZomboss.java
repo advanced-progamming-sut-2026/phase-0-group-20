@@ -40,7 +40,6 @@ public class SpiderZomboss extends Zomboss {
                     .message("MISSILE_EXPLOSION")
                     .coordinate(targetTile.getRow(), targetTile.getCol())
                     .build());
-            GameSession.notify("Spider Zomboss missile exploded and cratered the tile!");
         };
         attacks.add(new ZombossMissileAttack(this, idleAttack, egyptImpact));
         attacks.add(new SwitchLaneZombossAttack(this, idleAttack));

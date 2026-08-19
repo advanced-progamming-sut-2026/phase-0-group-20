@@ -70,7 +70,6 @@ public class BarrelRollerMove implements MoveBehavior {
                 }
                 session.getArena().getActivePlants().remove(plant);
                 session.getTimeManager().unregisterTicker(plant);
-                GameSession.notify("Barrel crushed " + plant.getName() + "!");
             }
         }
     }

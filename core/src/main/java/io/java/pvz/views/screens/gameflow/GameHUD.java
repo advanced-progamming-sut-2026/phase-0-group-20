@@ -57,6 +57,7 @@ public class GameHUD {
 
     private Table seedBankTable;
     private Table zombieTopBar;
+    private final List<ZombieCardButton> zombieTopBarCards = new ArrayList<>();
 
     public GameHUD(Group mainLayer, Group modalLayer, Viewport viewport,
                    GameInputHandler inputHandler, GameFlowController gameFlowController) {
@@ -259,10 +260,10 @@ public class GameHUD {
             if (session != null) {
                 if (session.getSpeedMultiplier() == 1.0f) {
                     session.setSpeedMultiplier(2.0f);
-                    GameSession.notify("⏩ Fast Forward: 2X SPEED");
+                    GameSession.notify("Fast Forward: 2X SPEED");
                 } else {
                     session.setSpeedMultiplier(1.0f);
-                    GameSession.notify("▶️ Normal Speed");
+                    GameSession.notify("Normal Speed");
                 }
             }
         });
@@ -445,16 +446,25 @@ public class GameHUD {
     }
 
     private ZombieCardButton createZombiePacket(Zombie zombie, int slotNumber) {
+        return createZombiePacket(zombie, slotNumber, true);
+    }
+
+    private ZombieCardButton createZombiePacket(Zombie zombie, int slotNumber, boolean mouseSelectable) {
         Image background = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_READY");
         String zombiePath = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_" + UiFactory.getZombieAddress(zombie);
         Image zombieImage = UiFactory.imageFor(textures, zombiePath);
         ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie, slotNumber, skin);
-        card.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                inputHandler.onZombieCardClicked(zombie, zombieImage);
-            }
-        });
+
+        if (mouseSelectable) {
+            card.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    inputHandler.onZombieCardClicked(zombie, zombieImage);
+                }
+            });
+        } else {
+            card.setTouchable(Touchable.disabled);
+        }
         return card;
     }
 
@@ -632,6 +642,7 @@ public class GameHUD {
         } else {
             zombieTopBar.clear();
         }
+        zombieTopBarCards.clear();
 
         List<Zombie> selectedZombie = new ArrayList<>();
         if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel) {
@@ -640,9 +651,12 @@ public class GameHUD {
         }
 
         for (int i = 0; i < selectedZombie.size(); i++) {
-            ZombieCardButton zombieCardButton = createZombiePacket(selectedZombie.get(i), i + 1);
+            boolean mouseSelectable = !MatchController.getInstance().isCouchPlay();
+            ZombieCardButton zombieCardButton = createZombiePacket(selectedZombie.get(i), i + 1, mouseSelectable);
             zombieTopBar.add(zombieCardButton).size(90f, 85f).padRight(40f);
+            zombieTopBarCards.add(zombieCardButton);
         }
+
     }
 
     private void buildAsymmetricEconomyUI() {
@@ -668,6 +682,12 @@ public class GameHUD {
             belt.setSize(200f, 700);
             belt.setPosition(20f, 250);
             mainLayer.addActor(belt);
+        }
+    }
+
+    public void highlightSelectedZombieCard(int selectedIndex) {
+        for (int i = 0; i < zombieTopBarCards.size(); i++) {
+            zombieTopBarCards.get(i).setSelectedVisual(i == selectedIndex);
         }
     }
 }

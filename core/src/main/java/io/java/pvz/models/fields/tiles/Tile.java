@@ -97,7 +97,6 @@ public abstract class Tile implements Ticker {
             if (craterTimer <= 0) {
                 isFired = false;
                 isCrater = false;
-                GameSession.notify("Creator is Back to Normal Tile.");
             }
         }
     }

@@ -57,7 +57,6 @@ public class SlipperyTile extends Tile {
         if (targetRow < 0 || targetRow >= GameSession.getInstance().getArena().getRows()) return;
 
         zombie.addEffect(new SlideEffect(zombie, targetRow));
-        GameSession.notify("Zombie is sliding " + direction + " to row " + (targetRow + 1));
     }
 
     public SlideDirection getDirection() {

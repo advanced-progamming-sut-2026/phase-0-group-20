@@ -127,8 +127,6 @@ public class TombRaiserEffect extends Effect {
                 new GraveStoneTile(targetTile.getRow(), targetTile.getCol())
             );
 
-            GameSession.notify("Grave spawned at: " + (targetTile.getCol() + 1) + ", " + (targetTile.getRow() + 1));
-
             GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
                 new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
                     .message("BONE_HIT")

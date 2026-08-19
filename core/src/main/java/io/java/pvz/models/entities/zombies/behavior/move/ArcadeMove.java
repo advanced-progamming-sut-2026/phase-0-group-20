@@ -101,7 +101,6 @@ public class ArcadeMove implements MoveBehavior, GameEventListener {
                 }
                 session.getArena().getActivePlants().remove(plant);
                 session.getTimeManager().unregisterTicker(plant);
-                GameSession.notify("Arcade Machine crushed " + plant.getName() + "!");
             }
         }
 
@@ -118,7 +117,6 @@ public class ArcadeMove implements MoveBehavior, GameEventListener {
         for (Zombie z : zombiesToCrush) {
             if (z != null && !z.isDead()) {
                 z.takeDamage(99999);
-                GameSession.notify("Arcade Machine crushed a hypnotized zombie!");
             }
         }
     }

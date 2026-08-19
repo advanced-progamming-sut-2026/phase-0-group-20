@@ -105,8 +105,6 @@ public class TroglobiteMove implements MoveBehavior {
                 if (!plant.isDead()) {
                     plant.takeDamage(99999);
                     tile.removePlant(plant);
-                    GameSession.notify("IceBlock crushed " + plant.getName() +
-                        " on tile [" + (row + 1) + "," + (col + 1) + "]!");
                 }
             }
         }
