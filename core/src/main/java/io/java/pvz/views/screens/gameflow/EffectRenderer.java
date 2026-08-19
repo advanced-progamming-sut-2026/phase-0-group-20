@@ -374,6 +374,91 @@ public class EffectRenderer {
         ));
     }
 
+    public void spawnPotatoMineExplosion(int col, int row) {
+        String pamPath = "768/INITIAL/EFFECTS/POTATOMINE_EXPLOSION/POTATOMINE_EXPLOSION.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "animation", pamPath);
+        actor.setSize(120, 120);
+        actor.setOrigin(Align.center);
+
+        Position pos = new Position(col, row);
+        float x = pos.getX() - (actor.getWidth() / 2f);
+        float y = pos.getY() - (actor.getHeight() / 2f) + 30f;
+
+        actor.setPosition(x, y);
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.18f),
+            Actions.removeActor()
+        ));
+    }
+
+    public void spawnPrimalPotatoMineExplosion(int col, int row) {
+        String pamPath = "768/INITIAL/EFFECTS/PRIMAL_POTATOMINE_EXPLOSION/PRIMAL_POTATOMINE_EXPLOSION.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "animation", pamPath);
+        actor.setSize(200, 200);
+        actor.setOrigin(Align.center);
+
+        Position pos = new Position(col, row);
+        float x = pos.getX() - (actor.getWidth() / 2f);
+        float y = pos.getY() - (actor.getHeight() / 2f) + 30f;
+
+        actor.setPosition(x, y);
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.18f),
+            Actions.removeActor()
+        ));
+    }
+
+    public void spawnJalapenoFire(int row) {
+        String pamPath = "768/INITIAL/EFFECTS/JALAPENO_FIRE/JALAPENO_FIRE.PAM";
+
+        int totalCols = 9;
+
+        for (int col = 0; col < totalCols; col++) {
+            PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "idle", pamPath);
+
+            actor.setSize(TILE_WIDTH, TILE_HEIGHT * 1.5f);
+            actor.setOrigin(Align.center);
+
+            float x = GRID_START_X + (col * TILE_WIDTH) + (TILE_WIDTH / 2f) - (actor.getWidth() / 2f);
+
+            float y = GRID_START_Y + (row * TILE_HEIGHT) + (TILE_HEIGHT / 2f) - (actor.getHeight() / 2f) + 100f;
+
+            actor.setPosition(x, y);
+            effectLayer.addActor(actor);
+
+            actor.addAction(Actions.sequence(
+                Actions.delay(1.5f),
+                Actions.removeActor()
+            ));
+        }
+    }
+
+    public void spawnCherryBombExplosion(int col, int row) {
+        String pamPath = "768/FULL/EFFECTS/CHERRYBOMB_EXPLOSION_REAR/CHERRYBOMB_EXPLOSION_REAR.PAM";
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "explosion", pamPath);
+        actor.setSize(TILE_WIDTH * 3, TILE_HEIGHT * 3);
+        actor.setOrigin(Align.center);
+
+        Position pos = new Position(col, row);
+        float x = pos.getX() - (actor.getWidth() / 2f);
+        float y = pos.getY() - (actor.getHeight() / 2f) + 200f;
+
+        actor.setPosition(x, y);
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.5f),
+            Actions.removeActor()
+        ));
+    }
+
     public void spawnSandstormEffect(Zombie zombie) {
         if (zombie == null) return;
 
@@ -423,6 +508,7 @@ public class EffectRenderer {
         map.put(ProjectileType.EXPLODE_NUT_BOWL, new HitAnim(Ids.ProjectileHits.EXPLODE_NUT_BOWL,
             "explosion", 1.6667f));
         map.put(ProjectileType.SHARK,new HitAnim(Ids.ProjectileHits.SHARK,"attack", 2.1f));
+        map.put(ProjectileType.PUFF_SPORE, new HitAnim("768/INITIAL/EFFECTS/T_PUFFSHROOM_HIT/T_PUFFSHROOM_HIT.PAM", "animation", 0.5f));
         return map;
     }
 }

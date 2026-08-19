@@ -5,6 +5,8 @@ import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.obstacle.GraveHolder;
 import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.strategy.CactusStrategy;
+import io.java.pvz.models.entities.plants.strategy.HypnotizeStrategy;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.plants.strategy.TorchwoodStrategy;
 import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
@@ -271,30 +273,26 @@ public class CollisionManager {
     private void checkZombiesAndZombiesCollision(Zombie z) {
         if (z.isDead()) return;
 
-        int row = z.getRow();
-        int targetCol = (int) ((z.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH + 0.2f);
-        if (targetCol >= arena.getCols()) return;
+        Zombie targetZombie = null;
+        float collisionRadius = PhysicalConstants.TILE_WIDTH * 0.5f;
 
-        Tile targetTile = arena.getTile(row, targetCol);
-
-        if (targetTile != null) {
-            List<Zombie> zombiesToEat = arena.getZombiesOnTile(targetTile);
-            Zombie targetZombie = null;
-
-            for (Zombie enemyZ : zombiesToEat) {
-                if (!enemyZ.isHypnotized() && !enemyZ.isDead()) {
+        for (Zombie enemyZ : arena.zombieInRow(z.getRow())) {
+            if (!enemyZ.isHypnotized() && !enemyZ.isDead()) {
+                if (Math.abs(enemyZ.getX() - z.getX()) <= collisionRadius) {
                     targetZombie = enemyZ;
                     break;
                 }
             }
+        }
 
-            if (targetZombie != null) {
-                if (!z.isAttacking()) {
-                    z.setAttacking(true);
-                }
-            } else if (z.isAttacking()) {
-                z.setAttacking(false);
+        z.setTargetZombie(targetZombie);
+
+        if (targetZombie != null) {
+            if (!z.isAttacking()) {
+                z.setAttacking(true);
             }
+        } else if (z.isAttacking()) {
+            z.setAttacking(false);
         }
     }
 
@@ -345,6 +343,12 @@ public class CollisionManager {
                             canEat = false;
                         }
                     }
+
+                    if (strategy instanceof HypnotizeStrategy hypno) {
+                        hypno.onEatenBy(p, z);
+                        canEat = false;
+                        break;
+                    }
                 }
 
                 if (canEat) {
@@ -354,23 +358,33 @@ public class CollisionManager {
             }
         }
 
-        List<Zombie> zombiesToEat = arena.getZombiesOnTile(targetTile);
         Zombie targetZombie = null;
+        float collisionRadius = PhysicalConstants.TILE_WIDTH * 0.5f;
 
-        for (Zombie zombie : zombiesToEat) {
-            if (zombie.isHypnotized()) {
-                targetZombie = zombie;
-                break;
+        for (Zombie enemyZ : arena.zombieInRow(z.getRow())) {
+            if (enemyZ.isHypnotized() && !enemyZ.isDead()) {
+                if (Math.abs(enemyZ.getX() - z.getX()) <= collisionRadius) {
+                    targetZombie = enemyZ;
+                    break;
+                }
             }
         }
+
+        z.setTargetZombie(targetZombie);
 
         if (eatingPlant != null) {
             if (!z.isAttacking()) {
                 z.setAttacking(true);
+                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_TAKING_DAMAGE,new GameEventPayload
+                    .Builder(GameEvent.PLANT_TAKING_DAMAGE)
+                    .build());
             }
         } else if (targetZombie != null) {
             if (!z.isAttacking()) {
                 z.setAttacking(true);
+                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_TAKING_DAMAGE,new GameEventPayload
+                    .Builder(GameEvent.PLANT_TAKING_DAMAGE)
+                    .build());
             }
         } else if (z.isAttacking()) {
             z.setAttacking(false);

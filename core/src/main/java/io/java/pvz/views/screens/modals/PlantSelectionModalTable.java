@@ -46,6 +46,9 @@ public class PlantSelectionModalTable extends Table {
     private Actor blocker;
     private final Level currentLevel;
 
+    private Group modalLayer;
+    private Viewport viewport;
+
     public PlantSelectionModalTable(Skin skin, Runnable onComplete) {
         super();
         this.skin = skin;
@@ -259,7 +262,7 @@ public class PlantSelectionModalTable extends Table {
         descLabel.setAlignment(Align.topLeft);
         rightContentTable.add(descLabel).growX().height(60).top().row();
 
-        if(App.getActiveUser().isItUnlocked(clickedPlant)) {
+        if (App.getActiveUser().isItUnlocked(clickedPlant)) {
             Table buttonsTable = createButtonTable(textures);
             rightContentTable.add(buttonsTable).right().expandX().bottom();
         }
@@ -316,6 +319,7 @@ public class PlantSelectionModalTable extends Table {
             bannedBtn.setTouchable(Touchable.disabled);
             return bannedBtn;
         }
+
         if (isForced) {
             TextButton forcedBtn = new TextButton("FORCED", skin, "green");
             forcedBtn.setDisabled(true);
@@ -332,16 +336,34 @@ public class PlantSelectionModalTable extends Table {
                 if (isSelected) {
                     Result res = controller.removePlant(clickedPlant.getName());
                     if (res != null && res.isSuccessful()) {
-                        if (activeCard != null) activeCard.setColor(Color.WHITE);
+                        if (activeCard != null) {
+                            activeCard.setColor(Color.WHITE);
+                        }
                         updateSelectedSlots(textures);
                         updateTopInfo(textures);
                     }
                 } else {
-                    Result res = controller.addPlant(clickedPlant.getName());
-                    if (res != null && res.isSuccessful()) {
-                        if (activeCard != null) activeCard.setColor(Color.DARK_GRAY);
-                        updateSelectedSlots(textures);
-                        updateTopInfo(textures);
+                    if (clickedPlant.getName().equalsIgnoreCase("Imitater")) {
+                        ImitaterSelectionModalTable imitaterModal = new ImitaterSelectionModalTable(skin,
+                            selectedTarget -> {
+                            controller.addImitater(selectedTarget.getName());
+                            Result res = controller.addPlant(clickedPlant.getName());
+                            if (res != null && res.isSuccessful()) {
+                                if (activeCard != null) activeCard.setColor(Color.DARK_GRAY);
+                                updateSelectedSlots(textures);
+                                updateTopInfo(textures);
+                            }
+                        });
+                        imitaterModal.show(modalLayer, viewport);
+                    } else {
+                        Result res = controller.addPlant(clickedPlant.getName());
+                        if (res != null && res.isSuccessful()) {
+                            if (activeCard != null) {
+                                activeCard.setColor(Color.DARK_GRAY);
+                            }
+                            updateSelectedSlots(textures);
+                            updateTopInfo(textures);
+                        }
                     }
                 }
             }
@@ -352,7 +374,7 @@ public class PlantSelectionModalTable extends Table {
 
     private @NonNull TextButton generateBoostBtn(TextureBank textures) {
         List<String> boostedPlants = controller.getBoostedPlantNames();
-        boolean isAlreadyBoosted =( boostedPlants != null && boostedPlants.contains(clickedPlant.getName()))||
+        boolean isAlreadyBoosted = (boostedPlants != null && boostedPlants.contains(clickedPlant.getName())) ||
             clickedPlant.isBoosted();
         TextButton boostBtn;
         if (isAlreadyBoosted) {
@@ -453,6 +475,9 @@ public class PlantSelectionModalTable extends Table {
     }
 
     public void show(Group modalLayer, Viewport viewport) {
+        this.modalLayer = modalLayer;
+        this.viewport = viewport;
+
         float width = viewport.getWorldWidth();
         float height = viewport.getWorldHeight();
 
@@ -503,7 +528,7 @@ public class PlantSelectionModalTable extends Table {
             case SHOOTER -> "IMAGE_UI_PACKETS_MINTFAM_PEASHOOTER";
             case MODIFIER -> "IMAGE_UI_PACKETS_MINTFAM_MAGIC";
             case WALL_NUT -> "IMAGE_UI_PACKETS_MINTFAM_DEFENSE";
-            case EXPLOSIVE ->  "IMAGE_UI_PACKETS_MINTFAM_EXPLOSIVE";
+            case EXPLOSIVE -> "IMAGE_UI_PACKETS_MINTFAM_EXPLOSIVE";
         };
     }
 

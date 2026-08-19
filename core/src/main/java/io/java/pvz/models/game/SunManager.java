@@ -7,6 +7,7 @@ import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
 
+import java.lang.classfile.instruction.ReturnInstruction;
 import java.util.Random;
 
 public class SunManager implements Ticker {
@@ -46,10 +47,10 @@ public class SunManager implements Ticker {
         int spawnY = rand.nextInt(arena.getRows());
         Sun sun = new Sun(type, spawnX, spawnY);
         GameSession.getInstance().getTimeManager().registerNewTicker(sun);
-        String message = "New " + sun.getType().getLabel() + " sun reached from the sky at "
-                + (spawnX + 1) + ", " + (spawnY + 1) + ".";
-
-        GameSession.notify(message);
+//        String message = "New " + sun.getType().getLabel() + " sun reached from the sky at "
+//                + (spawnX + 1) + ", " + (spawnY + 1) + ".";
+//
+//        GameSession.notify(message);
         arena.addSun(sun);
 
 
@@ -62,5 +63,6 @@ public class SunManager implements Ticker {
         } else if (chance <= 95) {
             return SunType.SPECIAL_SUN;
         } else return SunType.RADIOACTIVE_SUN;
+
     }
 }

@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens.modals;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -12,11 +13,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.controllers.ScreenManager;
+import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.views.screens.ChapterSelectionScreen;
+import io.java.pvz.views.screens.gameflow.GameFlowScreen;
 import pvz.skin.BorderedTable;
 
 public class LevelResultTable extends BorderedTable {
@@ -28,8 +33,8 @@ public class LevelResultTable extends BorderedTable {
         super();
         pad(35, 45, 35, 45);
         setSize(700, 420);
-        buildContent(skin, result);
         this.game = game;
+        buildContent(skin, result);
     }
 
     private void buildContent(Skin skin, GameState result) {
@@ -50,6 +55,28 @@ public class LevelResultTable extends BorderedTable {
         subLabel.setAlignment(Align.center);
         add(subLabel).padBottom(40).row();
 
+        Table buttonsTable = new Table();
+
+        TextButton restartBtn = UiFactory.textButton(
+            "Restart",
+            skin, "brown", 1.05f, 0.95f,
+            () -> {
+                GameFlowController flowController = new GameFlowController();
+                Result res = flowController.restartLevel();
+
+                if (res.isSuccessful()) {
+                    Gdx.app.postRunnable(() -> {
+                        String mapId = new GameMenuController().getCurrentMapTextureId();
+                        ScreenManager.getInstance().popScreen();
+                        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+                    });
+                }
+                remove();
+            }
+        );
+        restartBtn.getLabel().setFontScale(1.3f);
+        buttonsTable.add(restartBtn).size(250, 80).padRight(20);
+
         TextButton continueBtn = UiFactory.textButton(
             won ? "Continue" : "Try Again Later",
             skin, "green_small", 1.05f, 0.95f,
@@ -65,7 +92,9 @@ public class LevelResultTable extends BorderedTable {
             }
         );
         continueBtn.getLabel().setFontScale(1.3f);
-        add(continueBtn).size(320, 80);
+        buttonsTable.add(continueBtn).size(250, 80);
+
+        add(buttonsTable).center();
     }
 
     public void show(Group targetLayer, Viewport viewport) {

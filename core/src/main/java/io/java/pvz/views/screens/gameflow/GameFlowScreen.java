@@ -2,6 +2,7 @@ package io.java.pvz.views.screens.gameflow;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,6 +17,7 @@ import io.java.pvz.models.App;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.*;
 import io.java.pvz.models.game.minigame.DroppedSeedPacket;
 import io.java.pvz.models.timeManager.TimeManager;
 
@@ -36,14 +38,13 @@ public class GameFlowScreen extends BaseScreen {
     private TextureRegion mainRegion;
     private TextureRegion leftRegion;
     private TextureRegion rightRegion;
-
     private ShapeRenderer shapeRenderer;
     private BitmapFont debugFont;
-
     private static final int COLS = 9;
     private static final int ROWS = 5;
 
     private String currentMapId;
+    private CameraListener cameraListener;
 
     private boolean levelResultShown = false;
 
@@ -79,8 +80,14 @@ public class GameFlowScreen extends BaseScreen {
         debugFont = new BitmapFont();
         debugFont.getData().setScale(1.2f);
 
+
         camera.position.x = viewport.getWorldWidth();
         camera.update();
+
+        cameraListener = new CameraListener(camera,stage);
+        GameEventMessenger.getInstance().addListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_EXPLODED, cameraListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);
     }
 
     private void loadMap(String mainMapId) {
@@ -363,5 +370,8 @@ public class GameFlowScreen extends BaseScreen {
         super.dispose();
         if (shapeRenderer != null) shapeRenderer.dispose();
         if (debugFont != null) debugFont.dispose();
+        GameEventMessenger.getInstance().removeListener(GameEvent.GARGANTUAR_MOVES,cameraListener);
+        GameEventMessenger.getInstance().removeListener(GameEvent.PLANT_EXPLODED,cameraListener);
+        GameEventMessenger.getInstance().removeListener(GameEvent.LAWNMOWER_TRIGGERED,cameraListener);
     }
 }

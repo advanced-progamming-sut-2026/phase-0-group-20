@@ -12,6 +12,7 @@ import io.java.pvz.models.entities.plants.strategy.ImitateStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
+import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
@@ -77,6 +78,24 @@ public class GameFlowController {
         Sun sun = arena.getSunInCoordinate(realCol, realRow);
         if (sun == null) {
             return new Result(false, "There is no sun in this coordinate.");
+        }
+
+        sun.collect();
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.SUN_COLLECTED)
+            .amount(sun.getType().getValue())
+            .build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.SUN_COLLECTED, payload);
+
+        return new Result(true, "You collected a " + sun.getType().getLabel().toLowerCase() + " sun.");
+    }
+
+    public Result collectSun(Sun sun) {
+        if (sun == null) {
+            return new Result(false, "There is no sun to collect.");
+        }
+
+        if (sun.isCollected()) {
+            return new Result(false, "Sun is already collected.");
         }
 
         sun.collect();

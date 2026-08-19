@@ -6,6 +6,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
+import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.net.NetworkIdGenerator;
 
 public class Sun implements Ticker {
@@ -15,7 +16,7 @@ public class Sun implements Ticker {
 
     private SunType type;
     private Position position;
-    private int fallTicksLeft = 50;
+    private int fallTicksLeft = 5 * TimeManager.TICKS_PER_SECOND;
     private boolean isFalling = true;
     private boolean isCollected = false;
     private boolean exploded = false;
@@ -37,7 +38,7 @@ public class Sun implements Ticker {
     }
 
     public Sun(int amount, int col, int row) {
-        this.type = null;
+        this.type = SunType.SPECIAL_SUN;
         this.position = new Position(col, row);
         this.amountProduced = amount;
         if (GameSession.getInstance() != null) {
@@ -71,17 +72,14 @@ public class Sun implements Ticker {
             this.type = SunType.NORMAL_SUN;
             this.amountProduced = this.type.getValue();
         }
-        notify(String.format("Sun reached the ground at position (%d, %d)\n", getCol() + 1, getRow() + 1));
+//        notify(String.format("Sun reached the ground at position (%d, %d)\n", getCol() + 1, getRow() + 1));
     }
 
     public void collect() {
         this.isCollected = true;
 
-        if (isFalling && type == SunType.RADIOACTIVE_SUN) {
-            notify("Radioactive sun exploded mid-air!");
-        } else {
-            GameSession.getInstance().addSun(amountProduced);
-        }
+        GameSession.getInstance().addSun(amountProduced);
+
     }
 
     public void notify(String message) {
