@@ -283,14 +283,8 @@ public class GameHUD {
             seedBankTable.clear();
         }
 
-        boolean isZombieUI = false;
-        if (MatchController.getInstance().isOnlineMatch()) {
-            isZombieUI = (MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE);
-        } else if (MatchController.getInstance().isCouchPlay()) {
-            isZombieUI = true;
-        } else {
-            isZombieUI = (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel);
-        }
+        boolean isZombieUI = GameSession.getInstance().getCurrentMode() instanceof IZombieLevel;
+
 
         int maxSlots = 8;
 
@@ -304,7 +298,7 @@ public class GameHUD {
             for (int i = 0; i < 5; i++) {
                 if (i < selectedZombie.size()) {
                     ZombieCardButton zombieCardButton = createZombiePacket(selectedZombie.get(i), i + 1);
-                    seedBankTable.add(zombieCardButton).size(180f, 85f).padTop(100).padRight(50);
+                    seedBankTable.add(zombieCardButton).size(180f, 85f).padBottom(80).row();
                 }
             }
         } else {

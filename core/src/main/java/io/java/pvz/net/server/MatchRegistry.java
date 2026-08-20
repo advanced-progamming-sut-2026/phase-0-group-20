@@ -5,6 +5,7 @@ import io.java.pvz.net.protocol.NetworkMessage;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MatchRegistry {
@@ -12,6 +13,7 @@ public class MatchRegistry {
     private final Map<String, MatchSession> matchesById = new ConcurrentHashMap<>();
     private final Map<String, MatchSession> matchByUsername = new ConcurrentHashMap<>();
     private volatile Consumer<MatchSession> onEnd;
+    private volatile BiConsumer<MatchSession, ClientConnection> onDisconnect;
 
     public void setOnEnd(Consumer<MatchSession> onEnd) {
         this.onEnd = onEnd;
@@ -58,13 +60,21 @@ public class MatchRegistry {
         MatchSession match = getByConnection(connection);
         if (match == null) return;
 
-        ClientConnection opponent = match.getOpponentOf(connection);
-        if (opponent != null) {
-            NetworkMessage notice = NetworkMessage.request(MessageType.MATCH_END);
-            notice.put("matchId", match.getMatchId());
-            notice.put("reason", "opponent_disconnected");
-            opponent.send(notice);
+        if (onDisconnect != null) {
+            onDisconnect.accept(match, connection);
+        } else {
+            ClientConnection opponent = match.getOpponentOf(connection);
+            if (opponent != null) {
+                NetworkMessage notice = NetworkMessage.request(MessageType.MATCH_END);
+                notice.put("matchId", match.getMatchId());
+                notice.put("reason", "opponent_disconnected");
+                opponent.send(notice);
+            }
+            end(match);
         }
-        end(match);
+    }
+
+    public void setOnDisconnect(BiConsumer<MatchSession, ClientConnection> onDisconnect) {
+        this.onDisconnect = onDisconnect;
     }
 }
