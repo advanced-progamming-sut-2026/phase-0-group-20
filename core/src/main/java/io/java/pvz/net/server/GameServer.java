@@ -37,7 +37,7 @@ public class GameServer {
     }
 
     private void registerDefaultHandlers() {
-        AuthHandler authHandler = new AuthHandler();
+        AuthHandler authHandler = new AuthHandler(sessionRegistry);
         dispatcher.register(MessageType.LOGIN, authHandler::login);
         dispatcher.register(MessageType.LOGOUT, authHandler::logout);
         dispatcher.register(MessageType.SIGNUP_REGISTER, authHandler::signupRegister);
@@ -55,9 +55,13 @@ public class GameServer {
         dispatcher.register(MessageType.QUEUE_LEAVE, matchmakingHandler::queueLeave);
 
         matchRegistry.setOnEnd(match -> matchGameEngine.cancelMatch(match.getMatchId()));
-
+        matchRegistry.setOnDisconnect((match, connection) ->
+            matchGameEngine.handlePlayerLeft(match.getMatchId(), connection, "opponent_disconnected"));
+        
         MatchSyncHandler matchSyncHandler = new MatchSyncHandler(matchRegistry, matchGameEngine);
         dispatcher.register(MessageType.MATCH_ACTION, matchSyncHandler::handleAction);
+
+        dispatcher.register(MessageType.MATCH_SURRENDER, matchSyncHandler::handleSurrender);
 
         ReactionHandler reactionHandler = new ReactionHandler(matchRegistry);
         dispatcher.register(MessageType.REACTION_SEND, reactionHandler::handleReactionSend);

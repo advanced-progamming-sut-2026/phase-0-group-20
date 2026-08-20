@@ -48,4 +48,18 @@ public class MatchSyncHandler {
             return NetworkMessage.failure(request, "internal error: " + e.getMessage());
         }
     }
+
+    public NetworkMessage handleSurrender(NetworkMessage request, ClientConnection connection) {
+        if (connection.getAuthenticatedUser() == null) {
+            return NetworkMessage.failure(request, "not logged in");
+        }
+
+        MatchSession match = matchRegistry.getByConnection(connection);
+        if (match == null) {
+            return NetworkMessage.failure(request, "you are not currently in a match");
+        }
+
+        gameEngine.handlePlayerLeft(match.getMatchId(), connection, "surrendered");
+        return NetworkMessage.success(request);
+    }
 }

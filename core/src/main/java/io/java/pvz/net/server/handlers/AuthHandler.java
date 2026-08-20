@@ -6,14 +6,21 @@ import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.users.User;
 import io.java.pvz.net.protocol.NetworkMessage;
 import io.java.pvz.net.server.ClientConnection;
+import io.java.pvz.net.server.SessionRegistry;
 
 public class AuthHandler {
+
+    private final SessionRegistry sessionRegistry;
+
+    public AuthHandler(SessionRegistry sessionRegistry) {
+        this.sessionRegistry = sessionRegistry;
+    }
 
     public NetworkMessage login(NetworkMessage request, ClientConnection connection) {
         String username = request.getString("username");
         String password = request.getString("password");
         boolean stayLoggedIn = Boolean.TRUE.equals(request.getBoolean("stayLoggedIn"));
-        boolean isHash = Boolean.TRUE.equals(request.getBoolean("isHash")); // 🌟 فیکس مهم: چک کردن هش بودن پسورد
+        boolean isHash = Boolean.TRUE.equals(request.getBoolean("isHash"));
 
         if (username == null || password == null) {
             return NetworkMessage.failure(request, "username and password are required");
@@ -36,6 +43,10 @@ public class AuthHandler {
 
         if (user == null) {
             return NetworkMessage.failure(request, "incorrect password");
+        }
+
+        if (sessionRegistry.isOnline(user.getUsername())) {
+            return NetworkMessage.failure(request, "this account is already logged in from another session");
         }
 
         user.setStayLoggedIn(stayLoggedIn);

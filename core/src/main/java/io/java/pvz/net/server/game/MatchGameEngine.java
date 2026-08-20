@@ -161,14 +161,17 @@ public class MatchGameEngine {
     }
 
     private void finishMatch(NetworkMatchState match, GameState finalState) {
+        PlayerRole winner = (finalState == GameState.WON) ? PlayerRole.ZOMBIE : PlayerRole.PLANT;
+        finishMatch(match, winner, "finished");
+    }
+
+    private void finishMatch(NetworkMatchState match, PlayerRole winner, String reason) {
         if (match.isEnded()) return;
         match.markEnded();
 
-        PlayerRole winner = (finalState == GameState.WON) ? PlayerRole.ZOMBIE : PlayerRole.PLANT;
-
         NetworkMessage endMsg = NetworkMessage.request(MessageType.MATCH_END);
         endMsg.put("matchId", match.getMatchId());
-        endMsg.put("reason", "finished");
+        endMsg.put("reason", reason);
         endMsg.put("winnerRole", winner.name());
         endMsg.put("winnerUsername", winner == PlayerRole.PLANT
             ? match.getPlantUser().getUsername() : match.getZombieUser().getUsername());
@@ -201,4 +204,18 @@ public class MatchGameEngine {
     public interface ActionResultCallback {
         void onResult(boolean success, String message);
     }
+
+    public void handlePlayerLeft(String matchId, ClientConnection leaver, String reason) {
+        executor.submit(() -> {
+            NetworkMatchState match = matches.get(matchId);
+            if (match == null || match.isEnded()) return;
+
+            PlayerRole leaverRole = match.getMatchSession().getRoleOf(leaver);
+            if (leaverRole == null) return;
+
+            PlayerRole winner = (leaverRole == PlayerRole.PLANT) ? PlayerRole.ZOMBIE : PlayerRole.PLANT;
+            finishMatch(match, winner, reason);
+        });
+    }
+
 }
