@@ -16,6 +16,7 @@ import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.utils.DialogueLine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,19 @@ public abstract class Level implements GameMode {
     private boolean allWavesSpawned = false;
     private Wave currentActiveWave = null;
     private float currentDifficulty;
+    protected List<DialogueLine> introDialogue = new ArrayList<>();
+
+    public List<DialogueLine> getIntroDialogue() {
+        return introDialogue;
+    }
+
+    public void setIntroDialogue(List<DialogueLine> introDialogue) {
+        this.introDialogue = introDialogue;
+    }
+
+    public void addDialogueLine(String speakerName, String text, String pamPath, String clipName, boolean isLeft) {
+        this.introDialogue.add(new DialogueLine(speakerName, text, pamPath, clipName, isLeft));
+    }
 
     protected Level(String name, SeasonType season, int waveCount, int baseWaveBudget, int levelNumber) {
         this.name = name;
@@ -48,6 +62,7 @@ public abstract class Level implements GameMode {
         this.waveCount = waveCount;
         this.baseWaveBudget = (int) (baseWaveBudget * getDifficultyCoefficient());
         this.levelNumber = levelNumber;
+        setupDialogues();
     }
 
     public void onStart(GameSession session) {
@@ -233,6 +248,10 @@ public abstract class Level implements GameMode {
     public float getDifficultyCoefficient() {
         int diffLevel = App.getSettings().getDifficulty();
         return 0.4f + (diffLevel * 0.2f);
+    }
+
+    public void setupDialogues(){
+
     }
 
 }
