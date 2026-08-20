@@ -56,12 +56,6 @@ public class MatchController {
             if (onMatchEnd != null) onMatchEnd.accept(message);
         }));
 
-//        client.onPush(MessageType.MATCH_FOUND, message -> Gdx.app.postRunnable(() -> {
-//            currentMatchId = message.getString("matchId");
-//            isOnlineMatch = true;
-//            currentRole = PlayerRole.valueOf(message.getString("role"));
-//        }));
-
         client.onPush(MessageType.MATCH_ACTION_BROADCAST, message -> Gdx.app.postRunnable(() -> {
             String action = message.getString("action");
             int col = message.getInt("col");

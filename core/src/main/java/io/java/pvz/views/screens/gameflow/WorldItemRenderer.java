@@ -274,7 +274,6 @@ public class WorldItemRenderer {
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
                 if (pointer == -1 || pointer == 0) {
                     tryCollectSun();
                 }
@@ -283,10 +282,12 @@ public class WorldItemRenderer {
             private void tryCollectSun() {
                 if (sun.isCollected()) return;
 
-                boolean isOnlineZombie = MatchController.getInstance().isOnlineMatch()
-                    && MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE;
+                boolean isOnline = MatchController.getInstance().isOnlineMatch();
 
-                if (isOnlineZombie) {
+                if (isOnline) {
+                    if (MatchController.getInstance().getCurrentRole() != PlayerRole.ZOMBIE)
+                        return; // plant player: suns are visual-only and no interaction
+
                     MatchController.getInstance().collectSun(sun.getCol(), sun.getRow(), response -> {
                         if (response != null && response.isSuccess()) {
                             playCollectAnimation();

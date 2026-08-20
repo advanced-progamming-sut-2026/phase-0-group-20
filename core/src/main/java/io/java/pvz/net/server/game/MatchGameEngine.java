@@ -5,6 +5,9 @@ import io.java.pvz.controllers.GameController.MiniGameController;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.game.minigame.MiniGameFactory;
 import io.java.pvz.models.game.minigame.MiniGameType;
@@ -143,7 +146,10 @@ public class MatchGameEngine {
                     request.getString("plantName"), request.getString("col"), request.getString("row"));
             }
             case "COLLECT_SUN" -> {
-                if (role != PlayerRole.PLANT) return new Result(false, "only the plant side can collect sun");
+                if (role != PlayerRole.ZOMBIE) {
+                    GameSession.notify("only zombie can collect sun");
+                    return new Result(false, "only the zombie side can collect sun");
+                }
                 Integer col = request.getInt("col");
                 Integer row = request.getInt("row");
                 if (col == null || row == null) return new Result(false, "missing col/row");

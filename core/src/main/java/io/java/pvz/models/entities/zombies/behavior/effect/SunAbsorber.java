@@ -100,10 +100,8 @@ public class SunAbsorber extends Effect {
 
                 if (targetedSun != null && !targetedSun.isCollected()) {
                     float progress = (float) phaseTicksCounter / powerTicks;
-
                     float newX = startSunX + (targetZombieX - startSunX) * progress;
                     float newY = startSunY + (targetZombieY - startSunY) * progress;
-
                     targetedSun.getPosition().setPosition(newX, newY);
                 }
 
