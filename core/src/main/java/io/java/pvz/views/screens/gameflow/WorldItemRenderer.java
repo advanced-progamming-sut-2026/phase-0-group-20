@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
 import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
@@ -24,6 +25,7 @@ import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
@@ -176,7 +178,7 @@ public class WorldItemRenderer {
         map.put(ProjectileType.BOWLING_BULB_BLUE, new ProjectileAnim(Ids.Projectiles.EXPLODE_NUT_BOWL, "animation"));
         map.put(ProjectileType.BOWLING_BULB_ORANGE, new ProjectileAnim(Ids.Projectiles.GIANT_NUT_BOWL, "animation"));
         map.put(ProjectileType.PUFF_SPORE, new ProjectileAnim("768/INITIAL/EFFECTS/T_PUFFSHROOM_PROJECTILE/T_PUFFSHROOM_PROJECTILE.PAM", "animation"));
-        map.put(ProjectileType.SHARK,new ProjectileAnim(Ids.Projectiles.SHARK,"walk"));
+        map.put(ProjectileType.SHARK, new ProjectileAnim(Ids.Projectiles.SHARK, "walk"));
         return map;
     }
 
@@ -249,8 +251,8 @@ public class WorldItemRenderer {
 
             actor.setPosition(targetX, targetY + 10f);
             actor.addAction(Actions.sequence(
-                Actions.moveTo(targetX, targetY + 60f, 0.35f,Interpolation.sineOut),
-                Actions.moveTo(targetX, targetY, 0.35f,Interpolation.bounceOut)
+                Actions.moveTo(targetX, targetY + 60f, 0.35f, Interpolation.sineOut),
+                Actions.moveTo(targetX, targetY, 0.35f, Interpolation.bounceOut)
             ));
 
             sun.getPosition().setX(baseX + offsetX + actor.getWidth() / 2f);
@@ -272,28 +274,44 @@ public class WorldItemRenderer {
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
                 if (pointer == -1 || pointer == 0) {
                     tryCollectSun();
                 }
             }
 
             private void tryCollectSun() {
-                if (!sun.isCollected()) {
-                    Result result = gameFlowController.collectSun(sun);
+                if (sun.isCollected()) return;
 
-                    if (result.isSuccessful()) {
-                        if (sun.isExploded() || (sun.getType() == SunType.RADIOACTIVE_SUN && sun.isFalling())) {
-                        } else {
-                            actor.addAction(Actions.sequence(
-                                Actions.parallel(
-                                    Actions.scaleTo(finalScale * 1.5f, finalScale * 1.5f, 0.2f),
-                                    Actions.fadeOut(0.2f)
-                                ),
-                                Actions.removeActor()
-                            ));
+                boolean isOnline = MatchController.getInstance().isOnlineMatch();
+
+                if (isOnline) {
+                    if (MatchController.getInstance().getCurrentRole() != PlayerRole.ZOMBIE)
+                        return; // plant player: suns are visual-only and no interaction
+
+                    MatchController.getInstance().collectSun(sun.getCol(), sun.getRow(), response -> {
+                        if (response != null && response.isSuccess()) {
+                            playCollectAnimation();
                         }
+                    });
+                } else {
+                    Result result = gameFlowController.collectSun(sun);
+                    if (result.isSuccessful()) {
+                        playCollectAnimation();
                     }
+                }
+            }
+
+            private void playCollectAnimation() {
+                if (sun.isExploded() || (sun.getType() == SunType.RADIOACTIVE_SUN && sun.isFalling())) {
+                    return;
+                } else {
+                    actor.addAction(Actions.sequence(
+                        Actions.parallel(
+                            Actions.scaleTo(finalScale * 1.5f, finalScale * 1.5f, 0.2f),
+                            Actions.fadeOut(0.2f)
+                        ),
+                        Actions.removeActor()
+                    ));
                 }
             }
         });
@@ -325,7 +343,7 @@ public class WorldItemRenderer {
                 if (!actor.getClip().equals(finalClip)) actor.setClip(finalClip);
             }
         } else {
-            String idleClip = (sun.getType() ==SunType.RADIOACTIVE_SUN) ? "animation2" : "animation";
+            String idleClip = (sun.getType() == SunType.RADIOACTIVE_SUN) ? "animation2" : "animation";
             if (!actor.getClip().equals(idleClip)) actor.setClip(idleClip);
         }
 
@@ -473,8 +491,7 @@ public class WorldItemRenderer {
                 zombieLayer.addActor(fakePlant);
                 fakePlantActors.put(ib, fakePlant);
             }
-        }
-        else
+        } else
             pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_ZOMBIE/FROSTBITE_ICE_BLOCK_ZOMBIE.PAM";
 
         PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, defaultClip);

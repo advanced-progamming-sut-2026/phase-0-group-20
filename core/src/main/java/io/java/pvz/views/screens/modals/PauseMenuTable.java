@@ -3,17 +3,14 @@ package io.java.pvz.views.screens.modals;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.controllers.GameController.GameMenuController;
+import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.controllers.GameController.SettingController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.models.App;
@@ -96,12 +93,19 @@ public class PauseMenuTable extends BorderedTable {
 
         TextButton saveExitBtn = UiFactory.textButton("SAVE AND EXIT", skin, "brown", 1.05f, 0.95f, () -> {
             System.out.println("Quitting to Plant Selection...");
-            app.postRunnable(() -> {
+
+            Runnable proceedToExit = () -> app.postRunnable(() -> {
                 GameSession.destroyInstance();
                 App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
                 ScreenManager.getInstance().popScreen();
                 ScreenManager.getInstance().popScreen();
             });
+
+            if (MatchController.getInstance().isOnlineMatch()) {
+                MatchController.getInstance().surrender(response -> proceedToExit.run());
+            } else {
+                proceedToExit.run();
+            }
         });
         saveExitBtn.getLabel().setFontScale(1.1f);
         buttonsTable.add(saveExitBtn).width(200).height(65).padRight(15);

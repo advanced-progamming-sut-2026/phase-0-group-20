@@ -4,11 +4,12 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
+import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
-import io.java.pvz.models.entities.zombies.behavior.effect.*;
+import io.java.pvz.models.entities.zombies.behavior.effect.RageEffect;
 import io.java.pvz.models.entities.zombies.behavior.move.BarrelRollerMove;
 import io.java.pvz.models.entities.zombies.zomboss.MammothFreezingColumn;
 import io.java.pvz.models.entities.zombies.zomboss.MammothZomboss;
@@ -119,7 +120,7 @@ public class ZombieRenderer {
 
         float yOffset = 0f;
         if (!(zombie instanceof Zomboss boss)) {
-           yOffset =  actor.getHeight() / 2f + 30f;
+            yOffset = actor.getHeight() / 2f + 30f;
         } else {
             ZombieType type = boss.getType();
             switch (type) {
@@ -150,12 +151,28 @@ public class ZombieRenderer {
 
     private String resolveZombieClip(Zombie zombie) {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie.getType());
+        Result r;
 
+        if ((r = resolveZombossClip(zombie, anim)).isSuccessful()) return r.message();
+        if ((r = resolveBarrelRollerClip(zombie, anim)).isSuccessful()) return r.message();
+        if ((r = resolveEarlyStateClip(zombie, anim)).isSuccessful()) return r.message();
+        if ((r = resolveAllStarClip(zombie, anim)).isSuccessful()) return r.message();
+        if ((r = resolvePianistClip(zombie, anim)).isSuccessful()) return r.message();
+        if ((r = resolveCrystalSkullClip(zombie, anim)).isSuccessful()) return r.message();
+        if ((r = resolveMotionAndCastStateClip(zombie, anim)).isSuccessful()) return r.message();
+        if ((r = resolveNewspaperClip(zombie, anim)).isSuccessful()) return r.message();
+        if ((r = resolvePushZombieClip(zombie, anim)).isSuccessful()) return r.message();
+        if ((r = resolveCombatAndEffectStateClip(zombie, anim)).isSuccessful()) return r.message();
+
+        return pickClip(anim, CLIP_IDLE, "walk");
+    }
+
+    private Result resolveZombossClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
         if (zombie instanceof Zomboss zomboss) {
-            if (zomboss.isDead()) return "die";
-            if (zomboss.getState() == ZombieState.INTRO) return "intro";
+            if (zomboss.isDead()) return new Result(true, "die");
+            if (zomboss.getState() == ZombieState.INTRO) return new Result(true, "intro");
 
-            return switch (zomboss.getState()) {
+            String clip = switch (zomboss.getState()) {
                 case BOSS_VACUUM_START -> "suction_on";
                 case BOSS_VACUUM_LOOP -> "suction_loop";
                 case BOSS_VACUUM_END -> "suction_off";
@@ -167,12 +184,12 @@ public class ZombieRenderer {
                 case BOSS_SUMMON_END -> pickClip(anim, "spawn", "zombie_portal_end", "slingshot", "summoning");
                 case BOSS_GLACIER -> {
                     if (zomboss.getAttackBehavior() instanceof MammothFreezingColumn colAttack) {
-                        int animIndex = ( 6 - colAttack.getTargetCol());
+                        int animIndex = (6 - colAttack.getTargetCol());
                         yield "glacier_column_" + animIndex;
                     }
                     yield "glacier_column_1";
                 }
-                case BOSS_MISSILE_START -> (zomboss instanceof MammothZomboss)? "slingshot" : "missile_start";
+                case BOSS_MISSILE_START -> (zomboss instanceof MammothZomboss) ? "slingshot" : "missile_start";
                 case BOSS_MISSILE_LAUNCH -> "rocket_launch";
                 case BOSS_DASH -> "walk_forward";
                 case BOSS_JUMP_START -> "jump_start";
@@ -187,93 +204,128 @@ public class ZombieRenderer {
                 case BOSS_IDLE -> "idle";
                 default -> pickClip(anim, "idle", "idle");
             };
+            return new Result(true, clip);
         }
+        return new Result(false, null);
+    }
 
+    private Result resolveBarrelRollerClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
         if (zombie.getType() == ZombieType.BARREL_ROLLER) {
             boolean hasBarrel = zombieHasBarrel(zombie);
             if (zombie.isDead()) {
-                return hasBarrel ? pickClip(anim, CLIP_WALK, "die") : pickClip(anim, CLIP_WALK, "die2");
+                return new Result(true, hasBarrel ? pickClip(anim, CLIP_WALK, "die") : pickClip(anim, CLIP_WALK, "die2"));
             }
             if (zombie.isAttacking()) {
-                return hasBarrel ? pickClip(anim, CLIP_WALK, "eat") : pickClip(anim, CLIP_WALK, "eat2");
+                return new Result(true, hasBarrel ? pickClip(anim, CLIP_WALK, "eat") : pickClip(anim, CLIP_WALK, "eat2"));
             }
             if (zombie.getState() == ZombieState.STUNNED) {
-                return hasBarrel ? pickClip(anim, CLIP_WALK, "idle") : pickClip(anim, CLIP_WALK, "idle2");
+                return new Result(true, hasBarrel ? pickClip(anim, CLIP_WALK, "idle") : pickClip(anim, CLIP_WALK, "idle2"));
             }
-            return hasBarrel ? pickClip(anim, CLIP_WALK, "walk") : pickClip(anim, CLIP_WALK, "walk2");
+            return new Result(true, hasBarrel ? pickClip(anim, CLIP_WALK, "walk") : pickClip(anim, CLIP_WALK, "walk2"));
         }
+        return new Result(false, null);
+    }
 
-        if (zombie.isDead()) return pickClip(anim, CLIP_WALK, "die");
-        if (zombie.getState() == ZombieState.TOSS) return pickClip(anim, CLIP_IDLE, "toss");
-        if (zombie.getState() == ZombieState.INTRO) return pickClip(anim, "idle", "intro");
+    private Result resolveEarlyStateClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
+        if (zombie.isDead()) return new Result(true, pickClip(anim, CLIP_WALK, "die"));
+        if (zombie.getState() == ZombieState.TOSS) return new Result(true, pickClip(anim, CLIP_IDLE, "toss"));
+        if (zombie.getState() == ZombieState.INTRO) return new Result(true, pickClip(anim, "idle", "intro"));
+        return new Result(false, null);
+    }
 
+    private Result resolveAllStarClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
         if (zombie.getType() == ZombieType.ALL_STAR) {
             if (zombie.getState() == ZombieState.SPECIAL) {
-                return pickClip(anim, CLIP_WALK, "tackle");
+                return new Result(true, pickClip(anim, CLIP_WALK, "tackle"));
             }
             if (zombie.getState() == ZombieState.WALKING && zombie.getCurrentSpeed() > zombie.getBaseSpeed() * 1.5f) {
-                return pickClip(anim, CLIP_WALK, "run");
+                return new Result(true, pickClip(anim, CLIP_WALK, "run"));
             }
         }
+        return new Result(false, null);
+    }
 
+    private Result resolvePianistClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
         if (zombie.getType() == ZombieType.PIANIST) {
             if (zombie.getState() == ZombieState.SPECIAL) {
-                return pickClip(anim, CLIP_WALK, "play");
+                return new Result(true, pickClip(anim, CLIP_WALK, "play"));
             }
-            return pickClip(anim, CLIP_IDLE, "idle");
+            return new Result(true, pickClip(anim, CLIP_IDLE, "idle"));
         }
+        return new Result(false, null);
+    }
 
+    private Result resolveCrystalSkullClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
         if (zombie.getType() == ZombieType.CRYSTAL_SKULL) {
-            if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
-            if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
-            if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, CLIP_WALK, "attack");
-            if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
+            if (zombie.getState() == ZombieState.POWER_UP)
+                return new Result(true, pickClip(anim, CLIP_WALK, "power_up"));
+            if (zombie.getState() == ZombieState.POWER) return new Result(true, pickClip(anim, CLIP_WALK, "power"));
+            if (zombie.getState() == ZombieState.SPECIAL) return new Result(true, pickClip(anim, CLIP_WALK, "attack"));
+            if (zombie.getState() == ZombieState.POWER_DOWN)
+                return new Result(true, pickClip(anim, CLIP_WALK, "power_down"));
         }
+        return new Result(false, null);
+    }
 
-        if (zombie.getState() == ZombieState.SPECIAL) return pickClip(anim, "idle", "special");
-        if (zombie.getState() == ZombieState.CAST) return pickClip(anim, CLIP_IDLE, "cast");
-        if (zombie.getState() == ZombieState.CAST_LOOP) return pickClip(anim, CLIP_IDLE, "cast_loop");
-        if (zombie.getState() == ZombieState.REEL) return pickClip(anim, CLIP_IDLE, "reel");
-        if (zombie.getState() == ZombieState.SMASH) return pickClip(anim, "eat", "smash_left");
-        if (zombie.getState() == ZombieState.THROW_IMP) return pickClip(anim, "idle", "fire", "cannon_fire");
-        if (zombie.getState() == ZombieState.FLYING_IMP) return pickClip(anim, "walk", "fly");
-        if (zombie.getState() == ZombieState.LANDING) return pickClip(anim, "idle", "land");
-        if (zombie.getState() == ZombieState.FLY_START) return pickClip(anim, CLIP_WALK, "fly_start");
-        if (zombie.getState() == ZombieState.FLYING) return pickClip(anim, CLIP_WALK, "fly_loop", "fly");
-        if (zombie.getState() == ZombieState.FLY_END) return pickClip(anim, CLIP_WALK, "fly_end", "land");
+    private Result resolveMotionAndCastStateClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
+        if (zombie.getState() == ZombieState.SPECIAL) return new Result(true, pickClip(anim, "idle", "special"));
+        if (zombie.getState() == ZombieState.CAST) return new Result(true, pickClip(anim, CLIP_IDLE, "cast"));
+        if (zombie.getState() == ZombieState.CAST_LOOP) return new Result(true, pickClip(anim, CLIP_IDLE, "cast_loop"));
+        if (zombie.getState() == ZombieState.REEL) return new Result(true, pickClip(anim, CLIP_IDLE, "reel"));
+        if (zombie.getState() == ZombieState.SMASH) return new Result(true, pickClip(anim, "eat", "smash_left"));
+        if (zombie.getState() == ZombieState.THROW_IMP)
+            return new Result(true, pickClip(anim, "idle", "fire", "cannon_fire"));
+        if (zombie.getState() == ZombieState.FLYING_IMP) return new Result(true, pickClip(anim, "walk", "fly"));
+        if (zombie.getState() == ZombieState.LANDING) return new Result(true, pickClip(anim, "idle", "land"));
+        if (zombie.getState() == ZombieState.FLY_START) return new Result(true, pickClip(anim, CLIP_WALK, "fly_start"));
+        if (zombie.getState() == ZombieState.FLYING)
+            return new Result(true, pickClip(anim, CLIP_WALK, "fly_loop", "fly"));
+        if (zombie.getState() == ZombieState.FLY_END)
+            return new Result(true, pickClip(anim, CLIP_WALK, "fly_end", "land"));
+        return new Result(false, null);
+    }
 
+    private Result resolveNewspaperClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
         if (zombie.getType() == ZombieType.NEWSPAPER) {
             if (zombie.getState() == ZombieState.ENRAGING) {
-                return pickClip(anim, CLIP_WALK, "newspaper_defeat");
+                return new Result(true, pickClip(anim, CLIP_WALK, "newspaper_defeat"));
             }
             boolean isEnraged = zombie.getActiveEffects().stream().anyMatch(e -> e instanceof RageEffect);
             if (isEnraged) {
-                if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
-                return pickClip(anim, CLIP_WALK, "walk");
+                if (zombie.isAttacking()) return new Result(true, pickClip(anim, CLIP_WALK, "eat"));
+                return new Result(true, pickClip(anim, CLIP_WALK, "walk"));
             } else {
-                if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat_newspaper");
-                return pickClip(anim, CLIP_WALK, "walk_newspaper");
+                if (zombie.isAttacking()) return new Result(true, pickClip(anim, CLIP_WALK, "eat_newspaper"));
+                return new Result(true, pickClip(anim, CLIP_WALK, "walk_newspaper"));
             }
         }
+        return new Result(false, null);
+    }
 
+    private Result resolvePushZombieClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
         if (zombie.getType() == ZombieType.TROGLOBITE || zombie.getType() == ZombieType.ARCADE) {
             if (zombie.getState() == ZombieState.PUSH) {
-                return pickClip(anim, CLIP_WALK, "push");
+                return new Result(true, pickClip(anim, CLIP_WALK, "push"));
             }
         }
+        return new Result(false, null);
+    }
 
-        if (zombie.getState() == ZombieState.POWER_UP) return pickClip(anim, CLIP_WALK, "power_up");
-        if (zombie.getState() == ZombieState.POWER) return pickClip(anim, CLIP_WALK, "power");
-        if (zombie.getState() == ZombieState.POWER_DOWN) return pickClip(anim, CLIP_WALK, "power_down");
-        if (zombie.getState() == ZombieState.THROW) return pickClip(anim, CLIP_WALK, "throw");
-        if (zombie.getState() == ZombieState.SPIN_UP) return pickClip(anim, CLIP_IDLE, "spinup");
-        if (zombie.getState() == ZombieState.SPINNING) return pickClip(anim, CLIP_WALK, "spin_walk", "spin");
-        if (zombie.getState() == ZombieState.SPIN_DOWN) return pickClip(anim, CLIP_IDLE, "spindown");
-        if (zombie.getState() == ZombieState.SPELL) return pickClip(anim, "idle", "sheep");
-        if (zombie.isAttacking()) return pickClip(anim, CLIP_WALK, "eat");
-        if (zombie.getState() == ZombieState.STUNNED) return pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop");
-
-        return pickClip(anim, CLIP_IDLE, "walk");
+    private Result resolveCombatAndEffectStateClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
+        if (zombie.getState() == ZombieState.POWER_UP) return new Result(true, pickClip(anim, CLIP_WALK, "power_up"));
+        if (zombie.getState() == ZombieState.POWER) return new Result(true, pickClip(anim, CLIP_WALK, "power"));
+        if (zombie.getState() == ZombieState.POWER_DOWN)
+            return new Result(true, pickClip(anim, CLIP_WALK, "power_down"));
+        if (zombie.getState() == ZombieState.THROW) return new Result(true, pickClip(anim, CLIP_WALK, "throw"));
+        if (zombie.getState() == ZombieState.SPIN_UP) return new Result(true, pickClip(anim, CLIP_IDLE, "spinup"));
+        if (zombie.getState() == ZombieState.SPINNING)
+            return new Result(true, pickClip(anim, CLIP_WALK, "spin_walk", "spin"));
+        if (zombie.getState() == ZombieState.SPIN_DOWN) return new Result(true, pickClip(anim, CLIP_IDLE, "spindown"));
+        if (zombie.getState() == ZombieState.SPELL) return new Result(true, pickClip(anim, "idle", "sheep"));
+        if (zombie.isAttacking()) return new Result(true, pickClip(anim, CLIP_WALK, "eat"));
+        if (zombie.getState() == ZombieState.STUNNED)
+            return new Result(true, pickClip(anim, CLIP_WALK, "stun_idle", "stun_loop"));
+        return new Result(false, null);
     }
 
     private String pickClip(AnimationCatalog.EntityAnimation anim, String fallback, String... preferredClips) {

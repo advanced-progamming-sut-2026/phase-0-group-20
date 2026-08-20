@@ -1,5 +1,7 @@
 package io.java.pvz.net.client;
 
+import io.java.pvz.models.entities.Sun;
+import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
@@ -16,6 +18,13 @@ public class NetworkStateSyncer {
         GameSession session = GameSession.getInstance();
         if (session == null || session.getArena() == null) return;
         Arena arena = session.getArena();
+
+        if (session.getCurrentMode() instanceof io.java.pvz.models.game.minigame.IZombieLevel iZombieLevel) {
+            Number redLineColValue = (Number) snapshot.get("redLineCol");
+            if (redLineColValue != null) {
+                iZombieLevel.setRedLineCol(redLineColValue.intValue());
+            }
+        }
 
         int serverSun = ((Number) snapshot.get("currentSun")).intValue();
         int diff = serverSun - session.getCurrentSun();
@@ -46,7 +55,8 @@ public class NetworkStateSyncer {
                             } else if (sState != ZombieState.EATING && localZ.isAttacking()) {
                                 localZ.setAttacking(false);
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             }
@@ -66,6 +76,46 @@ public class NetworkStateSyncer {
                 }
             }
         }
+
+        List<Map<String, Object>> sunsData = (List<Map<String, Object>>) snapshot.get("suns");
+        if (sunsData != null) {
+            java.util.Set<String> serverSunIds = new java.util.HashSet<>();
+
+            for (Map<String, Object> sData : sunsData) {
+                String sId = (String) sData.get("id");
+                if (sId == null) continue;
+                serverSunIds.add(sId);
+
+                int sCol = ((Number) sData.get("col")).intValue();
+                int sRow = ((Number) sData.get("row")).intValue();
+                String typeStr = (String) sData.get("type");
+                Boolean sFalling = (Boolean) sData.get("falling");
+
+                Sun localSun = findSunById(arena, sId);
+                if (localSun == null) {
+                    SunType sunType;
+                    try {
+                        sunType = typeStr != null
+                            ? SunType.valueOf(typeStr)
+                            : SunType.NORMAL_SUN;
+                    } catch (Exception e) {
+                        sunType = SunType.NORMAL_SUN;
+                    }
+
+                    Sun newSun = new Sun(sunType, sCol, sRow);
+                    newSun.setNetworkId(sId);
+                    if (sFalling != null) newSun.setFalling(sFalling);
+                    arena.addSun(newSun);
+                } else {
+                    if (sFalling != null && localSun.isFalling() != sFalling)
+                        localSun.setFalling(sFalling);
+
+                }
+            }
+
+            arena.getActiveSuns().removeIf(sun ->
+                sun.getNetworkId() != null && !serverSunIds.contains(sun.getNetworkId()) && !sun.isCollected());
+        }
     }
 
     private static Zombie findZombieById(Arena arena, String id) {
@@ -77,6 +127,12 @@ public class NetworkStateSyncer {
     private static Plant findPlantById(Arena arena, String id) {
         for (Plant plant : arena.getActivePlants())
             if (id.equals(plant.getNetworkId())) return plant;
+        return null;
+    }
+
+    private static Sun findSunById(Arena arena, String id) {
+        for (Sun sun : arena.getActiveSuns())
+            if (id.equals(sun.getNetworkId())) return sun;
         return null;
     }
 }
