@@ -102,15 +102,23 @@ public class MultiplayerLobbyScreen extends BaseScreen {
             outgoingInviteId = null;
             waitingInQueue = false;
             closeWaitingModal();
-            MatchController.getInstance().setCouchPlay(false);
+
+            MatchController.getInstance().setupOnlineMatch(
+                info.matchId,
+                io.java.pvz.net.server.PlayerRole.valueOf(info.role)
+            );
+
+            Level izombie = MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, 1);
+            GameSession.startMiniGame(izombie, App.getActiveUser().getUnlockedPlants());
             new MatchFoundTable(skin, info.opponentUsername, info.role).show(modalLayer, viewport);
+
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
                     String mapId = new GameMenuController().getCurrentMapTextureId();
                     ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
                 }
-            }, 2.0f);
+            }, 4.0f);
         });
     }
 

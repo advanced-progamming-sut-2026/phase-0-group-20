@@ -57,7 +57,7 @@ public class GameServer {
         matchRegistry.setOnEnd(match -> matchGameEngine.cancelMatch(match.getMatchId()));
         matchRegistry.setOnDisconnect((match, connection) ->
             matchGameEngine.handlePlayerLeft(match.getMatchId(), connection, "opponent_disconnected"));
-        
+
         MatchSyncHandler matchSyncHandler = new MatchSyncHandler(matchRegistry, matchGameEngine);
         dispatcher.register(MessageType.MATCH_ACTION, matchSyncHandler::handleAction);
 

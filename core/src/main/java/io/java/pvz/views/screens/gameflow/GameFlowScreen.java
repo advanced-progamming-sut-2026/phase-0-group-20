@@ -2,7 +2,6 @@ package io.java.pvz.views.screens.gameflow;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,16 +10,18 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import io.java.pvz.controllers.GameController.GameFlowController;
+import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.controllers.GameController.MiniGameController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.game.GameSession;
-import io.java.pvz.models.game.events.*;
+import io.java.pvz.models.game.events.CameraListener;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.minigame.DroppedSeedPacket;
 import io.java.pvz.models.timeManager.TimeManager;
-
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PlantCardButton;
 import io.java.pvz.utils.UiFactory;
@@ -70,7 +71,8 @@ public class GameFlowScreen extends BaseScreen {
         battlefieldRenderer = new BattlefieldRenderer();
         mainLayer.addActor(battlefieldRenderer.getGroup());
 
-        inputHandler = new GameInputHandler(mainLayer, viewport, battlefieldRenderer.getHighlightLayer(), gameFlowController, miniGameController);
+        inputHandler = new GameInputHandler(mainLayer, viewport, battlefieldRenderer.getHighlightLayer(),
+            gameFlowController, miniGameController);
         gameHUD = new GameHUD(mainLayer, modalLayer, viewport, inputHandler, gameFlowController);
         inputHandler.setGameHUD(gameHUD);
 
@@ -80,14 +82,34 @@ public class GameFlowScreen extends BaseScreen {
         debugFont = new BitmapFont();
         debugFont.getData().setScale(1.2f);
 
-
         camera.position.x = viewport.getWorldWidth();
         camera.update();
 
-        cameraListener = new CameraListener(camera,stage);
+        cameraListener = new CameraListener(camera, stage);
         GameEventMessenger.getInstance().addListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
         GameEventMessenger.getInstance().addListener(GameEvent.PLANT_EXPLODED, cameraListener);
         GameEventMessenger.getInstance().addListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);
+
+        MatchController.getInstance().setOnMatchEnd(message -> {
+            String winnerRoleStr = message.getString("winnerRole");
+            String reason = message.getString("reason");
+            io.java.pvz.net.server.PlayerRole myRole = MatchController.getInstance().getCurrentRole();
+
+            GameState finalState = GameState.LOST;
+            if (myRole != null && myRole.name().equals(winnerRoleStr)) {
+                finalState = GameState.WON;
+            }
+
+            if (!levelResultShown) {
+                levelResultShown = true;
+                if (GameSession.getInstance() != null)
+                    GameSession.getInstance().pauseGame();
+                LevelResultTable resultTable = new LevelResultTable(AssetLoader.getInstance().getSkin(),
+                    finalState, game);
+                resultTable.show(modalLayer, viewport);
+                GameSession.notify("Match Ended: " + reason);
+            }
+        });
     }
 
     private void loadMap(String mainMapId) {
@@ -128,7 +150,7 @@ public class GameFlowScreen extends BaseScreen {
         handleDebugSpawnKeys();
         batch.end();
 
-        if(App.getSettings().isGrid())
+        if (App.getSettings().isGrid())
             drawDebugLayout();
         advanceSimulation(simDelta);
         syncDroppedPackets();
@@ -370,8 +392,8 @@ public class GameFlowScreen extends BaseScreen {
         super.dispose();
         if (shapeRenderer != null) shapeRenderer.dispose();
         if (debugFont != null) debugFont.dispose();
-        GameEventMessenger.getInstance().removeListener(GameEvent.GARGANTUAR_MOVES,cameraListener);
-        GameEventMessenger.getInstance().removeListener(GameEvent.PLANT_EXPLODED,cameraListener);
-        GameEventMessenger.getInstance().removeListener(GameEvent.LAWNMOWER_TRIGGERED,cameraListener);
+        GameEventMessenger.getInstance().removeListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
+        GameEventMessenger.getInstance().removeListener(GameEvent.PLANT_EXPLODED, cameraListener);
+        GameEventMessenger.getInstance().removeListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);
     }
 }

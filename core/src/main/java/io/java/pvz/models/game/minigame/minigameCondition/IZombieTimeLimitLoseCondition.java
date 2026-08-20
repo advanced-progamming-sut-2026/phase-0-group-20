@@ -6,7 +6,7 @@ import io.java.pvz.models.timeManager.TimeManager;
 
 public class IZombieTimeLimitLoseCondition implements LoseCondition {
 
-    public static final int DEFAULT_TIME_LIMIT_SECONDS = 120;
+    public static final int DEFAULT_TIME_LIMIT_SECONDS = 180;
 
     private final int timeLimitTicks;
 

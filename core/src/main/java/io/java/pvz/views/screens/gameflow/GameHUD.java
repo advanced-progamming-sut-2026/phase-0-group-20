@@ -23,8 +23,8 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.zomboss.Zomboss;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
-import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.BossLevel;
+import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.game.minigame.BeghouledLevel;
 import io.java.pvz.models.game.minigame.IZombieLevel;
@@ -105,7 +105,7 @@ public class GameHUD {
                 Image flagImage = UiFactory.imageFor(textures,
                     "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
                 flagImage.setSize(40f, 45f);
-                float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction)-(flagImage.getWidth() / 2f);
+                float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction) - (flagImage.getWidth() / 2f);
                 float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (flagImage.getHeight() / 2f);
                 flagImage.setPosition(x, y);
                 mainLayer.addActor(flagImage);
@@ -142,12 +142,12 @@ public class GameHUD {
     }
 
     private void setupPlantSelectionMenu() {
-        if(GameSession.getInstance() !=  null){
+        if (GameSession.getInstance() != null) {
             GameSession.getInstance().pauseGame();
         }
         if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
             buildBeghouledSeedBank();
-            new LevelIntroModalTable(skin).show(modalLayer,viewport);
+            new LevelIntroModalTable(skin).show(modalLayer, viewport);
 
         } else if (GameSession.getInstance() != null &&
             GameSession.getInstance().getCurrentMode() instanceof IZombieLevel) {
@@ -159,11 +159,11 @@ public class GameHUD {
             } else {
                 buildSeedBank();
             }
-            new LevelIntroModalTable(skin).show(modalLayer,viewport);
+            new LevelIntroModalTable(skin).show(modalLayer, viewport);
         } else if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin, () -> {
                 buildSeedBank();
-                new LevelIntroModalTable(skin).show(modalLayer,viewport);
+                new LevelIntroModalTable(skin).show(modalLayer, viewport);
                 GameSession.getInstance().pauseGame();
 
             });
@@ -175,7 +175,7 @@ public class GameHUD {
             belt.setSize(200f, 700);
             belt.setPosition(20f, 250);
             mainLayer.addActor(belt);
-            new LevelIntroModalTable(skin).show(modalLayer,viewport);
+            new LevelIntroModalTable(skin).show(modalLayer, viewport);
             GameSession.getInstance().pauseGame();
         }
     }
@@ -189,35 +189,40 @@ public class GameHUD {
     }
 
     private void setupIndicators() {
-        Stack sunStack = new Stack();
-        sunStack.setSize(80, 80);
-        sunStack.setPosition(100, 950);
+        boolean hideSunForPlantRole = MatchController.getInstance().isOnlineMatch()
+            && MatchController.getInstance().getCurrentRole() == PlayerRole.PLANT;
 
-        Image sunIcon = UiFactory.imageFor(textures, Ids.UI.SUN_ICON);
-        sunStack.add(sunIcon);
+        if (!hideSunForPlantRole) {
+            Stack sunStack = new Stack();
+            sunStack.setSize(80, 80);
+            sunStack.setPosition(100, 950);
 
-        Label sunLabel = new Label("0", skin) {
-            @Override
-            public void act(float delta) {
-                super.act(delta);
-                if (GameSession.getInstance() != null) {
-                    setText(String.valueOf(GameSession.getInstance().getCurrentSun()));
+            Image sunIcon = UiFactory.imageFor(textures, Ids.UI.SUN_ICON);
+            sunStack.add(sunIcon);
+
+            Label sunLabel = new Label("0", skin) {
+                @Override
+                public void act(float delta) {
+                    super.act(delta);
+                    if (GameSession.getInstance() != null) {
+                        setText(String.valueOf(GameSession.getInstance().getCurrentSun()));
+                    }
                 }
-            }
-        };
-        sunLabel.setAlignment(Align.center);
-        sunLabel.setFontScale(1.2f);
-        sunLabel.setColor(Color.BLACK);
-        sunStack.add(sunLabel);
+            };
+            sunLabel.setAlignment(Align.center);
+            sunLabel.setFontScale(1.2f);
+            sunLabel.setColor(Color.BLACK);
+            sunStack.add(sunLabel);
 
-        sunStack.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                gameFlowController.cheatAddSun("50");
-            }
-        });
+            sunStack.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    gameFlowController.cheatAddSun("50");
+                }
+            });
 
-        mainLayer.addActor(sunStack);
+            mainLayer.addActor(sunStack);
+        }
 
         plantFoodBankUI = new PlantFoodUI(textures);
         plantFoodBankUI.setPosition(200f, 20f);
@@ -343,7 +348,7 @@ public class GameHUD {
     }
 
     private PlantCardButton createSeedPacket(Plant plant, boolean lockIncluded) {
-        Image bgCard = UiFactory.imageFor(textures,(plant.isBoosted())? Ids.PlantCards.BOOSTED_BG_CARD
+        Image bgCard = UiFactory.imageFor(textures, (plant.isBoosted()) ? Ids.PlantCards.BOOSTED_BG_CARD
             : Ids.PlantCards.BG_CARD);
         String plantName = UiFactory.getAtlasName(plant);
         String plantTextureKey = "IMAGE_UI_PACKETS_" + plantName.toUpperCase();

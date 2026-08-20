@@ -17,6 +17,13 @@ public class NetworkStateSyncer {
         if (session == null || session.getArena() == null) return;
         Arena arena = session.getArena();
 
+        if (session.getCurrentMode() instanceof io.java.pvz.models.game.minigame.IZombieLevel iZombieLevel) {
+            Number redLineColValue = (Number) snapshot.get("redLineCol");
+            if (redLineColValue != null) {
+                iZombieLevel.setRedLineCol(redLineColValue.intValue());
+            }
+        }
+
         int serverSun = ((Number) snapshot.get("currentSun")).intValue();
         int diff = serverSun - session.getCurrentSun();
         if (diff != 0) session.addSun(diff);

@@ -249,4 +249,8 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     public List<Plant> getBelt() {
         return belt;
     }
+
+    public void setRedLineCol(int col) {
+        this.redLineCol = col;
+    }
 }

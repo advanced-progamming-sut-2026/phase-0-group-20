@@ -135,7 +135,7 @@ public class MatchGameEngine {
             case "PLACE_PLANT" -> {
                 if (role != PlayerRole.PLANT) return new Result(false, "only the plant side can place plants");
                 Integer col = request.getInt("col");
-                if (col != null && !(col - 1 < level.getRedLineCol())) {
+                if (col != null && !(col < level.getRedLineCol())) {
                     return new Result(false, "you can only plant behind the red line (col < "
                         + (level.getRedLineCol() + 1) + ")");
                 }

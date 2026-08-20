@@ -56,11 +56,11 @@ public class MatchController {
             if (onMatchEnd != null) onMatchEnd.accept(message);
         }));
 
-        client.onPush(MessageType.MATCH_FOUND, message -> Gdx.app.postRunnable(() -> {
-            currentMatchId = message.getString("matchId");
-            isOnlineMatch = true;
-            currentRole = PlayerRole.valueOf(message.getString("role"));
-        }));
+//        client.onPush(MessageType.MATCH_FOUND, message -> Gdx.app.postRunnable(() -> {
+//            currentMatchId = message.getString("matchId");
+//            isOnlineMatch = true;
+//            currentRole = PlayerRole.valueOf(message.getString("role"));
+//        }));
 
         client.onPush(MessageType.MATCH_ACTION_BROADCAST, message -> Gdx.app.postRunnable(() -> {
             String action = message.getString("action");
@@ -138,6 +138,11 @@ public class MatchController {
         worker.start();
     }
 
+    public void surrender(Consumer<NetworkMessage> callback) {
+        NetworkMessage request = NetworkMessage.request(MessageType.MATCH_SURRENDER);
+        sendAsync(request, callback);
+    }
+
     public boolean isOnlineMatch() {
         return isOnlineMatch;
     }
@@ -156,5 +161,12 @@ public class MatchController {
 
     public void setOnlineMatch(boolean onlineMatch) {
         this.isOnlineMatch = onlineMatch;
+    }
+
+    public void setupOnlineMatch(String matchId, PlayerRole role) {
+        this.currentMatchId = matchId;
+        this.currentRole = role;
+        this.isOnlineMatch = true;
+        this.isCouchPlay = false;
     }
 }
