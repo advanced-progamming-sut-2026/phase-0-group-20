@@ -65,7 +65,6 @@ public class AssetLoaderScreen extends BaseScreen {
 
         AssetLoader.getInstance().updateTextures();
         TextureBank textures = AssetLoader.getInstance().getTextures();
-
         if (backgroundRegion == null)
             backgroundRegion = textures.region(Ids.MainMenu.BACKGROUND);
 
@@ -92,24 +91,12 @@ public class AssetLoaderScreen extends BaseScreen {
         if (!isInitFinished && virtualProgress < 0.9f) virtualProgress += delta * 0.2f;
         else if (isInitFinished && virtualProgress < 1f) virtualProgress += delta / 2;
         progressBar.setValue(virtualProgress);
-        AudioListener audioListener = new AudioListener();
-        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_MENUS, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_EGYPT, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_FROZEN_CAVES, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_ZEN_GARDEN, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_DARK_AGES, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_BIG_WAVE_BEACH, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.LAWNMOWER_TRIGGERED, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_PLACED, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_TAKING_DAMAGE, audioListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_LOST, audioListener);
+        addListeners();
 
         if (isInitFinished && virtualProgress >= 1f) {
             User stayedUser = DataBaseManager.getLoggedInUser();
             GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_MENUS,
-                new GameEventPayload.Builder(GameEvent.ENTERED_MENUS)
-                    .build());
+                new GameEventPayload.Builder(GameEvent.ENTERED_MENUS).build());
             if (stayedUser == null) {
                 App.setActiveAdventure(new Adventure());
                 ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
@@ -130,4 +117,20 @@ public class AssetLoaderScreen extends BaseScreen {
     protected boolean showsCurrencyBar() {
         return false;
     }
+
+    private void addListeners() {
+        AudioListener audioListener = new AudioListener();
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_MENUS, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_EGYPT, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_FROZEN_CAVES, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_ZEN_GARDEN, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_DARK_AGES, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ENTERED_BIG_WAVE_BEACH, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.LAWNMOWER_TRIGGERED, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_PLACED, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_TAKING_DAMAGE, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_LOST, audioListener);
+    }
+
 }

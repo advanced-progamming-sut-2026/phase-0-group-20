@@ -42,7 +42,6 @@ public class EnvironmentRenderer {
         pixmap.fill();
         darkTexture = new Texture(pixmap);
         pixmap.dispose();
-
     }
 
     public void sync(Arena arena) {
@@ -54,7 +53,6 @@ public class EnvironmentRenderer {
         Set<Tile> activeVases = new HashSet<>();
         Set<Tile> activeDarkTiles = new HashSet<>();
         Set<Tile> activeCraters = new HashSet<>();
-
         Set<Tile> activeFiredTiles = new HashSet<>();
 
         List<Tile> allTiles = new ArrayList<>();
@@ -65,129 +63,151 @@ public class EnvironmentRenderer {
                 float pixelX = tile.getCol() * TILE_WIDTH + GRID_START_X;
                 float pixelY = tile.getRow() * TILE_HEIGHT + GRID_START_Y;
 
-                if (tile.isCrater()) {
-                    activeCraters.add(tile);
-                    PamAnimatedActor actor = craterActors.computeIfAbsent(tile, t -> {
-                        PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
-                            "768/FULL/BACKGROUNDS/GOLDTILE/GOLDTILE.PAM", "active_idle"
-                        );
-
-                        animatedActor.setSize(TILE_WIDTH * 1.3f, TILE_HEIGHT * 1.3f);
-                        layerGroup.addActor(animatedActor);
-                        animatedActor.toBack();
-                        return animatedActor;
-                    });
-                    centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f + TILE_HEIGHT);
-                }
-
-                if (tile.isFired()) {
-                    activeFiredTiles.add(tile);
-                    Image firedImg = firedActors.computeIfAbsent(tile, t -> {
-                        Image img = UiFactory.imageFor(AssetLoader.getInstance().getTextures(),
-                            "IMAGE_ZOMBIE_ZOMBIE_DARK_ZOMBOSS_ZOMBIE_DARK_ZOMBOSS_177X196");
-                        img.setSize(TILE_WIDTH+60f, TILE_HEIGHT+80f);
-                        layerGroup.addActor(img);
-                        return img;
-                    });
-                    firedImg.setPosition(pixelX-30f, pixelY-40f);
-                    firedImg.toBack();
-                }
-
-                boolean shouldBeDark = tile instanceof NecromanceTile ||
-                    (tile instanceof LowShoreTile lt && !lt.isFlooded());
-
-                if (shouldBeDark) {
-                    activeDarkTiles.add(tile);
-                    Image overlay = darkOverlayActors.computeIfAbsent(tile, t -> {
-                        Image img = new Image(darkTexture);
-                        img.setSize(TILE_WIDTH, TILE_HEIGHT);
-                        layerGroup.addActor(img);
-                        return img;
-                    });
-                    overlay.setPosition(pixelX, pixelY);
-                    overlay.toBack();
-                }
-
-                Iterator<Map.Entry<Tile, Image>> darkIt = darkOverlayActors.entrySet().iterator();
-                while (darkIt.hasNext()) {
-                    Map.Entry<Tile, Image> entry = darkIt.next();
-                    if (!activeDarkTiles.contains(entry.getKey())) {
-                        entry.getValue().remove();
-                        darkIt.remove();
-                    }
-                }
-
-                Iterator<Map.Entry<Tile, Image>> firedIt = firedActors.entrySet().iterator();
-                while (firedIt.hasNext()) {
-                    Map.Entry<Tile, Image> entry = firedIt.next();
-                    if (!activeFiredTiles.contains(entry.getKey())) {
-                        entry.getValue().remove();
-                        firedIt.remove();
-                    }
-                }
-
-                if (tile instanceof SlipperyTile st) {
-                    activeSlippery.add(tile);
-                    PamAnimatedActor actor = slipperyActors.computeIfAbsent(tile, t -> {
-                        String dir = st.getDirection() != SlipperyTile.SlideDirection.DOWN ?
-                            Ids.ArenaEffects.TILESLIDER_DOWN :
-                            Ids.ArenaEffects.TILESLIDER_UP;
-                        PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(dir, "idle");
-                        layerGroup.addActor(animatedActor);
-                        animatedActor.toBack();
-                        return animatedActor;
-                    });
-                    centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2);
-                }
-
-                if (tile instanceof GraveHolder gh && gh.getGraveStone() != null) {
-                    activeGraves.add(tile);
-                    PamAnimatedActor actor = graveActors.computeIfAbsent(tile, t -> {
-                        PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
-                            Ids.ArenaEffects.GRAVE, "undamaged");
-                        animatedActor.setScale(0.85f);
-                        layerGroup.addActor(animatedActor);
-                        return animatedActor;
-                    });
-                    actor.setClip(resolveGraveClip(gh.getGraveStone().getHp()));
-                    centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2);
-                }
-
-                // for minigame vase breaker
-                if (tile instanceof VaseTile vt && !vt.isBroken()) {
-                    activeVases.add(tile);
-                    if (tile instanceof RandomVaseTile) {
-                        PamAnimatedActor actor = vaseActors.computeIfAbsent(tile, t -> {
-                            PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
-                                Ids.ArenaEffects.VASE_RANDOM, "idle");
-                            animatedActor.setScale(0.8f);
-                            layerGroup.addActor(animatedActor);
-                            return animatedActor;
-                        });
-                        centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f);
-                    } else if (tile instanceof PlantVaseTile) {
-                        PamAnimatedActor actor = vaseActors.computeIfAbsent(tile, t -> {
-                            PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
-                                Ids.ArenaEffects.VASE_PLANTS, "idle");
-                            layerGroup.addActor(animatedActor);
-                            animatedActor.setScale(0.8f);
-                            return animatedActor;
-                        });
-                        centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f);
-                    } else {
-                        PamAnimatedActor actor = vaseActors.computeIfAbsent(tile, t -> {
-                            PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
-                                Ids.ArenaEffects.VASE_ZOMBIE, "idle");
-                            layerGroup.addActor(animatedActor);
-                            animatedActor.setScale(0.8f);
-                            return animatedActor;
-                        });
-                        centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f);
-                    }
-                }
+                syncCrater(tile, activeCraters, pixelX, pixelY);
+                syncFiredTile(tile, activeFiredTiles, pixelX, pixelY);
+                syncDarkTile(tile, activeDarkTiles, pixelX, pixelY);
+                syncSlipperyTile(tile, activeSlippery, pixelX, pixelY);
+                syncGraveTile(tile, activeGraves, pixelX, pixelY);
+                syncVaseTile(tile, activeVases, pixelX, pixelY);
             }
         }
 
+        despawnMissingImages(darkOverlayActors, activeDarkTiles);
+        despawnMissingImages(firedActors, activeFiredTiles);
+
+        syncBigWaveBeach(arena, allTiles);
+
+        despawnMissingTiles(graveActors, activeGraves);
+        despawnMissingTiles(slipperyActors, activeSlippery);
+        despawnMissingTiles(waterActors, activeWater);
+        despawnMissingTiles(vaseActors, activeVases);
+        despawnMissingTiles(craterActors, activeCraters);
+    }
+
+    public void clear() {
+        layerGroup.clearChildren();
+        graveActors.clear();
+        slipperyActors.clear();
+        waterActors.clear();
+        vaseActors.clear();
+        firedActors.clear();
+        craterActors.clear();
+    }
+
+    private void syncCrater(Tile tile, Set<Tile> activeCraters, float pixelX, float pixelY) {
+        if (tile.isCrater()) {
+            activeCraters.add(tile);
+            PamAnimatedActor actor = craterActors.computeIfAbsent(tile, t -> {
+                PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
+                    "768/FULL/BACKGROUNDS/GOLDTILE/GOLDTILE.PAM", "active_idle"
+                );
+                animatedActor.setSize(TILE_WIDTH * 1.3f, TILE_HEIGHT * 1.3f);
+                layerGroup.addActor(animatedActor);
+                animatedActor.toBack();
+                return animatedActor;
+            });
+            centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f + TILE_HEIGHT);
+        }
+    }
+
+    private void syncFiredTile(Tile tile, Set<Tile> activeFiredTiles, float pixelX, float pixelY) {
+        if (tile.isFired()) {
+            activeFiredTiles.add(tile);
+            Image firedImg = firedActors.computeIfAbsent(tile, t -> {
+                Image img = UiFactory.imageFor(AssetLoader.getInstance().getTextures(),
+                    "IMAGE_ZOMBIE_ZOMBIE_DARK_ZOMBOSS_ZOMBIE_DARK_ZOMBOSS_177X196");
+                img.setSize(TILE_WIDTH + 60f, TILE_HEIGHT + 80f);
+                layerGroup.addActor(img);
+                return img;
+            });
+            firedImg.setPosition(pixelX - 30f, pixelY - 40f);
+            firedImg.toBack();
+        }
+    }
+
+    private void syncDarkTile(Tile tile, Set<Tile> activeDarkTiles, float pixelX, float pixelY) {
+        boolean shouldBeDark = tile instanceof NecromanceTile ||
+            (tile instanceof LowShoreTile lt && !lt.isFlooded());
+
+        if (shouldBeDark) {
+            activeDarkTiles.add(tile);
+            Image overlay = darkOverlayActors.computeIfAbsent(tile, t -> {
+                Image img = new Image(darkTexture);
+                img.setSize(TILE_WIDTH, TILE_HEIGHT);
+                layerGroup.addActor(img);
+                return img;
+            });
+            overlay.setPosition(pixelX, pixelY);
+            overlay.toBack();
+        }
+    }
+
+    private void syncSlipperyTile(Tile tile, Set<Tile> activeSlippery, float pixelX, float pixelY) {
+        if (tile instanceof SlipperyTile st) {
+            activeSlippery.add(tile);
+            PamAnimatedActor actor = slipperyActors.computeIfAbsent(tile, t -> {
+                String dir = st.getDirection() != SlipperyTile.SlideDirection.DOWN ?
+                    Ids.ArenaEffects.TILESLIDER_DOWN :
+                    Ids.ArenaEffects.TILESLIDER_UP;
+                PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(dir, "idle");
+                layerGroup.addActor(animatedActor);
+                animatedActor.toBack();
+                return animatedActor;
+            });
+            centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2);
+        }
+    }
+
+    private void syncGraveTile(Tile tile, Set<Tile> activeGraves, float pixelX, float pixelY) {
+        if (tile instanceof GraveHolder gh && gh.getGraveStone() != null) {
+            activeGraves.add(tile);
+            PamAnimatedActor actor = graveActors.computeIfAbsent(tile, t -> {
+                PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
+                    Ids.ArenaEffects.GRAVE, "undamaged");
+                animatedActor.setScale(0.85f);
+                layerGroup.addActor(animatedActor);
+                return animatedActor;
+            });
+            actor.setClip(resolveGraveClip(gh.getGraveStone().getHp()));
+            centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2);
+        }
+    }
+
+    private void syncVaseTile(Tile tile, Set<Tile> activeVases, float pixelX, float pixelY) {
+        if (tile instanceof VaseTile vt && !vt.isBroken()) {
+            activeVases.add(tile);
+            if (tile instanceof RandomVaseTile) {
+                PamAnimatedActor actor = vaseActors.computeIfAbsent(tile, t -> {
+                    PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
+                        Ids.ArenaEffects.VASE_RANDOM, "idle");
+                    animatedActor.setScale(0.8f);
+                    layerGroup.addActor(animatedActor);
+                    return animatedActor;
+                });
+                centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f);
+            } else if (tile instanceof PlantVaseTile) {
+                PamAnimatedActor actor = vaseActors.computeIfAbsent(tile, t -> {
+                    PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
+                        Ids.ArenaEffects.VASE_PLANTS, "idle");
+                    layerGroup.addActor(animatedActor);
+                    animatedActor.setScale(0.8f);
+                    return animatedActor;
+                });
+                centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f);
+            } else {
+                PamAnimatedActor actor = vaseActors.computeIfAbsent(tile, t -> {
+                    PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
+                        Ids.ArenaEffects.VASE_ZOMBIE, "idle");
+                    layerGroup.addActor(animatedActor);
+                    animatedActor.setScale(0.8f);
+                    return animatedActor;
+                });
+                centerOnPoint(actor, pixelX + TILE_WIDTH / 2f, pixelY + TILE_HEIGHT / 2f);
+            }
+        }
+    }
+
+    private void syncBigWaveBeach(Arena arena, List<Tile> allTiles) {
         if (GameSession.getInstance() != null &&
             GameSession.getInstance().getCurrentChapter().getSeasonType() == SeasonType.BIG_WAVE_BEACH) {
             float gridCenterY = GRID_START_Y + (arena.getRows() * TILE_HEIGHT) / 2f;
@@ -229,25 +249,9 @@ public class EnvironmentRenderer {
             float currentX = bigWaveForeground.getX();
 
             if (currentX == 0) currentX = targetX;
-            currentX += (targetX - currentX) * 0.05f; //lerp
+            currentX += (targetX - currentX) * 0.05f;
             bigWaveForeground.setPosition(currentX, gridCenterY);
         }
-
-        despawnMissingTiles(graveActors, activeGraves);
-        despawnMissingTiles(slipperyActors, activeSlippery);
-        despawnMissingTiles(waterActors, activeWater);
-        despawnMissingTiles(vaseActors, activeVases);
-        despawnMissingTiles(craterActors, activeCraters);
-    }
-
-    public void clear() {
-        layerGroup.clearChildren();
-        graveActors.clear();
-        slipperyActors.clear();
-        waterActors.clear();
-        vaseActors.clear();
-        firedActors.clear();
-        craterActors.clear();
     }
 
     private String resolveGraveClip(int currentHp) {
@@ -261,6 +265,17 @@ public class EnvironmentRenderer {
         Iterator<Map.Entry<Tile, PamAnimatedActor>> it = actorMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Tile, PamAnimatedActor> entry = it.next();
+            if (!activeTiles.contains(entry.getKey())) {
+                entry.getValue().remove();
+                it.remove();
+            }
+        }
+    }
+
+    private void despawnMissingImages(Map<Tile, Image> actorMap, Set<Tile> activeTiles) {
+        Iterator<Map.Entry<Tile, Image>> it = actorMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Tile, Image> entry = it.next();
             if (!activeTiles.contains(entry.getKey())) {
                 entry.getValue().remove();
                 it.remove();

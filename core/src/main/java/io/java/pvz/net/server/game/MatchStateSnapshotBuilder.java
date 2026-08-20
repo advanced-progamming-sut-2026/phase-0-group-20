@@ -80,7 +80,8 @@ public final class MatchStateSnapshotBuilder {
         m.put("id", s.getNetworkId());
         m.put("row", s.getRow());
         m.put("col", s.getCol());
-        m.put("value", s.getType() != null ? s.getType().getValue() : 0);
+        m.put("type", s.getType() != null ? s.getType().name() : null);
+        m.put("falling", s.isFalling());
         return m;
     }
 

@@ -9,7 +9,7 @@ import io.java.pvz.models.timeManager.Ticker;
 public class Brain implements Ticker {
 
     private final int row;
-    private int hp = 100;
+    private int hp = 500;
     private boolean isEaten;
 
     public Brain(int row) {

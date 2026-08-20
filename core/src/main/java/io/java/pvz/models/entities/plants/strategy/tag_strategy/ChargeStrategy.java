@@ -67,68 +67,7 @@ public class ChargeStrategy implements IPlantStrategy {
         }
 
         String name = context.getName();
-
-        if (name.equalsIgnoreCase("Bowling Bulb")) {
-            if (context.getCurrentAction() != null) return;
-
-            if (bowlingBulbAmmo == 3) {
-                if (bowlingBulbReloadStage == 0) {
-                    context.triggerAction("reload");
-                    bowlingBulbReloadStage = 1;
-                } else if (bowlingBulbReloadStage == 1) {
-                    context.triggerAction("reload2");
-                    bowlingBulbReloadStage = 2;
-                } else if (bowlingBulbReloadStage == 2) {
-                    context.triggerAction("reload3");
-                    bowlingBulbReloadStage = 3;
-                } else if (bowlingBulbReloadStage == 3) {
-                    bowlingBulbAmmo = 1;
-                    bowlingBulbReloadStage = 0;
-                }
-                return;
-            }
-
-            int spawnCol = context.getPlacedTile().getCol();
-            int spawnRow = context.getPlacedTile().getRow();
-            Zombie target = selectTarget(spawnRow, spawnCol, false);
-
-            if (target != null) {
-                int damage = 40;
-                String anim = "special";
-                ProjectileType pt = ProjectileType.BOWLING_BULB_CYAN;
-
-                if (bowlingBulbAmmo == 3) {
-                    damage = 180;
-                    anim = "special3";
-                    pt = ProjectileType.BOWLING_BULB_ORANGE;
-                } else if (bowlingBulbAmmo == 2) {
-                    damage = 120;
-                    anim = "special2";
-                    pt = ProjectileType.BOWLING_BULB_BLUE;
-                }
-
-                context.triggerAction(anim);
-                bowlingBulbAmmo++;
-
-                notify("🎳 Bowling Bulb fired a bouncing bulb! (Damage: " + damage + ")");
-
-                Projectile projectile = Projectile.spawnNewProjectile(
-                    context,
-                    pt,
-                    damage,
-                    new Position(spawnCol, spawnRow),
-                    0,
-                    0,
-                    false,
-                    true
-                );
-
-                projectile.setEffect(effect);
-                projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
-                projectile.setSpawnDelayTicks(0.5f);
-            }
-            return;
-        }
+        if (handleBowlingBulb(name, context)) return;
 
         if (name.equalsIgnoreCase("Citron")) {
             if (!recoveryAnimTriggered && context.getCurrentAction() == null) {
@@ -157,26 +96,17 @@ public class ChargeStrategy implements IPlantStrategy {
         boolean canFire = false;
 
         int requiredCharge = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
-        if (chargedTicks >= requiredCharge) {canFire = true;}
+        if (chargedTicks >= requiredCharge) canFire = true;
 
         if (canFire && projectileType != null) {
             Zombie target = selectTarget(plantRow, plantCol, isHoming);
             if (target != null && context.getCurrentAction() == null) {
                 context.triggerAction("attack");
-
                 if (name.equalsIgnoreCase("Citron")) {
                     recoveryAnimTriggered = false;
                     chargeAnimTriggered = false;
                 }
-
-                if (isHoming) {
-                    ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
-                    notify("🔮 " + context.getName() + " fired a fully charged homing attack at "
-                        + target.getName() + "!");
-                } else {
-                    notify("🔋 " + context.getName() + " fired a charged attack! (Damage: " + baseDamage + ")");
-                    ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
-                }
+                ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
                 chargeStartTick = currentTick;
             }
         }
@@ -206,7 +136,73 @@ public class ChargeStrategy implements IPlantStrategy {
         return null;
     }
 
-    public void speedUpRegen(float seconds) {this.regenSpeedup += seconds;}
-    public void setProjectileType(ProjectileType projectileType) {this.projectileType = projectileType;}
-    public void setEffect(ProjectileEffect effect) {this.effect = effect;}
+    public void speedUpRegen(float seconds) {
+        this.regenSpeedup += seconds;
+    }
+
+    public void setProjectileType(ProjectileType projectileType) {
+        this.projectileType = projectileType;
+    }
+
+    public void setEffect(ProjectileEffect effect) {
+        this.effect = effect;
+    }
+
+    private boolean handleBowlingBulb(String name , Plant context) {
+        if (name.equalsIgnoreCase("Bowling Bulb")) {
+            if (context.getCurrentAction() != null) return true;
+
+            if (bowlingBulbAmmo == 3) {
+                if (bowlingBulbReloadStage == 0) {
+                    context.triggerAction("reload");
+                    bowlingBulbReloadStage = 1;
+                } else if (bowlingBulbReloadStage == 1) {
+                    context.triggerAction("reload2");
+                    bowlingBulbReloadStage = 2;
+                } else if (bowlingBulbReloadStage == 2) {
+                    context.triggerAction("reload3");
+                    bowlingBulbReloadStage = 3;
+                } else if (bowlingBulbReloadStage == 3) {
+                    bowlingBulbAmmo = 1;
+                    bowlingBulbReloadStage = 0;
+                }
+                return true;
+            }
+
+            int spawnCol = context.getPlacedTile().getCol();
+            int spawnRow = context.getPlacedTile().getRow();
+            Zombie target = selectTarget(spawnRow, spawnCol, false);
+
+            if (target != null) {
+                int damage = 40;
+                String anim = "special";
+                ProjectileType pt = ProjectileType.BOWLING_BULB_CYAN;
+
+                if (bowlingBulbAmmo == 3) {
+                    damage = 180;
+                    anim = "special3";
+                    pt = ProjectileType.BOWLING_BULB_ORANGE;
+                } else if (bowlingBulbAmmo == 2) {
+                    damage = 120;
+                    anim = "special2";
+                    pt = ProjectileType.BOWLING_BULB_BLUE;
+                }
+
+                context.triggerAction(anim);
+                bowlingBulbAmmo++;
+
+                Projectile projectile = Projectile.spawnNewProjectile(context,
+                    pt, damage, new Position(spawnCol, spawnRow),
+                    0, 0, false, true
+                );
+
+                projectile.setEffect(effect);
+                projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
+                projectile.setSpawnDelayTicks(0.5f);
+            }
+            return true;
+        }
+        return false;
+    }
+
 }

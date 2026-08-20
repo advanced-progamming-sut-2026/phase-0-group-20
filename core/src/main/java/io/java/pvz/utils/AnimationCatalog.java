@@ -5,15 +5,11 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class AnimationCatalog {
-    private AnimationCatalog() {}
+    private AnimationCatalog() {
+    }
 
     public static final class EntityAnimation {
         public final String name;
@@ -392,36 +388,37 @@ public final class AnimationCatalog {
             "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_HUNTER/ZOMBIE_ICEAGE_HUNTER.PAM",
             "idle", 2.1f, "walk", 3.0f, "eat", 4.0333f, "die", 2.1667f, "throw", 2.1f, "particles", 0.0333f);
         registerZombie(table, ZombieType.ZOMBOTANY_WALLNUT,
-        "768/FULL/ZOMBIE/ZOMBIE_SUMMER_GARGANTUAR/ZOMBIE_SUMMER_GARGANTUAR.PAM",
+            "768/FULL/ZOMBIE/ZOMBIE_SUMMER_GARGANTUAR/ZOMBIE_SUMMER_GARGANTUAR.PAM",
             "idle", 2.0333f, "walk", 2.3667f, "eat", 1.2667f, "smash_left", 1.7667f, "fire", 0.9667f,
             "cannon_fire", 0.5667f, "die", 2.6333f, "particles", 0.0333f);
         registerZombie(table, ZombieType.ZOMBOTANY_JALAPENO, "768/INITIAL/ZOMBIE/ZOMBIE_EXPLORER/ZOMBIE_EXPLORER.PAM",
             "idle", 2.1333f, "walk", 2.0f, "eat", 6.3333f, "die", 3.7333f, "particles", 0.0333f);
-        registerZombie(table, ZombieType.ZOMBOTANY_SQUASH,"768/FULL/ZOMBIE/ZOMBIE_80S_ARCADE/ZOMBIE_80S_ARCADE.PAM",
+        registerZombie(table, ZombieType.ZOMBOTANY_SQUASH, "768/FULL/ZOMBIE/ZOMBIE_80S_ARCADE/ZOMBIE_80S_ARCADE.PAM",
             "idle", 3.3333f, "walk", 4.0333f, "eat", 8.4667f, "push", 4.0333f, "die", 3.5f, "particles", 0.0333f);
 
     }
 
-    private static void registerZombiesZomboss(Map<ZombieType , EntityAnimation> table){
-        registerZombie(table , ZombieType.ZOMBOSS_EGYPT,
-            "768/INITIAL/ZOMBIE/ZOMBIE_EGYPT_ZOMBOSS/ZOMBIE_EGYPT_ZOMBOSS.PAM","intro",2.6f,"idle",5.30f,
-            "walk_forward" , 1.25f , "walk_backwards",1.25f,"walk_down",1.25f,"walk_up",1.25f,"jump_start",0.7f,
-            "jump_mid", 0.45f , "jump_land",0.75f,"zombie_portal_start", 2.3f, "zombie_portal_loop", 2.0f ,
-            "zombie_portal_end" , 1.6f , "missile_start",3.35f,"rocket_launch",1.85f,"die",0.3f,"die_idle",4.95f,
-            "stun_start", 0.5f,"stun_loop", 1.3f ,"stun_end",0.11f);
-        registerZombie(table,ZombieType.ZOMBOSS_FROZEN_CAVES,
-            "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_ZOMBOSS/ZOMBIE_ICEAGE_ZOMBOSS.PAM","intro",4.7f ,"idle",3.35f
-        ,"wind_1",2.85f,"wind_3" ,2.85f,"slingshot",3.5f,"glacier_column_1",6.30f,"glacier_column_2",6.30f,
-            "glacier_column_3",6.30f,"glacier_column_4",6.30f,"glacier_column_5",6.30f,"glacier_column_6",6.30f,
-            "reveal",0.68f,"stun" , 1.0f,"die", 4.05f);
-        registerZombie(table,ZombieType.ZOMBOSS_DARK_AGES,
-            "768/FULL/ZOMBIE/ZOMBIE_DARK_ZOMBOSS/ZOMBIE_DARK_ZOMBOSS.PAM","intro",10.4f,"idle",3.35f,
-            "fire_attack",1.83f,"fire_attack_idle",0.85f,"fire_attack_end",0.83f,"fire_bomb", 1.85f,"fire_bomb_loop",0.53f,"fire_bomb_end",0.95f
-        ,"summoning",2.15f,"stun_start",0.45f,"stun_loop",0.82f,"stun_end",0.5f,"die",5.7f);
-        registerZombie(table,ZombieType.ZOMBOSS_BEACH,
-            "768/FULL/ZOMBIE/ZOMBIE_BEACH_ZOMBOSS/ZOMBIE_BEACH_ZOMBOSS.PAM","intro",6.22f,"idle",4.0f,
-            "spawn",3.0f,"suction_on",2.15f,"suction_loop",2.0f,"suction_off",2.52f,"stun_start",0.15f,
-            "stun_loop",1.85f,"stun_end",1.12f,"die",5.1f);
+    private static void registerZombiesZomboss(Map<ZombieType, EntityAnimation> table) {
+        registerZombie(table, ZombieType.ZOMBOSS_EGYPT,
+            "768/INITIAL/ZOMBIE/ZOMBIE_EGYPT_ZOMBOSS/ZOMBIE_EGYPT_ZOMBOSS.PAM", "intro", 2.6f, "idle", 5.30f,
+            "walk_forward", 1.25f, "walk_backwards", 1.25f, "walk_down", 1.25f, "walk_up", 1.25f, "jump_start", 0.7f,
+            "jump_mid", 0.45f, "jump_land", 0.75f, "zombie_portal_start", 2.3f, "zombie_portal_loop", 2.0f,
+            "zombie_portal_end", 1.6f, "missile_start", 3.35f, "rocket_launch", 1.85f, "die", 0.3f, "die_idle", 4.95f,
+            "stun_start", 0.5f, "stun_loop", 1.3f, "stun_end", 0.11f);
+        registerZombie(table, ZombieType.ZOMBOSS_FROZEN_CAVES,
+            "768/FULL/ZOMBIE/ZOMBIE_ICEAGE_ZOMBOSS/ZOMBIE_ICEAGE_ZOMBOSS.PAM", "intro", 4.7f, "idle", 3.35f
+            , "wind_1", 2.85f, "wind_3", 2.85f, "slingshot", 3.5f, "glacier_column_1", 6.30f, "glacier_column_2", 6.30f,
+            "glacier_column_3", 6.30f, "glacier_column_4", 6.30f, "glacier_column_5", 6.30f, "glacier_column_6", 6.30f,
+            "reveal", 0.68f, "stun", 1.0f, "die", 4.05f);
+        registerZombie(table, ZombieType.ZOMBOSS_DARK_AGES,
+            "768/FULL/ZOMBIE/ZOMBIE_DARK_ZOMBOSS/ZOMBIE_DARK_ZOMBOSS.PAM", "intro", 10.4f, "idle", 3.35f,
+            "fire_attack", 1.83f, "fire_attack_idle", 0.85f, "fire_attack_end", 0.83f, "fire_bomb", 1.85f,
+            "fire_bomb_loop", 0.53f, "fire_bomb_end", 0.95f
+            , "summoning", 2.15f, "stun_start", 0.45f, "stun_loop", 0.82f, "stun_end", 0.5f, "die", 5.7f);
+        registerZombie(table, ZombieType.ZOMBOSS_BEACH,
+            "768/FULL/ZOMBIE/ZOMBIE_BEACH_ZOMBOSS/ZOMBIE_BEACH_ZOMBOSS.PAM", "intro", 6.22f, "idle", 4.0f,
+            "spawn", 3.0f, "suction_on", 2.15f, "suction_loop", 2.0f, "suction_off", 2.52f, "stun_start", 0.15f,
+            "stun_loop", 1.85f, "stun_end", 1.12f, "die", 5.1f);
 
     }
 
@@ -459,7 +456,7 @@ public final class AnimationCatalog {
         registerSun(table, SunType.SPECIAL_SUN, defaultSunPath,
             "animation", 1.0f, "transition_red", 0.5333f, "red", 1.0f);
         registerSun(table, SunType.RADIOACTIVE_SUN, "768/FULL/EFFECTS/SUN_BOMB/SUN_BOMB.PAM",
-            "animation2", 1.0f,"attack",2.26f,"transition",0.52f);
+            "animation2", 1.0f, "attack", 2.26f, "transition", 0.52f);
     }
 
     private static void registerSun(Map<SunType, EntityAnimation> table,
