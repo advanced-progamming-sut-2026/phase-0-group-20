@@ -363,8 +363,10 @@ public class GameInputHandler {
 
         if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel iZombieLevel) {
             int zeroBasedCol = col - 1;
-            if (!iZombieLevel.isValidPlantPlacement(zeroBasedCol))
+            if (!iZombieLevel.isValidPlantPlacement(zeroBasedCol)) {
+                GameSession.notify("You must plant behind the red line!");
                 return;
+            }
         }
 
         if (MatchController.getInstance().isOnlineMatch() && selectedPacketToPlace == null) {
@@ -430,7 +432,7 @@ public class GameInputHandler {
 
     public void handleCouchPlayKeyboard() {
         if (!MatchController.getInstance().isCouchPlay()) return;
-        if ( GameSession.getInstance() != null &&
+        if (GameSession.getInstance() != null &&
             !(GameSession.getInstance().getCurrentMode() instanceof IZombieLevel)) return;
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.S)) couchZombieRow = Math.max(0, couchZombieRow - 1);

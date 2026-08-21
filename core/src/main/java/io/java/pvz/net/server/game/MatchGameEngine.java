@@ -48,7 +48,7 @@ public class MatchGameEngine {
             try {
                 int levelNumber = 2; // it's better to hard code level number to be more controllable and normal
                 IZombieLevel level = (IZombieLevel) MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, levelNumber);
-
+                level.setMultiplayer(true);
                 NetworkMatchState match = new NetworkMatchState(matchSession, level);
                 matches.put(match.getMatchId(), match);
 
@@ -138,7 +138,7 @@ public class MatchGameEngine {
             case "PLACE_PLANT" -> {
                 if (role != PlayerRole.PLANT) return new Result(false, "only the plant side can place plants");
                 Integer col = request.getInt("col");
-                if (col != null && !(col < level.getRedLineCol())) {
+                if (col != null && !(col -1 < level.getRedLineCol())) {
                     return new Result(false, "you can only plant behind the red line (col < "
                         + (level.getRedLineCol() + 1) + ")");
                 }

@@ -27,6 +27,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.game.minigame.BowlingLevel;
+import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.users.User;
 
 import java.util.ArrayList;
@@ -251,7 +252,7 @@ public class GameFlowController {
 
     private Result validatePlantPlacement(GameSession session, Plant plant) {
         boolean usesUnlimitedBelt = session.getCurrentMode() instanceof ConveyorBelt
-            || session.getCurrentMode() instanceof io.java.pvz.models.game.minigame.IZombieLevel;
+            || session.getCurrentMode() instanceof IZombieLevel;
 
         if (!usesUnlimitedBelt) {
             if (session.getCurrentSun() < plant.getCost()) {

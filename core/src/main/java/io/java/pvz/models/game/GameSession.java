@@ -1,5 +1,6 @@
 package io.java.pvz.models.game;
 
+import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.entities.PlantFood;
@@ -314,6 +315,8 @@ public class GameSession {
 
     private void checkGameConditions() {
         if (this.currentMode == null) return;
+        if (MatchController.getInstance().isOnlineMatch()) return;
+
         GameState result = this.currentMode.checkResult(this);
 
         if (result == GameState.LOST) {
