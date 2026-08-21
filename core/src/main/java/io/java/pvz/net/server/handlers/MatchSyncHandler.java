@@ -62,4 +62,62 @@ public class MatchSyncHandler {
         gameEngine.handlePlayerLeft(match.getMatchId(), connection, "surrendered");
         return NetworkMessage.success(request);
     }
+
+    public NetworkMessage handlePauseRequest(NetworkMessage request, ClientConnection connection) {
+        if (connection.getAuthenticatedUser() == null) {
+            return NetworkMessage.failure(request, "not logged in");
+        }
+
+        MatchSession match = matchRegistry.getByConnection(connection);
+        if (match == null) {
+            return NetworkMessage.failure(request, "you are not currently in a match");
+        }
+
+        CompletableFuture<Boolean> success = new CompletableFuture<>();
+        CompletableFuture<String> message = new CompletableFuture<>();
+
+        gameEngine.requestPause(match.getMatchId(), connection, (ok, msg) -> {
+            success.complete(ok);
+            message.complete(msg);
+        });
+
+        try {
+            boolean ok = success.get(5, TimeUnit.SECONDS);
+            String msg = message.get(5, TimeUnit.SECONDS);
+            return ok ? NetworkMessage.success(request) : NetworkMessage.failure(request, msg);
+        } catch (TimeoutException e) {
+            return NetworkMessage.failure(request, "match engine timed out");
+        } catch (Exception e) {
+            return NetworkMessage.failure(request, "internal error: " + e.getMessage());
+        }
+    }
+
+    public NetworkMessage handleResumeRequest(NetworkMessage request, ClientConnection connection) {
+        if (connection.getAuthenticatedUser() == null) {
+            return NetworkMessage.failure(request, "not logged in");
+        }
+
+        MatchSession match = matchRegistry.getByConnection(connection);
+        if (match == null) {
+            return NetworkMessage.failure(request, "you are not currently in a match");
+        }
+
+        CompletableFuture<Boolean> success = new CompletableFuture<>();
+        CompletableFuture<String> message = new CompletableFuture<>();
+
+        gameEngine.requestResume(match.getMatchId(), connection, (ok, msg) -> {
+            success.complete(ok);
+            message.complete(msg);
+        });
+
+        try {
+            boolean ok = success.get(5, TimeUnit.SECONDS);
+            String msg = message.get(5, TimeUnit.SECONDS);
+            return ok ? NetworkMessage.success(request) : NetworkMessage.failure(request, msg);
+        } catch (TimeoutException e) {
+            return NetworkMessage.failure(request, "match engine timed out");
+        } catch (Exception e) {
+            return NetworkMessage.failure(request, "internal error: " + e.getMessage());
+        }
+    }
 }

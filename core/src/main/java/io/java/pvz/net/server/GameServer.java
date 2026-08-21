@@ -61,6 +61,9 @@ public class GameServer {
         MatchSyncHandler matchSyncHandler = new MatchSyncHandler(matchRegistry, matchGameEngine);
         dispatcher.register(MessageType.MATCH_ACTION, matchSyncHandler::handleAction);
 
+        dispatcher.register(MessageType.MATCH_PAUSE_REQUEST, matchSyncHandler::handlePauseRequest);
+        dispatcher.register(MessageType.MATCH_RESUME_REQUEST, matchSyncHandler::handleResumeRequest);
+
         dispatcher.register(MessageType.MATCH_SURRENDER, matchSyncHandler::handleSurrender);
 
         ReactionHandler reactionHandler = new ReactionHandler(matchRegistry);

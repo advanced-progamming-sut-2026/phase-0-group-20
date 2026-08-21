@@ -12,8 +12,10 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventListener;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -24,8 +26,8 @@ public class PianistMove implements MoveBehavior, GameEventListener {
 
     private static final float PIANO_OFFSET_X = 45f;
 
-    private static final int PLAY_DURATION_TICKS = 20;
-    private static final int IDLE_DURATION_TICKS = 80;
+    private static final int PLAY_DURATION_TICKS = 4 * TimeManager.TICKS_PER_SECOND;
+    private static final int IDLE_DURATION_TICKS = 8 * TimeManager.TICKS_PER_SECOND;
 
     private boolean isPlaying = false;
     private int phaseTimer = 0;
@@ -107,18 +109,24 @@ public class PianistMove implements MoveBehavior, GameEventListener {
         GameSession session = GameSession.getInstance();
         if (session == null || session.getArena() == null) return;
 
+        List<ZombieType> noEffects = Arrays.asList(
+            ZombieType.ZOMBOSS_BEACH,
+            ZombieType.ZOMBOSS_EGYPT,
+            ZombieType.ZOMBOSS_DARK_AGES,
+            ZombieType.ZOMBOSS_FROZEN_CAVES,
+            ZombieType.GARGANTUAR
+        );
+
         List<Zombie> zombies = session.getArena().getActiveZombies();
         for (Zombie z : zombies) {
-            if (z != null && !z.isDead() && z.getType() != ZombieType.PIANIST && z.getType() != ZombieType.GARGANTUAR) {
+            if (z != null && !z.isDead() && z.getType() != ZombieType.PIANIST && !noEffects.contains(z.getType())) {
                 int currentRow = z.getRow();
                 List<Integer> possibleRows = new ArrayList<>();
                 if (currentRow > 0) possibleRows.add(currentRow - 1);
                 if (currentRow < 4) possibleRows.add(currentRow + 1);
 
-                if (!possibleRows.isEmpty()) {
-                    int newRow = possibleRows.get(random.nextInt(possibleRows.size()));
-                    z.setRow(newRow);
-                }
+                int newRow = possibleRows.get(random.nextInt(possibleRows.size()));
+                z.setRow(newRow);
             }
         }
     }

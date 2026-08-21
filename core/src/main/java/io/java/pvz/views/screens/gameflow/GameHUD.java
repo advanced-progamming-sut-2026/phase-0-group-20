@@ -287,13 +287,29 @@ public class GameHUD {
         mainLayer.addActor(shovelBtn);
 
         Stack pauseBtn = UiFactory.iconButton(textures, skin, Ids.UI.PAUSE, 90, 90, () -> {
-            if (GameSession.getInstance() != null) GameSession.getInstance().pauseGame();
-            new PauseMenuTable(skin).show(modalLayer, viewport);
+            if (MatchController.getInstance().isOnlineMatch()) {
+                MatchController.getInstance().requestPause(response -> {
+                    if (response == null || !response.isSuccess()) {
+                        GameSession.notify(response != null ? "Pause failed: " + response.getErrorMessage()
+                            : "Pause failed: network error");
+                        return;
+                    }
+                    new PauseMenuTable(skin).show(modalLayer, viewport);
+                });
+            } else {
+                if (GameSession.getInstance() != null) GameSession.getInstance().pauseGame();
+                new PauseMenuTable(skin).show(modalLayer, viewport);
+            }
         });
         pauseBtn.setPosition(1730, 950);
         mainLayer.addActor(pauseBtn);
 
         Stack fastForwardBtn = UiFactory.iconButton(textures, skin, Ids.UI.FAST_FORWARD, 90, 90, () -> {
+            if (MatchController.getInstance().isOnlineMatch()) {
+                GameSession.notify("Fast Forward is disabled in online matches");
+                return;
+            }
+
             GameSession session = GameSession.getInstance();
             if (session != null) {
                 if (session.getSpeedMultiplier() == 1.0f) {

@@ -24,6 +24,10 @@ public class NetworkMatchState {
     private volatile ScheduledFuture<?> tickTask;
     private volatile boolean ended = false;
 
+    private volatile boolean paused = false;
+    private volatile PlayerRole pausedBy = null;
+    private volatile ScheduledFuture<?> pauseTimeoutTask;
+
     public NetworkMatchState(MatchSession matchSession, IZombieLevel level) {
         this.matchSession = matchSession;
         this.level = level;
@@ -88,5 +92,31 @@ public class NetworkMatchState {
     public void markEnded() {
         this.ended = true;
         if (tickTask != null) tickTask.cancel(false);
+        if (pauseTimeoutTask != null) pauseTimeoutTask.cancel(false);
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public PlayerRole getPausedBy() {
+        return pausedBy;
+    }
+
+    public void setPaused(boolean paused, PlayerRole pausedBy) {
+        this.paused = paused;
+        this.pausedBy = paused ? pausedBy : null;
+    }
+
+    public void setPauseTimeoutTask(ScheduledFuture<?> task) {
+        if (this.pauseTimeoutTask != null) this.pauseTimeoutTask.cancel(false);
+        this.pauseTimeoutTask = task;
+    }
+
+    public void cancelPauseTimeoutTask() {
+        if (pauseTimeoutTask != null) {
+            pauseTimeoutTask.cancel(false);
+            pauseTimeoutTask = null;
+        }
     }
 }

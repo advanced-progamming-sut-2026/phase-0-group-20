@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 
 import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.controllers.GameController.MiniGameController;
+import io.java.pvz.models.game.GameSession;
 
 public class MatchController {
 
@@ -21,6 +22,7 @@ public class MatchController {
 
     private Consumer<Map<String, Object>> onStateSync;
     private Consumer<NetworkMessage> onMatchEnd;
+    private Consumer<NetworkMessage> onPauseStateChanged;
 
     private volatile String currentMatchId;
     private volatile PlayerRole currentRole;
@@ -73,6 +75,20 @@ public class MatchController {
                 new GameFlowController().collectSun(col, row);
             }
         }));
+
+        client.onPush(MessageType.MATCH_PAUSE_STATE, message -> Gdx.app.postRunnable(() -> {
+            boolean paused = Boolean.TRUE.equals(message.getBoolean("paused"));
+
+            if (GameSession.getInstance() != null) {
+                if (paused) {
+                    GameSession.getInstance().pauseGame();
+                } else {
+                    GameSession.getInstance().resumeGame();
+                }
+            }
+
+            if (onPauseStateChanged != null) onPauseStateChanged.accept(message);
+        }));
     }
 
     public void setCurrentMatchId(String matchId) {
@@ -85,6 +101,10 @@ public class MatchController {
 
     public void setOnMatchEnd(Consumer<NetworkMessage> listener) {
         this.onMatchEnd = listener;
+    }
+
+    public void setOnPauseStateChanged(Consumer<NetworkMessage> listener) {
+        this.onPauseStateChanged = listener;
     }
 
     public void placePlant(String plantName, int col, int row, Consumer<NetworkMessage> callback) {
@@ -110,6 +130,16 @@ public class MatchController {
         request.put("zombieAlias", zombieAlias);
         request.put("col", col);
         request.put("row", row);
+        sendAsync(request, callback);
+    }
+
+    public void requestPause(Consumer<NetworkMessage> callback) {
+        NetworkMessage request = NetworkMessage.request(MessageType.MATCH_PAUSE_REQUEST);
+        sendAsync(request, callback);
+    }
+
+    public void requestResume(Consumer<NetworkMessage> callback) {
+        NetworkMessage request = NetworkMessage.request(MessageType.MATCH_RESUME_REQUEST);
         sendAsync(request, callback);
     }
 

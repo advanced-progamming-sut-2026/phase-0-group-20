@@ -110,25 +110,29 @@ public class PauseMenuTable extends BorderedTable {
         saveExitBtn.getLabel().setFontScale(1.1f);
         buttonsTable.add(saveExitBtn).width(200).height(65).padRight(15);
 
-        TextButton restartBtn = UiFactory.textButton("RESTART", skin, "brown", 1.05f, 0.95f, () -> {
-            System.out.println("Restarting Level...");
-            GameFlowController flowController = new GameFlowController();
-            Result res = flowController.restartLevel();
+        boolean isOnline = MatchController.getInstance().isOnlineMatch();
 
-            if (res.isSuccessful()) {
-                app.postRunnable(() -> {
-                    Game game = (Game) Gdx.app.getApplicationListener();
-                    String mapId = new GameMenuController().getCurrentMapTextureId();
+        if (!isOnline) {
+            TextButton restartBtn = UiFactory.textButton("RESTART", skin, "brown", 1.05f, 0.95f, () -> {
+                System.out.println("Restarting Level...");
+                GameFlowController flowController = new GameFlowController();
+                Result res = flowController.restartLevel();
 
-                    ScreenManager.getInstance().popScreen();
+                if (res.isSuccessful()) {
+                    app.postRunnable(() -> {
+                        Game game = (Game) Gdx.app.getApplicationListener();
+                        String mapId = new GameMenuController().getCurrentMapTextureId();
 
-                    ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
-                });
-            }
-            this.remove();
-        });
-        restartBtn.getLabel().setFontScale(1.1f);
-        buttonsTable.add(restartBtn).width(180).height(65).padRight(15);
+                        ScreenManager.getInstance().popScreen();
+
+                        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+                    });
+                }
+                closeUiOnly();
+            });
+            restartBtn.getLabel().setFontScale(1.1f);
+            buttonsTable.add(restartBtn).width(180).height(65).padRight(15);
+        }
 
         TextButton resumeBtn = UiFactory.textButton("RESUME", skin, "purple", 1.05f, 0.95f, this::remove);
         resumeBtn.getLabel().setFontScale(1.1f);
@@ -181,15 +185,26 @@ public class PauseMenuTable extends BorderedTable {
         targetLayer.addActor(this);
     }
 
+    private void closeAndResume() {
+        if (MatchController.getInstance().isOnlineMatch()) {
+            MatchController.getInstance().requestResume(response -> {
+                closeUiOnly();
+            });
+        } else {
+            GameSession session = GameSession.getInstance();
+            if (session != null) session.resumeGame();
+            closeUiOnly();
+        }
+    }
+
+    private void closeUiOnly() {
+        if (blocker != null) blocker.remove();
+        super.remove();
+    }
+
     @Override
     public boolean remove() {
-        GameSession session = GameSession.getInstance();
-        if (session != null)
-            session.resumeGame();
-
-        if (blocker != null) {
-            blocker.remove();
-        }
-        return super.remove();
+        closeAndResume();
+        return true;
     }
 }
