@@ -250,7 +250,10 @@ public class GameFlowController {
     }
 
     private Result validatePlantPlacement(GameSession session, Plant plant) {
-        if (!(session.getCurrentMode() instanceof ConveyorBelt)) {
+        boolean usesUnlimitedBelt = session.getCurrentMode() instanceof ConveyorBelt
+            || session.getCurrentMode() instanceof io.java.pvz.models.game.minigame.IZombieLevel;
+
+        if (!usesUnlimitedBelt) {
             if (session.getCurrentSun() < plant.getCost()) {
                 GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
                     new GameEventPayload.Builder(GameEvent.NOTIFY)
