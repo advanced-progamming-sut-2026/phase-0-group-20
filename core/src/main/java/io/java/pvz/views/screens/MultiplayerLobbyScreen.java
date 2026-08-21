@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Timer;
 import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.controllers.GameController.MatchmakingController;
+import io.java.pvz.controllers.GameController.TravelLogController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
@@ -22,6 +23,7 @@ import io.java.pvz.net.client.NetworkClient;
 import io.java.pvz.net.client.ServerConfig;
 import io.java.pvz.net.protocol.MessageType;
 import io.java.pvz.net.protocol.NetworkMessage;
+import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.views.screens.gameflow.GameFlowScreen;
@@ -105,10 +107,10 @@ public class MultiplayerLobbyScreen extends BaseScreen {
 
             MatchController.getInstance().setupOnlineMatch(
                 info.matchId,
-                io.java.pvz.net.server.PlayerRole.valueOf(info.role)
+                PlayerRole.valueOf(info.role)
             );
 
-            Level izombie = MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, 1);
+            Level izombie = MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, 2);
             GameSession.startMiniGame(izombie, App.getActiveUser().getUnlockedPlants());
             new MatchFoundTable(skin, info.opponentUsername, info.role).show(modalLayer, viewport);
 
@@ -182,17 +184,19 @@ public class MultiplayerLobbyScreen extends BaseScreen {
         MatchController.getInstance().setOnlineMatch(false);
         MatchController.getInstance().setCouchPlay(false);
 
-        Level izombie = MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, 1);
-        GameSession.startMiniGame(izombie, null);
-        String mapId = new GameMenuController().getCurrentMapTextureId();
-        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+        TravelLogController travelLogController = new TravelLogController();
+        travelLogController.changePage("minigame");
+
+        ScreenManager.getInstance().pushScreen(
+            new LevelSelectionScreen(game, MiniGameType.I_ZOMBIE, travelLogController)
+        );
     }
 
     private void startCouchPlay() {
         MatchController.getInstance().setOnlineMatch(false);
         MatchController.getInstance().setCouchPlay(true);
 
-        Level izombie = MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, 1);
+        Level izombie = MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, 2);
         GameSession.startMiniGame(izombie, null);
         String mapId = new GameMenuController().getCurrentMapTextureId();
         ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));

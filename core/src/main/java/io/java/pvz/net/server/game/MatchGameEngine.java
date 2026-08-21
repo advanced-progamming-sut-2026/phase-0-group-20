@@ -20,15 +20,13 @@ import io.java.pvz.net.server.PlayerRole;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class MatchGameEngine {
 
     private static final int TICK_INTERVAL_MS = 100;
     private static final int TICKS_PER_INTERVAL = 6;
+    private static final int PAUSE_TIMEOUT_SECONDS = 20;
 
     private final ScheduledExecutorService executor =
         Executors.newSingleThreadScheduledExecutor(r -> {
@@ -48,7 +46,7 @@ public class MatchGameEngine {
     public void startMatch(MatchSession matchSession) {
         executor.submit(() -> {
             try {
-                int levelNumber = random.nextInt(3) + 1;
+                int levelNumber = 2; // it's better to hard code level number to be more controllable and normal
                 IZombieLevel level = (IZombieLevel) MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, levelNumber);
 
                 NetworkMatchState match = new NetworkMatchState(matchSession, level);
@@ -67,6 +65,8 @@ public class MatchGameEngine {
 
     private void tick(NetworkMatchState match) {
         if (match.isEnded()) return;
+        if (match.isPaused()) return;
+
         try {
             match.activate();
             GameSession session = match.getGameSession();
@@ -222,6 +222,93 @@ public class MatchGameEngine {
             PlayerRole winner = (leaverRole == PlayerRole.PLANT) ? PlayerRole.ZOMBIE : PlayerRole.PLANT;
             finishMatch(match, winner, reason);
         });
+    }
+
+    public void requestPause(String matchId, ClientConnection sender, ActionResultCallback callback) {
+        NetworkMatchState match = matches.get(matchId);
+        if (match == null) {
+            callback.onResult(false, "match not found or already finished");
+            return;
+        }
+
+        executor.submit(() -> {
+            try {
+                PlayerRole role = match.getMatchSession().getRoleOf(sender);
+                if (role == null) {
+                    callback.onResult(false, "you are not part of this match");
+                    return;
+                }
+                if (match.isPaused()) {
+                    callback.onResult(false, "match is already paused");
+                    return;
+                }
+
+                match.setPaused(true, role);
+
+                NetworkMessage pauseMsg = NetworkMessage.request(MessageType.MATCH_PAUSE_STATE);
+                pauseMsg.put("paused", true);
+                pauseMsg.put("pausedByRole", role.name());
+                pauseMsg.put("timeoutSeconds", PAUSE_TIMEOUT_SECONDS);
+                broadcastRaw(match, pauseMsg);
+
+                ScheduledFuture<?> timeoutTask = executor.schedule(
+                    () -> expirePause(match.getMatchId()), PAUSE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                match.setPauseTimeoutTask(timeoutTask);
+
+                callback.onResult(true, "paused");
+            } catch (Exception e) {
+                callback.onResult(false, "internal error: " + e.getMessage());
+            }
+        });
+    }
+
+    public void requestResume(String matchId, ClientConnection sender, ActionResultCallback callback) {
+        NetworkMatchState match = matches.get(matchId);
+        if (match == null) {
+            callback.onResult(false, "match not found or already finished");
+            return;
+        }
+
+        executor.submit(() -> {
+            try {
+                PlayerRole role = match.getMatchSession().getRoleOf(sender);
+                if (role == null) {
+                    callback.onResult(false, "you are not part of this match");
+                    return;
+                }
+                if (!match.isPaused()) {
+                    callback.onResult(false, "match is not paused");
+                    return;
+                }
+
+                resumeMatch(match);
+                callback.onResult(true, "resumed");
+            } catch (Exception e) {
+                callback.onResult(false, "internal error: " + e.getMessage());
+            }
+        });
+    }
+
+    private void expirePause(String matchId) {
+        NetworkMatchState match = matches.get(matchId);
+        if (match == null || match.isEnded() || !match.isPaused()) return;
+        resumeMatch(match);
+    }
+
+    private void resumeMatch(NetworkMatchState match) {
+        match.cancelPauseTimeoutTask();
+        match.setPaused(false, null);
+
+        NetworkMessage resumeMsg = NetworkMessage.request(MessageType.MATCH_PAUSE_STATE);
+        resumeMsg.put("paused", false);
+        broadcastRaw(match, resumeMsg);
+    }
+
+    private void broadcastRaw(NetworkMatchState match, NetworkMessage message) {
+        ClientConnection plantConn = match.getPlantConnection();
+        ClientConnection zombieConn = match.getZombieConnection();
+        if (plantConn != null) plantConn.send(message);
+        if (zombieConn != null) zombieConn.send(message);
     }
 
 }
