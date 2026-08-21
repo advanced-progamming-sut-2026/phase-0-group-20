@@ -15,6 +15,7 @@ public class NormalTile extends Tile implements IceHolder {
 
     @Override
     public boolean isPlantable(Plant plantToPlant) {
+        System.out.println("heafaesdf");
         if (hasIceBlock())
             return plantToPlant.getStrategies().stream()
                     .anyMatch(strategy -> strategy instanceof MeltIceStrategy);

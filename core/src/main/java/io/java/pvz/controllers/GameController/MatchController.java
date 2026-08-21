@@ -52,10 +52,11 @@ public class MatchController {
         }));
 
         client.onPush(MessageType.MATCH_END, message -> Gdx.app.postRunnable(() -> {
+            if (onMatchEnd != null) onMatchEnd.accept(message);
+
             currentMatchId = null;
             isOnlineMatch = false;
             currentRole = null;
-            if (onMatchEnd != null) onMatchEnd.accept(message);
         }));
 
         client.onPush(MessageType.MATCH_ACTION_BROADCAST, message -> Gdx.app.postRunnable(() -> {

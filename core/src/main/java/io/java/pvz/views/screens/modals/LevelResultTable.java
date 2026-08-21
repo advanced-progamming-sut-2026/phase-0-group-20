@@ -15,10 +15,12 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.GameFlowController;
 import io.java.pvz.controllers.GameController.GameMenuController;
+import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.views.screens.ChapterSelectionScreen;
 import io.java.pvz.views.screens.gameflow.GameFlowScreen;
@@ -40,16 +42,19 @@ public class LevelResultTable extends BorderedTable {
     private void buildContent(Skin skin, GameState result) {
         boolean won = result == GameState.WON;
 
-        Label titleLabel = new Label(won ? "LEVEL COMPLETE!" : "GAME OVER", skin, "big");
+        boolean isZombie = MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE;
+
+        String titleText = won ? (isZombie ? "BRAINS ACQUIRED!" : "LEVEL COMPLETE!") : "GAME OVER";
+        String subText = won ? (isZombie ? "You ate their brains!" : "You survived every wave!") :
+            (isZombie ? "You ran out of time or zombies..." : "The zombies ate your brains...");
+
+        Label titleLabel = new Label(titleText, skin, "big");
         titleLabel.setColor(won ? Color.valueOf("#2ECC71") : Color.valueOf("#E74C3C"));
         titleLabel.setFontScale(2f);
         titleLabel.setAlignment(Align.center);
         add(titleLabel).padBottom(20).row();
 
-        Label subLabel = new Label(
-            won ? "You survived every wave!" : "The zombies ate your brains...",
-            skin
-        );
+        Label subLabel = new Label(subText, skin);
         subLabel.setColor(Color.valueOf("#4A3018"));
         subLabel.setFontScale(1.2f);
         subLabel.setAlignment(Align.center);

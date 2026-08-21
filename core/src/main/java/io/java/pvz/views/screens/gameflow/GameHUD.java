@@ -619,7 +619,7 @@ public class GameHUD {
         String[] texts = {"Good Luck", "Oops!", "Well Played"};
         for (int i = 0; i < texts.length; i++) {
             final int index = i;
-            TextButton btn = new TextButton(texts[i], skin);
+            TextButton btn = new TextButton(texts[i], skin, "green_small");
             btn.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -632,7 +632,7 @@ public class GameHUD {
         String[] emojis = {"[Smile]", "[Sad]", "[Angry]"};
         for (int i = 0; i < emojis.length; i++) {
             final int index = i;
-            TextButton btn = new TextButton(emojis[i], skin);
+            TextButton btn = new TextButton(emojis[i], skin, "green_small");
             btn.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -664,21 +664,7 @@ public class GameHUD {
             displayStr = "(Animated Sticker " + index + ")";
         }
 
-        Label popupLabel = new Label(opponentName + " says: " + displayStr, skin);
-        popupLabel.setColor(Color.YELLOW);
-        popupLabel.setFontScale(1.5f);
-
-        popupLabel.setPosition(1200f, 800f);
-
-        popupLabel.getColor().a = 0f;
-        popupLabel.addAction(Actions.sequence(
-            Actions.fadeIn(0.3f),
-            Actions.delay(3.0f),
-            Actions.fadeOut(0.5f),
-            Actions.removeActor()
-        ));
-
-        mainLayer.addActor(popupLabel);
+        GameSession.notify(opponentName + " says: " + displayStr);
     }
 
     private void buildZombieTopBar() {

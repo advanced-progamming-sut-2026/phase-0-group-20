@@ -280,28 +280,26 @@ public class WorldItemRenderer {
             }
 
             private void tryCollectSun() {
-                if (sun.isCollected()) return;
-
-                boolean isOnline = MatchController.getInstance().isOnlineMatch();
-
-                if (isOnline) {
-                    if (MatchController.getInstance().getCurrentRole() != PlayerRole.ZOMBIE)
-                        return; // plant player: suns are visual-only and no interaction
-
-                    MatchController.getInstance().collectSun(sun.getCol(), sun.getRow(), response -> {
-                        if (response != null && response.isSuccess()) {
-                            playCollectAnimation();
+                if (!sun.isCollected()) {
+                    if (MatchController.getInstance().isOnlineMatch()) {
+                        if (MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE) {
+                            MatchController.getInstance().collectSun(sun.getCol(), sun.getRow(), response -> {
+                                if (response != null && response.isSuccess()) {
+                                    sun.collect();
+                                    animateCollection();
+                                }
+                            });
                         }
-                    });
-                } else {
-                    Result result = gameFlowController.collectSun(sun);
-                    if (result.isSuccessful()) {
-                        playCollectAnimation();
+                    } else {
+                        Result result = gameFlowController.collectSun(sun);
+                        if (result.isSuccessful()) {
+                            animateCollection();
+                        }
                     }
                 }
             }
 
-            private void playCollectAnimation() {
+            private void animateCollection() {
                 if (sun.isExploded() || (sun.getType() == SunType.RADIOACTIVE_SUN && sun.isFalling())) {
                     return;
                 } else {

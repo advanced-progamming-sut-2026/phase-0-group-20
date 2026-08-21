@@ -3,7 +3,6 @@ package io.java.pvz.models.fields.tiles;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.enums.plants.PlantTag;
-import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.timeManager.Ticker;
 
@@ -15,7 +14,7 @@ public abstract class Tile implements Ticker {
     protected ArrayList<Plant> plants = new ArrayList<>();
     protected Position position;
     protected boolean isCrater;
-    protected boolean isFired =false;
+    protected boolean isFired = false;
     protected int craterTimer = 0;
 
     public Tile(int row, int col) {
@@ -59,14 +58,19 @@ public abstract class Tile implements Ticker {
     }
 
     public boolean isPlantable(Plant plantToPlant) {
+        System.out.println("is crater : " + isCrater );
         if (isCrater) return false;
         boolean isWaterPlant = plantToPlant.getTags().contains(PlantTag.WATER);
 
+        System.out.println("isWaterPlant : " + isWaterPlant );
         if (isWaterPlant) return false;
         boolean isGraveBuster = this instanceof GraveStoneTile tile && tile.getGraveStone() != null &&
-                (plantToPlant.getName().contains("Buster")|| plantToPlant.getName().contains("buster"));
+            (plantToPlant.getName().contains("Buster") || plantToPlant.getName().contains("buster"));
+        System.out.println("isGraveBuster : " + isGraveBuster );
+        System.out.println("is Empty: " +  plantToPlant.getName().isEmpty() + " stack : " +
+            plantToPlant.getTags().contains(PlantTag.STACK));
         return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK) || isGraveBuster ||
-                plantToPlant.getName().equalsIgnoreCase("hot potato");
+            plantToPlant.getName().equalsIgnoreCase("hot potato");
     }
 
     public void removePlant(Plant plant) {
@@ -87,10 +91,22 @@ public abstract class Tile implements Ticker {
         return className;
     }
 
-    public boolean isCrater() {return isCrater;}
-    public void setCrater(boolean isCrater) {this.isCrater = isCrater;}
-    public void setCraterTimer(int ticks) {this.craterTimer = ticks;}
-    public int getCraterTimer() {return craterTimer;}
+    public boolean isCrater() {
+        return isCrater;
+    }
+
+    public void setCrater(boolean isCrater) {
+        this.isCrater = isCrater;
+    }
+
+    public void setCraterTimer(int ticks) {
+        this.craterTimer = ticks;
+    }
+
+    public int getCraterTimer() {
+        return craterTimer;
+    }
+
     protected void updateCraterLogic() {
         if (isCrater && craterTimer > 0) {
             craterTimer--;
@@ -106,7 +122,9 @@ public abstract class Tile implements Ticker {
         return null;
     }
 
-    public void setFired(boolean isFired) {this.isFired = isFired;}
+    public void setFired(boolean isFired) {
+        this.isFired = isFired;
+    }
 
     public boolean isFired() {
         return isFired;

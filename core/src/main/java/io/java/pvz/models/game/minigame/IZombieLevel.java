@@ -19,13 +19,14 @@ import io.java.pvz.models.game.minigame.minigameCondition.IZombieTimeLimitLoseCo
 import io.java.pvz.models.game.minigame.minigameCondition.IZombieWinCondition;
 import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.net.NetworkIdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
-    private static final int TIME_LIMIT = 120;
+    private static final int TIME_LIMIT = 180;
     private final Random rand = new Random();
     private int redLineCol = 6;
     private IZombieTimeLimitLoseCondition timeLimitCondition;
@@ -35,6 +36,8 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     private static final int BELT_SPAWN_INTERVAL_TICKS = 7 * TimeManager.TICKS_PER_SECOND;
     private int beltTicksPassed = 0;
     private List<Plant> beltPlantTemplates;
+
+    private boolean isMultiplayerFlag = false;
 
     public IZombieLevel(String name, SeasonType seasonType, int waveCount, int levelNumber) {
         super(name, seasonType, waveCount, -1, levelNumber);
@@ -63,7 +66,7 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
         redLineCol = rand.nextInt(2) + 2 + levelNumber;
 
-        boolean isMultiplayer = MatchController.getInstance().isOnlineMatch() ||
+        boolean isMultiplayer = this.isMultiplayerFlag || MatchController.getInstance().isOnlineMatch() ||
             MatchController.getInstance().isCouchPlay();
 
         for (int row = 0; row < session.getArena().getRows(); row++) {
@@ -88,7 +91,7 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
         session.getTimeManager().registerNewTicker(new Ticker() {
             int ticksPassed = 0;
-            int currentInterval = 12 * TimeManager.TICKS_PER_SECOND; // 12 seconds
+            int currentInterval = 15 * TimeManager.TICKS_PER_SECOND; // 12 seconds
 
             @Override
             public void onTick(int currentTick) {
@@ -101,7 +104,7 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
                 if (ticksPassed >= currentInterval) {
                     session.getArena().addSun(new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow()));
                     ticksPassed = 0;
-                    if (currentInterval > 4 * TimeManager.TICKS_PER_SECOND)
+                    if (currentInterval > 7 * TimeManager.TICKS_PER_SECOND)
                         currentInterval -= TimeManager.TICKS_PER_SECOND;
                 }
             }
@@ -131,7 +134,7 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
     @Override
     public void engineLoop(GameSession session, int currentTick) {
-        boolean isMultiplayer = MatchController.getInstance().isOnlineMatch() ||
+        boolean isMultiplayer = this.isMultiplayerFlag || MatchController.getInstance().isOnlineMatch() ||
             MatchController.getInstance().isCouchPlay();
 
         if (!isMultiplayer) return;
@@ -214,6 +217,8 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
         sunZombie.setBaseSpeed(0);
         session.getArena().addZombie(sunZombie);
 
+        if (MatchController.getInstance().isOnlineMatch()) return;
+
         session.getTimeManager().registerNewTicker(new Ticker() {
             int ticksPassed = 0;
             int currentInterval = 12 * TimeManager.TICKS_PER_SECOND;
@@ -227,7 +232,10 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
                 ticksPassed++;
                 if (ticksPassed >= currentInterval) {
-                    session.getArena().addSun(new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow()));
+                    Sun newSun = new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow());
+                    newSun.setNetworkId(NetworkIdGenerator.generateSunId(sunZombie.getCol(), sunZombie.getRow(), currentTick));
+                    session.getArena().addSun(newSun);
+
                     ticksPassed = 0;
                     if (currentInterval > 4 * TimeManager.TICKS_PER_SECOND)
                         currentInterval -= TimeManager.TICKS_PER_SECOND;
@@ -239,7 +247,7 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     @Override
     public String toString() {
         return "Don't Let Plants Destroy Your Zombies-Destroy All Of The Plants-" +
-            "Win The Game in Under "+TIME_LIMIT+" Seconds";
+            "Win The Game in Under " + TIME_LIMIT + " Seconds";
     }
 
     public boolean isValidPlantPlacement(int col) {
@@ -253,4 +261,9 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     public void setRedLineCol(int col) {
         this.redLineCol = col;
     }
+
+    public void setMultiplayer(boolean isMultiplayer) {
+        this.isMultiplayerFlag = isMultiplayer;
+    }
+
 }
