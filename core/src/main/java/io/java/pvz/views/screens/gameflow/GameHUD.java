@@ -32,6 +32,7 @@ import io.java.pvz.models.game.minigame.VaseBreakerLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.*;
+import io.java.pvz.views.screens.modals.DialogueModalTable;
 import io.java.pvz.views.screens.modals.LevelIntroModalTable;
 import io.java.pvz.views.screens.modals.PauseMenuTable;
 import io.java.pvz.views.screens.modals.PlantSelectionModalTable;
@@ -142,9 +143,38 @@ public class GameHUD {
     }
 
     private void setupPlantSelectionMenu() {
-        if (GameSession.getInstance() != null) {
+        if(GameSession.getInstance() != null){
             GameSession.getInstance().pauseGame();
         }
+
+        Level upcomingLevel = null;
+        if (GameSession.getPendingBonusLevel() != null) {
+            upcomingLevel = GameSession.getPendingBonusLevel();
+        } else if (GameSession.getMinigameLevel() != null) {
+            upcomingLevel = GameSession.getMinigameLevel();
+        } else if (GameSession.getPendingLevel() != null) {
+            upcomingLevel = GameSession.getPendingLevel();
+        } else if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof Level) {
+            upcomingLevel = (Level) GameSession.getInstance().getCurrentMode();
+        }
+
+        List<DialogueLine> introDialogue = null;
+        if (upcomingLevel != null) {
+            introDialogue = upcomingLevel.getIntroDialogue();
+        }
+
+        if (introDialogue != null && !introDialogue.isEmpty()) {
+            new DialogueModalTable(
+                AssetLoader.getInstance().getSkin(),
+                introDialogue,
+                this::proceedWithPlantSelectionUI
+            ).show(modalLayer, viewport);
+        } else {
+            proceedWithPlantSelectionUI();
+        }
+    }
+
+    private void proceedWithPlantSelectionUI() {
         if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
             buildBeghouledSeedBank();
             new LevelIntroModalTable(skin).show(modalLayer, viewport);
@@ -159,15 +189,18 @@ public class GameHUD {
             } else {
                 buildSeedBank();
             }
-            new LevelIntroModalTable(skin).show(modalLayer, viewport);
+            new LevelIntroModalTable(skin).show(modalLayer,viewport);
+
         } else if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin, () -> {
                 buildSeedBank();
-                new LevelIntroModalTable(skin).show(modalLayer, viewport);
-                GameSession.getInstance().pauseGame();
-
+                new LevelIntroModalTable(skin).show(modalLayer,viewport);
+                if(GameSession.getInstance() != null) {
+                    GameSession.getInstance().pauseGame();
+                }
             });
             plantSelectionModal.show(modalLayer, viewport);
+
         } else if (GameSession.getInstance() != null &&
             !(GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel)) {
             belt = new ConveyorBeltUI(skin, textures,

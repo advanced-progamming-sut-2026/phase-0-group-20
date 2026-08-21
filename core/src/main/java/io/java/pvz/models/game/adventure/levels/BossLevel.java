@@ -19,6 +19,7 @@ public class BossLevel extends ConveyorBelt {
         this.loseConditions.clear();
 
         this.addLoseCondition(new NormalLoseCondition());
+        setupDialogues();
     }
 
     @Override
@@ -65,5 +66,112 @@ public class BossLevel extends ConveyorBelt {
     @Override
     public String toString() {
         return "Don't Let Zombies Eat Your Brain-Defeat The Zomboss";
+    }
+
+    @Override
+    public void setupDialogues() {
+        introDialogue.clear();
+        switch (season) {
+            case ANCIENT_EGYPT -> dialogueEgypt();
+            case FROZEN_CAVES -> dialogueFrozen();
+            case DARK_AGES -> dialogueDarkAges();
+            case BIG_WAVE_BEACH -> dialogueBeach();
+        }
+    }
+
+    private void dialogueEgypt() {
+        addDialogueLine(
+            "Crazy Dave",
+            "Greetings, ancient neighbor! Look at that giant mechanical cat!",
+            "768/INITIAL/CRAZYDAVE/CRAZYDAVE/CRAZYDAVE.PAM",
+            "anim_taco_talk",
+            true
+        );
+        addDialogueLine(
+            "Dr. Zomboss",
+            "Foolish mortals! My Sphinx-inator shall crush your puny flora into pyramid dust!",
+            "768/FULL/NPC/ZOMBOSS/ZOMBOSS.PAM",
+            "zomboss_talk",
+            false
+        );
+        addDialogueLine(
+            "Crazy Dave",
+            "Because I'm CRAAAAZY! Bring on the pyramid power!",
+            "768/INITIAL/CRAZYDAVE/CRAZYDAVE/CRAZYDAVE.PAM",
+            "anim_taco_talk",
+            true
+        );
+    }
+
+    private void dialogueFrozen() {
+        addDialogueLine(
+            "Crazy Dave",
+            "Brrrr! My taco is completely frozen solid!",
+            "768/INITIAL/CRAZYDAVE/CRAZYDAVE/CRAZYDAVE.PAM",
+            "anim_taco_talk",
+            true
+        );
+        addDialogueLine(
+            "Dr. Zomboss",
+            "Welcome to the Ice Age, Dave! Prepare to become a prehistoric frozen snack!",
+            "768/FULL/NPC/ZOMBOSS/ZOMBOSS.PAM",
+            "zomboss_talk",
+            false
+        );
+        addDialogueLine(
+            "Crazy Dave",
+            "Not on my watch! Warm up the lawn, plants!",
+            "768/INITIAL/CRAZYDAVE/CRAZYDAVE/CRAZYDAVE.PAM",
+            "anim_taco_talk",
+            true
+        );
+    }
+
+    private void dialogueDarkAges() {
+        addDialogueLine(
+            "Crazy Dave",
+            "Hark, neighbor! Is that a metal dragon breathing fire?!",
+            "768/INITIAL/CRAZYDAVE/CRAZYDAVE/CRAZYDAVE.PAM",
+            "anim_taco_talk",
+            true
+        );
+        addDialogueLine(
+            "Dr. Zomboss",
+            "Kneel before the Dark Dragon! Your medieval defenses will burn to ash!",
+            "768/FULL/NPC/ZOMBOSS/ZOMBOSS.PAM",
+            "zomboss_talk",
+            false
+        );
+        addDialogueLine(
+            "Crazy Dave",
+            "We have knights, mushrooms, and fire extinguishers! For the Kingdom!",
+            "768/INITIAL/CRAZYDAVE/CRAZYDAVE/CRAZYDAVE.PAM",
+            "anim_taco_talk",
+            true
+        );
+    }
+
+    private void dialogueBeach() {
+        addDialogueLine(
+            "Crazy Dave",
+            "Surf's up! But what is that giant metal shark lurking under the waves?",
+            "768/INITIAL/CRAZYDAVE/CRAZYDAVE/CRAZYDAVE.PAM",
+            "anim_taco_talk",
+            true
+        );
+        addDialogueLine(
+            "Dr. Zomboss",
+            "You are in deep waters now! The Sharktronic Sub will swallow your lawn whole!",
+            "768/FULL/NPC/ZOMBOSS/ZOMBOSS.PAM",
+            "zomboss_talk",
+            false
+        );
+        addDialogueLine(
+            "Crazy Dave",
+            "Tangle Kelps and Lily Pads, assemble! Let's make a big splash!",
+            "768/INITIAL/CRAZYDAVE/CRAZYDAVE/CRAZYDAVE.PAM",
+            "anim_taco_talk",
+            true
+        );
     }
 }

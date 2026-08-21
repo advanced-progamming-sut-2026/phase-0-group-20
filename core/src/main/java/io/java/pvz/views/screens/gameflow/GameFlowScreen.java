@@ -17,6 +17,12 @@ import io.java.pvz.models.App;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.adventure.levels.Level;
+import io.java.pvz.models.game.events.*;
+import io.java.pvz.models.game.minigame.DroppedSeedPacket;
+import io.java.pvz.models.timeManager.TimeManager;
+
+import io.java.pvz.utils.DialogueLine;
 import io.java.pvz.models.game.events.CameraListener;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
@@ -26,6 +32,7 @@ import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PlantCardButton;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.views.screens.BaseScreen;
+import io.java.pvz.views.screens.modals.DialogueModalTable;
 import io.java.pvz.views.screens.modals.LevelResultTable;
 import pvz.libpvz.textures.TextureBank;
 
