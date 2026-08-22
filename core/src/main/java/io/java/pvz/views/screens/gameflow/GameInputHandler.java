@@ -399,7 +399,7 @@ public class GameInputHandler {
             if (GameSession.getInstance().getCurrentMode() instanceof BowlingLevel) {
                 result = miniGameController.plantBowlingNut(selectedPlantToPlace, col, row);
             } else {
-                result = gameFlowController.plantPlant(selectedPlantToPlace.getName(),
+                result = gameFlowController.plantPlant(selectedPlantToPlace,
                     String.valueOf(col), String.valueOf(row));
             }
         }

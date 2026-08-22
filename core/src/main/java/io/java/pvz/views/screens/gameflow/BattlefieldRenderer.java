@@ -148,7 +148,7 @@ public class BattlefieldRenderer implements GameEventListener {
             g = 0.8f;
             b = 1.0f;
             intensity = 0.3f;
-        } else if (isPoisoned) {
+        } else if (isPoisoned || zombie.isShiny()) {
             r = 0.6f;
             g = 0.1f;
             b = 0.8f;
@@ -178,7 +178,9 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     public void sync(Arena arena) {
-        if (arena == null) return;
+        if (arena == null) {
+            return;
+        }
         float delta = Gdx.graphics.getDeltaTime();
 
         for (Zombie z : arena.getActiveZombies()) {
