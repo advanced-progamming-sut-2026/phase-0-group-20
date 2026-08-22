@@ -250,9 +250,14 @@ public class GameInputHandler {
             int row = (int) gridPos.y + 1;
 
             if (isShovelSelected) {
-                if (gameFlowController.pluckPlant(String.valueOf(col), String.valueOf(row)).isSuccessful()) {
-
-                    clearAllSelections();
+                if (MatchController.getInstance().isOnlineMatch()) {
+                    MatchController.getInstance().pluckPlant(col, row, response -> {
+                        if (response.isSuccess())
+                            clearAllSelections();
+                    });
+                } else {
+                    if (gameFlowController.pluckPlant(String.valueOf(col), String.valueOf(row)).isSuccessful())
+                        clearAllSelections();
                 }
                 return;
             }

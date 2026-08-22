@@ -119,7 +119,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
                     String mapId = new GameMenuController().getCurrentMapTextureId();
                     ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
                 }
-            }, 4.0f);
+            }, 2.0f);
         });
     }
 

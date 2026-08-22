@@ -10,6 +10,7 @@ import io.java.pvz.net.server.PlayerRole;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+
 import io.java.pvz.models.game.GameSession;
 
 public class MatchController {
@@ -70,6 +71,9 @@ public class MatchController {
             else if ("COLLECT_SUN".equals(action)) {
                 new GameFlowController().collectSun(col, row);
             }
+            else if ("PLUCK_PLANT".equals(action)) {
+                new GameFlowController().pluckPlant(String.valueOf(col), String.valueOf(row));
+            }
         }));
 
         client.onPush(MessageType.MATCH_PAUSE_STATE, message -> Gdx.app.postRunnable(() -> {
@@ -95,6 +99,14 @@ public class MatchController {
         NetworkMessage request = NetworkMessage.request(MessageType.MATCH_ACTION);
         request.put("action", "PLACE_PLANT");
         request.put("plantName", plantName);
+        request.put("col", col);
+        request.put("row", row);
+        sendAsync(request, callback);
+    }
+
+    public void pluckPlant(int col, int row, Consumer<NetworkMessage> callback) {
+        NetworkMessage request = NetworkMessage.request(MessageType.MATCH_ACTION);
+        request.put("action", "PLUCK_PLANT");
         request.put("col", col);
         request.put("row", row);
         sendAsync(request, callback);
@@ -155,7 +167,7 @@ public class MatchController {
         return isOnlineMatch;
     }
 
-    public io.java.pvz.net.server.PlayerRole getCurrentRole() {
+    public PlayerRole getCurrentRole() {
         return currentRole;
     }
 
