@@ -3,7 +3,6 @@ package io.java.pvz.models.entities.projectiles;
 public final class ProjectileTuning {
     private ProjectileTuning() {}
 
-
     public static final float PEA_SPEED_TILES_PER_SEC = 5.5f;
 
     public static final float SPIKE_SPEED_TILES_PER_SEC = 6.0f;
