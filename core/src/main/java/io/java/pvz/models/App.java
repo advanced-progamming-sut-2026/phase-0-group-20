@@ -24,10 +24,6 @@ public class App {
     private static GameSession activeSession;
     private static List<User> allUsers;
 
-    public static void changeDifficulty(int difficulty) {
-        SETTINGS.setDifficulty(difficulty);
-    }
-
     public static User getActiveUser() {
         return activeUser;
     }
@@ -83,27 +79,6 @@ public class App {
             }
         }
         return null;
-    }
-
-    public static Zombie findZombieByName(String name) {
-        for (Zombie z : allZombies) {
-            if (z.getName().equals(name)) {
-                return z;
-            }
-        }
-        return null;
-    }
-
-    public static ArrayList<Chapter> getAllChapters() {
-        return allChapters;
-    }
-
-    public static void setAllChapters(ArrayList<Chapter> allChapters) {
-        App.allChapters = allChapters;
-    }
-
-    public static GameSession getActiveSession() {
-        return activeSession;
     }
 
     public static void setActiveSession(GameSession activeSession) {

@@ -1,8 +1,7 @@
 package io.java.pvz.models.entities.zombies.behavior.defense;
 
 import io.java.pvz.models.entities.zombies.behavior.context.ExplorerContext;
-import io.java.pvz.models.enums.plants.ProjectileType;
-import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 
 public class ExplorerDefense implements DefenseBehavior {
     private final ExplorerContext context;

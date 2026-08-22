@@ -8,7 +8,7 @@ import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.GameState;
-import io.java.pvz.models.enums.plants.PlantCategory;
+import io.java.pvz.models.entities.plants.PlantCategory;
 import io.java.pvz.models.fields.modifiers.SeasonModifier;
 import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.game.adventure.Chapter;

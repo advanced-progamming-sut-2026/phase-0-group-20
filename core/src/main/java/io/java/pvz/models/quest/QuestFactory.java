@@ -2,8 +2,8 @@ package io.java.pvz.models.quest;
 
 import com.google.gson.JsonObject;
 import io.java.pvz.models.entities.plants.PlantFactory;
-import io.java.pvz.models.enums.plants.PlantCategory;
-import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.entities.plants.PlantCategory;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.quest.conditions.*;
 import io.java.pvz.models.quest.reward.CurrencyReward;
 import io.java.pvz.models.quest.reward.Reward;

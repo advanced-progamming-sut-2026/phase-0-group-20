@@ -1,4 +1,4 @@
-package io.java.pvz.models.enums.plants;
+package io.java.pvz.models.entities.projectiles;
 
 public enum ProjectileType {
     PEA,

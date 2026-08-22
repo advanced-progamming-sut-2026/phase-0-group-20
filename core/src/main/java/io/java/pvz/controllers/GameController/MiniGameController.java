@@ -5,21 +5,15 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.Result;
-import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileTuning;import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
-import io.java.pvz.models.enums.PhysicalConstants;
-import io.java.pvz.models.enums.plants.ProjectileType;
-import io.java.pvz.models.fields.Brain;
-import io.java.pvz.models.fields.LawnMower;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.fields.tiles.*;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
-import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.minigame.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 

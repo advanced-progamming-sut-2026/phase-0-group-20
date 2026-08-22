@@ -2,7 +2,7 @@ package io.java.pvz.models.fields.tiles;
 
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.game.GameSession;
 
 public class LowShoreTile extends Tile {

@@ -1,6 +1,6 @@
 package io.java.pvz.models.entities.zombies.behavior.defense;
 
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 
 public class NormalDefense implements DefenseBehavior {
     @Override

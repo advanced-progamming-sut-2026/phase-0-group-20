@@ -7,8 +7,8 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.behavior.effect.DodoFlyEffect;
 import io.java.pvz.models.enums.PhysicalConstants;
-import io.java.pvz.models.enums.plants.PlantCategory;
-import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.entities.plants.PlantCategory;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.game.GameSession;
 
 import java.util.List;

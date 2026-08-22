@@ -3,7 +3,7 @@ package io.java.pvz.models.entities.zombies.behavior.defense;
 import io.java.pvz.models.entities.obstacle.Piano;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.move.PianistMove;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 
 public class PianistDefense implements DefenseBehavior {
     private final Zombie zombie;

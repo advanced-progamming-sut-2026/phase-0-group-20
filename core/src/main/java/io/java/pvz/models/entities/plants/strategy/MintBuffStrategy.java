@@ -1,7 +1,7 @@
 package io.java.pvz.models.entities.plants.strategy;
 
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.enums.plants.PlantCategory;
+import io.java.pvz.models.entities.plants.PlantCategory;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.AnimationCatalog;

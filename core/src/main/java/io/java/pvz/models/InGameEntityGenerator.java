@@ -241,7 +241,6 @@ public class InGameEntityGenerator {
         };
     }
 
-
     public static Zombie getZombieForGame(ZombieType type, int row) {
         return ZombieFactory.create(type, row);
     }

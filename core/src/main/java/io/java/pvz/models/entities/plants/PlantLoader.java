@@ -2,8 +2,6 @@ package io.java.pvz.models.entities.plants;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.java.pvz.models.enums.plants.PlantCategory;
-import io.java.pvz.models.enums.plants.PlantTag;
 
 import java.io.FileReader;
 import java.io.Reader;

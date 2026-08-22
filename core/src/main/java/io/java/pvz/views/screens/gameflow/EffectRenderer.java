@@ -8,7 +8,7 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.game.GameMode;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.BossLevel;

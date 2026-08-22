@@ -68,26 +68,6 @@ public class Shop {
         return available;
     }
 
-    public String getPurchasablePlantsCatalog(User user) {
-        StringBuilder sb = new StringBuilder("=== Premium Plants Shop ===\n");
-        boolean hasAvailable = false;
-
-        for (Map.Entry<String, PlantPrice> entry : PREMIUM_PLANTS.entrySet()) {
-            String plantName = entry.getKey();
-            PlantPrice price = entry.getValue();
-
-            if (!userHasPlant(user, plantName)) {
-                sb.append(String.format("- %-20s : %d %s\n", plantName, price.amount, price.currency));
-                hasAvailable = true;
-            }
-        }
-
-        if (!hasAvailable) {
-            return "You have unlocked all available premium plants! Awesome!";
-        }
-        return sb.toString();
-    }
-
     public Result buyPremiumPlant(User user, String plantName) {
         String matchedKey = null;
         PlantPrice price = null;
@@ -137,26 +117,6 @@ public class Shop {
             }
         }
         return false;
-    }
-
-
-    public String getCatalog() {
-        return "=== Crazy Dave's Shop ===\n" +
-                "1. Pot (Max 20) - 2000 Coins\n" +
-                "2. Plant Food (Max 3) - 3 Diamonds\n" +
-                "3. Random Seed Packet (5x Pack) - 1000 Coins\n" +
-                "4. Selective Seed Packet (10x Pack) - 5 Diamonds\n" +
-                "5. Currency Exchange (500 Coins) - 5 Diamonds";
-    }
-
-    public String getDailyDeal(User user) {
-        if (user.isPurchasedDailyDealToday()) {
-            return "Daily Deal: Sold out for today!";
-        }
-        Plant dailyPlant = getDailyRandomPlant(user);
-        if (dailyPlant == null) return "Daily Deal: Not available yet.";
-
-        return "Daily Deal: 10x " + dailyPlant.getName() + " Seed Packets - 1600 Coins (20% Off!)";
     }
 
     private Plant getDailyRandomPlant(User user) {

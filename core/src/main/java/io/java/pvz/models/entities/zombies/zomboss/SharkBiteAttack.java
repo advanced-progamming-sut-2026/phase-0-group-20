@@ -4,7 +4,7 @@ import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.enums.PhysicalConstants;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 

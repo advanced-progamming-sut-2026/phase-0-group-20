@@ -119,18 +119,6 @@ public class User {
         }
     }
 
-    public long getLastLoginEpochDay() {
-        return lastLoginEpochDay;
-    }
-
-    public void setLastLoginEpochDay(long lastLoginEpochDay) {
-        this.lastLoginEpochDay = lastLoginEpochDay;
-    }
-
-    public boolean isHasPlayedDailyChallengeToday() {
-        return hasPlayedDailyChallengeToday;
-    }
-
     public void setHasPlayedDailyChallengeToday(boolean hasPlayedDailyChallengeToday) {
         this.hasPlayedDailyChallengeToday = hasPlayedDailyChallengeToday;
     }

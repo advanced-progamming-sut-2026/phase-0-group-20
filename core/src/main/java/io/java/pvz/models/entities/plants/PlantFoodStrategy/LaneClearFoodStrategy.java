@@ -5,7 +5,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.projectiles.ProjectileTuning;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 
 public class LaneClearFoodStrategy implements PlantFoodStrategy {
 

@@ -8,7 +8,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
-import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.NormalTile;
 import io.java.pvz.models.fields.tiles.SlipperyTile;
 import io.java.pvz.models.fields.tiles.Tile;

@@ -11,8 +11,6 @@ import io.java.pvz.models.entities.plants.strategy.category_strategy.*;
 import io.java.pvz.models.entities.plants.strategy.tag_strategy.ChargeStrategy;
 import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.enums.plants.PlantCategory;
-import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.events.GameEvent;

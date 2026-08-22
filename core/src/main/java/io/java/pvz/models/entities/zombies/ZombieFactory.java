@@ -5,7 +5,6 @@ import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.obstacle.ArcadeMachine;
 import io.java.pvz.models.entities.obstacle.Barrel;
 import io.java.pvz.models.entities.obstacle.Piano;
-import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.entities.zombies.armour.ArmorData;
 import io.java.pvz.models.entities.zombies.armour.ArmorLoader;
@@ -15,14 +14,11 @@ import io.java.pvz.models.entities.zombies.behavior.defense.*;
 import io.java.pvz.models.entities.zombies.behavior.effect.*;
 import io.java.pvz.models.entities.zombies.behavior.move.*;
 import io.java.pvz.models.enums.PhysicalConstants;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class ZombieFactory {
     public static void init(String jsonPath) {

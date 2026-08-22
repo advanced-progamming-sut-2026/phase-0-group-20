@@ -3,8 +3,6 @@ package io.java.pvz.controllers.GameController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.enums.plants.PlantTag;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
@@ -12,7 +10,6 @@ import io.java.pvz.models.users.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class CollectionController {
     private static final int MAX_LEVEL = 4;
