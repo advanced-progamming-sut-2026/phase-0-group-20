@@ -11,22 +11,6 @@ import java.util.Map;
 public class ShopMenuController {
     private final Shop shop = new Shop();
 
-    public Result showShopList() {
-        return new Result(true, shop.getCatalog());
-    }
-
-    public Result showDailyDeal() {
-        User activeUser = App.getActiveUser();
-        if (activeUser == null) return new Result(false, "No active user found!");
-        return new Result(true, shop.getDailyDeal(activeUser));
-    }
-
-    public Result showPurchasablePlants() {
-        User activeUser = App.getActiveUser();
-        if (activeUser == null) return new Result(false, "No active user found!");
-        return new Result(true, shop.getPurchasablePlantsCatalog(activeUser));
-    }
-
     public Map<String, Shop.PlantPrice> getAvailablePlants() {
         User activeUser = App.getActiveUser();
         if (activeUser == null) return Map.of();

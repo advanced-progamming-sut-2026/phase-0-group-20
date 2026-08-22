@@ -39,38 +39,6 @@ public class PlantSelectionController {
         }
     }
 
-    public Result showAllPlants() {
-        User activeUser = App.getActiveUser();
-        if (activeUser == null) return new Result(false, "No active user!");
-
-        List<Plant> unlocked = activeUser.getUnlockedPlants();
-        if (unlocked == null || unlocked.isEmpty()) {
-            return new Result(true, "You don't have any plants yet!");
-        }
-
-        StringBuilder sb = new StringBuilder("--- Your Unlocked Plants ---\n");
-        for (Plant p : unlocked) {
-            sb.append("- ").append(p.getName()).append(" (Cost: ").append(p.getCost()).append(")\n");
-        }
-        return new Result(true, sb.toString().trim());
-    }
-
-    public Result showAllAvailablePlants() {
-        if (selectedPlants.isEmpty()) {
-            return new Result(true, "You haven't selected any plants yet.");
-        }
-
-        StringBuilder sb = new StringBuilder("--- Selected Plants for this Level ---\n");
-        for (Plant p : selectedPlants) {
-            sb.append("- ").append(p.getName());
-            if (boostedPlantNames.contains(p.getName().toLowerCase())) {
-                sb.append(" [BOOSTED]");
-            }
-            sb.append("\n");
-        }
-        return new Result(true, sb.toString().trim());
-    }
-
     public Result addImitater(String targetName) {
         User activeUser = App.getActiveUser();
         Plant targetPlant = null;
