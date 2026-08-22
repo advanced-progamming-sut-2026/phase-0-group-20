@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
-import io.java.pvz.controllers.GameMenuController;
+import io.java.pvz.controllers.MenuScreenController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.enums.Menu;
@@ -19,13 +19,13 @@ import pvz.libpvz.textures.TextureBank;
 
 public class GameMenuScreen extends BaseScreen {
 
-    private final GameMenuController menuController;
+    private final MenuScreenController menuController;
     private final TextureRegion backgroundRegion;
 
     public GameMenuScreen(Game game) {
         super(game);
         TextureBank textures = AssetLoader.getInstance().getTextures();
-        menuController = new GameMenuController(modalLayer);
+        menuController = new MenuScreenController(modalLayer);
         backgroundRegion = textures.region(Ids.MainMenu.BACKGROUND);
 
         registerMenuPanels();
