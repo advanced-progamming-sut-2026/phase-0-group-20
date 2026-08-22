@@ -10,6 +10,7 @@ import io.java.pvz.models.game.adventure.levels.SpecialLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -18,7 +19,7 @@ public class ConveyorBelt extends SpecialLevel {
     private static final int BELT_SPEED_SECONDS = 6;
     private static final int BELT_CAPACITY = 10;
     private final List<Plant> belt = new ArrayList<>();
-    private final Random random = new Random();
+    protected final Random random = new Random();
     private List<Plant> unlockedPlants;
 
     public ConveyorBelt(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
@@ -63,16 +64,28 @@ public class ConveyorBelt extends SpecialLevel {
     }
 
     protected void spawnPlantOnBelt() {
-        if (unlockedPlants == null || unlockedPlants.isEmpty()) return;
+        List<String> plantPool = new ArrayList<>(Arrays.asList(
+            "Peashooter", "Wall-nut", "Potato Mine", "Cabbage-pult",
+            "Snow Pea", "Repeater", "Snapdragon",
+            "Cherry Bomb", "Bonk Choy", "Threepeater",
+            "Melon-pult", "Kernel-pult", "Cactus",
+            "Wasabi Whip", "Torchwood", "Chomper"
+        ));
         Plant template;
-       do{
-           template = unlockedPlants.get(random.nextInt(unlockedPlants.size()));
+        Plant newPlant = null;
 
-       }while(template.getCategory() == PlantCategory.SUN_PRODUCER);
-        Plant newPlant = PlantFactory.create(template.getId());
+        do {
+            String randomPlantName = plantPool.get(random.nextInt(plantPool.size()));
+            template = App.findPlantByName(randomPlantName);
 
-        belt.add(newPlant);
-        notify("A new " + newPlant.getName() + " arrived on the conveyor belt!");
+            if (template != null &&
+                template.getCategory() != PlantCategory.SUN_PRODUCER &&
+                App.getActiveUser().isItUnlocked(template)) {
+                newPlant = PlantFactory.create(template.getId());
+            }
+        } while (newPlant == null);
+
+        getBelt().add(newPlant);
     }
 
     public List<Plant> getBelt() {

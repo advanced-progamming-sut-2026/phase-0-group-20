@@ -154,7 +154,6 @@ public class GameFlowScreen extends BaseScreen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         drawBackground();
-        handleDebugSpawnKeys();
         batch.end();
 
         if (App.getSettings().isGrid())
@@ -231,18 +230,6 @@ public class GameFlowScreen extends BaseScreen {
             gameFlowController.gameOver();
             levelResultShown = true;
             new LevelResultTable(AssetLoader.getInstance().getSkin(), state, game).show(modalLayer, viewport);
-        }
-    }
-
-    private void handleDebugSpawnKeys() {
-        if (GameSession.getInstance() == null) return;
-
-        if (input.isKeyJustPressed(Input.Keys.P)) {
-            gameFlowController.plantPlant("Peashooter", "1", "1");
-        }
-
-        if (input.isKeyJustPressed(Input.Keys.Z)) {
-            gameFlowController.cheatSpawnZombie("Normal", "9", "1");
         }
     }
 

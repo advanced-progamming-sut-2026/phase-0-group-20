@@ -201,13 +201,15 @@ public class GameHUD {
             });
             plantSelectionModal.show(modalLayer, viewport);
 
-        } else if (GameSession.getInstance() != null &&
-            !(GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel)) {
-            belt = new ConveyorBeltUI(skin, textures,
-                (plant) -> createSeedPacket(plant, false));
-            belt.setSize(200f, 700);
-            belt.setPosition(20f, 250);
-            mainLayer.addActor(belt);
+        }else if (GameSession.getInstance() != null) {
+            if (!(GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel)) {
+                belt = new ConveyorBeltUI(skin, textures,
+                    (plant) -> createSeedPacket(plant, false));
+                belt.setSize(200f, 700);
+                belt.setPosition(20f, 250);
+                mainLayer.addActor(belt);
+            }
+
             new LevelIntroModalTable(skin).show(modalLayer, viewport);
             GameSession.getInstance().pauseGame();
         }

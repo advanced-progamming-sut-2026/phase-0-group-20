@@ -1,12 +1,20 @@
 package io.java.pvz.models.game.adventure.levels;
 
+import io.java.pvz.models.App;
+import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.PlantCategory;
+import io.java.pvz.models.entities.plants.PlantFactory;
 import io.java.pvz.models.entities.zombies.zomboss.*;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.SeasonType;
-import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
 import io.java.pvz.models.game.adventure.levels.conditions.BossWinCondition;
+import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
 import io.java.pvz.models.timeManager.TimeManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class BossLevel extends ConveyorBelt {
 
@@ -173,5 +181,47 @@ public class BossLevel extends ConveyorBelt {
             "anim_taco_talk",
             true
         );
+    }
+
+    @Override
+    protected void spawnPlantOnBelt() {
+        List<String> plantPool = new ArrayList<>(Arrays.asList(
+            "Peashooter", "Wall-nut", "Potato Mine", "Cabbage-pult",
+            "Snow Pea", "Repeater", "Snapdragon",
+            "Cherry Bomb", "Bonk Choy", "Threepeater",
+            "Melon-pult", "Kernel-pult", "Cactus",
+            "Wasabi Whip", "Torchwood"
+        ));
+
+        switch (season) {
+            case ANCIENT_EGYPT -> plantPool.addAll(Arrays.asList(
+                "Iceberg Lettuce", "Grave Buster"
+            ));
+            case FROZEN_CAVES -> plantPool.addAll(Arrays.asList(
+                "Rotobaga", "Hot Potato", "Winter Melon", "Split Pea"
+            ));
+            case DARK_AGES -> plantPool.addAll(Arrays.asList(
+                "Pea Pod", "Doom-shroom", "Mega Gatling Pea", "Electric Blueberry"
+            ));
+            case BIG_WAVE_BEACH -> plantPool.addAll(Arrays.asList(
+                "Lily Pad", "Tangle Kelp", "Bowling Bulb", "Sea-shroom", "Grapeshot"
+            ));
+        }
+
+        Plant template;
+        Plant newPlant = null;
+
+        do {
+            String randomPlantName = plantPool.get(random.nextInt(plantPool.size()));
+            template = App.findPlantByName(randomPlantName);
+
+            if (template != null &&
+                template.getCategory() != PlantCategory.SUN_PRODUCER &&
+                App.getActiveUser().isItUnlocked(template)) {
+                newPlant = PlantFactory.create(template.getId());
+            }
+        } while (newPlant == null);
+
+        getBelt().add(newPlant);
     }
 }
