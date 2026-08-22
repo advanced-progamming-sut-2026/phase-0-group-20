@@ -20,6 +20,7 @@ import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.views.screens.ChapterSelectionScreen;
@@ -42,7 +43,11 @@ public class LevelResultTable extends BorderedTable {
     private void buildContent(Skin skin, GameState result) {
         boolean won = result == GameState.WON;
 
-        boolean isZombie = MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE;
+        boolean isOnline = MatchController.getInstance().isOnlineMatch();
+        boolean isZombieRole = MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE;
+        boolean isOfflineZombieMode = !isOnline && (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel);
+
+        boolean isZombie = (isOnline && isZombieRole) || isOfflineZombieMode;
 
         String titleText = won ? (isZombie ? "BRAINS ACQUIRED!" : "LEVEL COMPLETE!") : "GAME OVER";
         String subText = won ? (isZombie ? "You ate their brains!" : "You survived every wave!") :
@@ -128,9 +133,7 @@ public class LevelResultTable extends BorderedTable {
 
     @Override
     public boolean remove() {
-        if (blocker != null) {
-            blocker.remove();
-        }
+        if (blocker != null) blocker.remove();
         return super.remove();
     }
 }

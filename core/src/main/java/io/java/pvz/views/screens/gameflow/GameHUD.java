@@ -626,7 +626,7 @@ public class GameHUD {
                     ReactionController.getInstance().sendReaction(ReactionController.Category.TEXT, index, null);
                 }
             });
-            reactionTable.add(btn).padRight(5f);
+            reactionTable.add(btn).padTop(10).row();
         }
 
         String[] emojis = {"[Smile]", "[Sad]", "[Angry]"};
@@ -639,7 +639,7 @@ public class GameHUD {
                     ReactionController.getInstance().sendReaction(ReactionController.Category.EMOJI, index, null);
                 }
             });
-            reactionTable.add(btn).padRight(5f);
+            reactionTable.add(btn).padTop(10).row();
         }
 
         mainLayer.addActor(reactionTable);

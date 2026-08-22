@@ -46,7 +46,7 @@ public class MatchGameEngine {
     public void startMatch(MatchSession matchSession) {
         executor.submit(() -> {
             try {
-                int levelNumber = 2; // it's better to hard code level number to be more controllable and normal
+                int levelNumber = 2;
                 IZombieLevel level = (IZombieLevel) MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, levelNumber);
                 level.setMultiplayer(true);
                 NetworkMatchState match = new NetworkMatchState(matchSession, level);
@@ -55,7 +55,7 @@ public class MatchGameEngine {
                 broadcast(match, MatchStateSnapshotBuilder.build(match));
 
                 match.setTickTask(executor.scheduleAtFixedRate(
-                    () -> tick(match), TICK_INTERVAL_MS, TICK_INTERVAL_MS, TimeUnit.MILLISECONDS));
+                    () -> tick(match), 6000, TICK_INTERVAL_MS, TimeUnit.MILLISECONDS));
             } catch (Exception e) {
                 System.err.println("Failed to start match " + matchSession.getMatchId() + ": " + e);
                 e.printStackTrace();
@@ -144,6 +144,13 @@ public class MatchGameEngine {
                 }
                 return new GameFlowController().plantPlant(
                     request.getString("plantName"), request.getString("col"), request.getString("row"));
+            }
+            case "PLUCK_PLANT" -> {
+                if (role != PlayerRole.PLANT) return new Result(false, "only the plant side can pluck plants");
+                Integer col = request.getInt("col");
+                Integer row = request.getInt("row");
+                if (col == null || row == null) return new Result(false, "missing col/row");
+                return new GameFlowController().pluckPlant(String.valueOf(col), String.valueOf(row));
             }
             case "COLLECT_SUN" -> {
                 if (role != PlayerRole.ZOMBIE) {
