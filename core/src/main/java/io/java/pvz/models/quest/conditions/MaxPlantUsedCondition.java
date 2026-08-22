@@ -1,7 +1,7 @@
 package io.java.pvz.models.quest.conditions;
 
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.enums.plants.PlantCategory;
+import io.java.pvz.models.entities.plants.PlantCategory;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventPayload;
 

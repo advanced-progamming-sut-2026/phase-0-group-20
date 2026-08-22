@@ -2,7 +2,7 @@ package io.java.pvz.models.entities.zombies.zomboss;
 
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.behavior.defense.DefenseBehavior;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 
 public class ZombossDefenseBehavior implements DefenseBehavior {
     private final Zomboss zomboss;

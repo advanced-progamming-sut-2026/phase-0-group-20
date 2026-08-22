@@ -92,7 +92,6 @@ public final class Position {
         updatePixelsFromGrid();
     }
 
-
     @Override
     public String toString() {
         return "Position{" +
@@ -102,5 +101,4 @@ public final class Position {
             ", col=" + col +
             '}';
     }
-
 }

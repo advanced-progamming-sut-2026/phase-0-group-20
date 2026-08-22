@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
 import io.java.pvz.controllers.GameController.ShopMenuController;
-import io.java.pvz.controllers.GameMenuController;
+import io.java.pvz.controllers.MenuScreenController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.Shop;
@@ -37,7 +37,7 @@ public class ShopModalMenu extends Table {
     private static final float CARD_HEIGHT = 360f;
 
     private final ShopMenuController controller = new ShopMenuController();
-    private final GameMenuController menuController;
+    private final MenuScreenController menuController;
     private final TextureBank textures;
     private final Skin skin;
 
@@ -48,11 +48,11 @@ public class ShopModalMenu extends Table {
     private int selectivePlantIndex = 0;
     private Group modalLayer; // Added to hold the blocker and confirm dialog
 
-    public static Table build(GameMenuController menuController, TextureBank textures, Skin skin, Group modalLayer) {
+    public static Table build(MenuScreenController menuController, TextureBank textures, Skin skin, Group modalLayer) {
         return new ShopModalMenu(menuController, textures, skin, modalLayer);
     }
 
-    private ShopModalMenu(GameMenuController menuController, TextureBank textures, Skin skin, Group modalLayer) {
+    private ShopModalMenu(MenuScreenController menuController, TextureBank textures, Skin skin, Group modalLayer) {
         this.menuController = menuController;
         this.textures = textures;
         this.skin = skin;

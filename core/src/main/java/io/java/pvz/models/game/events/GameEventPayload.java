@@ -3,7 +3,7 @@ package io.java.pvz.models.game.events;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.adventure.SeasonType;
 

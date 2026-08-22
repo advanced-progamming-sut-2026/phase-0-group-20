@@ -8,7 +8,7 @@ import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
@@ -18,7 +18,6 @@ import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.TimeManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ExplosiveStrategy implements IPlantStrategy {

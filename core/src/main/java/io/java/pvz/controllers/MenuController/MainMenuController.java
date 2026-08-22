@@ -8,7 +8,6 @@ import io.java.pvz.models.users.User;
 
 public class MainMenuController {
 
-
     public Result logout() {
         User currentUser = App.getActiveUser();
         if (currentUser == null)
@@ -24,5 +23,4 @@ public class MainMenuController {
 
         return new Result(true, "logged out successfully");
     }
-
 }

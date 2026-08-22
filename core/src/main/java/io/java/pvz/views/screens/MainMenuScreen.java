@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
-import io.java.pvz.controllers.GameMenuController;
+import io.java.pvz.controllers.MenuScreenController;
 import io.java.pvz.controllers.MenuController.MainMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
@@ -156,7 +156,7 @@ public class MainMenuScreen extends BaseScreen {
                 modalLayer.clear();
 
                 Table leaderboardTable = LeaderboardMenu.build(
-                    new GameMenuController(modalLayer) {
+                    new MenuScreenController(modalLayer) {
                         @Override
                         public void goBack() {
                             modalLayer.clear();

@@ -14,7 +14,7 @@ import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.category_strategy.SunProductionStrategy;
-import io.java.pvz.models.enums.plants.PlantCategory;
+import io.java.pvz.models.entities.plants.PlantCategory;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PlantCardButton;

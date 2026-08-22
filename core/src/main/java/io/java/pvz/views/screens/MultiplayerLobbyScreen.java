@@ -106,7 +106,6 @@ public class MultiplayerLobbyScreen extends BaseScreen {
             closeWaitingModal();
 
             MatchController.getInstance().setupOnlineMatch(
-                info.matchId,
                 PlayerRole.valueOf(info.role)
             );
 

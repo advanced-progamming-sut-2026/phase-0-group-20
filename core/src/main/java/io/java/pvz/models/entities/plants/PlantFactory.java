@@ -11,9 +11,7 @@ import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import io.java.pvz.models.entities.projectiles.HypnotizeEffect;
 import io.java.pvz.models.entities.projectiles.LightningEffect;
 import io.java.pvz.models.entities.projectiles.NormalEffect;
-import io.java.pvz.models.enums.plants.PlantCategory;
-import io.java.pvz.models.enums.plants.PlantTag;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 
 import java.util.ArrayList;
 import java.util.List;

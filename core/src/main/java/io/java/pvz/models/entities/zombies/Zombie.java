@@ -12,12 +12,9 @@ import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.ZombieEffect;
 import io.java.pvz.models.entities.zombies.behavior.move.MoveBehavior;
 import io.java.pvz.models.enums.PhysicalConstants;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
-import io.java.pvz.models.game.events.GameEvent;
-import io.java.pvz.models.game.events.GameEventMessenger;
-import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.net.NetworkIdGenerator;
 

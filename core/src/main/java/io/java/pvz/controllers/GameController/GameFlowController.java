@@ -4,7 +4,6 @@ import io.java.pvz.controllers.NavigationController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.Result;
-import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
@@ -12,9 +11,8 @@ import io.java.pvz.models.entities.plants.strategy.ImitateStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
-import io.java.pvz.models.enums.GameState;
 import io.java.pvz.models.enums.Menu;
-import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
@@ -274,11 +272,6 @@ public class GameFlowController {
         return null;
     }
 
-    public Result cheatRemoveCooldown() {
-        GameSession.getInstance().instantiateCooldowns(GameSession.getInstance().getChosenPlants());
-        return new Result(true, "Cheat Activated. All cooldowns have been removed.");
-    }
-
     public Result pluckPlant(String x, String y) {
         Integer posX = parsePositiveInt(x);
         Integer posY = parsePositiveInt(y);
@@ -437,7 +430,4 @@ public class GameFlowController {
             .filter(p -> p.getName().equals(plant.getName()))
             .findFirst().get().getLevel();
     }
-
-
-
 }

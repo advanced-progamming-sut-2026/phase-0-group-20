@@ -32,10 +32,6 @@ public class NetworkController {
         return authenticated && isConnected();
     }
 
-    public String getAuthenticatedUsername() {
-        return authenticatedUsername;
-    }
-
     public void login(String username, String password, Consumer<NetworkMessage> callback) {
         runAsync(() -> {
             NetworkClient client = connectIfNeeded();

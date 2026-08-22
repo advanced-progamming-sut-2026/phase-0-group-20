@@ -29,21 +29,6 @@ public class NewsController {
         return getUnreadNewsByType(MessageType.MINIGAME);
     }
 
-    public Result showAllNews() {
-        User activeUser = App.getActiveUser();
-
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Message message : activeUser.getInbox()) {
-            stringBuilder.append(message.getText()).append("\n");
-            message.setUnread(false);
-        }
-
-        String text = "";
-        if (!stringBuilder.isEmpty())
-            text = stringBuilder.deleteCharAt(stringBuilder.length() - 1).toString();
-        return new Result(true, text);
-    }
-
     private String getUnreadNewsByType(MessageType targetType) {
         User activeUser = App.getActiveUser();
         StringBuilder stringBuilder = new StringBuilder();
@@ -61,6 +46,4 @@ public class NewsController {
 
         return stringBuilder.deleteCharAt(stringBuilder.length() - 1).toString();
     }
-
-
 }

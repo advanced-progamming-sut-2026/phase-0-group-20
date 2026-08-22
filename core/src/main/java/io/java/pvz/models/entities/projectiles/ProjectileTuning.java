@@ -1,10 +1,7 @@
 package io.java.pvz.models.entities.projectiles;
 
-import io.java.pvz.models.enums.plants.ProjectileType;
-
 public final class ProjectileTuning {
     private ProjectileTuning() {}
-
 
     public static final float PEA_SPEED_TILES_PER_SEC = 5.5f;
 

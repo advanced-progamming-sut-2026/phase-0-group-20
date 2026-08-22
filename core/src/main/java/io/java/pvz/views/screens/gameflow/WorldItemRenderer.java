@@ -15,7 +15,7 @@ import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.obstacle.*;
 import io.java.pvz.models.entities.projectiles.Projectile;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.fields.Brain;
 import io.java.pvz.models.fields.LawnMower;
 import io.java.pvz.models.game.Arena;

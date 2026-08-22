@@ -3,7 +3,7 @@ package io.java.pvz.models.entities.obstacle;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.effect.FreezeEffect;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.events.GameEvent;

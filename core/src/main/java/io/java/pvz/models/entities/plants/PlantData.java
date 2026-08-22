@@ -1,8 +1,5 @@
 package io.java.pvz.models.entities.plants;
 
-import io.java.pvz.models.enums.plants.PlantCategory;
-import io.java.pvz.models.enums.plants.PlantTag;
-
 import java.util.List;
 import java.util.Map;
 

@@ -5,8 +5,8 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.projectiles.*;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.enums.plants.PlantTag;
-import io.java.pvz.models.enums.plants.ProjectileType;
+import io.java.pvz.models.entities.plants.PlantTag;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 

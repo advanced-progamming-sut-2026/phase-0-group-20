@@ -89,32 +89,4 @@ public class ProfileMenuController {
 
         return new Result(true, "nickname has been changed successfully");
     }
-
-    public Result showUserInfo() {
-        User current = App.getActiveUser();
-
-        if (current == null)
-            return new Result(false, "no user is currently logged in");
-
-        String userInfo = """
-                            ╔══════════════ User Information ══════════════╗
-                            👤 Username         : %s
-                            📛 Name             : %s
-                            🎮 Games Played     : %d
-                            🪙 Coins            : %d
-                            💎 Diamonds         : %d
-                            🏆 Levels Completed : %d
-                            ╚══════════════════════════════════════════════╝
-                """.formatted(
-                current.getUsername(),
-                current.getNickname(),
-                current.getGamesPlayed(),
-                current.getCoin(),
-                current.getDiamond(),
-                current.getLevelsCompleted()
-                // one more property to add later
-        );
-
-        return new Result(true, userInfo);
-    }
 }

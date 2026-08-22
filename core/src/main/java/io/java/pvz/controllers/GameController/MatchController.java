@@ -10,9 +10,6 @@ import io.java.pvz.net.server.PlayerRole;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
-
-import io.java.pvz.controllers.GameController.GameFlowController;
-import io.java.pvz.controllers.GameController.MiniGameController;
 import io.java.pvz.models.game.GameSession;
 
 public class MatchController {
@@ -24,7 +21,6 @@ public class MatchController {
     private Consumer<NetworkMessage> onMatchEnd;
     private Consumer<NetworkMessage> onPauseStateChanged;
 
-    private volatile String currentMatchId;
     private volatile PlayerRole currentRole;
     private volatile boolean isOnlineMatch = false;
 
@@ -54,7 +50,6 @@ public class MatchController {
         client.onPush(MessageType.MATCH_END, message -> Gdx.app.postRunnable(() -> {
             if (onMatchEnd != null) onMatchEnd.accept(message);
 
-            currentMatchId = null;
             isOnlineMatch = false;
             currentRole = null;
         }));
@@ -92,20 +87,8 @@ public class MatchController {
         }));
     }
 
-    public void setCurrentMatchId(String matchId) {
-        this.currentMatchId = matchId;
-    }
-
-    public void setOnStateSync(Consumer<Map<String, Object>> listener) {
-        this.onStateSync = listener;
-    }
-
     public void setOnMatchEnd(Consumer<NetworkMessage> listener) {
         this.onMatchEnd = listener;
-    }
-
-    public void setOnPauseStateChanged(Consumer<NetworkMessage> listener) {
-        this.onPauseStateChanged = listener;
     }
 
     public void placePlant(String plantName, int col, int row, Consumer<NetworkMessage> callback) {
@@ -188,8 +171,7 @@ public class MatchController {
         this.isOnlineMatch = onlineMatch;
     }
 
-    public void setupOnlineMatch(String matchId, PlayerRole role) {
-        this.currentMatchId = matchId;
+    public void setupOnlineMatch(PlayerRole role) {
         this.currentRole = role;
         this.isOnlineMatch = true;
         this.isCouchPlay = false;

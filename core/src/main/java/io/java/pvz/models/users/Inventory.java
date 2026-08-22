@@ -23,15 +23,6 @@ public class Inventory {
         return seedPackets;
     }
 
-    public void setSeedPackets(HashMap<String, Integer> seedPackets) {
-        this.seedPackets = seedPackets;
-    }
-
-    public void addFoodPlant(Plant plant) {
-        String key = plant.getName();
-        foodPlants.merge(key, 1, Integer::sum);
-    }
-
     public void addSeedPacket(Plant plant) {
         String key = plant.getName();
         seedPackets.merge(key, 1, Integer::sum);

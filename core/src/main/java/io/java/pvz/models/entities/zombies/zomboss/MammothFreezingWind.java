@@ -2,7 +2,7 @@ package io.java.pvz.models.entities.zombies.zomboss;
 
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.ZombieState;
-import io.java.pvz.models.enums.plants.PlantTag;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.entities.obstacle.IceBlock;
 import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.Tile;

@@ -38,7 +38,6 @@ public class GameMenuController {
         return new Result(true, "Enter Chapter " + targetChapter.getDisplayName());
     }
 
-
     public Result enterLevel(String levelStr) {
         if (GameSession.getPendingChapter() == null)
             return new Result(false, "Choose a Chapter first!");
@@ -87,7 +86,6 @@ public class GameMenuController {
         return result;
     }
 
-
     public Result enterScoringLevel() {
         Adventure activeAdventure = App.getActiveAdventure();
         Chapter currentChapter = activeAdventure.getCurrentChapter();
@@ -111,27 +109,6 @@ public class GameMenuController {
         return new Result(true, "Entering Plant Selection for Scoring Mode...");
     }
 
-    public Result enterLeaderboard() {
-        App.setActiveMenu(Menu.LEADERBOARD_MENU);
-        return new Result(true, "enter leaderboard");
-    }
-
-    public Result showCoin() {
-        User activeUser = App.getActiveUser();
-        if (activeUser == null) {
-            return new Result(false, "No active user found!");
-        }
-        return new Result(true, "Coins: " + activeUser.getCoin());
-    }
-
-    public Result showGem() {
-        User activeUser = App.getActiveUser();
-        if (activeUser == null) {
-            return new Result(false, "No active user found!");
-        }
-        return new Result(true, "Diamonds: " + activeUser.getDiamond());
-    }
-
     public Result cheat(int amount, String type) {
         User activeUser = App.getActiveUser();
         if (activeUser == null) {
@@ -150,84 +127,17 @@ public class GameMenuController {
         return new Result(false, "Invalid cheat type! Use 'coin' or 'diamond'.");
     }
 
-
-    public Result printAdventure() {
-        User activeUser = App.getActiveUser();
-        if (activeUser == null) {
-            return new Result(false, "No active user found!");
-        }
-
-        Adventure adventure = App.getActiveAdventure();
-        if (adventure == null) {
-            return new Result(false, "No active adventure found!");
-        }
-
-        int userHighChap = activeUser.getHighestUnlockedChapterIndex();
-        int userHighLevel = activeUser.getHighestUnlockedLevelIndex();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n--- Adventure Map ---\n\n");
-
-        List<Chapter> chapters = adventure.getChapters();
-        int displayIndex = 1;
-
-        for (int i = 0; i < GameConstants.CHAPTER_COUNT; i++) {
-            Chapter chapter = chapters.get(i);
-
-            sb.append(formatChapter(chapter, displayIndex++, i, userHighChap, userHighLevel));
-        }
-
-        return new Result(true, sb.toString().trim());
-    }
-
-    private String formatChapter(Chapter chapter, int displayIndex, int chapterIndex,
-                                 int userHighChap, int userHighLevel) {
-        String chapterName = chapter.getDisplayName();
-        if (chapterName == null) chapterName = "Unknown";
-
-        String prefix = String.format("Chapter %d: %-15s -> ", displayIndex, chapterName);
-
-        StringBuilder boxRow = new StringBuilder(prefix);
-        StringBuilder labelRow = new StringBuilder(" ".repeat(prefix.length()));
-
-        int totalLevels = 4;
-        if (chapter.getLevels() != null && !chapter.getLevels().isEmpty()) {
-            totalLevels = chapter.getLevels().size();
-        }
-
-        for (int j = 0; j < totalLevels; j++) {
-            boolean isUnlocked = false;
-            if (chapterIndex < userHighChap) {
-                isUnlocked = true;
-            } else if (chapterIndex == userHighChap && j <= userHighLevel) {
-                isUnlocked = true;
-            }
-
-            String box = isUnlocked ? "[Unlocked]" : "[ Locked ]";
-            String lbl = String.format("  Lvl %-4d", j + 1);
-
-            boxRow.append(box);
-            labelRow.append(lbl);
-
-            if (j < totalLevels - 1) {
-                boxRow.append("--");
-                labelRow.append("  ");
-            }
-        }
-
-        return boxRow.toString() + "\n" + labelRow.toString() + "\n\n";
-    }
-
     public String getCurrentMapTextureId() {
         SeasonType type;
-        if (GameSession.getPendingChapter() != null)
+        if (GameSession.getPendingChapter() != null) {
             type = GameSession.getPendingChapter().getSeasonType();
-        else if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentChapter() != null)
+        } else if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentChapter() != null) {
             type = GameSession.getInstance().getCurrentChapter().getSeasonType();
-        else if (GameSession.getPendingBonusLevel() != null) {
+        } else if (GameSession.getPendingBonusLevel() != null) {
             type = GameSession.getPendingBonusLevel().getSeason();
-        } else
+        } else {
             type = SeasonType.MINI_GAME;
+        }
 
         return switch (type) {
             case ANCIENT_EGYPT -> Ids.GameMap.ANCIENT_EGYPT_MAIN;
@@ -237,5 +147,4 @@ public class GameMenuController {
             case MINI_GAME -> Ids.GameMap.MINI_GAME_MAIN;
         };
     }
-
 }

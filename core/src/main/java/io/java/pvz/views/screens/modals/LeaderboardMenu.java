@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.GameController.LeaderBoardController;
 import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.GameController.NetworkLeaderboardController;
-import io.java.pvz.controllers.GameMenuController;
+import io.java.pvz.controllers.MenuScreenController;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
@@ -32,11 +32,11 @@ public class LeaderboardMenu extends Table {
 
     private int requestToken = 0;
 
-    public static Table build(GameMenuController menuController, TextureBank texture, Skin skin) {
+    public static Table build(MenuScreenController menuController, TextureBank texture, Skin skin) {
         return new LeaderboardMenu(menuController, texture, skin);
     }
 
-    private LeaderboardMenu(GameMenuController menuController, TextureBank texture, Skin skin) {
+    private LeaderboardMenu(MenuScreenController menuController, TextureBank texture, Skin skin) {
         this.skin = skin;
         this.textures = texture;
         setFillParent(true);

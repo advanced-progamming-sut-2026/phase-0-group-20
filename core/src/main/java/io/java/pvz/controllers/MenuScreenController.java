@@ -8,13 +8,13 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class GameMenuController {
+public class MenuScreenController {
 
     private final Table modalLayer;
     private final Map<Menu, Supplier<Table>> panelFactories = new EnumMap<>(Menu.class);
     private Menu current = Menu.GAME_MENU;
 
-    public GameMenuController(Table modalLayer) {
+    public MenuScreenController(Table modalLayer) {
         this.modalLayer = modalLayer;
     }
 

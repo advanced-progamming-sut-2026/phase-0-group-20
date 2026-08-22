@@ -12,28 +12,26 @@ import java.util.Scanner;
 import java.util.Set;
 
 public enum Menu {
-    SIGNUP_MENU(new SignUpMenu(), "signup menu"),
-    LOGIN_MENU(new LoginMenu(), "login menu"),
-    SETTINGS_MENU(new Setting(), "setting menu"),
-    MAIN_MENU(new MainMenu(), "main menu"),
-    COLLECTION_MENU(new CollectionMenu(), "collection menu"),
-    LEADERBOARD_MENU(new LeaderBoard(), "leaderboard menu"),
-    GREENHOUSE_MENU(new GreenHouseMenu(), "greenhouse menu"),
-    PLANTSELLECTION_MENU(new PlantSelectionMenu(), "plant selection menu"),
-    PROFILE_MENU(new ProfileMenu(), "profile menu"),
-    SHOP_MENU(new ShopMenu(), "shop menu"),
-    TRAVELLOG_MENU(new TravelLogMenu(), "travel log menu"),
-    GAME_MENU(new GameMenu(), "game menu"),
-    NEWS_MENU(new NewsMenu(), "news menu"),
-    GAME_FLOW_MENU(new GameFlowMenu(), "game flow menu"),
-    LEVEL_SELECTION_MENU(new LevelSelectionMenu(), "level selection menu"),
+    SIGNUP_MENU("signup menu"),
+    LOGIN_MENU("login menu"),
+    SETTINGS_MENU("setting menu"),
+    MAIN_MENU("main menu"),
+    COLLECTION_MENU("collection menu"),
+    LEADERBOARD_MENU("leaderboard menu"),
+    GREENHOUSE_MENU("greenhouse menu"),
+    PLANTSELLECTION_MENU("plant selection menu"),
+    PROFILE_MENU("profile menu"),
+    SHOP_MENU("shop menu"),
+    TRAVELLOG_MENU("travel log menu"),
+    GAME_MENU("game menu"),
+    NEWS_MENU("news menu"),
+    GAME_FLOW_MENU("game flow menu"),
+    LEVEL_SELECTION_MENU("level selection menu"),
     ;
 
-    private final AppMenu menu;
     private final String name;
 
-    Menu(AppMenu menu, String name) {
-        this.menu = menu;
+    Menu(String name) {
         this.name = name;
     }
 
@@ -54,10 +52,6 @@ public enum Menu {
             name.append(part).append(" ");
         }
         return name.toString().trim().toLowerCase();
-    }
-
-    public void checkCommand(Scanner sc) {
-        this.menu.check(sc);
     }
 
     public Set<Menu> getAllowedEntryTargets() {
@@ -106,6 +100,5 @@ public enum Menu {
     public String getName() {
         return name;
     }
-
 
 }

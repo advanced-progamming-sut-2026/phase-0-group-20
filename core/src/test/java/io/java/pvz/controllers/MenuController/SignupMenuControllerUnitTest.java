@@ -1,6 +1,6 @@
 package io.java.pvz.controllers.MenuController;
 
-import io.java.pvz.controllers.MenuController.SignupMenuController;
+import io.java.pvz.controllers.MenuScreenController.SignupMenuController;
 import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.database.DataBaseManager;
