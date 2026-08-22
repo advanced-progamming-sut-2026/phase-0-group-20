@@ -89,30 +89,6 @@ public class MatchmakingController {
         this.onMatchFound = listener;
     }
 
-    public boolean isConnected() {
-        return NetworkClient.getInstance().isConnected();
-    }
-
-    public void connectAndLogin(String username, String password, Consumer<NetworkMessage> callback) {
-        runAsync(() -> {
-            NetworkClient client = NetworkClient.getInstance();
-            if (!client.isConnected()) {
-                client.connect(ServerConfig.DEFAULT_HOST, ServerConfig.DEFAULT_PORT);
-            }
-            NetworkMessage request = NetworkMessage.request(MessageType.LOGIN);
-            request.put("username", username);
-            request.put("password", password);
-            request.put("stayLoggedIn", false);
-            return client.sendAndWait(request, 10);
-        }, callback);
-    }
-
-    public void checkUserOnline(String username, Consumer<NetworkMessage> callback) {
-        NetworkMessage request = NetworkMessage.request(MessageType.CHECK_USER_ONLINE);
-        request.put("username", username);
-        sendAsync(request, callback);
-    }
-
     public void sendChallenge(String username, Consumer<NetworkMessage> callback) {
         NetworkMessage request = NetworkMessage.request(MessageType.CHALLENGE_INVITE);
         request.put("username", username);

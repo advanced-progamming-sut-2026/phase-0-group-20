@@ -40,49 +40,6 @@ public class LeaderBoardController {
         };
     }
 
-    public Result showResults() {
-        List<User> allUsers = App.getAllUsers();
-        for (User user : allUsers) {
-            for (Quest quest : user.getQuestManager().getActiveQuests()) {
-                if (quest.isCompleted()) {
-                    System.out.println(quest.getTitle());
-                }
-            }
-        }
-        List<User> sortedUsers = switch (currentSortType) {
-            case "minigame" -> sortedByMinigame(allUsers);
-            case "season" -> sortedBySeason(allUsers);
-            case "quests" -> sortedByQuests(allUsers);
-            default -> sortedByScore(allUsers);
-        };
-
-        if (sortedUsers == null || sortedUsers.isEmpty()) {
-            return new Result(false, "No users to display on the leaderboard.");
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("--- LEADERBOARD (Sorted by: ").append(currentSortType.toUpperCase()).append(") ---\n");
-
-        for (int i = 0; i < sortedUsers.size(); i++) {
-            User u = sortedUsers.get(i);
-            sb.append(i + 1).append(". ").append(u.getUsername());
-
-            if (currentSortType.equals("score")) {
-                sb.append(" | Score: ").append(u.getHighestBonusScore());
-            } else if (currentSortType.equals("season")) {
-                sb.append(" | Chapter: ").append(u.getHighestUnlockedChapterIndex() + 1)
-                        .append(", Level: ").append(u.getHighestUnlockedLevelIndex() + 1);
-            } else if (currentSortType.equals("minigame")) {
-                int minigameScore = u.getUnlockedMinigames().size();
-                sb.append(" | Minigame Levels: ").append(minigameScore);
-            } else if (currentSortType.equals("quests")) {
-                sb.append(" | Quests Completed: ").append(u.getQuestManager().getCompletedQuestsCount());
-            }
-            sb.append("\n");
-        }
-        return new Result(true, sb.toString().trim());
-    }
-
     private List<User> sortedByScore(List<User> users) {
         return users.stream()
                 .sorted(Comparator.comparingInt(User::getLevelsCompleted).reversed()
@@ -112,5 +69,4 @@ public class LeaderBoardController {
                         .thenComparing(User::getUsername))
                 .collect(Collectors.toList());
     }
-
 }
