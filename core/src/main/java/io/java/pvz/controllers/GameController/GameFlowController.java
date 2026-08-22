@@ -274,11 +274,6 @@ public class GameFlowController {
         return null;
     }
 
-    public Result cheatRemoveCooldown() {
-        GameSession.getInstance().instantiateCooldowns(GameSession.getInstance().getChosenPlants());
-        return new Result(true, "Cheat Activated. All cooldowns have been removed.");
-    }
-
     public Result pluckPlant(String x, String y) {
         Integer posX = parsePositiveInt(x);
         Integer posY = parsePositiveInt(y);
@@ -437,7 +432,4 @@ public class GameFlowController {
             .filter(p -> p.getName().equals(plant.getName()))
             .findFirst().get().getLevel();
     }
-
-
-
 }
