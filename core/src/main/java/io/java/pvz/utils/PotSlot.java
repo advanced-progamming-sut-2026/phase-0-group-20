@@ -152,7 +152,7 @@ public class PotSlot extends Stack {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                controller.buyPot(pot, BUY_PRICE);
+                controller.buyPot(pot);
                 refreshAllSlots(textures);
             }
         });

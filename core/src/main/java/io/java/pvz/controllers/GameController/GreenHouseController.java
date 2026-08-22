@@ -14,15 +14,12 @@ import io.java.pvz.models.users.User;
 public class GreenHouseController {
     private User user;
 
-    public Result showGreenHouse(GreenHouse greenHouse) {
-        return new Result(true, greenHouse.showGreenHouse());
-    }
-
     public Result plantPot(int x, int y, GreenHouse greenHouse) {
         user = App.getActiveUser();
         int posX = x;
         int posY = y;
-        Pot desiredPot = greenHouse.getSpecificPot(posX , posY );
+
+        Pot desiredPot = greenHouse.getSpecificPot(posX , posY);
         return switch (desiredPot.getPotCondition()) {
             case LOCKED -> new Result(false, "You haven't unlocked this pot yet.");
             case PLANTED -> new Result(false, "You already planted a plant here.");
@@ -32,8 +29,6 @@ public class GreenHouseController {
                 yield new Result(true, "You planted a new plant here. congrats!!!");
             }
         };
-
-
     }
 
     public Result collect(int x, int y, GreenHouse greenHouse) {
@@ -45,7 +40,6 @@ public class GreenHouseController {
         return new Result(false, "You failed to collect a plant here.");
 
     }
-
 
     public Result grow(int x , int y , GreenHouse greenHouse) {
         user = App.getActiveUser();
@@ -67,7 +61,7 @@ public class GreenHouseController {
         return new Result(true,"success");
     }
 
-    public void buyPot(Pot pot , int price){
+    public void buyPot(Pot pot){
         User user = App.getActiveUser();
         if (user.getDiamond() < 10) {
             GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
@@ -80,7 +74,6 @@ public class GreenHouseController {
         user.costDiamond(10);
         pot.setPotCondition(PotCondition.EMPTY);
     }
-
 
     private Result collectThePot(Pot desiredPot) {
         user =  App.getActiveUser();
@@ -111,6 +104,4 @@ public class GreenHouseController {
             return new Result(true, "You collected an unlocked plant named " + collectedPlant.getName() + ".");
         }
     }
-
-
 }
