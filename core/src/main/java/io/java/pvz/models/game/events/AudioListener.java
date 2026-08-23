@@ -26,6 +26,7 @@ public class AudioListener implements GameEventListener {
             case PROJECTILE_HIT -> audioManager.playSfx(SfxType.ZOMBIE_HIT);
 //            case PLANT_TAKING_DAMAGE -> handlePlantTakingDamage();
             case PLANT_LOST -> audioManager.playSfx(SfxType.SHOVEL);
+            case PROJECTILE_FIRED -> audioManager.playSfx(SfxType.FIRED_PROJECTILE);
         }
     }
 

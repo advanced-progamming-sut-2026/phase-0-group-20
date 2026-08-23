@@ -131,6 +131,7 @@ public class AssetLoaderScreen extends BaseScreen {
         GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, audioListener);
         GameEventMessenger.getInstance().addListener(GameEvent.PLANT_TAKING_DAMAGE, audioListener);
         GameEventMessenger.getInstance().addListener(GameEvent.PLANT_LOST, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_FIRED, audioListener);
     }
 
 }
