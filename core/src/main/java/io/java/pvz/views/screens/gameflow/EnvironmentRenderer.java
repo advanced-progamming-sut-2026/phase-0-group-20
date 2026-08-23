@@ -95,7 +95,7 @@ public class EnvironmentRenderer {
     }
 
     private void syncCrater(Tile tile, Set<Tile> activeCraters, float pixelX, float pixelY) {
-        if (tile.isCrater()) {
+        if (tile.isCrater()&& !tile.isFired()) {
             activeCraters.add(tile);
             PamAnimatedActor actor = craterActors.computeIfAbsent(tile, t -> {
                 PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(

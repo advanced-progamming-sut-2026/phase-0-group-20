@@ -9,7 +9,7 @@ public enum SfxType {
     SHOVEL("sounds/sfx/shovel.mp3"),
     ZOMBIE_EAT_1("sounds/sfx/zombie eat 1.mp3"),
     ZOMBIE_EAT_2("sounds/sfx/zombie eat 2.mp3"),
-    ZOMBIE_HIT("sounds/sfx/zombie hit.mp3")
+    ZOMBIE_HIT("sounds/sfx/1-53. SFX kernelpult2.mp3")
    ;
 
     private final String path;
