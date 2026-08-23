@@ -285,6 +285,11 @@ public final class AnimationCatalog {
             "plantfood", 0.1333f, "plantfood_off", 1.1f, "water", 4.6333f);
         register(table, "WINTERMELON", "768/FULL/PLANT/WINTERMELON/WINTERMELON.PAM",
             "idle", 1.3667f, "attack", 2.1667f, "plantfood", 2.9333f, "water", 1.7667f);
+        register(table, "HOMINGTHISTLE","768/INITIAL/PLANT/HOMINGTHISTLE/HOMINGTHISTLE.PAM",
+            "idle", 2.5f, "idle2", 2.5f, "attack", 1.8667f, "plantfood", 0.8333f,
+            "plantfood_loop", 0.2667f, "plantfood_end", 0.9333f, "water", 2.5667f);
+        register(table, "CONTAINMINT", "768/INITIAL/EMPOWERMINTS/PLANT/CONTAINMINT/CONTAINMINT.PAM",
+            "intro", 3.3333f, "loop", 1.7f, "outro", 0.9667f);
     }
 
     private static void registerZombies(Map<ZombieType, EntityAnimation> table) {
