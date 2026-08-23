@@ -45,6 +45,10 @@ public class BowlingLevel extends ConveyorBelt implements IMinigame, RedLineCapa
         }
     }
 
+    @Override
+    protected void spawnPlantOnBelt() {
+
+    }
 
     private void spawnPlantOnBowlingBelt() {
         int rnd = random.nextInt(100);

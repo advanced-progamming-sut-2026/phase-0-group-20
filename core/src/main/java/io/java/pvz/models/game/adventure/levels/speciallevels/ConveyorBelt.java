@@ -65,7 +65,7 @@ public class ConveyorBelt extends SpecialLevel {
 
     protected void spawnPlantOnBelt() {
         List<String> plantPool = new ArrayList<>(Arrays.asList(
-            "Peashooter", "Wall-nut", "Potato Mine", "Cabbage-pult",
+            "Peashooter", "Wall-nut", "Cabbage-pult",
             "Snow Pea", "Repeater", "Snapdragon",
             "Cherry Bomb", "Bonk Choy", "Threepeater",
             "Melon-pult", "Kernel-pult", "Cactus",
