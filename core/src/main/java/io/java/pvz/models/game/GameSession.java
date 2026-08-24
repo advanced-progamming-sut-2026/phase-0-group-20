@@ -14,6 +14,7 @@ import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.game.adventure.Chapter;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.BonusLevel;
+import io.java.pvz.models.game.adventure.levels.BossLevel;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.events.*;
 import io.java.pvz.models.timeManager.TimeManager;
@@ -481,6 +482,12 @@ public class GameSession {
     private void playTheme(GameMode gameMode) {
         if(!(gameMode instanceof Level level) )return;
         SeasonType seasonType = level.getSeason();
+        System.out.println(level.getName() + " " + seasonType);
+        if(level.getName().contains("Boss")){
+            GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBOSS_PHASE_1,
+                new GameEventPayload.Builder(GameEvent.ZOMBOSS_PHASE_1).build());
+            return;
+        }
         switch (seasonType) {
             case DARK_AGES ->
                 GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_DARK_AGES,
