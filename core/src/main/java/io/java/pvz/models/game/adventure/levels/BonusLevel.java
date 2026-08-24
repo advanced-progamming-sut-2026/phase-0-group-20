@@ -113,8 +113,6 @@ public class BonusLevel extends Level implements GameEventListener {
                 seasonModifier.onZombieSpawn(newZombie, session.getArena());
             }
 
-            notify("Zombie " + newZombie.getType().name() +
-                    " spawned in lane " + (lane + 1) + ".");
         }
     }
 

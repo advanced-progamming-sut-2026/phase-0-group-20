@@ -21,7 +21,6 @@ public class ZombossMissileAttack implements IZombossAttack {
     private int targetCol;
     private final Random random = new Random();
 
-    // متغیرهای داینامیک برای زمان‌بندی و نوع انیمیشن
     private final int launchTicks;
     private final int totalTicks;
     private final boolean isMultiPhase;

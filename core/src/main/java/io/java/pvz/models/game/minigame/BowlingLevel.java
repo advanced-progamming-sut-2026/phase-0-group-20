@@ -61,8 +61,6 @@ public class BowlingLevel extends ConveyorBelt implements IMinigame, RedLineCapa
 
         Plant newPlant = PlantFactory.create(template.getId());
         belt.add(newPlant);
-        notify("A new " + newPlant.getName() + " arrived on the conveyor belt!");
-
     }
 
     public Plant consumePlant(int index) {
