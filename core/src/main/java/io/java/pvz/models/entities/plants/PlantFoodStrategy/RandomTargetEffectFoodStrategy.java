@@ -4,16 +4,19 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.utils.AnimationCatalog;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
 public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
 
     private final int targetCount;
     private final String effectDescription;
+    private int durationTicks = 0;
+    private boolean executed = false;
 
     public RandomTargetEffectFoodStrategy(int targetCount, String effectDescription) {
         this.targetCount = targetCount;
@@ -21,33 +24,50 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
     }
 
     @Override
-    public void executeStrategy(Plant plant) {
-        GameSession gameSession = GameSession.getInstance();
+    public void onEnter(Plant plant) {
+        PlantFoodStrategy.super.onEnter(plant);
+        this.executed = false;
 
-        List<Zombie> pool = new ArrayList<>(gameSession.getArena().getActiveZombies());
-        pool.removeIf(Zombie::isDead);
-
-        int hits = Math.min(targetCount, pool.size());
-        List<Zombie> targets = new ArrayList<>();
-
-        for (int i = 0; i < pool.size(); i++) {
-            int rnd = new Random().nextInt(pool.size());
-            targets.add(pool.get(rnd));
-            pool.remove(rnd);
-            if (targets.size() >= hits) break;
+        float animDuration = 1.0f;
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
+        if (anim != null) {
+            if (anim.hasClip("plantfood_on")) animDuration = anim.getDuration("plantfood_on") + anim.getDuration("plantfood");
+            else if (anim.hasClip("plantfood")) animDuration = anim.getDuration("plantfood");
         }
+        this.durationTicks = (int) (animDuration * TimeManager.TICKS_PER_SECOND);
+    }
 
-        boolean isLobbedProjectile = plant.getName().equalsIgnoreCase("Cabbage-pult")
+    @Override
+    public void executeStrategy(Plant plant) {
+        if (!executed) {
+            GameSession gameSession = GameSession.getInstance();
+
+            List<Zombie> pool = new ArrayList<>(gameSession.getArena().getActiveZombies());
+            pool.removeIf(Zombie::isDead);
+
+            int hits = Math.min(targetCount, pool.size());
+            List<Zombie> targets = new ArrayList<>();
+
+            for (int i = 0; i < pool.size(); i++) {
+                int rnd = new Random().nextInt(pool.size());
+                targets.add(pool.get(rnd));
+                pool.remove(rnd);
+                if (targets.size() >= hits) break;
+            }
+
+            boolean isLobbedProjectile = plant.getName().equalsIgnoreCase("Cabbage-pult")
                 || plant.getName().equalsIgnoreCase("Melon-pult")
                 || plant.getName().equalsIgnoreCase("Winter Melon")
                 || plant.getName().equalsIgnoreCase("Pepper-pult")
                 || plant.getName().equalsIgnoreCase("Bowling Bulb");
 
-        for (Zombie target : targets) {
-            if (isLobbedProjectile)
-                ProjectileMechanism.executeTargetedProjectile(plant, target, 0.1f);
-            else
-                applyDirectEffect(target, plant);
+            for (Zombie target : targets) {
+                if (isLobbedProjectile)
+                    ProjectileMechanism.executeTargetedProjectile(plant, target, 0.1f);
+                else
+                    applyDirectEffect(target, plant);
+            }
+            executed = true;
         }
     }
 
@@ -70,5 +90,15 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
                 target.hypnotize();
             }
         }
+    }
+
+    @Override
+    public int getDurationTicks() {
+        return durationTicks;
+    }
+
+    @Override
+    public void reset() {
+        this.executed = false;
     }
 }

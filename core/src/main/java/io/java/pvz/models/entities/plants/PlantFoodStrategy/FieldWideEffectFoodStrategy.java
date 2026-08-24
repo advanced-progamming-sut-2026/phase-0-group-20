@@ -10,69 +10,79 @@ import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.utils.AnimationCatalog;
 
 import java.util.List;
 import java.util.Random;
 
-/**
- * A single effect applied to every zombie on the field (or every zombie
- * currently visible on screen).
- * Used by: Garlic (force every zombie in the lane to move to another lane),
- * Kernel-pult (drop butter on every zombie's head, stunning them), Iceberg
- * Lettuce (freeze every zombie currently visible), Sweet Potato (pull in
- * every nearby zombie and fully heal itself).
- */
-
 public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
 
     private final String description;
+    private int durationTicks = 0;
+    private boolean executed = false;
 
     public FieldWideEffectFoodStrategy(String description) {
         this.description = description;
     }
 
+    @Override
+    public void onEnter(Plant plant) {
+        PlantFoodStrategy.super.onEnter(plant);
+        this.executed = false;
+
+        float animDuration = 1.0f;
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
+        if (anim != null) {
+            if (anim.hasClip("plantfood_on")) animDuration = anim.getDuration("plantfood_on") +
+                anim.getDuration("plantfood");
+            else if (anim.hasClip("plantfood")) animDuration = anim.getDuration("plantfood");
+        }
+        this.durationTicks = (int) (animDuration * TimeManager.TICKS_PER_SECOND);
+    }
 
     @Override
     public void executeStrategy(Plant plant) {
-        GameSession gameSession = GameSession.getInstance();
-        List<Zombie> allZombies = gameSession.getArena().getActiveZombies();
-        String plantName = plant.getName().toLowerCase();
+        if (!executed) {
+            GameSession gameSession = GameSession.getInstance();
+            List<Zombie> allZombies = gameSession.getArena().getActiveZombies();
+            String plantName = plant.getName().toLowerCase();
 
-        int plantRow = plant.getPlacedTile().getRow();
-        int plantCol = plant.getPlacedTile().getCol();
+            int plantRow = plant.getPlacedTile().getRow();
+            int plantCol = plant.getPlacedTile().getCol();
 
-        switch (plantName) {
-            case "iceberg lettuce":
-                for (Zombie zombie : allZombies)
-                    if (!zombie.isDead())
-                        if (gameSession.getCurrentChapter().getSeasonType() == SeasonType.FROZEN_CAVES)
-                            zombie.addEffect(new ChillEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
-                        else
-                            zombie.addEffect(new FreezeEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
-                break;
+            switch (plantName) {
+                case "iceberg lettuce":
+                    for (Zombie zombie : allZombies)
+                        if (!zombie.isDead())
+                            if (gameSession.getCurrentChapter().getSeasonType() == SeasonType.FROZEN_CAVES)
+                                zombie.addEffect(new ChillEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
+                            else
+                                zombie.addEffect(new FreezeEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
+                    break;
 
-            case "kernel-pult":
-                for (Zombie zombie : allZombies)
-                    if (!zombie.isDead())
-                        ProjectileMechanism.executeTargetedProjectile(plant, zombie, 0.5f);
-                break;
+                case "kernel-pult":
+                    for (Zombie zombie : allZombies)
+                        if (!zombie.isDead())
+                            ProjectileMechanism.executeTargetedProjectile(plant, zombie, 0.5f);
+                    break;
 
-            case "garlic":
-                for (Zombie zombie : gameSession.getArena().zombieInRow(plantRow))
-                    if (!zombie.isDead())
-                        shiftZombieToAdjacentLane(zombie, gameSession);
-                break;
+                case "garlic":
+                    for (Zombie zombie : gameSession.getArena().zombieInRow(plantRow))
+                        if (!zombie.isDead())
+                            shiftZombieToAdjacentLane(zombie, gameSession);
+                    break;
 
-            case "sweet potato":
-                plant.setCurrentHp(plant.getBaseHp());
-                List<Zombie> nearby = gameSession.getArena().getZombiesInRadius(
+                case "sweet potato":
+                    plant.setCurrentHp(plant.getBaseHp());
+                    List<Zombie> nearby = gameSession.getArena().getZombiesInRadius(
                         plantCol, plantRow, PhysicalConstants.TILE_WIDTH * 2);
-                for (Zombie zombie : nearby)
-                    if (!zombie.isDead() && zombie.getRow() != plantRow)
-                        zombie.setRow(plantRow);
-                break;
+                    for (Zombie zombie : nearby)
+                        if (!zombie.isDead() && zombie.getRow() != plantRow)
+                            zombie.setRow(plantRow);
+                    break;
+            }
+            executed = true;
         }
-
     }
 
     private void shiftZombieToAdjacentLane(Zombie zombie, GameSession gameSession) {
@@ -90,5 +100,15 @@ public class FieldWideEffectFoodStrategy implements PlantFoodStrategy {
             zombie.setRow(currentRow + 1);
         else
             zombie.setState(ZombieState.STUNNED);
+    }
+
+    @Override
+    public int getDurationTicks() {
+        return durationTicks;
+    }
+
+    @Override
+    public void reset() {
+        this.executed = false;
     }
 }
