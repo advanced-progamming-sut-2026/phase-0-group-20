@@ -10,7 +10,12 @@ public enum SfxType {
     ZOMBIE_EAT_1("sounds/sfx/zombie eat 1.mp3"),
     ZOMBIE_EAT_2("sounds/sfx/zombie eat 2.mp3"),
     ZOMBIE_HIT("sounds/sfx/1-53. SFX kernelpult2.mp3"),
-    FIRED_PROJECTILE("sounds/sfx/1-36. SFX floop.mp3")
+    BOWLING_HIT("sounds/sfx/1-14. SFX bowlingimpact.mp3"),
+    FIRED_PROJECTILE("sounds/sfx/1-36. SFX floop.mp3"),
+    DAVE_TALKS("sounds/sfx/2-10. Voices crazydavelong2.mp3"),
+    DAVE_TALKS_2("sounds/sfx/2-05. Voices crazydavecrazy.mp3"),
+    ZOMBOSS_TALKS("sounds/sfx/2-41. Voices sukhbir2.mp3")
+
    ;
 
     private final String path;

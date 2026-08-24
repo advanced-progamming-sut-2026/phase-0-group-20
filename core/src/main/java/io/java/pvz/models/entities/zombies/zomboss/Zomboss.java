@@ -11,6 +11,9 @@ import io.java.pvz.models.entities.zombies.behavior.move.MoveBehavior;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -62,6 +65,13 @@ public abstract class Zomboss extends Zombie {
         if (getState() == ZombieState.STUNNED) {
             currentStunTicks--;
             if (currentStunTicks <= 0) {
+                if(phase == 2){
+                    GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBOSS_PHASE_2,
+                        new GameEventPayload.Builder(GameEvent.ZOMBOSS_PHASE_2).build());
+                }else if (phase == 1){
+                    GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBOSS_PHASE_3,
+                        new GameEventPayload.Builder(GameEvent.ZOMBOSS_PHASE_3).build());
+                }
                 this.setState(ZombieState.WALKING);
             }
             return;

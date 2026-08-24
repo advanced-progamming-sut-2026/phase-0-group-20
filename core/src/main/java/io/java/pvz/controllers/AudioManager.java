@@ -3,11 +3,15 @@ package io.java.pvz.controllers;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.utils.Timer;
 import io.java.pvz.models.App;
 import io.java.pvz.views.sound.MusicType;
 import io.java.pvz.views.sound.SfxType;
 
 public class AudioManager {
+    private static final float DEFAULT_FADE_DURATION = 1.5f;
+    private static final float FADE_STEP = 0.05f;
+
     private static AudioManager instance;
     private AssetManager assetManager;
 
@@ -15,6 +19,9 @@ public class AudioManager {
     private MusicType currentTrackType;
     private float sfxVolume = App.getSettings().getSfxVolume();
     private float musicVolume = App.getSettings().getMusicVolume();
+
+    private Timer.Task fadeTask;
+    private Music fadeOutTrack;
 
     public static AudioManager getInstance() {
         if (instance == null) {
@@ -39,19 +46,68 @@ public class AudioManager {
     }
 
     public void playMusic(MusicType type) {
+        playMusic(type, DEFAULT_FADE_DURATION);
+    }
+
+    public void playMusic(MusicType type, float fadeDuration) {
         if (currentTrackType == type && currentTrack != null && currentTrack.isPlaying()) {
             return;
         }
-
-        stopMusic();
-
+        cancelFade();
+        Music outgoing = currentTrack;
+        Music incoming = getMusic(type);
         currentTrackType = type;
-        currentTrack = getMusic(type);
+        currentTrack = incoming;
+        if (incoming == null) {
+            if (outgoing != null) outgoing.stop();
+            return;
+        }
+        incoming.setLooping(true);
 
-        if (currentTrack != null) {
-            currentTrack.setLooping(true);
-            currentTrack.setVolume(musicVolume);
-            currentTrack.play();
+        if (fadeDuration <= 0f) {
+            if (outgoing != null) outgoing.stop();
+            incoming.setVolume(musicVolume);
+            incoming.play();
+            return;
+        }
+        incoming.setVolume(0f);
+        incoming.play();
+        fadeOutTrack = outgoing;
+
+        final Music fadingIn = incoming;
+        fadeTask = new Timer.Task() {
+            private float elapsed = 0f;
+            @Override
+            public void run() {
+                elapsed += FADE_STEP;
+                float progress = Math.min(elapsed / fadeDuration, 1f);
+
+                fadingIn.setVolume(musicVolume * progress);
+                if (fadeOutTrack != null) {
+                    fadeOutTrack.setVolume(musicVolume * (1f - progress));
+                }
+
+                if (progress >= 1f) {
+                    if (fadeOutTrack != null) {
+                        fadeOutTrack.stop();
+                        fadeOutTrack = null;
+                    }
+                    cancel();
+                    fadeTask = null;
+                }
+            }
+        };
+        Timer.schedule(fadeTask, FADE_STEP, FADE_STEP);
+    }
+
+    private void cancelFade() {
+        if (fadeTask != null) {
+            fadeTask.cancel();
+            fadeTask = null;
+        }
+        if (fadeOutTrack != null) {
+            fadeOutTrack.stop();
+            fadeOutTrack = null;
         }
     }
 
@@ -72,8 +128,10 @@ public class AudioManager {
     }
 
     public void stopMusic() {
+        cancelFade();
         if (currentTrack != null) currentTrack.stop();
         currentTrack = null;
+        currentTrackType = null;
     }
 
     public void stopSfx(SfxType type, long soundId) {
@@ -110,6 +168,8 @@ public class AudioManager {
     }
 
     public void dispose() {
+        cancelFade();
+        if (currentTrack != null) currentTrack.stop();
         currentTrack = null;
         currentTrackType = null;
     }
