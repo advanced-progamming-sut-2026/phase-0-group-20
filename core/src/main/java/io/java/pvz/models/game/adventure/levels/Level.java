@@ -157,7 +157,9 @@ public abstract class Level implements GameMode {
             if (waveCount == 1)
                 randomX += (int) (TILE_WIDTH) / 2;
 
-            newZombie.setX(GRID_START_X + TILE_WIDTH * 9 + 300 + randomX * 6);
+            newZombie.setCol(session.getArena().getCols() - 1);
+            if (!newZombie.getName().equalsIgnoreCase("ZombieDarkKing"))
+                newZombie.setX(GRID_START_X + TILE_WIDTH * 9 + 300 + randomX * 6);
 
             wave.addZombie(newZombie);
             accumulatedCost += newZombie.getWaveCost();
@@ -250,7 +252,7 @@ public abstract class Level implements GameMode {
         return 0.4f + (diffLevel * 0.2f);
     }
 
-    public void setupDialogues(){
+    public void setupDialogues() {
 
     }
 

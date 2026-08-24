@@ -20,7 +20,7 @@ public class LaneClearFoodStrategy implements PlantFoodStrategy {
         int row = plant.getPlacedTile().getRow();
         int col = plant.getPlacedTile().getCol();
 
-        int damage = 1000; // damage ziad yani cheghad?
+        int damage = 1800; // damage ziad yani cheghad?
 
         ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
 

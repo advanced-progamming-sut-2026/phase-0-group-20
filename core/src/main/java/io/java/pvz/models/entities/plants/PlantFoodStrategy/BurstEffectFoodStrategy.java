@@ -30,7 +30,7 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
         String name = plant.getName().toLowerCase();
         int row = plant.getPlacedTile().getRow();
         int col = plant.getPlacedTile().getCol();
-        int damage = 1500; //damage ziad
+        int damage = 1800; //damage ziad
 
         if (name.equalsIgnoreCase("fume-shroom")) {
             for (Zombie zombie : gameSession.getArena().zombieInRow(row)) {

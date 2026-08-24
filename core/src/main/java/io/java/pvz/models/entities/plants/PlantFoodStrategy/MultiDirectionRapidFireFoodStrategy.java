@@ -24,7 +24,7 @@ public class MultiDirectionRapidFireFoodStrategy implements PlantFoodStrategy {
     public void executeStrategy(Plant plant) {
         tickTimer++;
         if (tickTimer <= durationTicks) {
-            if (tickTimer %  TimeManager.TICKS_PER_SECOND / 5 == 0)
+            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 5) == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, true, 0.1f);
 
         }

@@ -39,15 +39,13 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
         }
 
-
         if (doesRapidFire && tickTimer <= durationTicks) {
-            if (tickTimer % TimeManager.TICKS_PER_SECOND / 5 == 0)
+            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 5) == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, false, 0.1f);
         }
 
-        if (giantShotsFired < totalGiantShots) {  //shoot giant pea if needed
-
-            if (tickTimer % TimeManager.TICKS_PER_SECOND / 2 == 0) { //giant shots take more time
+        if (giantShotsFired < totalGiantShots) {
+            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 2) == 0) {
                 ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
                 int giantDamage = plant.getDamage() * 20;
                 int col = plant.getPlacedTile().getCol();
@@ -70,7 +68,6 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
                 giantShotsFired++;
             }
         }
-
     }
 
     @Override

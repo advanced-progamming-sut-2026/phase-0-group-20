@@ -109,10 +109,9 @@ public class PlantRenderer {
             return action;
         }
 
-        if (plant.isBoosted()) {
+        if (plant.isBoosted() && action == null) {
             if (anim.hasClip("plantfood_loop")) return "plantfood_loop";
             if (anim.hasClip("plantfood")) return "plantfood";
-            if (anim.hasClip("plantfood_on")) return "plantfood_on";
         }
 
         DigestionStrategy digestion = plant.getStrategy(DigestionStrategy.class);
@@ -135,7 +134,7 @@ public class PlantRenderer {
             String altStageIdle = "idle" + size;
             if (anim.hasClip(stageIdle)) return stageIdle;
             if (anim.hasClip(altStageIdle)) return altStageIdle;
-            if (anim.hasClip("stage" +  size + "_idle")) return "stage" +  size + "_idle";
+            if (anim.hasClip("stage" + size + "_idle")) return "stage" + size + "_idle";
         }
 
         float hpRatio = (float) plant.getCurrentHp() / plant.getMaxHp();
@@ -154,7 +153,7 @@ public class PlantRenderer {
         if (anim.hasClip("loop")) return "loop";
         if (anim.hasClip("idle_stage1")) return "idle_stage1";
         if (anim.hasClip("idle1_1")) return "idle1_1";
-        if (anim.hasClip("stage1_idle"))  return "stage1_idle";
+        if (anim.hasClip("stage1_idle")) return "stage1_idle";
 
         Iterator<String> anyClip = anim.getClipNames().iterator();
         return anyClip.hasNext() ? anyClip.next() : CLIP_IDLE;
