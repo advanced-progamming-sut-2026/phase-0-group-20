@@ -128,6 +128,11 @@ public class PlantRenderer {
 
         if (plant.isAsleep() && anim.hasClip("sleep")) return "sleep";
 
+        if (plant.getStackCount() > 1 && plant.getName().equalsIgnoreCase("Pea Pod")) {
+            String peaIdle = "idle" + plant.getStackCount();
+            if (anim.hasClip(peaIdle)) return peaIdle;
+        }
+
         int size = plant.getSize();
         if (size > 1) {
             String stageIdle = "idle_stage" + size;

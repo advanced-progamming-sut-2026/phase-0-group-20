@@ -3,20 +3,15 @@ package io.java.pvz.models.entities.plants.PlantFoodStrategy;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.plants.strategy.SpikeStrategy;
-
-/**
- * Grants the plant permanent bonus "armor" HP (on top of its current HP) and,
- * optionally, a combat buff.
- * Used by: Wall-nut (+4000 armor), Tall-nut (+8000 armor), Endurian (metal
- * armor + increased reflect damage), Explode-o-nut (metal armor, also
- * explodes when the armor itself is destroyed), Pumpkin (strong metal
- * armor), Sun Bean (strong metal armor).
- */
+import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.utils.AnimationCatalog;
 
 public class ArmorFoodStrategy implements PlantFoodStrategy {
 
     private final int armorAmount;
     private final boolean boostsReflectDamage;
+    private int durationTicks = 0;
+    private boolean executed = false;
 
     public ArmorFoodStrategy(int armorAmount) {
         this(armorAmount, false);
@@ -28,15 +23,42 @@ public class ArmorFoodStrategy implements PlantFoodStrategy {
     }
 
     @Override
-    public void executeStrategy(Plant plant) {
+    public void onEnter(Plant plant) {
+        PlantFoodStrategy.super.onEnter(plant);
+        this.executed = false;
 
-        int maxHpWithArmor = plant.getBaseHp() + armorAmount;
-        plant.setCurrentHp(maxHpWithArmor);
-
-        if (boostsReflectDamage) {
-            for (IPlantStrategy strategy : plant.getStrategies())
-                if (strategy instanceof SpikeStrategy spikeStrategy)
-                    spikeStrategy.setHasArmor(true);
+        float animDuration = 1.0f;
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
+        if (anim != null) {
+            if (anim.hasClip("plantfood_on")) animDuration = anim.getDuration("plantfood_on") +
+                anim.getDuration("plantfood");
+            else if (anim.hasClip("plantfood")) animDuration = anim.getDuration("plantfood");
         }
+        this.durationTicks = (int) (animDuration * TimeManager.TICKS_PER_SECOND);
+    }
+
+    @Override
+    public void executeStrategy(Plant plant) {
+        if (!executed) {
+            int maxHpWithArmor = plant.getBaseHp() + armorAmount;
+            plant.setCurrentHp(maxHpWithArmor);
+
+            if (boostsReflectDamage) {
+                for (IPlantStrategy strategy : plant.getStrategies())
+                    if (strategy instanceof SpikeStrategy spikeStrategy)
+                        spikeStrategy.setHasArmor(true);
+            }
+            executed = true;
+        }
+    }
+
+    @Override
+    public int getDurationTicks() {
+        return durationTicks;
+    }
+
+    @Override
+    public void reset() {
+        this.executed = false;
     }
 }

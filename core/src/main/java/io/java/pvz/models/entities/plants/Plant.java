@@ -576,6 +576,14 @@ public class Plant implements IPlant, Ticker {
     }
 
     public void triggerAction(String action) {
+        if (this.actionTimer > 0 && this.currentAction != null) {
+            if (this.currentAction.contains("plantfood")
+                || this.currentAction.contains("special")
+                || this.currentAction.contains("intro")) {
+                return;
+            }
+        }
+
         this.currentAction = action;
         this.actionTimer = (int) (AnimationCatalog.getPlantAnimation(this).getDuration(action) * TimeManager.TICKS_PER_SECOND);
     }
@@ -583,10 +591,6 @@ public class Plant implements IPlant, Ticker {
     public String getCurrentAction() {
         if (actionTimer > 0) {
             return currentAction;
-        }
-
-        if (getStackCount() > 1 && getName().equalsIgnoreCase("Pea Pod")) {
-            return "idle" + getStackCount();
         }
 
         return null;

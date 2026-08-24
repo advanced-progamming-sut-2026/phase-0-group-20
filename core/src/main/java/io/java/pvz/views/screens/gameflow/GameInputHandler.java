@@ -72,6 +72,7 @@ public class GameInputHandler {
 
     private Image couchFloatingZombieImage = null;
     private int lastCouchFloatingZombieIndex = -1;
+    private final Group highlightLayer;
 
     public GameInputHandler(Group mainLayer, Viewport viewport, Group highlightLayer,
                             GameFlowController gameFlowController, MiniGameController miniGameController) {
@@ -79,6 +80,7 @@ public class GameInputHandler {
         this.viewport = viewport;
         this.gameFlowController = gameFlowController;
         this.miniGameController = miniGameController;
+        this.highlightLayer = highlightLayer;
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(0, 0, 0, 0.35f);
@@ -274,7 +276,9 @@ public class GameInputHandler {
                     PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated
                         ("768/INITIAL/EFFECTS/PLANTFOOD_FX/PLANTFOOD_FX.PAM", "plantfood");
                     actor.setPosition(centerX, centerY);
-                    mainLayer.addActor(actor);
+
+                    highlightLayer.addActor(actor);
+
                     Tile tile = GameSession.getInstance().getArena().getTile(row - 1, col - 1);
                     plantFoodAnimations.put(tile, actor);
                     clearAllSelections();
@@ -327,7 +331,7 @@ public class GameInputHandler {
             for (Plant plant : tile.getPlants()) {
                 if (!plant.isBoosted()) {
                     PamAnimatedActor actor = plantFoodAnimations.get(tile);
-                    mainLayer.removeActor(actor);
+                    highlightLayer.removeActor(actor);
                     break;
                 }
             }
