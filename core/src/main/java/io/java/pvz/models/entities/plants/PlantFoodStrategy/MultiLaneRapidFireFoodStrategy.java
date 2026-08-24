@@ -15,31 +15,36 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
 
     private int currentRow = 0;
     private int directionCoeff = 1;
+    private int tickTimer = 0;
 
     @Override
     public void executeStrategy(Plant plant) {
-        GameSession session = GameSession.getInstance();
+        tickTimer++;
+        if (tickTimer <= durationTicks) {
+            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 5) == 0) {
+                GameSession session = GameSession.getInstance();
 
-        ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
-        int damage = plant.getDamage();
-        int plantCol = plant.getPlacedTile().getCol();
+                ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
+                int damage = plant.getDamage();
+                int plantCol = plant.getPlacedTile().getCol();
 
-        Projectile projectile = Projectile.spawnNewProjectile(
-            plant,
-            type,
-            damage,
-            new Position(plantCol, currentRow),
-            ProjectileTuning.speedFor(type),
-            0,
-            false,
-            false);
+                Projectile projectile = Projectile.spawnNewProjectile(
+                    plant,
+                    type,
+                    damage,
+                    new Position(plantCol, currentRow),
+                    ProjectileTuning.speedFor(type),
+                    0,
+                    false,
+                    false);
 
-        projectile.setSpawnDelayTicks(0.1f);
-        if (currentRow >= session.getArena().getRows() - 1) directionCoeff = -1;
-        else if (currentRow <= 0) directionCoeff = 1;
+                projectile.setSpawnDelayTicks(0.1f);
+                if (currentRow >= session.getArena().getRows() - 1) directionCoeff = -1;
+                else if (currentRow <= 0) directionCoeff = 1;
 
-        currentRow += directionCoeff;
-
+                currentRow += directionCoeff;
+            }
+        }
     }
 
     @Override
@@ -49,6 +54,7 @@ public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
 
     @Override
     public void reset() {
+        this.tickTimer = 0;
         this.currentRow = 0;
         this.directionCoeff = 1;
     }

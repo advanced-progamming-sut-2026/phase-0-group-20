@@ -93,7 +93,7 @@ public class Plant implements IPlant, Ticker {
         if (plantFoodStrategy.isEmpty()) {
             GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
                 new GameEventPayload.Builder(GameEvent.NOTIFY)
-                    .message(getName() + " has no Plant Food effect wired up yet!")
+                    .message(getName() + " has no Plant Food effect")
                     .build());
             return;
         }
@@ -104,7 +104,12 @@ public class Plant implements IPlant, Ticker {
 
         for (PlantFoodStrategy strategy : plantFoodStrategy) {
             strategy.reset();
+            strategy.onEnter(this);
+
             int duration = strategy.getDurationTicks();
+
+            if (duration == 0 && this.actionTimer > 0)
+                duration = this.actionTimer;
 
             if (duration == -1)
                 isPermanentBoost = true;
@@ -119,8 +124,8 @@ public class Plant implements IPlant, Ticker {
             this.boostTimer = maxDuration;
         else if (isPermanentBoost)
             this.boostTimer = -1;
-        else this.boosted = false;
-
+        else
+            this.boosted = false;
     }
 
     @Override
@@ -153,7 +158,12 @@ public class Plant implements IPlant, Ticker {
 
             boostTimer--;
 
-            if (boostTimer <= 0) boosted = false;
+            if (boostTimer <= 0) {
+                boosted = false;
+                for (PlantFoodStrategy strategy : plantFoodStrategy) {
+                    strategy.onExit(this);
+                }
+            }
 
         } else {
             for (IPlantStrategy strategy : strategies)
@@ -566,6 +576,14 @@ public class Plant implements IPlant, Ticker {
     }
 
     public void triggerAction(String action) {
+        if (this.actionTimer > 0 && this.currentAction != null) {
+            if (this.currentAction.contains("plantfood")
+                || this.currentAction.contains("special")
+                || this.currentAction.contains("intro")) {
+                return;
+            }
+        }
+
         this.currentAction = action;
         this.actionTimer = (int) (AnimationCatalog.getPlantAnimation(this).getDuration(action) * TimeManager.TICKS_PER_SECOND);
     }
@@ -573,10 +591,6 @@ public class Plant implements IPlant, Ticker {
     public String getCurrentAction() {
         if (actionTimer > 0) {
             return currentAction;
-        }
-
-        if (getStackCount() > 1 && getName().equalsIgnoreCase("Pea Pod")) {
-            return "idle" + getStackCount();
         }
 
         return null;

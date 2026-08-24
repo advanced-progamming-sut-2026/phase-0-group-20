@@ -19,7 +19,7 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
         GameSession session = GameSession.getInstance();
 
         if (tickTimer <= durationTicks) {
-            if (tickTimer % TimeManager.TICKS_PER_SECOND/5 == 0) {
+            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 5) == 0) {
                 int col = plant.getPlacedTile().getCol();
                 int row = plant.getPlacedTile().getRow();
 
@@ -29,7 +29,6 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
                     ProjectileMechanism.executeTargetedProjectile(plant, target, 0.1f);
                 else
                     ProjectileMechanism.executeNewProjectile(plant, true, false, 0.1f);
-
             }
         }
     }

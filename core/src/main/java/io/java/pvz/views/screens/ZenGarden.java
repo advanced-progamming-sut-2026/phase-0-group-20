@@ -18,11 +18,12 @@ import io.java.pvz.utils.PotSlot;
 import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
 
-public class ZenGarden extends BaseScreen{
+public class ZenGarden extends BaseScreen {
     private final GreenHouseController controller = new GreenHouseController();
     private final GreenHouse greenHouse;
     private final Skin skin;
     private final Texture background;
+
     public ZenGarden(Game game) {
         super(game);
         greenHouse = App.getActiveUser().getGreenHouse();
@@ -43,8 +44,8 @@ public class ZenGarden extends BaseScreen{
         Table rootTable = new Table();
         rootTable.setFillParent(true);
         Table gridTable = new Table();
-        gridTable.setDebug(true);
-        float slotWidth = 195;
+        gridTable.setDebug(App.getSettings().isGrid());
+        float slotWidth = 200;
         float slotHeight = 190;
         float gapX = 45f;
         float gapY = 42f;
@@ -53,18 +54,18 @@ public class ZenGarden extends BaseScreen{
             for (int col = 0; col < GreenHouse.getCOL(); col++) {
 
                 Pot currentPot = greenHouse.getSpecificPot(row, col);
-                PotSlot slotUI = new PotSlot(currentPot, textures , row , col , controller , greenHouse);
+                PotSlot slotUI = new PotSlot(currentPot, textures, row, col, controller, greenHouse);
 
                 slotUI.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         if (currentPot.getPotCondition() == PotCondition.EMPTY) {
                             System.out.println("Planting a new seed!");
-                            controller.plantPot(slotUI.getRow(),slotUI.getColumn(),greenHouse);
+                            controller.plantPot(slotUI.getRow(), slotUI.getColumn(), greenHouse);
                             slotUI.update(textures);
                         } else if (currentPot.getPotCondition() == PotCondition.COLLECTABLE) {
                             System.out.println("Collecting reward!");
-                            controller.collect(slotUI.getRow(),slotUI.getColumn(),greenHouse);
+                            controller.collect(slotUI.getRow(), slotUI.getColumn(), greenHouse);
                             slotUI.update(textures);
                         }
                     }

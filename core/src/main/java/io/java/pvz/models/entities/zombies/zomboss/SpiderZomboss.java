@@ -1,7 +1,5 @@
 package io.java.pvz.models.entities.zombies.zomboss;
 
-import io.java.pvz.models.entities.obstacle.GraveHolder;
-import io.java.pvz.models.entities.obstacle.GraveStone; // اگر اسم کلاس قبر چیز دیگری است این را تغییر بده
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.fields.tiles.GraveStoneTile;
 import io.java.pvz.models.fields.tiles.Tile;
@@ -59,9 +57,9 @@ public class SpiderZomboss extends Zomboss {
                 if (!(rndTile instanceof GraveStoneTile)) {
 
                     GameSession.getInstance().getArena().changeTile(
-                        targetTile.getRow(),
-                        targetTile.getCol(),
-                        new GraveStoneTile(targetTile.getRow(), targetTile.getCol())
+                        r,
+                        c,
+                        new GraveStoneTile(r, c)
                     );
                     gravesPlanted++;
 

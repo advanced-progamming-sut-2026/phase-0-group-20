@@ -36,7 +36,7 @@ public class IcyRapidFireFoodStrategy implements PlantFoodStrategy {
                         zombie.addEffect(new FreezeEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
             }
 
-            if (tickTimer % 2 == 0)
+            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 5) == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, false, 0.1f);
 
         }

@@ -6,7 +6,6 @@ import io.java.pvz.models.entities.plants.PlantFactory;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.RedLineCapable;
 import io.java.pvz.models.game.adventure.SeasonType;
-import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalWinCondition;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
@@ -61,8 +60,6 @@ public class BowlingLevel extends ConveyorBelt implements IMinigame, RedLineCapa
 
         Plant newPlant = PlantFactory.create(template.getId());
         belt.add(newPlant);
-        notify("A new " + newPlant.getName() + " arrived on the conveyor belt!");
-
     }
 
     public Plant consumePlant(int index) {
@@ -112,6 +109,6 @@ public class BowlingLevel extends ConveyorBelt implements IMinigame, RedLineCapa
 
     @Override
     public String toString() {
-        return "Don't Let Zombies Eat Your Brain-Bowl The Bowlings Behind Col "+(RED_LINE_COL+1);
+        return "Don't Let Zombies Eat Your Brain-Bowl The Bowlings Behind Col " + RED_LINE_COL;
     }
 }

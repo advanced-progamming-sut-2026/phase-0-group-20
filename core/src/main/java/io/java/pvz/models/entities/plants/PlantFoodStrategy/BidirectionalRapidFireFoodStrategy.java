@@ -2,7 +2,6 @@ package io.java.pvz.models.entities.plants.PlantFoodStrategy;
 
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
-import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.timeManager.TimeManager;
 
 /**
@@ -21,7 +20,7 @@ public class BidirectionalRapidFireFoodStrategy implements PlantFoodStrategy {
 
         if (tickTimer <= durationTicks) {
 
-            if (tickTimer % TimeManager.TICKS_PER_SECOND/5 == 0)
+            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 5) == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, true, 0.1f);
         }
     }
