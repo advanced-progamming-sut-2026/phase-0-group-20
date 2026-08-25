@@ -21,6 +21,7 @@ public class SettingModalTable extends BorderedTable {
     private int currentMusicVolume;
     private int currentSoundVolume;
     private int currentDifficulty;
+    private int currentProgressSpeed;
     private boolean isGrid;
     private boolean isDebug;
     private Actor blocker;
@@ -33,6 +34,7 @@ public class SettingModalTable extends BorderedTable {
         this.currentDifficulty = controller.getDifficulty();
         this.isGrid = controller.isGrid();
         this.isDebug = controller.isDebug();
+        this.currentProgressSpeed = controller.getProgressSpeed();
 
         pad(45, 40, 40, 40);
         buildSettings(skin);
@@ -74,6 +76,11 @@ public class SettingModalTable extends BorderedTable {
             currentDifficulty = val;
             controller.setDifficulty(val);
         });
+        createSliderRow(contentTable,skin,"Progress Speed",1,3,currentProgressSpeed,
+            textScale, fontColor, 55, val -> {
+            currentProgressSpeed = val;
+            controller.changeProgressSpeed(val);
+            });
 
         CheckBox gridCheckBox = createCheckBox(skin, " Show Grid", isGrid, textScale, fontColor, val -> {
             isGrid = val;

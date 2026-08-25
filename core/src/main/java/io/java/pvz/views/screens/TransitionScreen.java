@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import io.java.pvz.utils.PamAnimatedActor;
 
@@ -32,7 +33,7 @@ public class TransitionScreen extends BaseScreen {
         String flowerPath = "768/INITIAL/EFFECTS/LOAD_ICON_FRONT/LOAD_ICON_FRONT.PAM";
         PamAnimatedActor flowerAnim = PamAnimatedActor.createEffectAnimated(flowerPath, "animation");
 
-        com.badlogic.gdx.scenes.scene2d.ui.Stack stack = new com.badlogic.gdx.scenes.scene2d.ui.Stack();
+        Stack stack = new Stack();
         stack.add(loadingAnim);
         stack.add(flowerAnim);
         Table table = new Table();

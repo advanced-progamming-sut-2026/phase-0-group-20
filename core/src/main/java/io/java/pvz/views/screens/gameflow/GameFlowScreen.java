@@ -143,6 +143,7 @@ public class GameFlowScreen extends BaseScreen {
                 simDelta = 0f;
             else
                 simDelta = delta * session.getSpeedMultiplier();
+            simDelta*= App.getSettings().getProgressSpeed();
         }
         gameHUD.update(simDelta);
         inputHandler.handleTileClick();
