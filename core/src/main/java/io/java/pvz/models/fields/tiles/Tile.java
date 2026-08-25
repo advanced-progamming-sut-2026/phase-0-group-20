@@ -58,17 +58,17 @@ public abstract class Tile implements Ticker {
     }
 
     public boolean isPlantable(Plant plantToPlant) {
-        System.out.println("is crater : " + isCrater );
+//        System.out.println("is crater : " + isCrater );
         if (isCrater) return false;
         boolean isWaterPlant = plantToPlant.getTags().contains(PlantTag.WATER);
 
-        System.out.println("isWaterPlant : " + isWaterPlant );
+//        System.out.println("isWaterPlant : " + isWaterPlant );
         if (isWaterPlant) return false;
         boolean isGraveBuster = this instanceof GraveStoneTile tile && tile.getGraveStone() != null &&
             (plantToPlant.getName().contains("Buster") || plantToPlant.getName().contains("buster"));
-        System.out.println("isGraveBuster : " + isGraveBuster );
-        System.out.println("is Empty: " +  plantToPlant.getName().isEmpty() + " stack : " +
-            plantToPlant.getTags().contains(PlantTag.STACK));
+//        System.out.println("isGraveBuster : " + isGraveBuster );
+//        System.out.println("is Empty: " +  plantToPlant.getName().isEmpty() + " stack : " +
+//            plantToPlant.getTags().contains(PlantTag.STACK));
         return this.plants.isEmpty() || plantToPlant.getTags().contains(PlantTag.STACK) || isGraveBuster ||
             plantToPlant.getName().equalsIgnoreCase("hot potato");
     }

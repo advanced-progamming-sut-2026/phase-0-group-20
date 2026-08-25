@@ -49,7 +49,13 @@ public class DuplicateSelfFoodStrategy implements PlantFoodStrategy {
 
                     if (targetTile instanceof WaterTile) {
                         if (targetTile.getPlants().isEmpty()) {
-                            InGameEntityGenerator.getPlantForGame(plant, false);
+                            Plant newLily = InGameEntityGenerator.getPlantForGame(plant, false);
+
+                            newLily.setPlacedTile(targetTile);
+                            targetTile.addPlant(newLily);
+                            gameSession.getArena().addPlant(newLily);
+                            gameSession.getTimeManager().registerNewTicker(newLily);
+
                         } else {
                             Plant p = targetTile.getPlants().get(0);
                             if (p.getStrategies().get(0) instanceof LilyPadStrategy)

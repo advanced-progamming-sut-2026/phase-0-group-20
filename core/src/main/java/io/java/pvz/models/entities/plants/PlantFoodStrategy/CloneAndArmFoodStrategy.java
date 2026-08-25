@@ -51,7 +51,12 @@ public class CloneAndArmFoodStrategy implements PlantFoodStrategy {
             if (randomEmptyTiles != null) {
                 for (Tile tile : randomEmptyTiles) {
                     Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, true);
+
+                    newPlant.setPlacedTile(tile);
                     tile.addPlant(newPlant);
+                    GameSession.getInstance().getArena().addPlant(newPlant);
+                    GameSession.getInstance().getTimeManager().registerNewTicker(newPlant);
+
                     for (IPlantStrategy strategy : newPlant.getStrategies()) {
                         if (strategy instanceof TrapStrategy trapStrategy) {
                             trapStrategy.setArmingTimeTicks(0);

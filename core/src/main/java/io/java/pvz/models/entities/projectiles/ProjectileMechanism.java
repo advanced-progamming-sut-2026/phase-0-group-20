@@ -77,7 +77,13 @@ public class ProjectileMechanism {
         );
 
         projectile.setEffect(effect);
-        projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
+
+        if (ProjectileType.isLobbed(type)) {
+            projectile.setArcTrajectory(target, ProjectileTuning.LOB_SPEED_TILES_PER_SEC, ProjectileTuning.LOB_ARC_HEIGHT_TILES);
+        } else {
+            projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
+        }
+
         projectile.setSpawnDelayTicks(delaySeconds);
     }
 
@@ -91,6 +97,7 @@ public class ProjectileMechanism {
     }
 
 
+
     public static ProjectileType getProjectileType(String name) {
         return switch (name) {
             case "Snow Pea" -> ProjectileType.ICE_PEA;
@@ -101,10 +108,15 @@ public class ProjectileMechanism {
             case "Electric Blueberry" -> ProjectileType.LIGHTNING_CLOUD;
             case "Citron" -> ProjectileType.PLASMA_BALL;
             case "Kernel-pult" -> ProjectileType.BUTTER;
+            case "Cabbage-pult" -> ProjectileType.CABBAGE;
+            case "Melon-pult" -> ProjectileType.MELON;
+            case "Winter Melon" -> ProjectileType.WINTER_MELON;
+            case "Pepper-pult" -> ProjectileType.PEPPER;
             case "Puff-shroom" -> ProjectileType.PUFF_SPORE;
             default -> ProjectileType.PEA;
         };
     }
+
 
 
     public static List<float[]> getShotConfigurations(Plant plant) {
