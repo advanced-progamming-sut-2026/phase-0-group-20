@@ -55,6 +55,9 @@ public class BattlefieldRenderer implements GameEventListener {
                     Plant plant = (Plant) child.getUserObject();
                     if (plant != null) {
                         applyPlantShaderUniforms(plant);
+                    } else {
+                        entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
+                        entityShader.setUniformf("u_damageFlash", 0f);
                     }
                     child.draw(batch, parentAlpha);
                 }
@@ -71,6 +74,9 @@ public class BattlefieldRenderer implements GameEventListener {
                     Zombie zombie = (Zombie) child.getUserObject();
                     if (zombie != null) {
                         applyZombieShaderUniforms(zombie);
+                    } else {
+                        entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
+                        entityShader.setUniformf("u_damageFlash", 0f);
                     }
                     child.draw(batch, parentAlpha);
                 }

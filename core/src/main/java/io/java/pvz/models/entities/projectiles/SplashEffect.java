@@ -16,6 +16,10 @@ public class SplashEffect implements ProjectileEffect {
     @Override
     public void applyEffect(Zombie zombie, Projectile projectile) {
 
+        if (zombie == null) {
+            return;
+        }
+
         List<Zombie> nearbyZombies = GameSession.getInstance().getArena().getZombiesInRadius(
                 zombie.getCol(), zombie.getRow(), SPLASH_RADIUS
         );

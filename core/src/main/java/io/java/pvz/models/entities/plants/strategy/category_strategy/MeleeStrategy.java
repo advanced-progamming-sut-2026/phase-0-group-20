@@ -1,11 +1,14 @@
 package io.java.pvz.models.entities.plants.strategy.category_strategy;
 
+import io.java.pvz.models.entities.obstacle.GraveHolder;
+import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.models.fields.tiles.Tile;
 
 import java.util.List;
 import java.util.Random;
@@ -104,9 +107,9 @@ public class MeleeStrategy implements IPlantStrategy {
             }
         }
 
-        if (target != null) {
-            int damage = name.equals("Wasabi Whip") ? Math.max(baseDamage, 40) : baseDamage;
+        int damage = name.equals("Wasabi Whip") ? Math.max(baseDamage, 40) : baseDamage;
 
+        if (target != null) {
             target.takeDamage(damage);
 
             int r = rand.nextInt(5) + 1;
@@ -125,6 +128,72 @@ public class MeleeStrategy implements IPlantStrategy {
             return true;
         }
 
+        Object targetObstacle = null;
+        double minObsDistance = Double.MAX_VALUE;
+
+        int minCol = (int) Math.max(0, Math.floor(plantCol + backwardRange));
+        int maxCol = (int) Math.min(GameSession.getInstance().getArena().getCols() - 1, Math.floor(plantCol + forwardRange));
+
+        for (int c = minCol; c <= maxCol; c++) {
+            Tile tile = GameSession.getInstance().getArena().getTile(plantRow, c);
+            boolean hasObstacle = false;
+
+            if (tile instanceof GraveHolder gh && gh.getGraveStone() != null) {
+                hasObstacle = true;
+            } else if (tile instanceof IceHolder ih && ih.hasIceBlock()) {
+                hasObstacle = true;
+            }
+
+            if (hasObstacle) {
+                double dist = Math.abs(c - plantCol);
+                if (dist < minObsDistance) {
+                    minObsDistance = dist;
+                    targetObstacle = tile;
+                }
+            }
+
+            for (Plant p : tile.getPlants()) {
+                if (p.isFrozen()) {
+                    double dist = Math.abs(c - plantCol);
+                    if (dist < minObsDistance) {
+                        minObsDistance = dist;
+                        targetObstacle = p;
+                    }
+                }
+            }
+        }
+
+        for (io.java.pvz.models.entities.obstacle.PushableObstacle obs : GameSession.getInstance().getArena().getActiveObstacles()) {
+            if (!obs.isDestroyed() && obs.getRow() == plantRow) {
+                double dist = obs.getCol() - plantCol;
+                if (dist >= backwardRange && dist <= forwardRange) {
+                    if (Math.abs(dist) < minObsDistance) {
+                        minObsDistance = Math.abs(dist);
+                        targetObstacle = obs;
+                    }
+                }
+            }
+        }
+
+        if (targetObstacle != null) {
+            if (targetObstacle instanceof io.java.pvz.models.entities.obstacle.GraveHolder gh) {
+                gh.takeDamage(damage, plantRow, ((Tile) targetObstacle).getCol());
+            } else if (targetObstacle instanceof io.java.pvz.models.entities.obstacle.IceHolder ih) {
+                ih.takeIceDamage(damage);
+            } else if (targetObstacle instanceof Plant p) {
+                p.damageIceBlock(damage);
+            } else if (targetObstacle instanceof io.java.pvz.models.entities.obstacle.PushableObstacle obs) {
+                obs.takeDamage(damage);
+            }
+
+            int r = rand.nextInt(5) + 1;
+            String animName = r == 1 ? "attack" : "attack" + r;
+            context.triggerAction(animName);
+
+            notify("🥊 " + name + " landed a melee strike on an obstacle!");
+            return true;
+        }
+
         return false;
     }
 
@@ -132,23 +201,23 @@ public class MeleeStrategy implements IPlantStrategy {
         List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5);
         boolean attacked = false;
 
-        if (!targets.isEmpty()) {
-            int finalDamage = baseDamage;
+        int finalDamage = baseDamage;
 
-            if (name.equals("Kiwibeast")) {
-                int stage = context.getSize();
-                if (stage == 3) {
-                    finalDamage = baseDamage * 3;
-                } else if (stage == 2) {
-                    finalDamage = 30;
-                }
-            } else {
-                if (attackCount % 4 == 3) {
-                    finalDamage = baseDamage * 3;
-                    notify("💥 Phat Beet landed a CRITICAL thump!");
-                }
+        if (name.equals("Kiwibeast")) {
+            int stage = context.getSize();
+            if (stage == 3) {
+                finalDamage = baseDamage * 3;
+            } else if (stage == 2) {
+                finalDamage = 30;
             }
+        } else {
+            if (attackCount % 4 == 3) {
+                finalDamage = baseDamage * 3;
+                notify("💥 Phat Beet landed a CRITICAL thump!");
+            }
+        }
 
+        if (!targets.isEmpty()) {
             for (Zombie z : targets) {
                 if (!z.isDead()) {
                     z.takeDamage(finalDamage);
@@ -158,15 +227,50 @@ public class MeleeStrategy implements IPlantStrategy {
                     attacked = true;
                 }
             }
+        }
 
-            if (attacked) {
-                if (name.equals("Kiwibeast")) {
-                    context.triggerAction("attack_stage" + context.getSize());
-                } else {
-                    context.triggerAction("attack");
+        int minRow = Math.max(0, plantRow - 1);
+        int maxRow = Math.min(GameSession.getInstance().getArena().getRows() - 1, plantRow + 1);
+        int minCol = Math.max(0, plantCol - 1);
+        int maxCol = Math.min(GameSession.getInstance().getArena().getCols() - 1, plantCol + 1);
+
+        for (int r = minRow; r <= maxRow; r++) {
+            for (int c = minCol; c <= maxCol; c++) {
+                Tile tile = GameSession.getInstance().getArena().getTile(r, c);
+
+                if (tile instanceof io.java.pvz.models.entities.obstacle.GraveHolder gh && gh.getGraveStone() != null) {
+                    gh.takeDamage(finalDamage, r, c);
+                    attacked = true;
                 }
-                notify("🔊 " + name + " slammed a 3x3 area, hitting " + targets.size() + " zombies!");
+
+                if (tile instanceof io.java.pvz.models.entities.obstacle.IceHolder ih && ih.hasIceBlock()) {
+                    ih.takeIceDamage(finalDamage);
+                    attacked = true;
+                }
+
+                for (Plant p : tile.getPlants()) {
+                    if (p.isFrozen()) {
+                        p.damageIceBlock(finalDamage);
+                        attacked = true;
+                    }
+                }
             }
+        }
+
+        for (io.java.pvz.models.entities.obstacle.PushableObstacle obs : GameSession.getInstance().getArena().getActiveObstacles()) {
+            if (!obs.isDestroyed() && obs.getRow() >= minRow && obs.getRow() <= maxRow && obs.getCol() >= minCol && obs.getCol() <= maxCol) {
+                obs.takeDamage(finalDamage);
+                attacked = true;
+            }
+        }
+
+        if (attacked) {
+            if (name.equals("Kiwibeast")) {
+                context.triggerAction("attack_stage" + context.getSize());
+            } else {
+                context.triggerAction("attack");
+            }
+            notify("🔊 " + name + " slammed a 3x3 area, hitting targets!");
         }
 
         return attacked;

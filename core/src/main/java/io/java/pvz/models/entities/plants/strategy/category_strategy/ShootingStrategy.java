@@ -110,17 +110,24 @@ public class ShootingStrategy implements IPlantStrategy {
         for (int line : targetLines) {
             if (line < 0 || line >= GameSession.getInstance().getArena().getRows()) continue;
 
+            int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom"))
+                ? (3 + rangeExtension) : 999;
+
             for (Zombie z : GameSession.getInstance().getArena().zombieInRow(line)) {
                 if (z.isDead()) continue;
-
-                int maxRange = (plantName.equals("Sea-shroom") || plantName.equals("Puff-shroom"))
-                    ? (3 + rangeExtension) : 999;
 
                 if (z.getCol() >= plantCol && z.getCol() <= plantCol + maxRange) shootForward = true;
 
                 if (z.getCol() < plantCol && plantName.equals("Split Pea")) shootBackward = true;
             }
+
+            int obstacleCol = GameSession.getInstance().getArena().getFrontmostObstacleColInRow(line, plantCol);
+
+            if (obstacleCol != -1 && obstacleCol >= plantCol && obstacleCol <= plantCol + maxRange) {
+                shootForward = true;
+            }
         }
+
         return new boolean[]{shootForward, shootBackward};
     }
 

@@ -323,6 +323,9 @@ public class Projectile implements Ticker {
             destY = target.getY();
             frozenDestX = destX;
             frozenDestY = destY;
+        } else if (target == null) {
+            destX = frozenDestX;
+            destY = frozenDestY;
         } else {
             target = null;
             isDestroyed = true;
@@ -354,6 +357,27 @@ public class Projectile implements Ticker {
         this.launchY = position.getY();
         this.frozenDestX = target.getX();
         this.frozenDestY = target.getY();
+
+        float dx = frozenDestX - launchX;
+        float dy = frozenDestY - launchY;
+        float distancePixels = (float) Math.sqrt(dx * dx + dy * dy);
+        float speedPixelsPerTick = averageSpeedTilesPerSec * PhysicalConstants.SPEED_SCALE_RATIO;
+
+        this.flightDurationTicks = Math.max(1f, distancePixels / Math.max(0.0001f, speedPixelsPerTick));
+        this.arcHeightPixels = arcHeightTiles * PhysicalConstants.TILE_HEIGHT;
+        this.elapsedFlightTicks = 0f;
+        this.arcOffsetY = 0f;
+    }
+
+    public void setArcTrajectory(Position targetPos, float averageSpeedTilesPerSec, float arcHeightTiles) {
+        this.target = null;
+        this.isArcTrajectory = true;
+        this.canPassObstacles = true;
+
+        this.launchX = position.getX();
+        this.launchY = position.getY();
+        this.frozenDestX = targetPos.getX();
+        this.frozenDestY = targetPos.getY();
 
         float dx = frozenDestX - launchX;
         float dy = frozenDestY - launchY;
@@ -534,14 +558,25 @@ public class Projectile implements Ticker {
             }
         }
 
-        if (!canPassObstacles) {
-            isDestroyed = true;
+        if (!canPassObstacles || (isArcTrajectory && getArcProgress() >= 1f)) {
+
+            if (piercing && !canPassObstacles) {
+                pierceCount--;
+                if (pierceCount <= 0) isDestroyed = true;
+            } else {
+                isDestroyed = true;
+            }
+
             GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
                 new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
                     .pixelCoordinate(this.getX(), this.getY())
                     .projectileType(this.type)
                     .coordinate(tile.getRow(), tile.getCol())
                     .build());
+
+//            if (canPassObstacles && this.effect != null) {
+//                this.effect.applyEffect(null, this);
+//            }
         }
     }
 

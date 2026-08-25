@@ -22,6 +22,7 @@ public class HomingStrategy implements IPlantStrategy {
     private int pendingBurstShots = 0;
     private int burstCooldownTicks = 0;
     private Zombie pendingTarget;
+    private boolean targetingObstacle = false;
 
     public HomingStrategy(TargetMode targetMode, int burstCount) {
         this.targetMode = targetMode;
@@ -37,9 +38,17 @@ public class HomingStrategy implements IPlantStrategy {
                 if (pendingTarget != null && !pendingTarget.isDead()) {
                     context.triggerAction("attack");
                     ProjectileMechanism.executeTargetedProjectile(context, pendingTarget, 0.5f);
+                } else if (targetingObstacle) {
+                    context.triggerAction("attack");
+                    ProjectileMechanism.executeNewProjectile(context, true, false, 0.5f);
                 }
+
                 pendingBurstShots--;
                 burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
+
+                if (pendingBurstShots <= 0) {
+                    targetingObstacle = false;
+                }
             }
             return;
         }
@@ -48,6 +57,7 @@ public class HomingStrategy implements IPlantStrategy {
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
             List<Zombie> activeZombies = GameSession.getInstance().getArena().getActiveZombies();
             List<Zombie> validTargets = activeZombies.stream().filter(z -> !z.isDead()).toList();
+
             if (!validTargets.isEmpty()) {
                 Zombie target = selectTarget(context, validTargets);
                 if (target != null && target.getCol() < GameSession.getInstance().getArena().getCols()) {
@@ -59,6 +69,26 @@ public class HomingStrategy implements IPlantStrategy {
                         pendingBurstShots = burstCount - 1;
                         burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
                         pendingTarget = target;
+                        targetingObstacle = false;
+                    }
+
+                    lastShotTick = currentTick;
+                }
+            } else {
+                int plantRow = context.getPlacedTile().getRow();
+                int plantCol = context.getPlacedTile().getCol();
+                int obstacleCol = GameSession.getInstance().getArena().getFrontmostObstacleColInRow(plantRow, plantCol);
+
+                if (obstacleCol != -1) {
+                    context.triggerAction("attack");
+                    ProjectileMechanism.executeNewProjectile(context, true, false, 0.5f);
+                    notify(context.getName() + " fired at an obstacle!");
+
+                    if (burstCount > 1) {
+                        pendingBurstShots = burstCount - 1;
+                        burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
+                        pendingTarget = null;
+                        targetingObstacle = true;
                     }
 
                     lastShotTick = currentTick;
