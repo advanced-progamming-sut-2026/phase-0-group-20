@@ -1,5 +1,6 @@
 package io.java.pvz.controllers;
 
+import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -8,10 +9,12 @@ import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.views.screens.TransitionScreen;
 import io.java.pvz.views.screens.ZenGarden;
 import io.java.pvz.views.screens.gameflow.GameFlowScreen;
 
 import java.util.Stack;
+import java.util.function.Supplier;
 
 public class ScreenManager {
     private static ScreenManager instance;
@@ -81,6 +84,28 @@ public class ScreenManager {
         }
         screenStack.push(rootScreen);
         game.setScreen(rootScreen);
+    }
+
+    public void pushScreenWithTransition(Supplier<Screen> screenSupplier, float duration) {
+        if (game == null) return;
+        TransitionScreen transition = new TransitionScreen(game, duration, () -> {
+            pushScreen(screenSupplier.get());
+        });
+        game.setScreen(transition);
+    }
+
+    public void popScreenWithTransition(float duration) {
+        if (game == null || screenStack.isEmpty()) return;
+        TransitionScreen transition = new TransitionScreen(game, duration, this::popScreen);
+        game.setScreen(transition);
+    }
+
+    public void setRootScreenWithTransition(Supplier<Screen> screenSupplier, float duration) {
+        if (game == null) return;
+        TransitionScreen transition = new TransitionScreen(game, duration, () -> {
+            setRootScreen(screenSupplier.get());
+        });
+        game.setScreen(transition);
     }
 
     public Screen getCurrentScreen() {
