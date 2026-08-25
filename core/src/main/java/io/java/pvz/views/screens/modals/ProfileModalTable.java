@@ -43,7 +43,7 @@ public class ProfileModalTable extends BorderedTable {
         this.controller = new ProfileMenuController();
 
         pad(40, 45, 35, 45);
-        setSize(720, 950);
+        setSize(800, 950);
 
         buildContent();
     }

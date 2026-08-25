@@ -22,7 +22,7 @@ public class SwitchLaneZombossAttack implements IZombossAttack {
     public void onEnter() {
         this.moveTimer = 0;
         zomboss.setState(ZombieState.WALKING);
-        GameSession.notify("Zomboss is preparing to switch lanes...");
+//        GameSession.notify("Zomboss is preparing to switch lanes...");
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SwitchLaneZombossAttack implements IZombossAttack {
                 PhysicalConstants.GRID_START_Y;
             zomboss.setY(newY);
 
-            GameSession.notify("Zomboss switched to rows " + (newRow + 1) + " and " + (newRow + 2) + "!");
+//            GameSession.notify("Zomboss switched to rows " + (newRow + 1) + " and " + (newRow + 2) + "!");
         }
 
         if (moveTimer >= 2 * TimeManager.TICKS_PER_SECOND) {
