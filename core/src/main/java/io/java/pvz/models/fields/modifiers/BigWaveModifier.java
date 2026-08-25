@@ -1,9 +1,9 @@
 package io.java.pvz.models.fields.modifiers;
 
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.LowShoreTile;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.fields.tiles.WaterTile;
@@ -59,7 +59,7 @@ public class BigWaveModifier implements SeasonModifier {
         zombie.setSpawnEffect(Zombie.SpawnEffect.WATER_SPLASH); //for graphic phase
 
         notify("A zombie emerged from the water at row " + (shore.getRow() + 1)
-                + ", col " + (shore.getCol() + 1) + "!");
+            + ", col " + (shore.getCol() + 1) + "!");
     }
 
     @Override
@@ -85,31 +85,32 @@ public class BigWaveModifier implements SeasonModifier {
     }
 
     private void changeTide(Arena arena) {
-//
-//        int effect = getCurrentLevelNumber() + arena.getCurrentActiveWave().getCurrentNumber() - 2;
-//        int randomTide = rand.nextInt(MAX_WATER_COLS - PERMANENT_WATER_COLS) / 2;
-//        int newWaterCols = Math.min(MAX_WATER_COLS, PERMANENT_WATER_COLS + randomTide + effect);
-//
-//        if (newWaterCols == currentWaterCols) newWaterCols = newWaterCols > 6 ? newWaterCols - 1 : newWaterCols + 1;
-//
-//        if (newWaterCols > currentWaterCols)
-//            notify("The tide is rising! Water now covers the " + newWaterCols + " rightmost columns.");
-//        else
-//            notify("The tide is receding! Water now covers the " + newWaterCols + " rightmost columns.");
-//        currentWaterCols = newWaterCols;
-//
-//        int cols = arena.getCols();
-//        for (Tile[] row : arena.getTiles()) {
-//            for (Tile tile : row) {
-//                if (!(tile instanceof LowShoreTile shore)) continue;
-//
-//                boolean shouldBeFlooded = shore.getCol() >= cols - newWaterCols;
-//                if (shouldBeFlooded == shore.isFlooded()) continue;
-//
-//                shore.setFlooded(shouldBeFlooded);
-//                if (shouldBeFlooded) drownLandPlants(shore, arena);
-//            }
-//        }
+
+        if (getCurrentLevelNumber() == 4) return;
+        int effect = getCurrentLevelNumber() + arena.getCurrentActiveWave().getCurrentNumber() - 2;
+        int randomTide = rand.nextInt(MAX_WATER_COLS - PERMANENT_WATER_COLS) / 2;
+        int newWaterCols = Math.min(MAX_WATER_COLS, PERMANENT_WATER_COLS + randomTide + effect);
+
+        if (newWaterCols == currentWaterCols) newWaterCols = newWaterCols > 6 ? newWaterCols - 1 : newWaterCols + 1;
+
+        if (newWaterCols > currentWaterCols)
+            notify("The tide is rising! Water now covers the " + newWaterCols + " rightmost columns.");
+        else
+            notify("The tide is receding! Water now covers the " + newWaterCols + " rightmost columns.");
+        currentWaterCols = newWaterCols;
+
+        int cols = arena.getCols();
+        for (Tile[] row : arena.getTiles()) {
+            for (Tile tile : row) {
+                if (!(tile instanceof LowShoreTile shore)) continue;
+
+                boolean shouldBeFlooded = shore.getCol() >= cols - newWaterCols;
+                if (shouldBeFlooded == shore.isFlooded()) continue;
+
+                shore.setFlooded(shouldBeFlooded);
+                if (shouldBeFlooded) drownLandPlants(shore, arena);
+            }
+        }
     }
 
     private void drownLandPlants(LowShoreTile shore, Arena arena) {

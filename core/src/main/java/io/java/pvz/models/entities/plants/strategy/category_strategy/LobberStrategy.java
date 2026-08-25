@@ -2,11 +2,10 @@ package io.java.pvz.models.entities.plants.strategy.category_strategy;
 
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.projectiles.*;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.entities.plants.PlantTag;
-import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
@@ -33,7 +32,7 @@ public class LobberStrategy implements IPlantStrategy {
                 if (!z.isDead()) {
                     if (z.getCol() < plantCol && !canShootBackward) continue;
                     float distance = Math.abs(z.getCol() - plantCol);
-                    if (distance < minDistance) {
+                    if (distance < minDistance && z.getCol() < 12) {
                         minDistance = distance;
                         targetZombie = z;
                     }

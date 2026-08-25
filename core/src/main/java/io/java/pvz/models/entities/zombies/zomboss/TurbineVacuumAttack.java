@@ -40,7 +40,7 @@ public class TurbineVacuumAttack implements IZombossAttack {
         this.attackTimer = 0;
         zomboss.setState(ZombieState.BOSS_VACUUM_START);
         dispatchTurbineEvent("TURBINE_START");
-        GameSession.notify("Zomboss is powering up the Turbine Vacuum!");
+//        GameSession.notify("Zomboss is powering up the Turbine Vacuum!");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class TurbineVacuumAttack implements IZombossAttack {
         if (attackTimer == PHASE_1_END) {
             zomboss.setState(ZombieState.BOSS_VACUUM_LOOP);
             dispatchTurbineEvent("TURBINE_LOOP");
-            GameSession.notify("Turbine Vacuum is active! Sucking everything in its path!");
+//        GameSession.notify("Turbine Vacuum is active! Sucking everything in its path!");
         }
         else if (attackTimer > PHASE_1_END && attackTimer <= PHASE_2_END) {
             vacuumZombiesContinuous();
@@ -61,7 +61,7 @@ public class TurbineVacuumAttack implements IZombossAttack {
         else if (attackTimer == PHASE_2_END + 1) {
             zomboss.setState(ZombieState.BOSS_VACUUM_END);
             dispatchTurbineEvent("TURBINE_END");
-            GameSession.notify("Turbine Vacuum is powering down...");
+//        GameSession.notify("Turbine Vacuum is powering down...");
         }
         else if (attackTimer >= TOTAL_DURATION_TICKS) {
             this.onExit();

@@ -60,7 +60,7 @@ public class ZombossMissileAttack implements IZombossAttack {
                 .coordinate(targetRow, targetCol)
                 .build());
 
-        GameSession.notify("Zomboss missile on row " + (targetRow + 1) +" and col " + (targetCol + 1) + "!");
+//        GameSession.notify("Zomboss missile on row " + (targetRow + 1) +" and col " + (targetCol + 1) + "!");
     }
 
     @Override

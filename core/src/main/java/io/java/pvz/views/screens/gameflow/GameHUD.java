@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -22,13 +21,12 @@ import io.java.pvz.models.entities.zombies.Wave;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.zomboss.Zomboss;
 import io.java.pvz.models.enums.Menu;
+import io.java.pvz.models.game.GameMode;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.BossLevel;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
-import io.java.pvz.models.game.minigame.BeghouledLevel;
-import io.java.pvz.models.game.minigame.IZombieLevel;
-import io.java.pvz.models.game.minigame.VaseBreakerLevel;
+import io.java.pvz.models.game.minigame.*;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.*;
@@ -76,14 +74,7 @@ public class GameHUD {
         setupIndicators();
         setupActionButtons();
 
-        boolean isBossLevel = GameSession.getInstance() != null &&
-            GameSession.getInstance().getCurrentMode() instanceof BossLevel;
-
-        if (isBossLevel) {
-            buildBossProgressBar();
-        } else {
-            buildNormalProgressBar();
-        }
+        buildProgressBarForCurrentMode();
 
         if (MatchController.getInstance().isOnlineMatch()) {
             buildReactionUI();
@@ -91,7 +82,32 @@ public class GameHUD {
         }
     }
 
+    private void buildProgressBarForCurrentMode() {
+        if (GameSession.getInstance() == null || GameSession.getInstance().getCurrentMode() == null) {
+            return;
+        }
+
+        GameMode currentMode = GameSession.getInstance().getCurrentMode();
+
+        boolean isBossLevel = currentMode instanceof BossLevel;
+        boolean isExcludedMinigame = currentMode instanceof IMinigame && !(currentMode instanceof ZombotanyLevel);
+        boolean showsWaveProgress = currentMode instanceof Level && !isExcludedMinigame;
+
+        if (isBossLevel) {
+            buildBossProgressBar();
+        } else if (showsWaveProgress) {
+            buildNormalProgressBar();
+        }
+    }
+
     private void buildNormalProgressBar() {
+//        System.out.println("asfasdfasdfasdfasdfasdfasdfasdfasdf");
+        if (!(GameSession.getInstance() != null &&
+            GameSession.getInstance().getCurrentMode() instanceof Level level)) {
+            return;
+        }
+//        System.out.println("asfasdfasdfasdfasdfasdfasdfasdfasdf");
+
         waveProgressBar = new ProgressBar(0f, 1f, 0.001f, false, skin, "xp_green");
         waveProgressBar.setSize(400, 45);
         waveProgressBar.setPosition(1400f, 30f);
@@ -99,17 +115,28 @@ public class GameHUD {
         visualWaveProgress = 0f;
         mainLayer.addActor(waveProgressBar);
 
-        if (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof Level level) {
-            int waveCount = level.getWaveCount();
+        int waveCount = level.getWaveCount();
+        if (waveCount > 0) {
+            Group flagGroup = new Group();
+            flagGroup.setPosition(0, 0);
+            mainLayer.addActor(flagGroup);
+
+            float flagWidth = 40f;
+            float flagHeight = 45f;
+
             for (int i = 1; i <= waveCount; i++) {
                 float fraction = (float) i / waveCount;
+
+                float clampedFraction = Math.min(fraction, 1f - (flagWidth / 2f) / waveProgressBar.getWidth());
+
                 Image flagImage = UiFactory.imageFor(textures,
                     "IMAGE_ZOMBIE_ZOMBIE_MODERN_VET_FLAG_ZOMBIE_MODERN_VET_FLAG_125X143");
-                flagImage.setSize(40f, 45f);
-                float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * fraction) - (flagImage.getWidth() / 2f);
-                float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (flagImage.getHeight() / 2f);
+
+                flagImage.setSize(flagWidth, flagHeight);
+                float x = waveProgressBar.getX() + (waveProgressBar.getWidth() * clampedFraction) - (flagWidth / 2f);
+                float y = waveProgressBar.getY() + (waveProgressBar.getHeight() / 2f) - (flagHeight / 2f);
                 flagImage.setPosition(x, y);
-                mainLayer.addActor(flagImage);
+                flagGroup.addActor(flagImage);
             }
         }
 
@@ -143,7 +170,7 @@ public class GameHUD {
     }
 
     private void setupPlantSelectionMenu() {
-        if(GameSession.getInstance() != null){
+        if (GameSession.getInstance() != null) {
             GameSession.getInstance().pauseGame();
         }
 
@@ -189,19 +216,20 @@ public class GameHUD {
             } else {
                 buildSeedBank();
             }
-            new LevelIntroModalTable(skin).show(modalLayer,viewport);
+            new LevelIntroModalTable(skin).show(modalLayer, viewport);
 
         } else if (App.getActiveMenu() == Menu.PLANTSELLECTION_MENU) {
             PlantSelectionModalTable plantSelectionModal = new PlantSelectionModalTable(skin, () -> {
                 buildSeedBank();
-                new LevelIntroModalTable(skin).show(modalLayer,viewport);
-                if(GameSession.getInstance() != null) {
+                buildProgressBarForCurrentMode();
+                new LevelIntroModalTable(skin).show(modalLayer, viewport);
+                if (GameSession.getInstance() != null) {
                     GameSession.getInstance().pauseGame();
                 }
             });
             plantSelectionModal.show(modalLayer, viewport);
 
-        }else if (GameSession.getInstance() != null) {
+        } else if (GameSession.getInstance() != null) {
             if (!(GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel)) {
                 belt = new ConveyorBeltUI(skin, textures,
                     (plant) -> createSeedPacket(plant, false));
@@ -225,7 +253,8 @@ public class GameHUD {
 
     private void setupIndicators() {
         boolean hideSunForPlantRole = MatchController.getInstance().isOnlineMatch()
-            && MatchController.getInstance().getCurrentRole() == PlayerRole.PLANT;
+            && MatchController.getInstance().getCurrentRole() == PlayerRole.PLANT ||
+            (GameSession.getInstance() != null && GameSession.getInstance().getCurrentMode() instanceof ConveyorBelt);
 
         if (!hideSunForPlantRole) {
             Stack sunStack = new Stack();
@@ -275,16 +304,14 @@ public class GameHUD {
 
     private void setupActionButtons() {
         if (App.getSettings().isDebug()) {
-            Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 50, 50, () -> {
-                gameFlowController.releaseNuke();
-            }, false);
+            Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 50, 50,
+                gameFlowController::releaseNuke, false);
             nukeBtn.setPosition(50, 50);
             mainLayer.addActor(nukeBtn);
         }
 
-        Stack shovelBtn = UiFactory.iconButton(textures, skin, Ids.UI.SHOVEL, 110, 110, () -> {
-            inputHandler.onShovelClicked();
-        }, false);
+        Stack shovelBtn = UiFactory.iconButton(textures, skin, Ids.UI.SHOVEL, 110, 110,
+            inputHandler::onShovelClicked, false);
         shovelBtn.setPosition(1350, 855);
         mainLayer.addActor(shovelBtn);
 
