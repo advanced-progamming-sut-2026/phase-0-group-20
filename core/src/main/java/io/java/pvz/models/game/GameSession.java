@@ -83,7 +83,7 @@ public class GameSession {
 
         this.progressListener = new ProgressListener();
         this.currentMode = currentLevel;
-        playTheme(currentMode);
+
     }
 
     public static GameSession getInstance() {
@@ -479,7 +479,7 @@ public class GameSession {
         }
     }
 
-    private void playTheme(GameMode gameMode) {
+    public void playTheme(GameMode gameMode) {
         if(!(gameMode instanceof Level level) )return;
         SeasonType seasonType = level.getSeason();
         System.out.println(level.getName() + " " + seasonType);

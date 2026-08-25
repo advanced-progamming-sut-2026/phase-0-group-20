@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import io.java.pvz.controllers.AudioManager;
 import io.java.pvz.controllers.GameController.GameMenuController;
 import io.java.pvz.controllers.GameController.TravelLogController;
 import io.java.pvz.controllers.ScreenManager;
@@ -171,8 +172,11 @@ public class LevelSelectionScreen extends BaseScreen {
                     if (result.isSuccessful()) {
                         System.out.println(result.message());
                         String mapId = gameMenuController.getCurrentMapTextureId();
+                        AudioManager.getInstance().stopMusic();
 
-                        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+                        ScreenManager.getInstance().pushScreenWithTransition(
+                            () -> new GameFlowScreen(game, mapId), 2.5f
+                        );
                     } else {
                         System.out.println(result.message());
                         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,

@@ -79,6 +79,9 @@ public class LevelIntroModalTable extends BorderedTable {
                     remove();
                     if (GameSession.getInstance() != null) {
                         GameSession.getInstance().resumeGame();
+                        if(GameSession.getInstance() != null){
+                            GameSession.getInstance().playTheme(GameSession.getInstance().getCurrentMode());
+                        }
                     }
                 }
             });
