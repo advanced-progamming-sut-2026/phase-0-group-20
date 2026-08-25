@@ -152,6 +152,18 @@ public class CollisionManager {
                 boolean hitObstacle = checkProjectileForObstaclesCollision(proj);
                 if (!hitObstacle && !proj.isDestroyed())
                     checkProjectileForZombieCollision(proj);
+
+                if (!proj.isDestroyed() && proj.isArcTrajectory() && proj.getArcProgress() >= 1f) {
+                    proj.setDestroyed(true);
+                    GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
+                        new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
+                            .pixelCoordinate(proj.getX(), proj.getY())
+                            .projectileType(proj.getType())
+                            .build());
+                    if (proj.getEffect() != null) {
+                        proj.getEffect().applyEffect(null, proj);
+                    }
+                }
             }
         }
     }
@@ -240,7 +252,13 @@ public class CollisionManager {
             proj.getType() == ProjectileType.EXPLODE_NUT_BOWL ||
             proj.getType() == ProjectileType.GIANT_NUT_BOWL);
 
-        if (proj.canPassObstacles() && !isBowling) return false;
+        if (proj.canPassObstacles() && !isBowling) {
+            if (proj.isArcTrajectory() && proj.getArcProgress() >= 1f) {
+
+            } else {
+                return false;
+            }
+        }
 
         int projectileRow = proj.getPosition().getRow();
         int projectileCol = (int) ((proj.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH);

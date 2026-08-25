@@ -28,6 +28,7 @@ public class LobberStrategy implements IPlantStrategy {
             Zombie targetZombie = null;
             float minDistance = Float.MAX_VALUE;
             boolean canShootBackward = context.getTags().contains(PlantTag.AOE);
+
             for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                 if (!z.isDead()) {
                     if (z.getCol() < plantCol && !canShootBackward) continue;
@@ -39,15 +40,20 @@ public class LobberStrategy implements IPlantStrategy {
                 }
             }
 
-            if (targetZombie != null) {
-                executeNewLobbedProjectile(context, targetZombie);
+            int obstacleCol = -1;
+            if (targetZombie == null) {
+                obstacleCol = GameSession.getInstance().getArena().getFrontmostObstacleColInRow(plantRow, (int) plantCol);
+            }
+
+            if (targetZombie != null || obstacleCol != -1) {
+                executeNewLobbedProjectile(context, targetZombie, obstacleCol);
                 lastLobTick = currentTick;
             }
         }
     }
 
 
-    private void executeNewLobbedProjectile(Plant context, Zombie targetZombie) {
+    private void executeNewLobbedProjectile(Plant context, Zombie targetZombie, int obstacleCol) {
         String name = context.getName();
         int spawnX = context.getPlacedTile().getCol() - 1;
         int spawnY = context.getPlacedTile().getRow();
@@ -98,8 +104,15 @@ public class LobberStrategy implements IPlantStrategy {
                 false,
                 true // canPassObstacles
             );
-            projectile.setArcTrajectory(targetZombie, ProjectileTuning.LOB_SPEED_TILES_PER_SEC,
-                ProjectileTuning.LOB_ARC_HEIGHT_TILES);
+
+            if (targetZombie != null) {
+                projectile.setArcTrajectory(targetZombie, ProjectileTuning.LOB_SPEED_TILES_PER_SEC,
+                    ProjectileTuning.LOB_ARC_HEIGHT_TILES);
+            } else if (obstacleCol != -1) {
+                projectile.setArcTrajectory(new Position(obstacleCol, spawnY), ProjectileTuning.LOB_SPEED_TILES_PER_SEC,
+                    ProjectileTuning.LOB_ARC_HEIGHT_TILES);
+            }
+
             projectile.setSpawnDelayTicks(0.5f);
 
             Projectile.spawnCustom(projectile);

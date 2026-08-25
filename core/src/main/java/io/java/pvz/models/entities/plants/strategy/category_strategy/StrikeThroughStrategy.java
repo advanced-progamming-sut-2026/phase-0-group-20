@@ -22,23 +22,36 @@ public class StrikeThroughStrategy implements IPlantStrategy {
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
             int plantRow = context.getPlacedTile().getRow();
             int plantCol = context.getPlacedTile().getCol();
-            boolean zombieFound = false;
+            boolean targetFound = false;
 
             for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
                 if (!z.isDead() && z.getCol() >= plantCol) {
                     if (context.getName().equals("Fume-shroom")) {
                         if (z.getCol() <= plantCol + 4 + rangeExtension) {
-                            zombieFound = true;
+                            targetFound = true;
                             break;
                         }
                     } else {
-                        zombieFound = true;
+                        targetFound = true;
                         break;
                     }
                 }
             }
 
-            if (zombieFound) {
+            if (!targetFound) {
+                int obstacleCol = GameSession.getInstance().getArena().getFrontmostObstacleColInRow(plantRow, plantCol);
+                if (obstacleCol != -1) {
+                    if (context.getName().equals("Fume-shroom")) {
+                        if (obstacleCol <= plantCol + 4 + rangeExtension) {
+                            targetFound = true;
+                        }
+                    } else {
+                        targetFound = true;
+                    }
+                }
+            }
+
+            if (targetFound) {
                 context.triggerAction("attack");
                 shootPiercingProjectile(context);
                 lastShotTick = currentTick;

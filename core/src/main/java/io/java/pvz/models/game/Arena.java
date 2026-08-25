@@ -1,6 +1,8 @@
 package io.java.pvz.models.game;
 
 import io.java.pvz.models.entities.Sun;
+import io.java.pvz.models.entities.obstacle.GraveHolder;
+import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
@@ -261,6 +263,59 @@ public class Arena {
 
     public List<DroppedSeedPacket> getDroppedSeedPackets() {
         return droppedSeedPackets;
+    }
+
+    public Object getFrontmostObstacleInRow(int row, int minCol) {
+        Object closestObject = null;
+        double minColFound = Double.MAX_VALUE;
+
+        for (int c = minCol; c < COLS; c++) {
+            Tile tile = tiles[row][c];
+
+            boolean hasObstacle = false;
+            if (tile instanceof GraveHolder graveHolder && graveHolder.getGraveStone() != null) {
+                hasObstacle = true;
+            } else if (tile instanceof IceHolder iceHolder && iceHolder.hasIceBlock()) {
+                hasObstacle = true;
+            }
+
+            if (hasObstacle) {
+                if (c < minColFound) {
+                    minColFound = c;
+                    closestObject = tile;
+                }
+            }
+
+            for (Plant p : tile.getPlants()) {
+                if (p.isFrozen()) {
+                    if (c < minColFound) {
+                        minColFound = c;
+                        closestObject = p;
+                    }
+                }
+            }
+
+            if (closestObject != null) break;
+        }
+
+        for (PushableObstacle obs : activeObstacles) {
+            if (!obs.isDestroyed() && obs.getRow() == row && obs.getCol() >= minCol) {
+                if (obs.getCol() < minColFound) {
+                    minColFound = obs.getCol();
+                    closestObject = obs;
+                }
+            }
+        }
+
+        return closestObject;
+    }
+
+    public int getFrontmostObstacleColInRow(int row, int minCol) {
+        Object obj = getFrontmostObstacleInRow(row, minCol);
+        if (obj instanceof Tile tile) return tile.getCol();
+        if (obj instanceof Plant plant && plant.getPlacedTile() != null) return plant.getPlacedTile().getCol();
+        if (obj instanceof PushableObstacle obstacle) return obstacle.getCol();
+        return -1;
     }
 
 }
