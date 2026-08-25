@@ -33,7 +33,7 @@ public class SharkBiteAttack implements IZombossAttack {
     public void onEnter() {
         this.attackTimer = 0;
         zomboss.setState(ZombieState.BOSS_SHARK);
-        zomboss.notify("Zomboss is preparing to release a swarm of mechanical sharks!");
+        GameSession.notify("Zomboss is preparing to release a swarm of mechanical sharks!");
     }
 
     @Override
@@ -84,7 +84,7 @@ public class SharkBiteAttack implements IZombossAttack {
             );
         }
 
-        zomboss.notify(sharkCount + " Sharks launched in multiple rows!");
+        GameSession.notify(sharkCount + " Sharks launched in multiple rows!");
     }
 
     @Override

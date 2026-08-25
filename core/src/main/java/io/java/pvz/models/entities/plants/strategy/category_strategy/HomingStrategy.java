@@ -50,7 +50,7 @@ public class HomingStrategy implements IPlantStrategy {
             List<Zombie> validTargets = activeZombies.stream().filter(z -> !z.isDead()).toList();
             if (!validTargets.isEmpty()) {
                 Zombie target = selectTarget(context, validTargets);
-                if (target != null) {
+                if (target != null && target.getCol() < GameSession.getInstance().getArena().getCols()) {
                     context.triggerAction("attack");
                     ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
                     notify(context.getName() + " locked onto " + target.getName() + "!");

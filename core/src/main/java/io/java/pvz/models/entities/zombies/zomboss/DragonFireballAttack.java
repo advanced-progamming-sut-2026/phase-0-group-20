@@ -33,7 +33,7 @@ public class DragonFireballAttack implements IZombossAttack {
     public void onEnter() {
         this.attackTimer = 0;
         zomboss.setState(ZombieState.BOSS_FIREBOMB_START);
-        zomboss.notify("Dragon Zomboss is launching fireballs!");
+        GameSession.notify("Dragon Zomboss is launching fireballs!");
     }
 
     @Override

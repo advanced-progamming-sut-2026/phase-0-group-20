@@ -48,6 +48,14 @@ public class SettingController {
         App.getSettings().setSfxVolume(volume);
         AudioManager.getInstance().changeSfxVolume(volume);
     }
+    public int getProgressSpeed(){
+        return App.getSettings().getProgressSpeed();
+    }
+
+    public void changeProgressSpeed(int speed){
+        App.getSettings().setProgressSpeed(speed);
+
+    }
 
     public boolean isGrid() {
         return App.getSettings().isGrid();

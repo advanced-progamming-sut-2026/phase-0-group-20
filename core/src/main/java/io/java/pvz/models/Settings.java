@@ -10,7 +10,7 @@ public class Settings {
     private float musicVolume;
     private float sfxVolume;
     private int difficulty;
-
+    private int progressSpeed;
     private boolean isGrid;
     private boolean isDebug;
 
@@ -22,12 +22,14 @@ public class Settings {
             sfxVolume = prefs.getFloat("sfxVolume", 5f);
             isGrid = prefs.getBoolean("isGrid", false);
             isDebug = prefs.getBoolean("isDebug", false);
+            progressSpeed = prefs.getInteger("progressSpeed", 1);
         } else {
             prefs = null;
             musicVolume = 5f;
             sfxVolume = 5f;
             isGrid = false;
             isDebug = false;
+            progressSpeed = 1;
         }
     }
 
@@ -94,6 +96,18 @@ public class Settings {
         this.isDebug = debug;
         if (prefs != null) {
             prefs.putBoolean("isDebug", debug);
+            prefs.flush();
+        }
+    }
+
+    public int getProgressSpeed() {
+        return progressSpeed;
+    }
+
+    public void setProgressSpeed(int progressSpeed) {
+        this.progressSpeed = progressSpeed;
+        if (prefs != null) {
+            prefs.putInteger("progressSpeed", progressSpeed);
             prefs.flush();
         }
     }

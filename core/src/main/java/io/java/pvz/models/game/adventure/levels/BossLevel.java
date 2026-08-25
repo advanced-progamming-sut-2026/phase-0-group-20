@@ -10,6 +10,9 @@ import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.conditions.BossWinCondition;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -43,6 +46,7 @@ public class BossLevel extends ConveyorBelt {
             case BIG_WAVE_BEACH -> new SharkZomboss(middleRow);
             default -> new SpiderZomboss(middleRow);
         };
+
 
         session.getArena().addZombie(zomboss);
         session.getTimeManager().registerNewTicker(zomboss);

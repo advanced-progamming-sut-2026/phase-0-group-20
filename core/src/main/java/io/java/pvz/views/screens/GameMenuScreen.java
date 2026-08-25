@@ -68,7 +68,7 @@ public class GameMenuScreen extends BaseScreen {
             () -> ScreenManager.getInstance().pushScreen(new CollectionScreen(game,skin)))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.GREENHOUSE_ICON,100, 100,
-            () -> ScreenManager.getInstance().pushScreen(new ZenGarden(game)))).padRight(30);
+            () -> ScreenManager.getInstance().pushScreenWithTransition(()-> new ZenGarden(game),1.5f))).padRight(30);
 
         topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON,100, 100,
             () -> {

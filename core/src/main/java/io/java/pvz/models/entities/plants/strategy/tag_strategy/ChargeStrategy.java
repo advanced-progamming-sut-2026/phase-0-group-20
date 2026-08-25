@@ -79,7 +79,13 @@ public class ChargeStrategy implements IPlantStrategy {
             }
         }
 
-        if (context.getCurrentAction() == null && !context.isBoosted()) {
+        int plantRow = context.getPlacedTile().getRow();
+        float plantCol = context.getPlacedTile().getCol();
+        int chargedTicks = currentTick - chargeStartTick;
+        int requiredCharge = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
+        boolean canFire = chargedTicks >= requiredCharge;
+
+        if (context.getCurrentAction() == null && !context.isBoosted() && !canFire) {
             if (name.equalsIgnoreCase("Caulipower")) {
                 int r = random.nextInt(4) + 1;
                 context.triggerAction("idle" + r + "_1");
@@ -89,14 +95,6 @@ public class ChargeStrategy implements IPlantStrategy {
                 context.triggerAction("idle" + r + "_" + sub);
             }
         }
-
-        int plantRow = context.getPlacedTile().getRow();
-        float plantCol = context.getPlacedTile().getCol();
-        int chargedTicks = currentTick - chargeStartTick;
-        boolean canFire = false;
-
-        int requiredCharge = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
-        if (chargedTicks >= requiredCharge) canFire = true;
 
         if (canFire && projectileType != null) {
             Zombie target = selectTarget(plantRow, plantCol, isHoming);
@@ -116,7 +114,8 @@ public class ChargeStrategy implements IPlantStrategy {
         if (homing) {
             List<Zombie> actives = GameSession.getInstance().getArena().getActiveZombies()
                 .stream()
-                .filter(z -> !z.isDead() && z.getCol() < GameSession.getInstance().getArena().getCols()).toList();
+                .filter(z -> !z.isDead() && z.getCol() < GameSession.getInstance().getArena().getCols() &&
+                    !z.isHypnotized()).toList();
             if (!actives.isEmpty()) {
                 return actives.get(random.nextInt(actives.size()));
             }
@@ -124,7 +123,7 @@ public class ChargeStrategy implements IPlantStrategy {
             Zombie frontZombie = null;
 
             for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
-                if (!z.isDead() && z.getCol() >= plantCol) {
+                if (!z.isDead() && z.getCol() >= plantCol && !z.isHypnotized()) {
                     if (frontZombie == null || z.getX() < frontZombie.getX()) {
                         frontZombie = z;
                     }

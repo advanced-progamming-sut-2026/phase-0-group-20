@@ -60,7 +60,7 @@ public class ZombossSpawnZombiesAttack implements IZombossAttack {
     public void onEnter() {
         this.attackTimer = 0;
         zomboss.setState(ZombieState.BOSS_SUMMON_START);
-        zomboss.notify("Zomboss is summoning guards!");
+        GameSession.notify("Zomboss is summoning guards!");
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ZombossSpawnZombiesAttack implements IZombossAttack {
             }
         }
 
-        zomboss.notify("Zomboss summoned " + spawnedCount + " zombies to protect itself!");
+        GameSession.notify("Zomboss summoned " + spawnedCount + " zombies to protect itself!");
     }
 
     @Override

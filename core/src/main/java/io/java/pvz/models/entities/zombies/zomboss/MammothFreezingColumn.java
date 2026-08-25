@@ -56,7 +56,7 @@ public class MammothFreezingColumn implements IZombossAttack {
                 .coordinate(0, targetCol)
                 .build());
 
-        zomboss.notify("Mammoth Zomboss started continuous freeze animation on column " + (targetCol + 1) + "!");
+        GameSession.notify("Mammoth Zomboss started continuous freeze animation on column " + (targetCol + 1) + "!");
     }
 
     @Override
@@ -64,7 +64,7 @@ public class MammothFreezingColumn implements IZombossAttack {
         attackTimer++;
 
         if (attackTimer == FREEZE_EXECUTION_TICKS) {
-            zomboss.notify("Mammoth Zomboss logic is freezing column " + (targetCol + 1) + " now!");
+            GameSession.notify("Mammoth Zomboss logic is freezing column " + (targetCol + 1) + " now!");
             spawnFrozenZombiesInColumn();
             freezeTargetColumn();
         } else if (attackTimer >= TOTAL_DURATION_TICKS) {
@@ -139,7 +139,7 @@ public class MammothFreezingColumn implements IZombossAttack {
         }
 
         if (spawnedCount > 0) {
-            zomboss.notify("Mammoth Zomboss trapped " + spawnedCount +
+            GameSession.notify("Mammoth Zomboss trapped " + spawnedCount +
                 " zombies inside IceBlocks in column " + (targetCol + 1) + "!");
         }
     }

@@ -32,7 +32,7 @@ public class MammothFreezingWind implements IZombossAttack {
     public void onEnter() {
         this.attackTimer = 0;
         zomboss.setState(ZombieState.BOSS_WIND);
-        zomboss.notify("Mammoth Zomboss is taking a deep breath of freezing air...");
+        GameSession.notify("Mammoth Zomboss is taking a deep breath of freezing air...");
     }
 
     @Override
@@ -70,7 +70,7 @@ public class MammothFreezingWind implements IZombossAttack {
         for (int row : targetRows) {
             if (row < 0 || row >= maxRows) continue;
 
-            zomboss.notify("A massive freezing wind sweeps through lane " + (row + 1) + "!");
+            GameSession.notify("A massive freezing wind sweeps through lane " + (row + 1) + "!");
 
             for (Plant plant : new ArrayList<>(arena.getActivePlants())) {
                 Tile tile = plant.getPlacedTile();
@@ -99,7 +99,7 @@ public class MammothFreezingWind implements IZombossAttack {
             session.getTimeManager().registerNewTicker(iceBlock);
             session.getArena().getActiveObstacles().add(iceBlock);
 
-            zomboss.notify(plant.getName() + " is completely frozen inside an IceBlock by Zomboss!");
+            GameSession.notify(plant.getName() + " is completely frozen inside an IceBlock by Zomboss!");
         }
     }
 
