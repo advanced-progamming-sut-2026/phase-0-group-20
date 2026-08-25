@@ -240,16 +240,6 @@ public class PlantFactory {
         }
     }
 
-    public static List<Plant> createListOfPlants(List<Plant> plants) {
-        List<Plant> newList = new ArrayList<>();
-        for (Plant plant : plants) {
-            int id = plant.getId();
-            Plant newPlant = create(id);
-            newList.add(newPlant);
-        }
-        return newList;
-    }
-
     private static IPlantStrategy createChargeStrategyFor(String plantName) {
         return switch (plantName) {
             case "citron" -> new ChargeStrategy(ProjectileType.PEA, new NormalEffect(), 800, false);

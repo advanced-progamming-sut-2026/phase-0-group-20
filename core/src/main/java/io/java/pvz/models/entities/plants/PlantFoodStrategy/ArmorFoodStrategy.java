@@ -23,6 +23,27 @@ public class ArmorFoodStrategy implements PlantFoodStrategy {
     }
 
     @Override
+    public void executeStrategy(Plant plant) {
+        int maxHpWithArmor = plant.getBaseHp() + armorAmount;
+        plant.setCurrentHp(maxHpWithArmor);
+
+        if (boostsReflectDamage) {
+            for (IPlantStrategy strategy : plant.getStrategies()) {
+                if (strategy instanceof SpikeStrategy spikeStrategy) {
+                    spikeStrategy.setHasArmor(true);
+                }
+            }
+        }
+
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
+        if (anim != null) {
+            if (anim.hasClip("plantfood_on")) {
+                plant.triggerAction("plantfood_on");
+            } else if (anim.hasClip("idle_plantfood")) {
+                plant.triggerAction("idle_plantfood");
+            } else if (anim.hasClip("plantfood")) {
+                plant.triggerAction("plantfood");
+            }
     public void onEnter(Plant plant) {
         PlantFoodStrategy.super.onEnter(plant);
         this.executed = false;

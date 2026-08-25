@@ -126,6 +126,8 @@ public final class UiFactory {
             case "Cherry Bomb" -> "CHERRY_BOMB";
             case "Iceberg Lettuce" -> "ICEBURG";
             case "Pierce-mint" -> "SPEARMINT";
+            case "Cat-tail" -> "HOMINGTHISTLE";
+            case "catTail-mint" -> "CONTAINMINT";
             default -> name.replace("-", "").replace(" ", "");
         };
     }
@@ -143,6 +145,8 @@ public final class UiFactory {
             case "Kernel-pult" -> "KERNALPULT";
             case "Phat Beet" -> "PHATBEETS";
             case "Pierce-mint" -> "SPEARMINT";
+            case "Cat-tail" -> "HOMINGTHISTLE";
+            case "catTail-mint" -> "CONTAINMINT";
 
             default -> name.replace("-", "").replace(" ", "").toUpperCase();
         };
