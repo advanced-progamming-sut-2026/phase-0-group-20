@@ -16,6 +16,8 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
     private final int targetCount;
     private final String effectDescription;
     private int durationTicks = 0;
+    private int setupTicks = 0;
+    private int tickTimer = 0;
     private boolean executed = false;
 
     public RandomTargetEffectFoodStrategy(int targetCount, String effectDescription) {
@@ -27,19 +29,27 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
     public void onEnter(Plant plant) {
         PlantFoodStrategy.super.onEnter(plant);
         this.executed = false;
+        this.tickTimer = 0;
 
         float animDuration = 1.0f;
+        float setupDuration = 0f;
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
         if (anim != null) {
-            if (anim.hasClip("plantfood_on")) animDuration = anim.getDuration("plantfood_on") + anim.getDuration("plantfood");
-            else if (anim.hasClip("plantfood")) animDuration = anim.getDuration("plantfood");
+            if (anim.hasClip("plantfood_on")) {
+                setupDuration = anim.getDuration("plantfood_on");
+                animDuration = setupDuration + anim.getDuration("plantfood");
+            } else if (anim.hasClip("plantfood")) {
+                animDuration = anim.getDuration("plantfood");
+            }
         }
+        this.setupTicks = (int) (setupDuration * TimeManager.TICKS_PER_SECOND);
         this.durationTicks = (int) (animDuration * TimeManager.TICKS_PER_SECOND);
     }
 
     @Override
     public void executeStrategy(Plant plant) {
-        if (!executed) {
+        tickTimer++;
+        if (!executed && tickTimer > setupTicks) {
             GameSession gameSession = GameSession.getInstance();
 
             List<Zombie> pool = new ArrayList<>(gameSession.getArena().getActiveZombies());
@@ -74,21 +84,14 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
     private void applyDirectEffect(Zombie target, Plant plant) {
         switch (plant.getName().toLowerCase()) {
             case "electric blueberry", "tangle kelp", "chomper" -> {
-                target.takeDamage(10000); //yahtamel plant be kar biad
-                if (target.isDead()) {
-                    plant.onZombieDeath(target);
-                }
+                target.takeDamage(10000);
+                if (target.isDead()) plant.onZombieDeath(target);
             }
             case "squash" -> {
-                int damage = plant.getDamage();
-                target.takeDamage(damage);
-                if (target.isDead()) {
-                    plant.onZombieDeath(target);
-                }
+                target.takeDamage(plant.getDamage());
+                if (target.isDead()) plant.onZombieDeath(target);
             }
-            case "caulipower" -> {
-                target.hypnotize();
-            }
+            case "caulipower" -> target.hypnotize();
         }
     }
 
@@ -100,5 +103,6 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
     @Override
     public void reset() {
         this.executed = false;
+        this.tickTimer = 0;
     }
 }
