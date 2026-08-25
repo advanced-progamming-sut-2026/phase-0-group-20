@@ -7,6 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.utils.DialogueLine;
 import io.java.pvz.utils.PamAnimatedActor;
 import pvz.skin.BorderedTable;
@@ -66,9 +69,15 @@ public class DialogueModalTable extends Table {
             if (current.isLeft()) {
                 characterLayer.bottom().left();
                 characterLayer.add(animatedActor).padLeft(CHAR_OFFSET_X).padBottom(CHAR_OFFSET_Y);
+                GameEventMessenger.getInstance().dispatch(GameEvent.DAVE_TALKS,
+                    new GameEventPayload.Builder(GameEvent.DAVE_TALKS)
+                        .build());
             } else {
                 characterLayer.bottom().right();
                 characterLayer.add(animatedActor).padRight(CHAR_OFFSET_X).padBottom(CHAR_OFFSET_Y);
+                GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBOSS_TALKS,
+                    new GameEventPayload.Builder(GameEvent.ZOMBOSS_TALKS)
+                        .build());
             }
         }
 

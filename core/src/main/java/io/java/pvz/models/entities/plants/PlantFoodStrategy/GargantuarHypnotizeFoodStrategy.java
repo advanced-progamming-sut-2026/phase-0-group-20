@@ -10,12 +10,20 @@ import io.java.pvz.models.entities.plants.Plant;
  */
 
 public class GargantuarHypnotizeFoodStrategy implements PlantFoodStrategy {
+    private boolean executed = false;
+
+    @Override
+    public void onEnter(Plant plant) {
+        PlantFoodStrategy.super.onEnter(plant);
+        this.executed = false;
+    }
+
     @Override
     public void executeStrategy(Plant plant) {
-        plant.setBoosted(true);
-        // we should implement it in collision logic that Hossein khahad zad
-        // if the zombie eats a hypno-shroom plant that has been boosted, it will be destroyed
-        // and new a gargantuar zombie will be born and hypnotized (working for plants)
+        if (!executed) {
+            plant.setBoosted(true);
+            executed = true;
+        }
     }
 
     @Override
@@ -23,4 +31,8 @@ public class GargantuarHypnotizeFoodStrategy implements PlantFoodStrategy {
         return -1;
     }
 
+    @Override
+    public void reset() {
+        this.executed = false;
+    }
 }

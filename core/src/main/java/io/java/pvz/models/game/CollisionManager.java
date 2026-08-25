@@ -35,7 +35,7 @@ public class CollisionManager {
     }
 
     public void checkAllCollisions() {
-        List<Zombie> activeZombies = arena.getActiveZombies();
+        List<Zombie> activeZombies = new ArrayList<>(arena.getActiveZombies());
 
         handleLawnMowers(activeZombies);
 

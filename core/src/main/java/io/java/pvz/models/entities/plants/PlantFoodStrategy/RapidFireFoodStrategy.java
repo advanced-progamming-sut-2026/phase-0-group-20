@@ -7,11 +7,13 @@ import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.timeManager.TimeManager;
+import io.java.pvz.utils.AnimationCatalog;
 
 
 public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
-    private final int durationTicks = 6 * TimeManager.TICKS_PER_SECOND;
+    private final int minDuration = 6 * TimeManager.TICKS_PER_SECOND;
+    private int durationTicks = 0;
     private final int extraGiantShots;
     private final boolean doesRapidFire;
     private int tickTimer = 0;
@@ -27,6 +29,21 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
         this.doesRapidFire = doesRapidFire;
     }
 
+
+    @Override
+    public void onEnter(Plant plant) {
+        PlantFoodStrategy.super.onEnter(plant);
+
+        float animDuration = 0;
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
+        if (anim != null) {
+            if (anim.hasClip("plantfood_on")) animDuration = anim.getDuration("plantfood_on") +
+                anim.getDuration("plantfood");
+            else if (anim.hasClip("plantfood")) animDuration = anim.getDuration("plantfood");
+        }
+        this.durationTicks = Math.max(minDuration, (int) (animDuration * TimeManager.TICKS_PER_SECOND));
+    }
+
     @Override
     public void executeStrategy(Plant plant) {
         tickTimer++;
@@ -39,15 +56,13 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
         }
 
-
         if (doesRapidFire && tickTimer <= durationTicks) {
-            if (tickTimer % TimeManager.TICKS_PER_SECOND / 5 == 0)
+            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 5) == 0)
                 ProjectileMechanism.executeNewProjectile(plant, true, false, 0.1f);
         }
 
-        if (giantShotsFired < totalGiantShots) {  //shoot giant pea if needed
-
-            if (tickTimer % TimeManager.TICKS_PER_SECOND / 2 == 0) { //giant shots take more time
+        if (giantShotsFired < totalGiantShots) {
+            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 2) == 0) {
                 ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
                 int giantDamage = plant.getDamage() * 20;
                 int col = plant.getPlacedTile().getCol();
@@ -70,7 +85,6 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
                 giantShotsFired++;
             }
         }
-
     }
 
     @Override

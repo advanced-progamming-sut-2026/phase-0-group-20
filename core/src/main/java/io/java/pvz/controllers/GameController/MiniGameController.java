@@ -14,11 +14,19 @@ import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.minigame.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class MiniGameController {
-
+    private final List<String> plantPool = new ArrayList<>(Arrays.asList(
+        "Peashooter", "Wall-nut", "Cabbage-pult",
+        "Snow Pea", "Repeater", "Snapdragon",
+        "Cherry Bomb", "Bonk Choy", "Threepeater",
+        "Melon-pult", "Kernel-pult", "Cactus",
+        "Wasabi Whip", "Torchwood", "Chomper"
+    ));
     private Integer parsePositiveInt(String str) {
         try {
             int val = Integer.parseInt(str);
@@ -58,8 +66,8 @@ public class MiniGameController {
                 return new Result(true, "A zombie emerged from the vase at [" + spawnX + "][" + spawnY + "]!");
 
             } else if (vaseInside == VaseInside.SEED_PACKET) {
-                java.util.List<Plant> pList = session.getChosenPlants();
-                Plant template = pList.get(new Random().nextInt(pList.size()));
+                String plantName = plantPool.get(new Random().nextInt(plantPool.size()));
+                Plant template = App.findPlantByName(plantName);
                 Plant freshPlant = InGameEntityGenerator.getPlantForGame(template, false);
 
                 DroppedSeedPacket packet = new DroppedSeedPacket(freshPlant, spawnY - 1, spawnX - 1);

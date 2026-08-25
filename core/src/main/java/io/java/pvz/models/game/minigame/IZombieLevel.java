@@ -223,7 +223,7 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
 
         session.getTimeManager().registerNewTicker(new Ticker() {
             int ticksPassed = 0;
-            int currentInterval = 12 * TimeManager.TICKS_PER_SECOND;
+            int currentInterval = 15 * TimeManager.TICKS_PER_SECOND;
 
             @Override
             public void onTick(int currentTick) {
@@ -239,7 +239,7 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
                     session.getArena().addSun(sun);
                     sun.setProducedByPlant(true);
                     ticksPassed = 0;
-                    if (currentInterval > 4 * TimeManager.TICKS_PER_SECOND)
+                    if (currentInterval > 7 * TimeManager.TICKS_PER_SECOND)
                         currentInterval -= TimeManager.TICKS_PER_SECOND;
                 }
             }

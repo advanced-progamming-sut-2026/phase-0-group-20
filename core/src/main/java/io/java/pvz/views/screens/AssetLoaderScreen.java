@@ -131,6 +131,12 @@ public class AssetLoaderScreen extends BaseScreen {
         GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, audioListener);
         GameEventMessenger.getInstance().addListener(GameEvent.PLANT_TAKING_DAMAGE, audioListener);
         GameEventMessenger.getInstance().addListener(GameEvent.PLANT_LOST, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_FIRED, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ZOMBOSS_TALKS, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.DAVE_TALKS, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ZOMBOSS_PHASE_1, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ZOMBOSS_PHASE_2, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.ZOMBOSS_PHASE_3, audioListener);
     }
 
 }

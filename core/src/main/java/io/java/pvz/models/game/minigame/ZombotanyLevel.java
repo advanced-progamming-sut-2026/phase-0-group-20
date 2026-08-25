@@ -51,15 +51,14 @@ public class ZombotanyLevel extends Level implements IMinigame {
             int lane = random.nextInt(session.getArena().getRows());
 
             Zombie newZombie = InGameEntityGenerator.getZombieForGame(template.getType(), lane);
-            newZombie.setCol(session.getArena().getCols() - 1);
+            int rand = new Random().nextInt(3);
+            newZombie.setCol(12 + rand * 2);
 
             wave.addZombie(newZombie);
             accumulatedCost += newZombie.getWaveCost();
 
             session.getArena().addZombie(newZombie);
             session.getTimeManager().registerNewTicker(newZombie);
-
-            notify("Zombotany: " + newZombie.getType().name() + " spawned in lane " + (lane+1));
         }
     }
 

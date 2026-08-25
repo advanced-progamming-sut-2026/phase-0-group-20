@@ -424,6 +424,10 @@ public class GameFlowController {
             }
         }
 
+        if (levelToRestart instanceof ConveyorBelt  conveyorBelt) {
+            conveyorBelt.getBelt().clear();
+        }
+
         if (levelToRestart.skipsPlantSelection()) {
             if (levelToRestart instanceof BowlingLevel bowlingLevel) {
                 if (levelToRestart.getSeason() == SeasonType.MINI_GAME) {

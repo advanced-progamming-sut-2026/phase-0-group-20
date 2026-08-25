@@ -23,6 +23,9 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.RedLineCapable;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.Level;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.net.server.PlayerRole;
@@ -128,7 +131,12 @@ public class WorldItemRenderer {
         actor.setOrigin(Align.center);
         if (proj.getSpeedX() < 0) actor.setScaleX(-1f);
         effectLayer.addActor(actor);
+        GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_FIRED,
+            new GameEventPayload.Builder(GameEvent.PROJECTILE_FIRED)
+                .projectileType(proj.getType())
+                .build());
         return actor;
+
     }
 
     private void updateProjectileActor(Projectile proj, PamAnimatedActor actor) {

@@ -54,13 +54,13 @@ public class DragonFireballAttack implements IZombossAttack {
 
     private void launchFireballs() {
         GameSession session = GameSession.getInstance();
-        int cols = session.getArena().getCols();
+        int cols = session.getArena().getCols()-3;
         int rows = session.getArena().getRows();
 
         int targetCount = 2 + random.nextInt(2);
 
         for (int i = 0; i < targetCount; i++) {
-            int targetCol = random.nextInt(cols);
+            int targetCol = random.nextInt(cols)+3;
             int targetRow = random.nextInt(rows);
 
             float startX = zomboss.getX() - (PhysicalConstants.TILE_WIDTH / 2f);
