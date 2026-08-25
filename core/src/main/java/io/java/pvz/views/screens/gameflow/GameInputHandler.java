@@ -35,7 +35,9 @@ import io.java.pvz.utils.UiFactory;
 import pvz.libpvz.textures.TextureBank;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static io.java.pvz.models.enums.PhysicalConstants.*;
 
@@ -324,16 +326,27 @@ public class GameInputHandler {
 
     public void sickAnimations() {
         if (plantFoodAnimations.isEmpty()) return;
-        GameSession session = GameSession.getInstance();
-        if (session == null) return;
-        for (Tile tile : plantFoodAnimations.keySet()) {
-            if (tile.getPlants().isEmpty()) return;
-            for (Plant plant : tile.getPlants()) {
-                if (!plant.isBoosted()) {
-                    PamAnimatedActor actor = plantFoodAnimations.get(tile);
-                    highlightLayer.removeActor(actor);
-                    break;
+
+        Iterator<Map.Entry<Tile, PamAnimatedActor>> it = plantFoodAnimations.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Tile, PamAnimatedActor> entry = it.next();
+            Tile tile = entry.getKey();
+            PamAnimatedActor actor = entry.getValue();
+
+            boolean keepEffect = false;
+
+            if (tile.getPlants() != null) {
+                for (Plant plant : tile.getPlants()) {
+                    if (!plant.isDead() && plant.isBoosted()) {
+                        keepEffect = true;
+                        break;
+                    }
                 }
+            }
+
+            if (!keepEffect) {
+                actor.remove();
+                it.remove();
             }
         }
     }

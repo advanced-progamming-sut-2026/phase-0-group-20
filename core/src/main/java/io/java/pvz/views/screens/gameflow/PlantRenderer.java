@@ -111,6 +111,7 @@ public class PlantRenderer {
 
         if (plant.isBoosted() && action == null) {
             if (anim.hasClip("plantfood_loop")) return "plantfood_loop";
+            if (anim.hasClip("plantfood_stage" + plant.getSize())) return "plantfood_stage" + plant.getSize();
             if (anim.hasClip("plantfood")) return "plantfood";
         }
 

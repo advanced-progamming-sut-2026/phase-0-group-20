@@ -127,7 +127,11 @@ public class WorldItemRenderer {
 
         PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), anim.clip(), anim.path());
 
-        actor.setSize(30, 30);
+        float baseSize = 30f;
+        float finalSize = baseSize * proj.getSize();
+
+        actor.setSize(finalSize, finalSize);
+
         actor.setOrigin(Align.center);
         if (proj.getSpeedX() < 0) actor.setScaleX(-1f);
         effectLayer.addActor(actor);
@@ -156,7 +160,13 @@ public class WorldItemRenderer {
     }
 
     private ProjectileAnim resolveProjectileAnim(Projectile proj) {
+        if (proj.getSize() > 1 && proj.getType() == ProjectileType.PEA) {
+            return new ProjectileAnim(
+                "768/FULL/EFFECTS/PEAPOD_PLANTFOOD_GIANTPEA/PEAPOD_PLANTFOOD_GIANTPEA.PAM",
+                "animation");
+        }
         ProjectileAnim anim = PROJECTILE_ANIMS.get(proj.getType());
+
         return anim != null ? anim : PROJECTILE_ANIMS.get(ProjectileType.PEA);
     }
 

@@ -209,15 +209,15 @@ public class PlantFactory {
             case "cactus" -> plant.addPlantFoodStrategy(new LaneClearFoodStrategy(
                     "electrified, high-damage, infinitely piercing spikes"));
             case "cabbage-pult" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    3, "cabbage lob"));
+                    4, "cabbage lob"));
             case "melon-pult" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    3, "giant watermelon lob"));
+                    4, "giant watermelon lob"));
             case "winter melon" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    3, "icy watermelon lob (slows)"));
+                    4, "icy watermelon lob (slows)"));
             case "pepper-pult" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    3, "large pepper lob (fire)"));
+                    4, "large pepper lob (fire)"));
             case "chomper" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    3, "swallowed instantly from range"));
+                    4, "swallowed instantly from range"));
             case "squash" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(2, "crushed"));
             case "garlic" -> plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy(
                     "forces every zombie in the lane to move to another lane"));

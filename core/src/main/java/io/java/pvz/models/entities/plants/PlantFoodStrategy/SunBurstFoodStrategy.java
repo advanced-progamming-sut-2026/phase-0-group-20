@@ -6,7 +6,6 @@ import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.utils.AnimationCatalog;
 
 public class SunBurstFoodStrategy implements PlantFoodStrategy {
-
     private final int sunAmount;
     private int durationTicks = 0;
     private boolean executed = false;
@@ -20,14 +19,17 @@ public class SunBurstFoodStrategy implements PlantFoodStrategy {
         PlantFoodStrategy.super.onEnter(plant);
         this.executed = false;
 
-        float animDuration = 1.0f;
+        float animDuration = 0f;
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
         if (anim != null) {
-            if (anim.hasClip("plantfood_on")) animDuration = anim.getDuration("plantfood_on") +
-                anim.getDuration("plantfood");
-            else if (anim.hasClip("plantfood")) animDuration = anim.getDuration("plantfood");
+            if (anim.hasClip("plantfood")) {
+                animDuration = anim.getDuration("plantfood");
+            } else if (anim.hasClip("plantfood_stage" + plant.getSize())) {
+                animDuration = anim.getDuration("plantfood_stage" + plant.getSize());
+            }
         }
-        this.durationTicks = (int) (animDuration * TimeManager.TICKS_PER_SECOND);
+
+        this.durationTicks = Math.max(1, (int) (animDuration * TimeManager.TICKS_PER_SECOND));
     }
 
     @Override

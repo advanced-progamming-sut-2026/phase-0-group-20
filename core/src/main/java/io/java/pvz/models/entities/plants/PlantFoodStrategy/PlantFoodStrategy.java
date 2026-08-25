@@ -7,8 +7,14 @@ public interface PlantFoodStrategy {
 
     default void onEnter(Plant plant) {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
-        if (anim != null && anim.hasClip("plantfood_on")) {
-            plant.triggerAction("plantfood_on");
+        if (anim != null) {
+            if (anim.hasClip("plantfood_on")) {
+                plant.triggerAction("plantfood_on");
+            } else if (anim.hasClip("plantfood_stage" + plant.getSize())) {
+                plant.triggerAction("plantfood_stage" + plant.getSize());
+            } else {
+                plant.triggerAction("plantfood");
+            }
         } else {
             plant.triggerAction("plantfood");
         }

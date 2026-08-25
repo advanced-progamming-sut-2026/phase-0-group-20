@@ -12,26 +12,35 @@ import io.java.pvz.utils.AnimationCatalog;
 public class DuplicateSelfFoodStrategy implements PlantFoodStrategy {
 
     private int durationTicks = 0;
+    private int setupTicks = 0;
+    private int tickTimer = 0;
     private boolean executed = false;
 
     @Override
     public void onEnter(Plant plant) {
         PlantFoodStrategy.super.onEnter(plant);
         this.executed = false;
+        this.tickTimer = 0;
 
         float animDuration = 1.0f;
+        float setupDuration = 0f;
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
         if (anim != null) {
-            if (anim.hasClip("plantfood_on")) animDuration = anim.getDuration("plantfood_on") +
-                anim.getDuration("plantfood");
-            else if (anim.hasClip("plantfood")) animDuration = anim.getDuration("plantfood");
+            if (anim.hasClip("plantfood_on")) {
+                setupDuration = anim.getDuration("plantfood_on");
+                animDuration = setupDuration + anim.getDuration("plantfood");
+            } else if (anim.hasClip("plantfood")) {
+                animDuration = anim.getDuration("plantfood");
+            }
         }
+        this.setupTicks = (int) (setupDuration * TimeManager.TICKS_PER_SECOND);
         this.durationTicks = (int) (animDuration * TimeManager.TICKS_PER_SECOND);
     }
 
     @Override
     public void executeStrategy(Plant plant) {
-        if (!executed) {
+        tickTimer++;
+        if (!executed && tickTimer > setupTicks) {
             GameSession gameSession = GameSession.getInstance();
             int row = plant.getPlacedTile().getRow();
             int col = plant.getPlacedTile().getCol();
@@ -49,7 +58,13 @@ public class DuplicateSelfFoodStrategy implements PlantFoodStrategy {
 
                     if (targetTile instanceof WaterTile) {
                         if (targetTile.getPlants().isEmpty()) {
-                            InGameEntityGenerator.getPlantForGame(plant, false);
+                            Plant newLily = InGameEntityGenerator.getPlantForGame(plant, false);
+
+                            newLily.setPlacedTile(targetTile);
+                            targetTile.addPlant(newLily);
+                            gameSession.getArena().addPlant(newLily);
+                            gameSession.getTimeManager().registerNewTicker(newLily);
+
                         } else {
                             Plant p = targetTile.getPlants().get(0);
                             if (p.getStrategies().get(0) instanceof LilyPadStrategy)
@@ -70,5 +85,6 @@ public class DuplicateSelfFoodStrategy implements PlantFoodStrategy {
     @Override
     public void reset() {
         this.executed = false;
+        this.tickTimer = 0;
     }
 }
