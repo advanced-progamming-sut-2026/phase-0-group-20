@@ -1,5 +1,6 @@
 package io.java.pvz.models.entities.zombies.zomboss;
 
+import com.badlogic.gdx.Game;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.fields.tiles.Tile;
@@ -32,7 +33,7 @@ public class DragonScorchedEarthAttack implements IZombossAttack {
     public void onEnter() {
         this.attackTimer = 0;
         zomboss.setState(ZombieState.BOSS_FIRE_ROW_START);
-        zomboss.notify("Dragon Zomboss takes a deep breath...");
+        GameSession.notify("Dragon Zomboss takes a deep breath...");
     }
 
     @Override
@@ -74,7 +75,7 @@ public class DragonScorchedEarthAttack implements IZombossAttack {
                     .build());
         }
 
-        zomboss.notify("Dragon Zomboss scorched rows " + (targetRows[0] + 1) + " and " + (targetRows[1] + 1) + "!");
+        GameSession.notify("Dragon Zomboss scorched rows " + (targetRows[0] + 1) + " and " + (targetRows[1] + 1) + "!");
     }
 
     static void burnTheTile(Tile tile) {

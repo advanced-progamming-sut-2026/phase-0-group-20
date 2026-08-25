@@ -20,50 +20,48 @@ public class NormalAttack implements AttackBehavior {
     @Override
     public void execute() {
         Tile currentTile = zombie.getTile();
-        if (currentTile == null || currentTile.getPlants().isEmpty()) {
+        if (currentTile == null) {
             resumeWalking();
             return;
         }
-        boolean isZombieToEat = false;
+
         int damagePerTick = zombie.getEatDps() / TimeManager.TICKS_PER_SECOND;
+
         List<Zombie> zombiesToEat = GameSession.getInstance().getArena().getZombiesOnTile(currentTile);
         Zombie targetZombie = null;
-        for (Zombie zombie : zombiesToEat) {
-            if (zombie.isHypnotized()) {
-                targetZombie = zombie;
-                isZombieToEat = true;
+        for (Zombie tileZombie : zombiesToEat) {
+            if (tileZombie.isHypnotized()) {
+                targetZombie = tileZombie;
                 break;
             }
         }
 
         if (targetZombie != null) {
             targetZombie.takeDamage(damagePerTick);
-            if (targetZombie.isDead()) {
-                isZombieToEat = false;
+            if (!targetZombie.isDead()) {
+                return;
             }
         }
 
-        if (!isZombieToEat) {
-            Plant targetPlant = currentTile.getPlants().get(0);
-            for (Plant p : currentTile.getPlants()) {
-                boolean isCat = p.getActiveEffects().stream().anyMatch(e -> e instanceof SheepEffect);
-                if (!isCat) {
-                    targetPlant = p;
-                    break;
-                }
+        if (currentTile.getPlants().isEmpty()) {
+            resumeWalking();
+            return;
+        }
+
+        Plant targetPlant = currentTile.getPlants().get(0);
+        for (Plant p : currentTile.getPlants()) {
+            boolean isCat = p.getActiveEffects().stream().anyMatch(e -> e instanceof SheepEffect);
+            if (!isCat) {
+                targetPlant = p;
+                break;
             }
-            if (targetPlant == null) {
+        }
+
+        targetPlant.takeDamage(damagePerTick);
+        if (targetPlant.isDead()) {
+            currentTile.getPlants().remove(targetPlant);
+            if (currentTile.getPlants().isEmpty()) {
                 resumeWalking();
-                return;
-            }
-            targetPlant.takeDamage(damagePerTick);
-
-            if (targetPlant.isDead()) {
-                currentTile.getPlants().remove(targetPlant);
-
-                if (currentTile.getPlants().isEmpty()) {
-                    resumeWalking();
-                }
             }
         }
     }

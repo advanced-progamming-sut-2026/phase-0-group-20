@@ -23,8 +23,8 @@ public class HypnotizeAttack implements AttackBehavior {
 
         if (targetZombie != null) {
             int damage = zombie.getEatDps() / TimeManager.TICKS_PER_SECOND;
-            targetZombie.takeDamage(damage);
-            zombie.notify("Hypnotized Zombie at (" + zombie.getCol() + ", " + zombie.getRow() +
+            targetZombie.takeDamage(damage * 2);
+            GameSession.notify("Hypnotized Zombie at (" + (zombie.getCol() + 1) + ", " + (zombie.getRow() + 1) +
                     ") attacked another zombie for " + damage + " damage!");
         }
     }

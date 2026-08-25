@@ -116,7 +116,7 @@ public abstract class Zomboss extends Zombie {
         this.currentStunTicks = stunDurationTicks;
         this.phase--;
         this.currentPhaseHealth = this.phaseHealth;
-        notify(this.getName() + " is STUNNED! Phase " + phase + " started.");
+        GameSession.notify(this.getName() + " is STUNNED! Phase " + phase + " started.");
     }
 
     @Override

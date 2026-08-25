@@ -2,6 +2,7 @@ package io.java.pvz.models.entities.zombies.zomboss;
 
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.enums.PhysicalConstants;
+import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
 public class RobotDashAttack implements IZombossAttack {
@@ -31,7 +32,7 @@ public class RobotDashAttack implements IZombossAttack {
         this.jumpTimer = 0;
 
         zomboss.setState(ZombieState.BOSS_DASH);
-        zomboss.notify("Robot Zomboss is dashing forward!");
+        GameSession.notify("Robot Zomboss is dashing forward!");
     }
 
     @Override
@@ -54,7 +55,7 @@ public class RobotDashAttack implements IZombossAttack {
                 targetX = 8 * PhysicalConstants.TILE_WIDTH + PhysicalConstants.GRID_START_X;
 
                 zomboss.setState(ZombieState.BOSS_JUMP_START);
-                zomboss.notify("Robot Zomboss reached the end and is preparing to jump!");
+                GameSession.notify("Robot Zomboss reached the end and is preparing to jump!");
             }
 
         } else {
@@ -87,7 +88,7 @@ public class RobotDashAttack implements IZombossAttack {
                     zomboss.setState(ZombieState.BOSS_JUMP_LAND);
                     zomboss.setX(targetX);
                     zomboss.setCol(8);
-                    zomboss.notify("Robot Zomboss landed on column 9!");
+                    GameSession.notify("Robot Zomboss landed on column 9!");
                 }
             }
             else {

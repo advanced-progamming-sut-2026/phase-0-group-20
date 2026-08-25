@@ -126,13 +126,7 @@ public class Zombie implements Ticker {
             return;
         }
 
-        for (Armor a : armorPieces) {
-            if (!a.isDestroyed()) {
-                remaining = a.takeDamage(remaining);
-                if (remaining <= 0) return;
-            }
-        }
-        applyHealthDamage(remaining, isFire);
+        takeDamageArmor(remaining, isFire);
     }
 
     public void takeDamage(int damage) {
@@ -143,6 +137,17 @@ public class Zombie implements Ticker {
             this.health = 0;
             dead = true;
         }
+    }
+
+    public void takeDamageArmor(int remaining, boolean isFire) {
+        int remain = remaining;
+        for (Armor a : armorPieces) {
+            if (!a.isDestroyed()) {
+                remain = a.takeDamage(remain);
+                if (remain <= 0) return;
+            }
+        }
+        applyHealthDamage(remain, isFire);
     }
 
     private boolean isArmorBypassingProjectile(ProjectileType projectileType) {
@@ -165,7 +170,6 @@ public class Zombie implements Ticker {
         this.isHypnotized = true;
 
         attackBehavior = new HypnotizeAttack(this);
-
     }
 
 
@@ -194,52 +198,6 @@ public class Zombie implements Ticker {
     public void removeFreezeEffect() {
         activeEffects.removeIf(e -> e instanceof FreezeEffect);
         resetSpeed();
-    }
-
-    public void notify(String message) {
-//        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-//            new GameEventPayload.Builder(GameEvent.NOTIFY)
-//                .message(message)
-//                .build());
-    }
-
-    public String getInGameDetails() {
-        StringBuilder info = new StringBuilder();
-
-        info.append("Name: ").append(type.toString()).append("\n");
-
-        info.append("position: ").append(position.getCol() + 1).append(", ").append(position.getRow() + 1).append("\n");
-
-        info.append("health: ").append(this.health).append("\n");
-
-        info.append("    armor:\n");
-        if (armorPieces != null && !armorPieces.isEmpty()) {
-            for (int i = 0; i < armorPieces.size(); i++) {
-                info.append("        ")
-                    .append(armorPieces.get(i).getData().getAlias())
-                    .append(": ")
-                    .append(armorPieces.get(i).getCurrentHealth())
-                    .append("\n");
-            }
-        }
-        info.append("\n");
-
-        info.append("effects:\n");
-        if (activeEffects != null && !activeEffects.isEmpty()) {
-            for (ZombieEffect e : activeEffects) {
-                if (e instanceof Effect effectImpl) {
-
-                    String effectName = effectImpl.getClass().getSimpleName().replace("Effect", "").toLowerCase();
-                    if (effectName.equals("chill")) effectName = "chilled";
-                    if (effectName.equals("freeze")) effectName = "frozen";
-
-                    float remainingTime = effectImpl.getRemainingSeconds();
-                    info.append(effectName).append(": ").append(String.format("%.1f", remainingTime)).append("s\n");
-                }
-            }
-        }
-
-        return info.toString().trim();
     }
 
     protected void updateTile() {
