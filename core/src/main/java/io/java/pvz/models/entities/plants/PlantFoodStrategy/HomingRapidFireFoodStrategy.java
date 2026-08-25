@@ -5,25 +5,47 @@ import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
-
+import io.java.pvz.utils.AnimationCatalog;
 
 public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
 
-    private final int durationTicks = 6 * TimeManager.TICKS_PER_SECOND;
+    private final int minDuration = 6 * TimeManager.TICKS_PER_SECOND;
+    private int durationTicks = 0;
+    private int setupTicks = 0;
     private int tickTimer = 0;
 
+    @Override
+    public void onEnter(Plant plant) {
+        PlantFoodStrategy.super.onEnter(plant);
+        this.tickTimer = 0;
+
+        float animDuration = 0;
+        float setupDuration = 0f;
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
+        if (anim != null) {
+            if (anim.hasClip("plantfood_on")) {
+                setupDuration = anim.getDuration("plantfood_on");
+                animDuration = setupDuration + anim.getDuration("plantfood");
+            } else if (anim.hasClip("plantfood")) {
+                animDuration = anim.getDuration("plantfood");
+            }
+        }
+        this.setupTicks = (int) (setupDuration * TimeManager.TICKS_PER_SECOND);
+        this.durationTicks = Math.max(minDuration + setupTicks, (int) (animDuration * TimeManager.TICKS_PER_SECOND));
+    }
 
     @Override
     public void executeStrategy(Plant plant) {
         tickTimer++;
-        GameSession session = GameSession.getInstance();
 
-        if (tickTimer <= durationTicks) {
-            if (tickTimer % (TimeManager.TICKS_PER_SECOND / 5) == 0) {
+        if (tickTimer > setupTicks && tickTimer <= durationTicks) {
+            int activeTick = tickTimer - setupTicks;
+
+            if (activeTick % (TimeManager.TICKS_PER_SECOND / 5) == 0) {
                 int col = plant.getPlacedTile().getCol();
                 int row = plant.getPlacedTile().getRow();
 
-                Zombie target = session.getArena().getNearestZombie(col, row); //we should implement it later
+                Zombie target = GameSession.getInstance().getArena().getNearestZombie(col, row);
 
                 if (target != null && !target.isDead())
                     ProjectileMechanism.executeTargetedProjectile(plant, target, 0.1f);
@@ -33,7 +55,7 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
         }
     }
 
-
+    @Override
     public int getDurationTicks() {
         return durationTicks;
     }
