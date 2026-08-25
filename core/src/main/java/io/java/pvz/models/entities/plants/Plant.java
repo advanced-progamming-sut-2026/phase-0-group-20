@@ -99,7 +99,7 @@ public class Plant implements IPlant, Ticker {
                     .build());
             return;
         }
-
+        this.asleep = false;
         int maxEffect = 0;
         int maxSetup = 0;
         boolean isPermanentBoost = false;
@@ -109,22 +109,13 @@ public class Plant implements IPlant, Ticker {
             strategy.reset();
             strategy.onEnter(this);
 
-            AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(this);
             int setupTicks = 0;
+
             int effectTicks = strategy.getDurationTicks();
 
-            if (anim != null) {
-                if (anim.hasClip("plantfood_on")) {
-                    setupTicks = (int) (anim.getDuration("plantfood_on") * TimeManager.TICKS_PER_SECOND);
-                }
-
-                if (effectTicks != -1) {
-                    if (anim.hasClip("plantfood")) {
-                        effectTicks = (int) (anim.getDuration("plantfood") * TimeManager.TICKS_PER_SECOND);
-                    } else {
-                        effectTicks = 1;
-                    }
-                }
+            AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(this);
+            if (anim != null && anim.hasClip("plantfood_on")) {
+                setupTicks = (int) (anim.getDuration("plantfood_on") * TimeManager.TICKS_PER_SECOND);
             }
 
             if (setupTicks > maxSetup) maxSetup = setupTicks;
@@ -185,14 +176,11 @@ public class Plant implements IPlant, Ticker {
                 }
             }
         } else {
-            // 🔹 حالت عادی (وقتی پلنت فود نداره)
             for (IPlantStrategy strategy : strategies) {
                 strategy.execute(this, currentTick);
             }
         }
     }
-
-    // ... (بقیه کدهای کلاس Plant دقیقاً سر جای خودشون هستن، هیچی پاک نشده)
 
     public void takeDamage(int amount) {
 
