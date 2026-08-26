@@ -6,13 +6,13 @@ import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.plants.strategy.ImitateStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
 import io.java.pvz.models.enums.Menu;
-import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
@@ -108,7 +108,7 @@ public class GameFlowController {
 
     public Result cheatAddSun(String amount) {
         Integer sunAmount = parsePositiveInt(amount);
-        if(!App.getSettings().isDebug()){
+        if (!App.getSettings().isDebug()) {
             return new Result(false, "Cheat is not Allowed");
         }
         if (sunAmount == null) {
@@ -144,6 +144,7 @@ public class GameFlowController {
         int sunAmount = GameSession.getInstance().getCurrentSun();
         return new Result(true, "You currently have " + sunAmount + " suns in your pocket.");
     }
+
     public Result plantPlant(String plantName, String col, String row) {
         GameSession session = GameSession.getInstance();
         Plant plant = findPlantForPlacement(session, plantName);
@@ -424,7 +425,7 @@ public class GameFlowController {
             }
         }
 
-        if (levelToRestart instanceof ConveyorBelt  conveyorBelt) {
+        if (levelToRestart instanceof ConveyorBelt conveyorBelt) {
             conveyorBelt.getBelt().clear();
         }
 
@@ -435,7 +436,7 @@ public class GameFlowController {
                 } else {
                     GameSession.startNewGame(bowlingLevel.getBelt());
                 }
-            }else if (levelToRestart instanceof ConveyorBelt conveyorBelt) {
+            } else if (levelToRestart instanceof ConveyorBelt conveyorBelt) {
                 conveyorBelt.getBelt().clear();
                 if (levelToRestart.getSeason() == SeasonType.MINI_GAME) {
                     GameSession.startMiniGame(levelToRestart, conveyorBelt.getBelt());
@@ -456,5 +457,23 @@ public class GameFlowController {
         return user.getUnlockedPlants().stream()
             .filter(p -> p.getName().equals(plant.getName()))
             .findFirst().get().getLevel();
+    }
+
+    public void collectAllSuns() {
+        GameSession session = GameSession.getInstance();
+        if (session == null || session.getArena() == null)
+            return;
+
+        List<Sun> activeSuns = session.getArena().getActiveSuns();
+
+        for (Sun sun : activeSuns) {
+            if (!sun.isCollected()) {
+                sun.collect();
+                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.SUN_COLLECTED)
+                    .amount(sun.getType().getValue())
+                    .build();
+                GameEventMessenger.getInstance().dispatch(GameEvent.SUN_COLLECTED, payload);
+            }
+        }
     }
 }
