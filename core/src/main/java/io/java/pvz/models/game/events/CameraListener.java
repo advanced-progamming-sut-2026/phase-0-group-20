@@ -30,6 +30,9 @@ public class CameraListener implements GameEventListener {
             case LAWNMOWER_TRIGGERED -> {
                 shakeCamera(0.2f, 4f);
             }
+            case GO_DISPLAYED -> {
+                shakeCamera(0.4f, 7f);
+            }
 
         }
     }

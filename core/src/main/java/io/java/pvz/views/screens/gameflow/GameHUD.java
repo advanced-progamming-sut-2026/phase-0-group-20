@@ -46,6 +46,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameHUD {
+    private static final float POP_IN_DURATION = 0.6f;
+    private static final float HOLD_DURATION = 0.4f;
+    private static final float FADE_OUT_DURATION = 0.6f;
+    private static final float TOTAL_ANNOUNCE_DURATION = POP_IN_DURATION + HOLD_DURATION + FADE_OUT_DURATION;
+
+    private static final float STOMP_FALL_DURATION = 0.22f;
+    private static final float STOMP_SQUASH_DURATION = 0.08f;
+    private static final float STOMP_SETTLE_DURATION = 0.18f;
+
     private final Group mainLayer;
     private final Group modalLayer;
     private final Viewport viewport;
@@ -77,10 +86,11 @@ public class GameHUD {
         this.announceListener = new GameEventListener() {
             @Override
             public void onEvent(GameEvent event, GameEventPayload payload) {
-                showBigAnnouncementText("Ready!!!");
+                showBigAnnouncementText("Ready!!!-GO!");
             }
         };
-        GameEventMessenger.getInstance().addListener(GameEvent.WAVE_STARTED_PLAYTIME, announceListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.WAVE_STARTED_PLAYTIME, announceListener
+        );
     }
 
     public void buildUI() {
@@ -425,7 +435,6 @@ public class GameHUD {
         }
 
 
-
         BeghouledLevel level = (BeghouledLevel) GameSession.getInstance().getCurrentMode();
         List<String> basePlants = level.getBasePlants();
 
@@ -440,34 +449,86 @@ public class GameHUD {
     }
 
     public void showBigAnnouncementText(String text) {
-        Label announcement = new Label(text, skin,"medium_outline");
+        if (text.contains("-")) {
+            String[] tokens = text.split("-");
+            for (int i = 0; i < tokens.length; i++) {
+                boolean isLastToken = (i == tokens.length - 1);
+                createAnnounce(tokens[i], i * TOTAL_ANNOUNCE_DURATION, isLastToken);
+            }
+        } else {
+            createAnnounce(text, 0f, false);
+        }
+    }
+
+    private void createAnnounce(String text, float startDelay, boolean stomp) {
+        Label announcement = new Label(text, skin, "medium_outline");
         announcement.setFontScale(2f);
         announcement.setAlignment(Align.center);
-
         announcement.setSize(600f, 150f);
-        announcement.setPosition(
-            (viewport.getWorldWidth() - announcement.getWidth()) / 2f,
-            (viewport.getWorldHeight() - announcement.getHeight()) / 2f
-        );
-
         announcement.setOrigin(Align.center);
-        announcement.setScale(0.4f);
         announcement.setColor(Color.RED);
-        announcement.getColor().a = 0f;
+
+        float targetX = (viewport.getWorldWidth() - announcement.getWidth()) / 2f;
+        float targetY = (viewport.getWorldHeight() - announcement.getHeight()) / 2f;
+
+        if (stomp) {
+            announcement.setPosition(targetX, targetY + 500f);
+            announcement.setScale(3f);
+            announcement.getColor().a = 0f;
+
+            announcement.addAction(Actions.sequence(
+                Actions.delay(startDelay),
+                Actions.run(() -> announcement.getColor().a = 1f),
+                Actions.parallel(
+                    Actions.moveTo(targetX, targetY, STOMP_FALL_DURATION, Interpolation.pow3In),
+                    Actions.scaleTo(1f, 1f, STOMP_FALL_DURATION, Interpolation.pow3In)
+                ),
+                Actions.run(() -> {
+                    GameEventMessenger.getInstance().dispatch(GameEvent.GO_DISPLAYED,
+                        new GameEventPayload.Builder(GameEvent.GO_DISPLAYED).build());
+                }),
+                Actions.scaleTo(1.5f, 0.6f, STOMP_SQUASH_DURATION),
+                Actions.scaleTo(1f, 1f, STOMP_SETTLE_DURATION, Interpolation.elasticOut),
+                Actions.delay(HOLD_DURATION),
+                Actions.parallel(
+                    Actions.scaleTo(1.8f, 1.8f, FADE_OUT_DURATION, Interpolation.exp10Out),
+                    Actions.fadeOut(FADE_OUT_DURATION)
+                ),
+                Actions.removeActor()
+            ));
+        } else {
+            announcement.setPosition(targetX, targetY);
+            announcement.setScale(0.4f);
+            announcement.getColor().a = 0f;
+
+            announcement.addAction(Actions.sequence(
+                Actions.delay(startDelay),
+                Actions.parallel(
+                    Actions.scaleTo(1.4f, 1.4f, POP_IN_DURATION, Interpolation.swingOut),
+                    Actions.fadeIn(0.15f)
+                ),
+                Actions.delay(HOLD_DURATION),
+                Actions.parallel(
+                    Actions.scaleTo(1.8f, 1.8f, FADE_OUT_DURATION, Interpolation.exp10Out),
+                    Actions.fadeOut(FADE_OUT_DURATION)
+                ),
+                Actions.removeActor()
+            ));
+        }
 
         mainLayer.addActor(announcement);
+    }
 
-        announcement.addAction(Actions.sequence(
-            Actions.parallel(
-                Actions.scaleTo(1.4f, 1.4f, 0.6f, Interpolation.swingOut),
-                Actions.fadeIn(0.15f)
-            ),
-            Actions.delay(0.4f),
-            Actions.parallel(
-                Actions.scaleTo(1.8f, 1.8f, 0.6f, Interpolation.exp10Out),
-                Actions.fadeOut(0.6f)
-            ),
-            Actions.removeActor()
+    private void triggerScreenShake() {
+        float originalX = mainLayer.getX();
+        float originalY = mainLayer.getY();
+        mainLayer.addAction(Actions.sequence(
+            Actions.moveBy(-12f, -8f, 0.03f),
+            Actions.moveBy(24f, 16f, 0.03f),
+            Actions.moveBy(-18f, -12f, 0.03f),
+            Actions.moveBy(14f, 10f, 0.03f),
+            Actions.moveBy(-8f, -6f, 0.03f),
+            Actions.moveTo(originalX, originalY, 0.03f)
         ));
     }
 

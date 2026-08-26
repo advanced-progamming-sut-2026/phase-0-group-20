@@ -34,5 +34,6 @@ public enum GameEvent {
     WAVE_STARTED_PLAYTIME,
 
     GARGANTUAR_MOVES,
+    GO_DISPLAYED,
     PLANT_EXPLODED;
 }

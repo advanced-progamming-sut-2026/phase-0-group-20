@@ -3,6 +3,7 @@ package io.java.pvz.models.game;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.obstacle.GraveHolder;
+import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.HypnotizeStrategy;
@@ -10,13 +11,12 @@ import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.plants.strategy.TorchwoodStrategy;
 import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import io.java.pvz.models.entities.projectiles.Projectile;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.zomboss.Zomboss;
 import io.java.pvz.models.enums.PhysicalConstants;
-import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.fields.Brain;
 import io.java.pvz.models.fields.LawnMower;
-import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
@@ -29,6 +29,7 @@ public class CollisionManager {
     private final GameSession session;
     private final Arena arena;
     private static final int LAWN_MOWER_THRESHOLD = 30;
+
     public CollisionManager(GameSession session) {
         this.session = session;
         this.arena = session.getArena();
@@ -44,7 +45,7 @@ public class CollisionManager {
 
         // for plants & zombies
         for (Zombie z : activeZombies) {
-            if (z instanceof Zomboss zomboss){
+            if (z instanceof Zomboss zomboss) {
                 checkZombossCrush(zomboss);
                 continue;
             }
@@ -88,8 +89,7 @@ public class CollisionManager {
                 if (!mower.isActivate() && z.getX() <= mower.getPosition().getX() + LAWN_MOWER_THRESHOLD) {
                     mower.trigger();
                     killZombieByMower(z, mower);
-                }
-                else if (mower.isActivate() && z.getX() <= mower.getPosition().getX() + LAWN_MOWER_THRESHOLD) {
+                } else if (mower.isActivate() && z.getX() <= mower.getPosition().getX() + LAWN_MOWER_THRESHOLD) {
                     killZombieByMower(z, mower);
                 }
             }
@@ -390,16 +390,12 @@ public class CollisionManager {
         if (eatingPlant != null) {
             if (!z.isAttacking()) {
                 z.setAttacking(true);
-                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_TAKING_DAMAGE,new GameEventPayload
-                    .Builder(GameEvent.PLANT_TAKING_DAMAGE)
-                    .build());
+
             }
         } else if (targetZombie != null) {
             if (!z.isAttacking()) {
                 z.setAttacking(true);
-                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_TAKING_DAMAGE,new GameEventPayload
-                    .Builder(GameEvent.PLANT_TAKING_DAMAGE)
-                    .build());
+
             }
         } else if (z.isAttacking()) {
             z.setAttacking(false);

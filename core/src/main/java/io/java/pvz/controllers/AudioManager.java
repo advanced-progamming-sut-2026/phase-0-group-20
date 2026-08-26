@@ -64,9 +64,11 @@ public class AudioManager {
         }
         incoming.setLooping(true);
 
+        float normalizedVolume = musicVolume / 10f;
+
         if (fadeDuration <= 0f) {
             if (outgoing != null) outgoing.stop();
-            incoming.setVolume(musicVolume);
+            incoming.setVolume(normalizedVolume);
             incoming.play();
             return;
         }
@@ -82,9 +84,9 @@ public class AudioManager {
                 elapsed += FADE_STEP;
                 float progress = Math.min(elapsed / fadeDuration, 1f);
 
-                fadingIn.setVolume(musicVolume * progress);
+                fadingIn.setVolume(normalizedVolume * progress);
                 if (fadeOutTrack != null) {
-                    fadeOutTrack.setVolume(musicVolume * (1f - progress));
+                    fadeOutTrack.setVolume(normalizedVolume * (1f - progress));
                 }
 
                 if (progress >= 1f) {

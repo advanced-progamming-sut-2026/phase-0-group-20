@@ -187,6 +187,10 @@ public class Plant implements IPlant, Ticker {
         if (isDead()) {
             return;
         }
+        GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_TAKING_DAMAGE, new GameEventPayload
+            .Builder(GameEvent.PLANT_TAKING_DAMAGE)
+            .plant(this)
+            .build());
 
         this.currentHp -= amount;
 
