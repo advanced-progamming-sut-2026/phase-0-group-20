@@ -195,9 +195,7 @@ public class GameInputHandler {
     }
 
     public void onShovelClicked() {
-        if (MatchController.getInstance().isOnlineMatch() &&
-            MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE)
-            return;
+        if (noMeddlingAllowed()) return;
 
         boolean wasSelected = isShovelSelected;
         clearAllSelections();
@@ -210,9 +208,7 @@ public class GameInputHandler {
     }
 
     public void onPlantFoodClicked() {
-        if (MatchController.getInstance().isOnlineMatch() &&
-            MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE)
-            return;
+        if (noMeddlingAllowed()) return;
 
         boolean wasSelected = isPlantFoodSelected;
         clearAllSelections();
@@ -463,6 +459,8 @@ public class GameInputHandler {
         if (Gdx.input.isKeyJustPressed(Input.Keys.A)) couchZombieCol = Math.max(3, couchZombieCol - 1);
         if (Gdx.input.isKeyJustPressed(Input.Keys.D)) couchZombieCol = Math.min(COLS - 1, couchZombieCol + 1);
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) gameFlowController.collectAllSuns();
+
         for (int i = 0; i < 5; i++) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1 + i)) {
                 couchSelectedZombieIndex = i;
@@ -528,5 +526,15 @@ public class GameInputHandler {
         couchFloatingZombieImage = createCouchGridFollowerImage(zombieIcon.getDrawable(), 80);
 
         lastCouchFloatingZombieIndex = couchSelectedZombieIndex;
+    }
+
+    private boolean noMeddlingAllowed() {
+        if (MatchController.getInstance().isOnlineMatch()) {
+            return MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE;
+        } else {
+            return !MatchController.getInstance().isCouchPlay() &&
+                GameSession.getInstance() != null &&
+                GameSession.getInstance().getCurrentMode() instanceof IZombieLevel;
+        }
     }
 }

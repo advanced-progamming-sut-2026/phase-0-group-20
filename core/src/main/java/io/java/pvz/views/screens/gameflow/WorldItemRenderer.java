@@ -299,6 +299,9 @@ public class WorldItemRenderer {
             }
 
             private void tryCollectSun() {
+                if (MatchController.getInstance().isCouchPlay())
+                    return;
+
                 if (!sun.isCollected()) {
                     if (MatchController.getInstance().isOnlineMatch()) {
                         if (MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE) {
