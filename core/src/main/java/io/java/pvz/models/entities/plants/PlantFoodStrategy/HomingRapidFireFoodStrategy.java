@@ -19,19 +19,10 @@ public class HomingRapidFireFoodStrategy implements PlantFoodStrategy {
         PlantFoodStrategy.super.onEnter(plant);
         this.tickTimer = 0;
 
-        float animDuration = 0;
-        float setupDuration = 0f;
-        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
-        if (anim != null) {
-            if (anim.hasClip("plantfood_on")) {
-                setupDuration = anim.getDuration("plantfood_on");
-                animDuration = setupDuration + anim.getDuration("plantfood");
-            } else if (anim.hasClip("plantfood")) {
-                animDuration = anim.getDuration("plantfood");
-            }
-        }
-        this.setupTicks = (int) (setupDuration * TimeManager.TICKS_PER_SECOND);
-        this.durationTicks = Math.max(minDuration + setupTicks, (int) (animDuration * TimeManager.TICKS_PER_SECOND));
+        int[] timings = calculateTimings(plant);
+        this.setupTicks = timings[0];
+
+        this.durationTicks = Math.max(minDuration + setupTicks, timings[1]);
     }
 
     @Override

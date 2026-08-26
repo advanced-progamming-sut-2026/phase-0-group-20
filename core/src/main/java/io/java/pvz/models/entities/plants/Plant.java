@@ -99,9 +99,10 @@ public class Plant implements IPlant, Ticker {
                     .build());
             return;
         }
+
         this.asleep = false;
-        int maxEffect = 0;
-        int maxSetup = 0;
+
+        int maxTotalDuration = 0;
         boolean isPermanentBoost = false;
         this.boosted = true;
 
@@ -109,30 +110,19 @@ public class Plant implements IPlant, Ticker {
             strategy.reset();
             strategy.onEnter(this);
 
-            int setupTicks = 0;
+            int duration = strategy.getDurationTicks();
 
-            int effectTicks = strategy.getDurationTicks();
-
-            AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(this);
-            if (anim != null && anim.hasClip("plantfood_on")) {
-                setupTicks = (int) (anim.getDuration("plantfood_on") * TimeManager.TICKS_PER_SECOND);
-            }
-
-            if (setupTicks > maxSetup) maxSetup = setupTicks;
-
-            if (effectTicks == -1) {
+            if (duration == -1) {
                 isPermanentBoost = true;
-            } else if (effectTicks > maxEffect) {
-                maxEffect = effectTicks;
+            } else if (duration > maxTotalDuration) {
+                maxTotalDuration = duration;
             }
         }
-
-        this.boostSetupTimer = maxSetup;
 
         if (isPermanentBoost) {
             this.boostEffectTimer = -1;
         } else {
-            this.boostEffectTimer = maxEffect;
+            this.boostEffectTimer = maxTotalDuration;
         }
     }
 
@@ -158,20 +148,16 @@ public class Plant implements IPlant, Ticker {
         }
 
         if (boosted) {
-            if (boostSetupTimer > 0) {
-                boostSetupTimer--;
-            } else {
-                for (PlantFoodStrategy strategy : plantFoodStrategy) {
-                    strategy.executeStrategy(this);
-                }
+            for (PlantFoodStrategy strategy : plantFoodStrategy) {
+                strategy.executeStrategy(this);
+            }
 
-                if (boostEffectTimer > 0) {
-                    boostEffectTimer--;
-                    if (boostEffectTimer <= 0) {
-                        boosted = false;
-                        for (PlantFoodStrategy strategy : plantFoodStrategy) {
-                            strategy.onExit(this);
-                        }
+            if (boostEffectTimer > 0) {
+                boostEffectTimer--;
+                if (boostEffectTimer <= 0) {
+                    boosted = false;
+                    for (PlantFoodStrategy strategy : plantFoodStrategy) {
+                        strategy.onExit(this);
                     }
                 }
             }

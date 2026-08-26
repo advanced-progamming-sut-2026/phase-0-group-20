@@ -2,25 +2,26 @@ package io.java.pvz.models.entities.plants.PlantFoodStrategy;
 
 import io.java.pvz.models.entities.plants.Plant;
 
-/**
- * Normally Hypno-shroom hypnotizes the single zombie that eats it. With
- * Plant Food, the next zombie that eats it is instead turned into a
- * fully-buffed Gargantuar fighting for the player.
- * Used by: Hypno-shroom.
- */
-
 public class GargantuarHypnotizeFoodStrategy implements PlantFoodStrategy {
+
     private boolean executed = false;
+    private int setupTicks = 0;
+    private int tickTimer = 0;
 
     @Override
     public void onEnter(Plant plant) {
         PlantFoodStrategy.super.onEnter(plant);
         this.executed = false;
+        this.tickTimer = 0;
+
+        int[] timings = calculateTimings(plant);
+        this.setupTicks = timings[0];
     }
 
     @Override
     public void executeStrategy(Plant plant) {
-        if (!executed) {
+        tickTimer++;
+        if (!executed && tickTimer > setupTicks) {
             plant.setBoosted(true);
             executed = true;
         }
@@ -34,5 +35,6 @@ public class GargantuarHypnotizeFoodStrategy implements PlantFoodStrategy {
     @Override
     public void reset() {
         this.executed = false;
+        this.tickTimer = 0;
     }
 }

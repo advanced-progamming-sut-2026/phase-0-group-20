@@ -104,10 +104,6 @@ public class IceBlock extends PushableObstacle implements Ticker {
             }
             session.getTimeManager().unregisterTicker(this);
         }
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-            new GameEventPayload.Builder(GameEvent.NOTIFY)
-                .message("IceBlock melted at [" + position.getRow() + "][" + position.getCol() + "]!")
-                .build());
     }
 
     public Plant getFrozenPlant() {
