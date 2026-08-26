@@ -102,9 +102,8 @@ public abstract class Level implements GameMode {
         currentActiveWave = session.getArena().getCurrentActiveWave();
 
         if (currentWave == 0) {
-            System.out.println("fuckkkkk");
             session.getTimeManager().registerNewTicker(
-                new DelayedEventTicker(GameEvent.WAVE_STARTED_PLAYTIME, 6f)
+                new DelayedEventTicker(GameEvent.WAVE_STARTED_PLAYTIME, 18f)
             );
             startNextWave(session);
         } else if (currentActiveWave != null && currentActiveWave.is75PercentHpDestroyed()) {

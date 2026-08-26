@@ -96,6 +96,7 @@ public class GameFlowScreen extends BaseScreen {
         GameEventMessenger.getInstance().addListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
         GameEventMessenger.getInstance().addListener(GameEvent.PLANT_EXPLODED, cameraListener);
         GameEventMessenger.getInstance().addListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.GO_DISPLAYED, cameraListener);
 
         MatchController.getInstance().setOnMatchEnd(message -> {
             String winnerRoleStr = message.getString("winnerRole");

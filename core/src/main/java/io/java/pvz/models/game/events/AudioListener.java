@@ -7,10 +7,13 @@ import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.views.sound.MusicType;
 import io.java.pvz.views.sound.SfxType;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class AudioListener implements GameEventListener {
     private final AudioManager audioManager = AudioManager.getInstance();
+    private final Map<Object, Long> lastDamageSoundTimes = new HashMap<>();
 
     private long lastDamageSoundTime = 0;
 
@@ -30,7 +33,7 @@ public class AudioListener implements GameEventListener {
             case LAWNMOWER_TRIGGERED -> audioManager.playSfx(SfxType.LAWN_MOWER);
             case PLANT_PLACED -> handlePlantPlacement(payload.getPlant());
             case PROJECTILE_HIT -> playProjectileHit(payload.getProjectileType());
-//            case PLANT_TAKING_DAMAGE -> handlePlantTakingDamage();
+            case PLANT_TAKING_DAMAGE -> handlePlantTakingDamage(payload);
             case PLANT_LOST -> audioManager.playSfx(SfxType.SHOVEL);
             case PROJECTILE_FIRED -> playProjectileSound(payload.getProjectileType());
             case ZOMBOSS_TALKS -> audioManager.playSfx(SfxType.ZOMBOSS_TALKS);
@@ -38,10 +41,8 @@ public class AudioListener implements GameEventListener {
             case GAME_OVER -> audioManager.playSfx(SfxType.LOSS_AUDIO);
             case LEVEL_COMPLETED -> {
                 audioManager.playSfx(SfxType.WIN_AUDIO);
-                System.out.println("lbjf");
             }
             case WAVE_STARTED_PLAYTIME -> {
-                System.out.println("good");
                 audioManager.playSfx(SfxType.START_WAVE_SOUND);
             }
         }
@@ -83,11 +84,13 @@ public class AudioListener implements GameEventListener {
         }
     }
 
-    private void handlePlantTakingDamage() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastDamageSoundTime >= 1000) {
-            lastDamageSoundTime = currentTime;
 
+    private void handlePlantTakingDamage(GameEventPayload payload) {
+        Object putable = payload.getPlant() != null ? payload.getPlant() : payload.getZombie();
+        long currentTime = System.currentTimeMillis();
+        Long last = lastDamageSoundTimes.get(putable);
+        if (last == null || currentTime - last >= 1000) {
+            lastDamageSoundTimes.put(putable, currentTime);
             if (Math.random() < 0.5) {
                 audioManager.playSfx(SfxType.ZOMBIE_EAT_1);
             } else {
