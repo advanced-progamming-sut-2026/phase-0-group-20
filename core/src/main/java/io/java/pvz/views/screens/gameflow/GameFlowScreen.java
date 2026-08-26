@@ -387,6 +387,7 @@ public class GameFlowScreen extends BaseScreen {
         super.dispose();
         if (shapeRenderer != null) shapeRenderer.dispose();
         if (debugFont != null) debugFont.dispose();
+        GameEventMessenger.getInstance().removeListener(GameEvent.WAVE_STARTED_PLAYTIME,gameHUD.getAnnounceListener());
         GameEventMessenger.getInstance().removeListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
         GameEventMessenger.getInstance().removeListener(GameEvent.PLANT_EXPLODED, cameraListener);
         GameEventMessenger.getInstance().removeListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);

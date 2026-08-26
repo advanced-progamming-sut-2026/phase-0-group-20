@@ -35,6 +35,15 @@ public class AudioListener implements GameEventListener {
             case PROJECTILE_FIRED -> playProjectileSound(payload.getProjectileType());
             case ZOMBOSS_TALKS -> audioManager.playSfx(SfxType.ZOMBOSS_TALKS);
             case DAVE_TALKS -> playDave();
+            case GAME_OVER -> audioManager.playSfx(SfxType.LOSS_AUDIO);
+            case LEVEL_COMPLETED -> {
+                audioManager.playSfx(SfxType.WIN_AUDIO);
+                System.out.println("lbjf");
+            }
+            case WAVE_STARTED_PLAYTIME -> {
+                System.out.println("good");
+                audioManager.playSfx(SfxType.START_WAVE_SOUND);
+            }
         }
     }
 

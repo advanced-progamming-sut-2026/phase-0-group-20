@@ -3,9 +3,11 @@ package io.java.pvz.views.screens.gameflow;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -26,6 +28,10 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.BossLevel;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventListener;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.game.minigame.*;
 import io.java.pvz.models.timeManager.TimeManager;
 import io.java.pvz.net.server.PlayerRole;
@@ -57,6 +63,7 @@ public class GameHUD {
     private Table seedBankTable;
     private Table zombieTopBar;
     private final List<ZombieCardButton> zombieTopBarCards = new ArrayList<>();
+    private GameEventListener announceListener;
 
     public GameHUD(Group mainLayer, Group modalLayer, Viewport viewport,
                    GameInputHandler inputHandler, GameFlowController gameFlowController) {
@@ -67,6 +74,13 @@ public class GameHUD {
         this.gameFlowController = gameFlowController;
         this.skin = AssetLoader.getInstance().getSkin();
         this.textures = AssetLoader.getInstance().getTextures();
+        this.announceListener = new GameEventListener() {
+            @Override
+            public void onEvent(GameEvent event, GameEventPayload payload) {
+                showBigAnnouncementText("Ready!!!");
+            }
+        };
+        GameEventMessenger.getInstance().addListener(GameEvent.WAVE_STARTED_PLAYTIME, announceListener);
     }
 
     public void buildUI() {
@@ -101,12 +115,10 @@ public class GameHUD {
     }
 
     private void buildNormalProgressBar() {
-//        System.out.println("asfasdfasdfasdfasdfasdfasdfasdfasdf");
         if (!(GameSession.getInstance() != null &&
             GameSession.getInstance().getCurrentMode() instanceof Level level)) {
             return;
         }
-//        System.out.println("asfasdfasdfasdfasdfasdfasdfasdfasdf");
 
         waveProgressBar = new ProgressBar(0f, 1f, 0.001f, false, skin, "xp_green");
         waveProgressBar.setSize(400, 45);
@@ -412,6 +424,8 @@ public class GameHUD {
             seedBankTable.clear();
         }
 
+
+
         BeghouledLevel level = (BeghouledLevel) GameSession.getInstance().getCurrentMode();
         List<String> basePlants = level.getBasePlants();
 
@@ -423,6 +437,38 @@ public class GameHUD {
                 seedBankTable.add(plantButton).size(180f, 85f).padBottom(10f).row();
             }
         }
+    }
+
+    public void showBigAnnouncementText(String text) {
+        Label announcement = new Label(text, skin,"medium_outline");
+        announcement.setFontScale(2f);
+        announcement.setAlignment(Align.center);
+
+        announcement.setSize(600f, 150f);
+        announcement.setPosition(
+            (viewport.getWorldWidth() - announcement.getWidth()) / 2f,
+            (viewport.getWorldHeight() - announcement.getHeight()) / 2f
+        );
+
+        announcement.setOrigin(Align.center);
+        announcement.setScale(0.4f);
+        announcement.setColor(Color.RED);
+        announcement.getColor().a = 0f;
+
+        mainLayer.addActor(announcement);
+
+        announcement.addAction(Actions.sequence(
+            Actions.parallel(
+                Actions.scaleTo(1.4f, 1.4f, 0.6f, Interpolation.swingOut),
+                Actions.fadeIn(0.15f)
+            ),
+            Actions.delay(0.4f),
+            Actions.parallel(
+                Actions.scaleTo(1.8f, 1.8f, 0.6f, Interpolation.exp10Out),
+                Actions.fadeOut(0.6f)
+            ),
+            Actions.removeActor()
+        ));
     }
 
     private PlantCardButton createSeedPacket(Plant plant, boolean lockIncluded) {
@@ -752,5 +798,9 @@ public class GameHUD {
         for (int i = 0; i < zombieTopBarCards.size(); i++) {
             zombieTopBarCards.get(i).setSelectedVisual(i == selectedIndex);
         }
+    }
+
+    public GameEventListener getAnnounceListener() {
+        return announceListener;
     }
 }

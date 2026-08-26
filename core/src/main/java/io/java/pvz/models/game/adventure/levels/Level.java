@@ -13,6 +13,7 @@ import io.java.pvz.models.game.LoseCondition;
 import io.java.pvz.models.game.WinCondition;
 import io.java.pvz.models.game.adventure.Chapter;
 import io.java.pvz.models.game.adventure.SeasonType;
+import io.java.pvz.models.game.events.DelayedEventTicker;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
@@ -101,6 +102,10 @@ public abstract class Level implements GameMode {
         currentActiveWave = session.getArena().getCurrentActiveWave();
 
         if (currentWave == 0) {
+            System.out.println("fuckkkkk");
+            session.getTimeManager().registerNewTicker(
+                new DelayedEventTicker(GameEvent.WAVE_STARTED_PLAYTIME, 6f)
+            );
             startNextWave(session);
         } else if (currentActiveWave != null && currentActiveWave.is75PercentHpDestroyed()) {
             startNextWave(session);
@@ -127,7 +132,6 @@ public abstract class Level implements GameMode {
         notify(isLastWave ? "The final wave has come." : "Wave " + currentWave + " started.");
 
         spawnWave(newWave, session);
-
         if (isLastWave) {
             allWavesSpawned = true;
         }

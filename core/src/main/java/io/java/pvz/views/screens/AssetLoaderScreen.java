@@ -41,7 +41,7 @@ public class AssetLoaderScreen extends BaseScreen {
 
         AssetLoader.getInstance().init();
         Skin skin = AssetLoader.getInstance().getSkin();
-
+        addListeners();
         mainLayer.clear();
         mainLayer.setFillParent(true);
 
@@ -91,7 +91,7 @@ public class AssetLoaderScreen extends BaseScreen {
         if (!isInitFinished && virtualProgress < 0.9f) virtualProgress += delta * 0.2f;
         else if (isInitFinished && virtualProgress < 1f) virtualProgress += delta / 2;
         progressBar.setValue(virtualProgress);
-        addListeners();
+
 
         if (isInitFinished && virtualProgress >= 1f) {
             User stayedUser = DataBaseManager.getLoggedInUser();
@@ -137,6 +137,9 @@ public class AssetLoaderScreen extends BaseScreen {
         GameEventMessenger.getInstance().addListener(GameEvent.ZOMBOSS_PHASE_1, audioListener);
         GameEventMessenger.getInstance().addListener(GameEvent.ZOMBOSS_PHASE_2, audioListener);
         GameEventMessenger.getInstance().addListener(GameEvent.ZOMBOSS_PHASE_3, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.LEVEL_COMPLETED, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.GAME_OVER, audioListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.WAVE_STARTED_PLAYTIME, audioListener);
     }
 
 }
