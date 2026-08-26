@@ -34,7 +34,6 @@ public class IceSplashEffect implements ProjectileEffect {
             }
         }
 
-        notify("❄️ Ice Splash applied! " + nearbyZombies.size() + " zombies chilled.");
     }
 
     @Override

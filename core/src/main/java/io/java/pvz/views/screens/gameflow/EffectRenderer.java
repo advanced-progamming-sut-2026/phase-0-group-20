@@ -493,6 +493,7 @@ public class EffectRenderer {
         map.put(ProjectileType.ICE_PEA, new HitAnim(Ids.ProjectileHits.ICE_PEA, "animation", 0.625f));
         map.put(ProjectileType.ROTOBAGA_SEED, new HitAnim(Ids.ProjectileHits.ROTOBAGA_SEED, "animation", 0.5f));
         map.put(ProjectileType.FIRE_PEA, new HitAnim(Ids.ProjectileHits.FIRE_PEA, "animation", 0.625f));
+        map.put(ProjectileType.BLUE_FIRE_PEA, new HitAnim(Ids.ProjectileHits.BLUE_FIRE_PEA, "animation", 0.625f));
         map.put(ProjectileType.GOO_PEA, new HitAnim(Ids.ProjectileHits.GOO_PEA, "animation", 0.4667f));
         map.put(ProjectileType.MAGIC_BEAM, new HitAnim(Ids.ProjectileHits.MAGIC_BEAM, "animation", 2.2f));
         map.put(ProjectileType.LIGHTNING_CLOUD, new HitAnim(Ids.ProjectileHits.LIGHTNING_CLOUD, "animation", 0.5f));

@@ -1,34 +1,28 @@
 package io.java.pvz.models.entities.plants.PlantFoodStrategy;
 
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.timeManager.TimeManager;
-import io.java.pvz.utils.AnimationCatalog;
 
 public class GrowToMaxSizeStrategy implements PlantFoodStrategy {
     private int durationTicks = 0;
     private boolean executed = false;
+    private int setupTicks = 0;
+    private int tickTimer = 0;
 
     @Override
     public void onEnter(Plant plant) {
         PlantFoodStrategy.super.onEnter(plant);
         this.executed = false;
+        this.tickTimer = 0;
 
-        float animDuration = 0f;
-        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
-        if (anim != null) {
-            if (anim.hasClip("plantfood")) {
-                animDuration = anim.getDuration("plantfood");
-            } else if (anim.hasClip("plantfood_stage" + plant.getSize())) {
-                animDuration = anim.getDuration("plantfood_stage" + plant.getSize());
-            }
-        }
-
-        this.durationTicks = Math.max(1, (int) (animDuration * TimeManager.TICKS_PER_SECOND));
+        int[] timings = calculateTimings(plant);
+        this.setupTicks = timings[0];
+        this.durationTicks = Math.max(1, timings[1]);
     }
 
     @Override
     public void executeStrategy(Plant plant) {
-        if (!executed) {
+        tickTimer++;
+        if (!executed && tickTimer > setupTicks) {
             plant.setSize(plant.getMaxSize());
             executed = true;
         }
@@ -42,5 +36,6 @@ public class GrowToMaxSizeStrategy implements PlantFoodStrategy {
     @Override
     public void reset() {
         this.executed = false;
+        this.tickTimer = 0;
     }
 }

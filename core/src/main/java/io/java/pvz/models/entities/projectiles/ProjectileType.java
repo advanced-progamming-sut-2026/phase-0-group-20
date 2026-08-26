@@ -5,6 +5,7 @@ public enum ProjectileType {
     ICE_PEA,
     ROTOBAGA_SEED,
     FIRE_PEA,
+    BLUE_FIRE_PEA,
     GOO_PEA,
     MAGIC_BEAM,
     LIGHTNING_CLOUD,
@@ -48,6 +49,6 @@ public enum ProjectileType {
     }
 
     public static boolean isFireProjectile(ProjectileType type) {
-        return type == FIRE_PEA || type == PEPPER;
+        return type == FIRE_PEA || type == BLUE_FIRE_PEA || type == PEPPER;
     }
 }

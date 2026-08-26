@@ -176,6 +176,7 @@ public class WorldItemRenderer {
         map.put(ProjectileType.ICE_PEA, new ProjectileAnim(Ids.Projectiles.ICE_PEA, "animation"));
         map.put(ProjectileType.ROTOBAGA_SEED, new ProjectileAnim(Ids.Projectiles.ROTOBAGA_SEED, "animation"));
         map.put(ProjectileType.FIRE_PEA, new ProjectileAnim(Ids.Projectiles.FIRE_PEA, "animation"));
+        map.put(ProjectileType.BLUE_FIRE_PEA, new ProjectileAnim(Ids.Projectiles.BLUE_FIRE_PEA, "animation"));
         map.put(ProjectileType.GOO_PEA, new ProjectileAnim(Ids.Projectiles.GOO_PEA, "projectile_t1"));
         map.put(ProjectileType.MAGIC_BEAM, new ProjectileAnim(Ids.Projectiles.MAGIC_BEAM, "animation"));
         map.put(ProjectileType.LIGHTNING_CLOUD, new ProjectileAnim(Ids.Projectiles.LIGHTNING_CLOUD, "idle"));

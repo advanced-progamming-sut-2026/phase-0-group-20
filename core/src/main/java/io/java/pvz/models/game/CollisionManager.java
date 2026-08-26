@@ -111,12 +111,11 @@ public class CollisionManager {
 
             Tile currentTile = arena.getTile(proj.getPosition().getRow(), proj.getPosition().getCol());
             if (currentTile == null) continue;
-            if (!proj.isFiredByZombie() && !proj.isGetTorchWood()) {
+            if (!proj.isFiredByZombie()) {
                 for (Plant p : currentTile.getPlants()) {
                     for (IPlantStrategy strategy : p.getStrategies()) {
                         if (strategy instanceof TorchwoodStrategy torchwoodStrategy) {
                             torchwoodStrategy.igniteProjectile(proj);
-                            proj.setGetTorchWood(true);
                         }
                     }
                 }

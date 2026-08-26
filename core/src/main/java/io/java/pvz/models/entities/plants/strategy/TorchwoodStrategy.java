@@ -30,8 +30,6 @@ public class TorchwoodStrategy implements IPlantStrategy {
             int plantCol = context.getPlacedTile().getCol();
             int explosionDamage = 1800;
 
-            notify("💥 Torchwood was destroyed and triggered a massive FIRE EXPLOSION!");
-
             List<Zombie> targets = GameSession.getInstance().getArena().getZombiesInRadius(plantCol, plantRow, 1.5f);
             for (Zombie z : targets) {
                 if (!z.isDead()) {
@@ -47,12 +45,35 @@ public class TorchwoodStrategy implements IPlantStrategy {
     public void igniteProjectile(Projectile projectile) {
         ProjectileType type = projectile.getType();
 
-        if (type == ProjectileType.PEA || type == ProjectileType.ICE_PEA || type == ProjectileType.FIRE_PEA) {
-            int multiplier = blueFlame ? 3 : 1;
-            int newDamage = projectile.getDamage() * multiplier;
+        int currentLevel;
+        int baseDamage;
 
-            projectile.setType(ProjectileType.FIRE_PEA);
-            projectile.setDamage(newDamage);
+        if (type == ProjectileType.ICE_PEA) {
+            currentLevel = 0;
+            baseDamage = projectile.getDamage();
+        } else if (type == ProjectileType.PEA) {
+            currentLevel = 1;
+            baseDamage = projectile.getDamage();
+        } else if (type == ProjectileType.FIRE_PEA) {
+            currentLevel = 2;
+            baseDamage = projectile.getDamage() / 2;
+        } else if (type == ProjectileType.BLUE_FIRE_PEA) {
+            currentLevel = 3;
+            baseDamage = projectile.getDamage() / 3;
+        } else {
+            return;
+        }
+
+        int targetLevel = blueFlame ? 3 : 2;
+
+        if (targetLevel > currentLevel) {
+            if (targetLevel == 3) {
+                projectile.setType(ProjectileType.BLUE_FIRE_PEA);
+                projectile.setDamage(baseDamage * 3);
+            } else {
+                projectile.setType(ProjectileType.FIRE_PEA);
+                projectile.setDamage(baseDamage * 2);
+            }
             projectile.setEffect(new FireEffect());
         }
     }

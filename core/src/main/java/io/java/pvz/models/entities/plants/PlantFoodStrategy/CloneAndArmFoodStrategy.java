@@ -29,19 +29,10 @@ public class CloneAndArmFoodStrategy implements PlantFoodStrategy {
         this.executed = false;
         this.tickTimer = 0;
 
-        float animDuration = 1.0f;
-        float setupDuration = 0f;
-        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
-        if (anim != null) {
-            if (anim.hasClip("plantfood_on")) {
-                setupDuration = anim.getDuration("plantfood_on");
-                animDuration = setupDuration + anim.getDuration("plantfood");
-            } else if (anim.hasClip("plantfood")) {
-                animDuration = anim.getDuration("plantfood");
-            }
-        }
-        this.setupTicks = (int) (setupDuration * TimeManager.TICKS_PER_SECOND);
-        this.durationTicks = (int) (animDuration * TimeManager.TICKS_PER_SECOND);
+        int[] timings = calculateTimings(plant);
+        this.setupTicks = timings[0];
+
+        this.durationTicks = Math.max(1, timings[1]);
     }
 
     @Override
@@ -59,8 +50,7 @@ public class CloneAndArmFoodStrategy implements PlantFoodStrategy {
 
             if (randomEmptyTiles != null) {
                 for (Tile tile : randomEmptyTiles) {
-                    Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, true);
-
+                    Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, false);
                     newPlant.setPlacedTile(tile);
                     tile.addPlant(newPlant);
                     GameSession.getInstance().getArena().addPlant(newPlant);
