@@ -30,7 +30,6 @@ public class Projectile implements Ticker {
     private boolean piercing;
     private boolean canPassObstacles; // for lobber
     private boolean isDestroyed;
-    private boolean isGetTorchWood = false;
 
     private int size = 1;
 
@@ -191,7 +190,7 @@ public class Projectile implements Ticker {
         return switch (projectileType) {
             case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE, PUFF_SPORE-> new NormalEffect();
             case ICE_PEA -> new IceEffect();
-            case FIRE_PEA -> new FireEffect();
+            case FIRE_PEA, BLUE_FIRE_PEA -> new FireEffect();
             case GOO_PEA, FUME -> new PoisonProjectileEffect();
             case MAGIC_BEAM -> new HypnotizeEffect();
             case LIGHTNING_CLOUD -> new LightningEffect();
@@ -706,14 +705,6 @@ public class Projectile implements Ticker {
 
     public Zombie getOwnerZombie() {
         return zombie;
-    }
-
-    public boolean isGetTorchWood() {
-        return isGetTorchWood;
-    }
-
-    public void setGetTorchWood(boolean getTorchWood) {
-        isGetTorchWood = getTorchWood;
     }
 
     public Tile getLastHitObstacleTile() {

@@ -2,17 +2,16 @@ package io.java.pvz.models.entities.zombies;
 
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.projectiles.Projectile;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.entities.zombies.behavior.attack.AttackBehavior;
 import io.java.pvz.models.entities.zombies.behavior.attack.HypnotizeAttack;
 import io.java.pvz.models.entities.zombies.behavior.defense.DefenseBehavior;
 import io.java.pvz.models.entities.zombies.behavior.effect.ChillEffect;
-import io.java.pvz.models.entities.zombies.behavior.effect.Effect;
 import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.ZombieEffect;
 import io.java.pvz.models.entities.zombies.behavior.move.MoveBehavior;
 import io.java.pvz.models.enums.PhysicalConstants;
-import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.Ticker;
@@ -52,6 +51,7 @@ public class Zombie implements Ticker {
     private Zombie targetZombie = null;
     private boolean shiny = false;
     private boolean burnedToAsh = false;
+    private int smashDamage;
 
     private final Position position;
 
@@ -69,6 +69,7 @@ public class Zombie implements Ticker {
         this.eatDPS = data.getEatDps();
         this.waveCost = data.getWaveCost();
         this.position = new Position(9, row); // we will randomly choose the exact x due to map
+        this.smashDamage = data.getSmashDamage();
         this.moveBehavior = moveBehavior;
         this.defenseBehavior = defenseBehavior;
         this.attackBehavior = attackBehavior;
@@ -473,5 +474,13 @@ public class Zombie implements Ticker {
 
     public void setNetworkId(String networkId) {
         this.networkId = networkId;
+    }
+
+    public int getSmashDamage() {
+        return smashDamage;
+    }
+
+    public void setSmashDamage(int smashDamage) {
+        this.smashDamage = smashDamage;
     }
 }

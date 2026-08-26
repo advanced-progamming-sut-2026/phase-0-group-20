@@ -5,9 +5,6 @@ import io.java.pvz.models.entities.zombies.Zombie;
 public class LightningEffect implements ProjectileEffect {
     @Override
     public void applyEffect(Zombie zombie, Projectile projectile) {
-
-
-        notify("⚡ " + zombie.getName() + " HAS BEEN ZAPPED AND REDUCED TO ASHES! ⚡");
     }
 
     @Override

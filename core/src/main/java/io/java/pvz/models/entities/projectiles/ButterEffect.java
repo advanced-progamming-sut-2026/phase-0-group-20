@@ -5,8 +5,6 @@ import io.java.pvz.models.entities.zombies.Zombie;
 public class ButterEffect implements ProjectileEffect {
     @Override
     public void applyEffect(Zombie zombie, Projectile projectile) {
-        notify("🧈 " + zombie.getName() + " got buttered and is STUNNED!");
-
         // apply effect
     }
 

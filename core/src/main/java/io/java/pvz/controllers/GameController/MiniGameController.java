@@ -22,11 +22,13 @@ import java.util.Random;
 public class MiniGameController {
     private final List<String> plantPool = new ArrayList<>(Arrays.asList(
         "Peashooter", "Wall-nut", "Cabbage-pult",
-        "Snow Pea", "Repeater", "Snapdragon",
+        "Snow Pea", "Repeater",
         "Cherry Bomb", "Bonk Choy", "Threepeater",
         "Melon-pult", "Kernel-pult", "Cactus",
-        "Wasabi Whip", "Torchwood", "Chomper"
+        "Wasabi Whip", "Torchwood", "Chomper",
+       "Squash", "Winter Melon", "Jalapeno"
     ));
+
     private Integer parsePositiveInt(String str) {
         try {
             int val = Integer.parseInt(str);
