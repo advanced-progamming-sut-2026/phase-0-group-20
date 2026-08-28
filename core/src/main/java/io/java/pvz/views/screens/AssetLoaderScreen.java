@@ -73,13 +73,11 @@ public class AssetLoaderScreen extends BaseScreen {
             if (logoRegion != null)
                 logoImage.setDrawable(new TextureRegionDrawable(logoRegion));
         }
-
         if (backgroundRegion != null) {
             batch.begin();
             batch.draw(backgroundRegion, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.end();
         }
-
         if (!isInitStarted) {
             isInitStarted = true;
             new Thread(() -> {

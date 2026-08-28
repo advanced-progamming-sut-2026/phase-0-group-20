@@ -45,6 +45,13 @@ public class PauseMenuTable extends BorderedTable {
     }
 
     private void buildContent(Skin skin) {
+        add(buildHeader(skin)).growX().padBottom(30).row();
+        add(buildObjectiveBox(skin)).padBottom(30).row();
+        add(buildSlidersTable(skin)).padBottom(40).row();
+        add(buildButtonsTable(skin)).center();
+    }
+
+    private Table buildHeader(Skin skin) {
         Table headerTable = new Table();
         TextButton closeBtn = UiFactory.getCloseBtn(skin, this::remove);
 
@@ -56,11 +63,13 @@ public class PauseMenuTable extends BorderedTable {
         headerTable.add(closeBtn).size(45, 45).left();
         headerTable.add(titleLabel).expandX().center().padRight(45);
 
-        add(headerTable).growX().padBottom(30).row();
+        return headerTable;
+    }
 
+    private Table buildObjectiveBox(Skin skin) {
         Table objectiveBox = new Table();
-
         Label.LabelStyle labelStyle = skin.get("bundle_reward_multiplier", Label.LabelStyle.class);
+
         if (labelStyle != null && labelStyle.background != null) {
             objectiveBox.setBackground(labelStyle.background);
         }
@@ -70,10 +79,13 @@ public class PauseMenuTable extends BorderedTable {
         objLabel.setFontScale(1.4f);
         objLabel.setAlignment(Align.center);
         objLabel.setWrap(true);
+
         objectiveBox.add(objLabel).width(600).pad(20);
 
-        add(objectiveBox).padBottom(30).row();
+        return objectiveBox;
+    }
 
+    private Table buildSlidersTable(Skin skin) {
         Table slidersTable = new Table();
         Color fontColor = Color.valueOf("#4A3018");
 
@@ -87,62 +99,79 @@ public class PauseMenuTable extends BorderedTable {
             controller.setSfxVolume(val);
         });
 
-        add(slidersTable).padBottom(40).row();
-
-        Table buttonsTable = new Table();
-
-        TextButton saveExitBtn = UiFactory.textButton("SAVE AND EXIT", skin, "brown", 1.05f, 0.95f, () -> {
-            System.out.println("Quitting to Plant Selection...");
-
-            Runnable proceedToExit = () -> app.postRunnable(() -> {
-                GameSession.destroyInstance();
-                App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
-                ScreenManager.getInstance().popScreen();
-                ScreenManager.getInstance().popScreen();
-            });
-
-            if (MatchController.getInstance().isOnlineMatch()) {
-                MatchController.getInstance().surrender(response -> proceedToExit.run());
-            } else {
-                proceedToExit.run();
-            }
-        });
-        saveExitBtn.getLabel().setFontScale(1.1f);
-        buttonsTable.add(saveExitBtn).width(200).height(65).padRight(15);
-
-        boolean isOnline = MatchController.getInstance().isOnlineMatch();
-
-        if (!isOnline) {
-            TextButton restartBtn = UiFactory.textButton("RESTART", skin, "brown", 1.05f, 0.95f, () -> {
-                System.out.println("Restarting Level...");
-                GameFlowController flowController = new GameFlowController();
-                Result res = flowController.restartLevel();
-
-                if (res.isSuccessful()) {
-                    app.postRunnable(() -> {
-                        Game game = (Game) Gdx.app.getApplicationListener();
-                        String mapId = new GameMenuController().getCurrentMapTextureId();
-
-                        ScreenManager.getInstance().popScreen();
-
-                        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
-                    });
-                }
-                closeUiOnly();
-            });
-            restartBtn.getLabel().setFontScale(1.1f);
-            buttonsTable.add(restartBtn).width(180).height(65).padRight(15);
-        }
-
-        TextButton resumeBtn = UiFactory.textButton("RESUME", skin, "purple", 1.05f, 0.95f, this::remove);
-        resumeBtn.getLabel().setFontScale(1.1f);
-        buttonsTable.add(resumeBtn).width(180).height(65);
-
-        add(buttonsTable).center();
+        return slidersTable;
     }
 
-    private void createSliderRow(Table table, Skin skin, String title, float min, float max, int initialVal,
-                                 float textScale, Color fontColor, float padBottom, Consumer<Integer> onChange) {
+    private Table buildButtonsTable(Skin skin) {
+        Table buttonsTable = new Table();
+
+        buttonsTable.add(createSaveExitButton(skin)).width(200).height(65).padRight(15);
+
+        if (!MatchController.getInstance().isOnlineMatch()) {
+            buttonsTable.add(createRestartButton(skin)).width(180).height(65).padRight(15);
+        }
+
+        buttonsTable.add(createResumeButton(skin)).width(180).height(65);
+
+        return buttonsTable;
+    }
+
+    private TextButton createSaveExitButton(Skin skin) {
+        TextButton btn = UiFactory.textButton("SAVE AND EXIT", skin, "brown", 1.05f, 0.95f, this::handleSaveAndExit);
+        btn.getLabel().setFontScale(1.1f);
+        return btn;
+    }
+
+    private void handleSaveAndExit() {
+        System.out.println("Quitting to Plant Selection...");
+
+        Runnable proceedToExit = () -> app.postRunnable(() -> {
+            GameSession.destroyInstance();
+            App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
+            ScreenManager.getInstance().popScreen();
+            ScreenManager.getInstance().popScreen();
+        });
+
+        if (MatchController.getInstance().isOnlineMatch()) {
+            MatchController.getInstance().surrender(response -> proceedToExit.run());
+        } else {
+            proceedToExit.run();
+        }
+    }
+
+    private TextButton createRestartButton(Skin skin) {
+        TextButton btn = UiFactory.textButton("RESTART", skin, "brown", 1.05f, 0.95f, this::handleRestart);
+        btn.getLabel().setFontScale(1.1f);
+        return btn;
+    }
+
+    private void handleRestart() {
+        System.out.println("Restarting Level...");
+        GameFlowController flowController = new GameFlowController();
+        Result res = flowController.restartLevel();
+
+        if (res.isSuccessful()) {
+            app.postRunnable(() -> {
+                Game game = (Game) Gdx.app.getApplicationListener();
+                String mapId = new GameMenuController().getCurrentMapTextureId();
+
+                ScreenManager.getInstance().popScreen();
+                ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+            });
+        }
+        closeUiOnly();
+    }
+
+    private TextButton createResumeButton(Skin skin) {
+        TextButton btn = UiFactory.textButton("RESUME", skin, "purple", 1.05f, 0.95f, this::remove);
+        btn.getLabel().setFontScale(1.1f);
+        return btn;
+    }
+
+    private void createSliderRow(
+        Table table, Skin skin, String title, float min, float max, int initialVal,
+        float textScale, Color fontColor, float padBottom, Consumer<Integer> onChange
+    ) {
         Label label = new Label(title, skin);
         label.setColor(fontColor);
         label.setFontScale(textScale);

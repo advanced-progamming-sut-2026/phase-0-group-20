@@ -21,9 +21,27 @@ public class CactusStrategy implements IPlantStrategy {
         int plantRow = context.getPlacedTile().getRow();
         int plantCol = context.getPlacedTile().getCol();
 
-        boolean zombieOnTile = false;
-        boolean targetInRange = false;
-        boolean flyingTargetInRange = false;
+        boolean[] targetStatus = scanZombiesInRow(plantRow, plantCol);
+        boolean zombieOnTile = targetStatus[0];
+        boolean targetInRange = targetStatus[1];
+        boolean flyingTargetInRange = targetStatus[2];
+        boolean boosted = context.isBoosted();
+
+        if (handleHidingAndMelee(context, currentTick, plantRow, plantCol, zombieOnTile, boosted)) {
+            return;
+        }
+
+        if (handleUnhiding(context, zombieOnTile, boosted)) {
+            return;
+        }
+
+        handleStretching(context, flyingTargetInRange);
+        handleShooting(context, currentTick, targetInRange, boosted);
+        handleIdle(context, boosted);
+    }
+
+    private boolean[] scanZombiesInRow(int plantRow, int plantCol) {
+        boolean[] status = new boolean[3]; // [zombieOnTile, targetInRange, flyingTargetInRange]
 
         for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
             if (z.isDead()) continue;
@@ -31,44 +49,58 @@ public class CactusStrategy implements IPlantStrategy {
             boolean isFlying = z.getState() != null && z.getState().name().contains("FLY");
 
             if (z.getCol() == plantCol && !isFlying) {
-                zombieOnTile = true;
+                status[0] = true;
             }
             if (z.getCol() >= plantCol) {
-                targetInRange = true;
-                if (isFlying) flyingTargetInRange = true;
-            }
-        }
-
-        boolean boosted = context.isBoosted();
-
-        if (zombieOnTile) {
-            if (!isHiding) {
-                context.triggerAction(boosted ? "down_plantfood" : "down");
-                isHiding = true;
-                isStretching = false;
-            } else if (context.getCurrentAction() == null || context.getCurrentAction().contains("down_idle")) {
-                if (currentTick - lastMeleeTick >= TimeManager.TICKS_PER_SECOND) {
-                    context.triggerAction(boosted ? "down_attack_plantfood" : "down_attack");
-
-                    for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
-                        if (!z.isDead() && z.getCol() == plantCol) {
-                            z.takeDamage(boosted ? context.getDamage() * 2 : context.getDamage());
-                        }
-                    }
-                    lastMeleeTick = currentTick;
-                } else if (context.getCurrentAction() == null) {
-                    context.triggerAction(boosted ? "down_idle_plantfood" : "down_idle");
+                status[1] = true;
+                if (isFlying) {
+                    status[2] = true;
                 }
             }
-            return;
+        }
+        return status;
+    }
+
+    private boolean handleHidingAndMelee(Plant context, int currentTick, int plantRow, int plantCol,
+                                         boolean zombieOnTile, boolean boosted) {
+        if (!zombieOnTile) return false;
+
+        if (!isHiding) {
+            context.triggerAction(boosted ? "down_plantfood" : "down");
+            isHiding = true;
+            isStretching = false;
+        } else if (context.getCurrentAction() == null || context.getCurrentAction().contains("down_idle")) {
+            processMeleeCombat(context, currentTick, plantRow, plantCol, boosted);
         }
 
+        return true;
+    }
+
+    private void processMeleeCombat(Plant context, int currentTick, int plantRow, int plantCol, boolean boosted) {
+        if (currentTick - lastMeleeTick >= TimeManager.TICKS_PER_SECOND) {
+            context.triggerAction(boosted ? "down_attack_plantfood" : "down_attack");
+
+            for (Zombie z : GameSession.getInstance().getArena().zombieInRow(plantRow)) {
+                if (!z.isDead() && z.getCol() == plantCol) {
+                    z.takeDamage(boosted ? context.getDamage() * 2 : context.getDamage());
+                }
+            }
+            lastMeleeTick = currentTick;
+        } else if (context.getCurrentAction() == null) {
+            context.triggerAction(boosted ? "down_idle_plantfood" : "down_idle");
+        }
+    }
+
+    private boolean handleUnhiding(Plant context, boolean zombieOnTile, boolean boosted) {
         if (isHiding && !zombieOnTile) {
             context.triggerAction(boosted ? "up_plantfood" : "up");
             isHiding = false;
-            return;
+            return true;
         }
+        return false;
+    }
 
+    private void handleStretching(Plant context, boolean flyingTargetInRange) {
         if (flyingTargetInRange && !isStretching) {
             context.triggerAction("up_stretch");
             isStretching = true;
@@ -76,8 +108,11 @@ public class CactusStrategy implements IPlantStrategy {
             context.triggerAction("down_stretch");
             isStretching = false;
         }
+    }
 
+    private void handleShooting(Plant context, int currentTick, boolean targetInRange, boolean boosted) {
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
+
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
             if (targetInRange && context.getCurrentAction() == null) {
                 if (isStretching) {
@@ -89,7 +124,9 @@ public class CactusStrategy implements IPlantStrategy {
                 lastShotTick = currentTick;
             }
         }
+    }
 
+    private void handleIdle(Plant context, boolean boosted) {
         if (context.getCurrentAction() == null) {
             if (boosted) {
                 context.triggerAction("idle_plantfood");

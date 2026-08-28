@@ -235,7 +235,9 @@ public class GameInputHandler {
     }
 
     public void handleTileClick() {
-        if (GameSession.getInstance() == null) return;
+        if (GameSession.getInstance() == null) {
+            return;
+        }
 
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
             clearAllSelections();
@@ -244,80 +246,109 @@ public class GameInputHandler {
 
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector2 gridPos = getGridPosition();
-            if (gridPos == null) return;
+            if (gridPos == null) {
+                return;
+            }
 
             int col = (int) gridPos.x + 1;
             int row = (int) gridPos.y + 1;
+            processLeftClickActions(col, row);
+        }
+    }
 
-            if (isShovelSelected) {
-                if (MatchController.getInstance().isOnlineMatch()) {
-                    MatchController.getInstance().pluckPlant(col, row, response -> {
-                        if (response.isSuccess())
-                            clearAllSelections();
-                    });
-                } else {
-                    if (gameFlowController.pluckPlant(String.valueOf(col), String.valueOf(row)).isSuccessful())
-                        clearAllSelections();
-                }
-                return;
-            }
+    private void processLeftClickActions(int col, int row) {
+        if (isShovelSelected) {
+            handleShovelAction(col, row);
+            return;
+        }
 
-            if (isPlantFoodSelected) {
-                if (gameFlowController.feedPlant(String.valueOf(col), String.valueOf(row)).isSuccessful()) {
-                    float tileX = GRID_START_X + (col - 1) * TILE_WIDTH;
-                    float tileY = GRID_START_Y + (row - 1) * TILE_HEIGHT;
+        if (isPlantFoodSelected) {
+            handlePlantFoodAction(col, row);
+            return;
+        }
 
-                    float offsetX = 10f;
-                    float offsetY = 100f;
-                    float centerX = tileX + (TILE_WIDTH / 2f) + offsetX;
-                    float centerY = tileY + (TILE_HEIGHT / 2f) + offsetY;
-                    PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated
-                        ("768/INITIAL/EFFECTS/PLANTFOOD_FX/PLANTFOOD_FX.PAM", "plantfood");
-                    actor.setPosition(centerX, centerY);
+        if (selectedGridPos != null && floatingPlantImage != null) {
+            handleSwapAction(col, row);
+            return;
+        }
 
-                    highlightLayer.addActor(actor);
+        if (GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
+            handleGridPickup(col, row);
+            return;
+        }
 
-                    Tile tile = GameSession.getInstance().getArena().getTile(row - 1, col - 1);
-                    plantFoodAnimations.put(tile, actor);
+        if (selectedZombieToPlace != null && floatingPlantImage != null) {
+            handleZombiePlacement(col, row);
+            return;
+        }
+
+        if (selectedPlantToPlace != null && floatingPlantImage != null) {
+            handlePlanting(col, row);
+            return;
+        }
+
+        if (GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel) {
+            miniGameController.breakVase(String.valueOf(col), String.valueOf(row));
+        }
+    }
+
+    private void handleShovelAction(int col, int row) {
+        if (MatchController.getInstance().isOnlineMatch()) {
+            MatchController.getInstance().pluckPlant(col, row, response -> {
+                if (response.isSuccess()) {
                     clearAllSelections();
-                    if (gameHUD != null) gameHUD.updatePlantFoodCount();
-
                 }
-                return;
-            }
-
-            if (selectedGridPos != null && floatingPlantImage != null) {
-                Result result = miniGameController.swapPlants(
-                    (int) selectedGridPos.x, (int) selectedGridPos.y
-                    , col, row);
-                if (!result.isSuccessful()) {
-                    GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                        new GameEventPayload.Builder(GameEvent.NOTIFY)
-                            .message(result.message())
-                            .build());
-                }
+            });
+        } else {
+            if (gameFlowController.pluckPlant(String.valueOf(col), String.valueOf(row)).isSuccessful()) {
                 clearAllSelections();
-                return;
-            }
-
-            if (GameSession.getInstance().getCurrentMode() instanceof BeghouledLevel) {
-                handleGridPickup(col, row);
-                return;
-            }
-
-            if (selectedZombieToPlace != null && floatingPlantImage != null) {
-                handleZombiePlacement(col, row);
-                return;
-            }
-
-            if (selectedPlantToPlace != null && floatingPlantImage != null) {
-                handlePlanting(col, row);
-                return;
-            }
-            if (GameSession.getInstance().getCurrentMode() instanceof VaseBreakerLevel) {
-                miniGameController.breakVase(String.valueOf(col), String.valueOf(row));
             }
         }
+    }
+
+    private void handlePlantFoodAction(int col, int row) {
+        if (gameFlowController.feedPlant(String.valueOf(col), String.valueOf(row)).isSuccessful()) {
+            float tileX = GRID_START_X + (col - 1) * TILE_WIDTH;
+            float tileY = GRID_START_Y + (row - 1) * TILE_HEIGHT;
+
+            float centerX = tileX + (TILE_WIDTH / 2f) + 10f;
+            float centerY = tileY + (TILE_HEIGHT / 2f) + 100f;
+
+            PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(
+                "768/INITIAL/EFFECTS/PLANTFOOD_FX/PLANTFOOD_FX.PAM",
+                "plantfood"
+            );
+            actor.setPosition(centerX, centerY);
+
+            highlightLayer.addActor(actor);
+
+            Tile tile = GameSession.getInstance().getArena().getTile(row - 1, col - 1);
+            plantFoodAnimations.put(tile, actor);
+            clearAllSelections();
+
+            if (gameHUD != null) {
+                gameHUD.updatePlantFoodCount();
+            }
+        }
+    }
+
+    private void handleSwapAction(int col, int row) {
+        Result result = miniGameController.swapPlants(
+            (int) selectedGridPos.x,
+            (int) selectedGridPos.y,
+            col,
+            row
+        );
+
+        if (!result.isSuccessful()) {
+            GameEventMessenger.getInstance().dispatch(
+                GameEvent.NOTIFY,
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message(result.message())
+                    .build()
+            );
+        }
+        clearAllSelections();
     }
 
     public void sickAnimations() {
@@ -471,9 +502,7 @@ public class GameInputHandler {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            if (couchSelectedZombieIndex < 0)
-                return;
-
+            if (couchSelectedZombieIndex < 0) return;
             IZombieLevel level = (IZombieLevel) GameSession.getInstance().getCurrentMode();
             List<ZombieType> availableZombies = level.getZombiesForThisLevel();
 
@@ -493,16 +522,12 @@ public class GameInputHandler {
                 }
             }
         }
-
-
         rowHighlight.setSize(COLS * TILE_WIDTH, TILE_HEIGHT);
         rowHighlight.setPosition(GRID_START_X, GRID_START_Y + (couchZombieRow * TILE_HEIGHT));
         rowHighlight.setVisible(true);
-
         colHighlight.setSize(TILE_WIDTH, ROWS * TILE_HEIGHT);
         colHighlight.setPosition(GRID_START_X + (couchZombieCol * TILE_WIDTH), GRID_START_Y);
         colHighlight.setVisible(true);
-
     }
 
     private void updateCouchFloatingZombie() {

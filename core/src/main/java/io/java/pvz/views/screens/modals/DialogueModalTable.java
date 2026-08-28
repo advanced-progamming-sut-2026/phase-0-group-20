@@ -47,15 +47,23 @@ public class DialogueModalTable extends Table {
     }
 
     private void updateCurrentLine() {
-        if (dialogueLines == null || currentIndex >= dialogueLines.size()) return;
+        if (dialogueLines == null || currentIndex >= dialogueLines.size()) {
+            return;
+        }
 
         this.clearChildren();
-
         DialogueLine current = dialogueLines.get(currentIndex);
 
         Stack layoutStack = new Stack();
         layoutStack.setFillParent(true);
 
+        layoutStack.add(buildCharacterLayer(current));
+        layoutStack.add(buildBoxLayer(current));
+
+        this.add(layoutStack).grow();
+    }
+
+    private Table buildCharacterLayer(DialogueLine current) {
         Table characterLayer = new Table();
         characterLayer.setFillParent(true);
 
@@ -65,49 +73,62 @@ public class DialogueModalTable extends Table {
                 current.getClipName(),
                 current.getPamPath()
             );
-
-            if (current.isLeft()) {
-                characterLayer.bottom().left();
-                characterLayer.add(animatedActor).padLeft(CHAR_OFFSET_X).padBottom(CHAR_OFFSET_Y);
-                GameEventMessenger.getInstance().dispatch(GameEvent.DAVE_TALKS,
-                    new GameEventPayload.Builder(GameEvent.DAVE_TALKS)
-                        .build());
-            } else {
-                characterLayer.bottom().right();
-                characterLayer.add(animatedActor).padRight(CHAR_OFFSET_X).padBottom(CHAR_OFFSET_Y);
-                GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBOSS_TALKS,
-                    new GameEventPayload.Builder(GameEvent.ZOMBOSS_TALKS)
-                        .build());
-            }
+            setupCharacterPosition(characterLayer, animatedActor, current);
         }
 
+        return characterLayer;
+    }
+
+    private void setupCharacterPosition(Table layer, PamAnimatedActor actor, DialogueLine current) {
+        if (current.isLeft()) {
+            layer.bottom().left();
+            layer.add(actor).padLeft(CHAR_OFFSET_X).padBottom(CHAR_OFFSET_Y);
+            GameEventMessenger.getInstance().dispatch(
+                GameEvent.DAVE_TALKS,
+                new GameEventPayload.Builder(GameEvent.DAVE_TALKS).build()
+            );
+        } else {
+            layer.bottom().right();
+            layer.add(actor).padRight(CHAR_OFFSET_X).padBottom(CHAR_OFFSET_Y);
+            GameEventMessenger.getInstance().dispatch(
+                GameEvent.ZOMBOSS_TALKS,
+                new GameEventPayload.Builder(GameEvent.ZOMBOSS_TALKS).build()
+            );
+        }
+    }
+
+    private Table buildBoxLayer(DialogueLine current) {
         Table boxLayer = new Table();
         boxLayer.bottom().padBottom(40);
 
         BorderedTable dialogBox = new BorderedTable();
         dialogBox.pad(20);
 
+        Table textTable = new Table();
+        textTable.add(createSpeakerLabel(current)).growX().padBottom(10).row();
+        textTable.add(createDialogueTextLabel(current)).grow().center();
+
+        dialogBox.add(textTable).grow().center();
+        boxLayer.add(dialogBox).width(800).height(180);
+
+        return boxLayer;
+    }
+
+    private Label createSpeakerLabel(DialogueLine current) {
         Label speakerLabel = new Label(current.getSpeakerName(), skin, "big");
         speakerLabel.setColor(Color.valueOf("#4A3018"));
         speakerLabel.setAlignment(Align.center);
 
+        return speakerLabel;
+    }
+
+    private Label createDialogueTextLabel(DialogueLine current) {
         Label dialogueTextLabel = new Label(current.getText(), skin, "medium");
         dialogueTextLabel.setColor(Color.BLACK);
         dialogueTextLabel.setWrap(true);
         dialogueTextLabel.setAlignment(Align.center);
 
-        Table textTable = new Table();
-        textTable.add(speakerLabel).growX().padBottom(10).row();
-        textTable.add(dialogueTextLabel).grow().center();
-
-        dialogBox.add(textTable).grow().center();
-
-        boxLayer.add(dialogBox).width(800).height(180);
-
-        layoutStack.add(characterLayer);
-        layoutStack.add(boxLayer);
-
-        this.add(layoutStack).grow();
+        return dialogueTextLabel;
     }
 
     private void advanceDialogue() {

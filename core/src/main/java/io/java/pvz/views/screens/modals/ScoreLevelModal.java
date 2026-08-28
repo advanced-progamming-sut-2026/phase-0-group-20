@@ -29,46 +29,34 @@ public class ScoreLevelModal extends BorderedTable {
     private Actor blocker;
     private final Game game;
 
-    public ScoreLevelModal(Skin skin,Game game) {
+    public ScoreLevelModal(Skin skin, Game game) {
         super();
         this.game = game;
         setSize(550, 400);
         top();
         pad(30);
 
-        Label titleLabel = new Label("Score Level", skin, "big");
-        titleLabel.setAlignment(Align.center);
-        titleLabel.setColor(Color.valueOf("#4A3018"));
+        Label titleLabel = createLabel("Score Level", skin, "big", Color.valueOf("#4A3018"));
+        Label questionLabel = createLabel("Do You Want to Start a Score Game ?", skin, "big", Color.BROWN);
 
-        Label questionLabel = new Label("Do You Want to Start a Score Game ?", skin, "big");
-        questionLabel.setAlignment(Align.center);
-        questionLabel.setColor(Color.BROWN);
+        String scoreText = "High Score : " + App.getActiveUser().getHighestBonusScore();
+        Label highScoreLabel = createLabel(scoreText, skin, "medium", Color.valueOf("#4A3018"));
 
-        Label highScoreLabel = new Label("High Score : "+ App.getActiveUser().getHighestBonusScore(),
-            skin, "medium");
-        highScoreLabel.setAlignment(Align.center);
-        highScoreLabel.setColor(Color.valueOf("#4A3018"));
+        add(buildHeaderTable(skin, titleLabel)).growX().padBottom(40).row();
+        add(questionLabel).growX().padBottom(30).row();
+        add(highScoreLabel).growX().expandY().top().padBottom(20).row();
+        add(buildButtonTable(skin)).padBottom(10).bottom();
+    }
 
-        Table buttonTable = new Table();
-        TextButton playBtn = new TextButton("Play", skin, "green");
-        playBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Result result = new GameMenuController().enterScoringLevel();
-                if(result.isSuccessful()){
-                    String mapId = new GameMenuController().getCurrentMapTextureId();
-                    ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
-                }
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(result.message())
-                        .build());
-            }
-        });
-        buttonTable.add(playBtn).size(160, 65).center();
+    private Label createLabel(String text, Skin skin, String style, Color color) {
+        Label label = new Label(text, skin, style);
+        label.setAlignment(Align.center);
+        label.setColor(color);
+        return label;
+    }
 
-        Label backBtn = new Label("X", skin, "big");
-        backBtn.setColor(Color.BROWN);
+    private Table buildHeaderTable(Skin skin, Label titleLabel) {
+        Label backBtn = createLabel("X", skin, "big", Color.BROWN);
         backBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -81,16 +69,55 @@ public class ScoreLevelModal extends BorderedTable {
         headerTable.add(titleLabel).expandX().center();
         headerTable.add().width(40);
 
-        add(headerTable).growX().padBottom(40).row();
-        add(questionLabel).growX().padBottom(30).row();
-        add(highScoreLabel).growX().expandY().top().padBottom(20).row();
-        add(buttonTable).padBottom(10).bottom();
+        return headerTable;
+    }
+
+    private Table buildButtonTable(Skin skin) {
+        Table buttonTable = new Table();
+        TextButton playBtn = new TextButton("Play", skin, "green");
+
+        playBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                handlePlayAction();
+            }
+        });
+
+        buttonTable.add(playBtn).size(160, 65).center();
+        return buttonTable;
+    }
+
+    private void handlePlayAction() {
+        Result result = new GameMenuController().enterScoringLevel();
+
+        if (result.isSuccessful()) {
+            String mapId = new GameMenuController().getCurrentMapTextureId();
+            ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+        }
+
+        GameEventMessenger.getInstance().dispatch(
+            GameEvent.NOTIFY,
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(result.message())
+                .build()
+        );
     }
 
     public void show(Group modalLayer, Viewport viewport) {
         float width = viewport.getWorldWidth();
         float height = viewport.getWorldHeight();
 
+        this.blocker = createBlockerTable(width, height);
+        modalLayer.addActor(blocker);
+
+        this.setPosition(
+            Math.round((width - this.getWidth()) / 2f),
+            Math.round((height - this.getHeight()) / 2f)
+        );
+        modalLayer.addActor(this);
+    }
+
+    private Table createBlockerTable(float width, float height) {
         Table blockerTable = new Table();
         blockerTable.setSize(width, height);
         blockerTable.setTouchable(Touchable.enabled);
@@ -102,14 +129,7 @@ public class ScoreLevelModal extends BorderedTable {
             }
         });
 
-        this.blocker = blockerTable;
-        modalLayer.addActor(blocker);
-
-        this.setPosition(
-            Math.round((width - this.getWidth()) / 2f),
-            Math.round((height - this.getHeight()) / 2f)
-        );
-        modalLayer.addActor(this);
+        return blockerTable;
     }
 
     @Override

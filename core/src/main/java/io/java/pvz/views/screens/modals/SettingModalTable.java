@@ -44,15 +44,12 @@ public class SettingModalTable extends BorderedTable {
     private void buildSettings(Skin skin) {
         Table headerTable = new Table();
         TextButton closeBtn = UiFactory.getCloseBtn(skin, this::remove);
-
         Label titleLabel = new Label("Settings", skin);
         titleLabel.setColor(Color.valueOf("#4A3018"));
         titleLabel.setFontScale(2.5f);
         titleLabel.setAlignment(Align.center);
-
         headerTable.add(closeBtn).size(50, 50).left();
         headerTable.add(titleLabel).expandX().center().padRight(50);
-
         add(headerTable).growX().padBottom(50).row();
 
         Table contentTable = new Table();
@@ -60,7 +57,6 @@ public class SettingModalTable extends BorderedTable {
 
         float textScale = 1.6f;
         Color fontColor = Color.valueOf("#4A3018");
-
         createSliderRow(contentTable, skin, "Music Volume", 0, 10, currentMusicVolume,
             textScale, fontColor, 35, val -> {
             currentMusicVolume = val;
@@ -93,7 +89,6 @@ public class SettingModalTable extends BorderedTable {
 
         contentTable.add(gridCheckBox).colspan(3).left().padBottom(25).row();
         contentTable.add(debugCheckBox).colspan(3).left().row();
-
         add(contentTable).expand().top();
     }
 

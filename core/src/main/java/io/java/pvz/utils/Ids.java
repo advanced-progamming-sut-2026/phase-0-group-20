@@ -98,6 +98,8 @@ public final class Ids {
         public static final String GIANT_NUT_BOWL =
             "768/FULL/EFFECTS/BOWLINGBULB_PROJECTILE3/BOWLINGBULB_PROJECTILE3.PAM";
         public static final String SHARK = "768/FULL/EFFECTS/ZOMBOSS_SHARK_PROJECTILE/ZOMBOSS_SHARK_PROJECTILE.PAM";
+        public static final String PUFFSHROOM =
+            "768/INITIAL/EFFECTS/T_PUFFSHROOM_PROJECTILE/T_PUFFSHROOM_PROJECTILE.PAM";
     }
 
     public static final class ProjectileHits {

@@ -22,6 +22,7 @@ import io.java.pvz.models.game.events.*;
 import io.java.pvz.models.game.minigame.DroppedSeedPacket;
 import io.java.pvz.models.timeManager.TimeManager;
 
+import io.java.pvz.net.server.PlayerRole;
 import io.java.pvz.utils.DialogueLine;
 import io.java.pvz.models.game.events.CameraListener;
 import io.java.pvz.models.game.events.GameEvent;
@@ -93,15 +94,12 @@ public class GameFlowScreen extends BaseScreen {
         camera.update();
 
         cameraListener = new CameraListener(camera, stage);
-        GameEventMessenger.getInstance().addListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_EXPLODED, cameraListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);
-        GameEventMessenger.getInstance().addListener(GameEvent.GO_DISPLAYED, cameraListener);
+        addListeners();
 
         MatchController.getInstance().setOnMatchEnd(message -> {
             String winnerRoleStr = message.getString("winnerRole");
             String reason = message.getString("reason");
-            io.java.pvz.net.server.PlayerRole myRole = MatchController.getInstance().getCurrentRole();
+            PlayerRole myRole = MatchController.getInstance().getCurrentRole();
 
             GameState finalState = GameState.LOST;
             if (myRole != null && myRole.name().equals(winnerRoleStr)) {
@@ -118,6 +116,14 @@ public class GameFlowScreen extends BaseScreen {
                 GameSession.notify("Match Ended: " + reason);
             }
         });
+    }
+
+    private void addListeners() {
+        GameEventMessenger.getInstance().addListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.PLANT_EXPLODED, cameraListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.GO_DISPLAYED, cameraListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.RELEASED_NUKE, cameraListener);
     }
 
     private void loadMap(String mainMapId) {
@@ -391,8 +397,11 @@ public class GameFlowScreen extends BaseScreen {
         if (shapeRenderer != null) shapeRenderer.dispose();
         if (debugFont != null) debugFont.dispose();
         GameEventMessenger.getInstance().removeListener(GameEvent.WAVE_STARTED_PLAYTIME,gameHUD.getAnnounceListener());
+        GameEventMessenger.getInstance().removeListener(GameEvent.FINAL_WAVE_STARTED, gameHUD.getAnnounceListener());
         GameEventMessenger.getInstance().removeListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
         GameEventMessenger.getInstance().removeListener(GameEvent.PLANT_EXPLODED, cameraListener);
         GameEventMessenger.getInstance().removeListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);
+        GameEventMessenger.getInstance().removeListener(GameEvent.GO_DISPLAYED, cameraListener);
+        GameEventMessenger.getInstance().removeListener(GameEvent.RELEASED_NUKE, cameraListener);
     }
 }

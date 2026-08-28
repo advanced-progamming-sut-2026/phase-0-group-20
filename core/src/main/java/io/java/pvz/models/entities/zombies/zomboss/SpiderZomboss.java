@@ -26,24 +26,37 @@ public class SpiderZomboss extends Zomboss {
     public void init() {
         this.setDefenseBehavior(new ZombossDefenseBehavior(this));
 
-        List<ZombieType> allowedZombies = Arrays.asList(
+        List<ZombieType> allowedZombies = createAllowedZombiesList();
+        List<IZombossAttack> attacks = new ArrayList<>();
+        IdleZombossAttack idleAttack = new IdleZombossAttack(this, attacks);
+
+        setupAttacks(attacks, idleAttack, allowedZombies);
+
+        this.setAttackBehavior(idleAttack);
+        idleAttack.onEnter();
+        this.setMoveBehavior(null);
+    }
+
+    private List<ZombieType> createAllowedZombiesList() {
+        return Arrays.asList(
             ZombieType.NORMAL, ZombieType.CONE, ZombieType.BUCKET,
             ZombieType.RA, ZombieType.EXPLORER, ZombieType.TOMB_RAISER,
             ZombieType.CRYSTAL_SKULL, ZombieType.GARGANTUAR, ZombieType.IMP
         );
+    }
 
-        List<IZombossAttack> attacks = new ArrayList<>();
-        IdleZombossAttack idleAttack = new IdleZombossAttack(this, attacks);
-
+    private void setupAttacks(
+        List<IZombossAttack> attacks, IdleZombossAttack idleAttack, List<ZombieType> allowedZombies
+    ) {
         attacks.add(new ZombossSpawnZombiesAttack(this, idleAttack, allowedZombies));
         attacks.add(new RobotDashAttack(this, idleAttack));
+        attacks.add(new ZombossMissileAttack(this, idleAttack, createEgyptImpactBehavior()));
+        attacks.add(new SwitchLaneZombossAttack(this, idleAttack));
+    }
 
-        MissileImpactBehavior egyptImpact = targetTile -> {
-            GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
-                new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
-                    .message("MISSILE_EXPLOSION")
-                    .coordinate(targetTile.getRow(), targetTile.getCol())
-                    .build());
+    private MissileImpactBehavior createEgyptImpactBehavior() {
+        return targetTile -> {
+            dispatchMissileExplosion(targetTile);
 
             Arena arena = GameSession.getInstance().getArena();
             Random random = new Random();
@@ -51,36 +64,49 @@ public class SpiderZomboss extends Zomboss {
             int attempts = 0;
 
             while (gravesPlanted < 2 && attempts < 20) {
-                int r = random.nextInt(arena.getRows());
-                int c = 2 + random.nextInt(arena.getCols() - 2);
-
-                Tile rndTile = arena.getTile(r, c);
-
-                if (!(rndTile instanceof GraveStoneTile)) {
-
-                    GameSession.getInstance().getArena().changeTile(
-                        rndTile.getRow(),
-                        rndTile.getCol(),
-                        new GraveStoneTile(rndTile.getRow(), rndTile.getCol())
-                    );
+                if (generateGrave(arena, random)) {
                     gravesPlanted++;
-
-                    GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
-                        new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
-                            .message("BONE_HIT")
-                            .coordinate(r, c)
-                            .build());
                 }
                 attempts++;
             }
         };
+    }
 
-        attacks.add(new ZombossMissileAttack(this, idleAttack, egyptImpact));
-        attacks.add(new SwitchLaneZombossAttack(this, idleAttack));
+    private void dispatchMissileExplosion(Tile targetTile) {
+        GameEventMessenger.getInstance().dispatch(
+            GameEvent.SPAWN_EFFECT,
+            new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                .message("MISSILE_EXPLOSION")
+                .coordinate(targetTile.getRow(), targetTile.getCol())
+                .build()
+        );
+    }
 
-        this.setAttackBehavior(idleAttack);
-        idleAttack.onEnter();
+    private boolean generateGrave(Arena arena, Random random) {
+        int r = random.nextInt(arena.getRows());
+        int c = 2 + random.nextInt(arena.getCols() - 2);
+        Tile rndTile = arena.getTile(r, c);
 
-        this.setMoveBehavior(null);
+        if (!(rndTile instanceof GraveStoneTile)) {
+            arena.changeTile(
+                rndTile.getRow(),
+                rndTile.getCol(),
+                new GraveStoneTile(rndTile.getRow(), rndTile.getCol())
+            );
+            dispatchBoneHit(r, c);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void dispatchBoneHit(int r, int c) {
+        GameEventMessenger.getInstance().dispatch(
+            GameEvent.SPAWN_EFFECT,
+            new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                .message("BONE_HIT")
+                .coordinate(r, c)
+                .build()
+        );
     }
 }

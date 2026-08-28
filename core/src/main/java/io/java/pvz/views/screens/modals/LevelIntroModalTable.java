@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.MatchController;
 import io.java.pvz.models.game.GameSession;
+import org.jspecify.annotations.NonNull;
 import pvz.skin.BorderedTable;
 
 public class LevelIntroModalTable extends BorderedTable {
@@ -44,14 +45,10 @@ public class LevelIntroModalTable extends BorderedTable {
             String[] parts = modeDetails.split("-");
 
             for (String part : parts) {
-                Label label = new Label(part.trim(), skin , "bundle_reward_multiplier");
-                label.setFontScale(1.5f);
-                label.setAlignment(Align.center);
-                label.setColor(Color.WHITE);
+                Label label = createTitleLabel(skin, part);
                 contentTable.add(label).padBottom(15f).row();
             }
         }
-
         if (isOnlineMatch) {
             Label readyLabel = new Label("GET READY...", skin, "big");
             readyLabel.setColor(Color.valueOf("#2ECC71"));
@@ -89,6 +86,14 @@ public class LevelIntroModalTable extends BorderedTable {
             contentTable.add(startBtn).size(250f, 70f).padTop(30f);
             this.add(contentTable).center();
         }
+    }
+
+    private static @NonNull Label createTitleLabel(Skin skin, String part) {
+        Label label = new Label(part.trim(), skin, "bundle_reward_multiplier");
+        label.setFontScale(1.5f);
+        label.setAlignment(Align.center);
+        label.setColor(Color.WHITE);
+        return label;
     }
 
     public void show(Group targetLayer, Viewport viewport) {

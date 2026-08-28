@@ -86,11 +86,14 @@ public class GameHUD {
         this.announceListener = new GameEventListener() {
             @Override
             public void onEvent(GameEvent event, GameEventPayload payload) {
-                showBigAnnouncementText("Ready!!!-GO!");
+                if(event == GameEvent.FINAL_WAVE_STARTED)
+                    createAnnounce("FINAL WAVE",0f,true);
+                else if (event == GameEvent.WAVE_STARTED_PLAYTIME)
+                    showBigAnnouncementText("Ready!!!-GO!");
             }
         };
-        GameEventMessenger.getInstance().addListener(GameEvent.WAVE_STARTED_PLAYTIME, announceListener
-        );
+        GameEventMessenger.getInstance().addListener(GameEvent.WAVE_STARTED_PLAYTIME, announceListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.FINAL_WAVE_STARTED, announceListener);
     }
 
     public void buildUI() {
@@ -331,7 +334,6 @@ public class GameHUD {
             nukeBtn.setPosition(50, 50);
             mainLayer.addActor(nukeBtn);
         }
-
         Stack shovelBtn = UiFactory.iconButton(textures, skin, Ids.UI.SHOVEL, 110, 110,
             inputHandler::onShovelClicked, false);
         shovelBtn.setPosition(1350, 855);
@@ -461,6 +463,21 @@ public class GameHUD {
     }
 
     private void createAnnounce(String text, float startDelay, boolean stomp) {
+        Label announcement = createAnnouncementLabel(text);
+
+        float targetX = (viewport.getWorldWidth() - announcement.getWidth()) / 2f;
+        float targetY = (viewport.getWorldHeight() - announcement.getHeight()) / 2f;
+
+        if (stomp) {
+            applyStompAnimation(announcement, targetX, targetY, startDelay);
+        } else {
+            applyPopInAnimation(announcement, targetX, targetY, startDelay);
+        }
+
+        mainLayer.addActor(announcement);
+    }
+
+    private Label createAnnouncementLabel(String text) {
         Label announcement = new Label(text, skin, "medium_outline");
         announcement.setFontScale(2f);
         announcement.setAlignment(Align.center);
@@ -468,55 +485,56 @@ public class GameHUD {
         announcement.setOrigin(Align.center);
         announcement.setColor(Color.RED);
 
-        float targetX = (viewport.getWorldWidth() - announcement.getWidth()) / 2f;
-        float targetY = (viewport.getWorldHeight() - announcement.getHeight()) / 2f;
+        return announcement;
+    }
 
-        if (stomp) {
-            announcement.setPosition(targetX, targetY + 500f);
-            announcement.setScale(3f);
-            announcement.getColor().a = 0f;
+    private void applyStompAnimation(Label announcement, float targetX, float targetY, float startDelay) {
+        announcement.setPosition(targetX, targetY + 500f);
+        announcement.setScale(3f);
+        announcement.getColor().a = 0f;
 
-            announcement.addAction(Actions.sequence(
-                Actions.delay(startDelay),
-                Actions.run(() -> announcement.getColor().a = 1f),
-                Actions.parallel(
-                    Actions.moveTo(targetX, targetY, STOMP_FALL_DURATION, Interpolation.pow3In),
-                    Actions.scaleTo(1f, 1f, STOMP_FALL_DURATION, Interpolation.pow3In)
-                ),
-                Actions.run(() -> {
-                    GameEventMessenger.getInstance().dispatch(GameEvent.GO_DISPLAYED,
-                        new GameEventPayload.Builder(GameEvent.GO_DISPLAYED).build());
-                }),
-                Actions.scaleTo(1.5f, 0.6f, STOMP_SQUASH_DURATION),
-                Actions.scaleTo(1f, 1f, STOMP_SETTLE_DURATION, Interpolation.elasticOut),
-                Actions.delay(HOLD_DURATION),
-                Actions.parallel(
-                    Actions.scaleTo(1.8f, 1.8f, FADE_OUT_DURATION, Interpolation.exp10Out),
-                    Actions.fadeOut(FADE_OUT_DURATION)
-                ),
-                Actions.removeActor()
-            ));
-        } else {
-            announcement.setPosition(targetX, targetY);
-            announcement.setScale(0.4f);
-            announcement.getColor().a = 0f;
+        announcement.addAction(Actions.sequence(
+            Actions.delay(startDelay),
+            Actions.run(() -> announcement.getColor().a = 1f),
+            Actions.parallel(
+                Actions.moveTo(targetX, targetY, STOMP_FALL_DURATION, Interpolation.pow3In),
+                Actions.scaleTo(1f, 1f, STOMP_FALL_DURATION, Interpolation.pow3In)
+            ),
+            Actions.run(() -> {
+                GameEventMessenger.getInstance().dispatch(
+                    GameEvent.GO_DISPLAYED,
+                    new GameEventPayload.Builder(GameEvent.GO_DISPLAYED).build()
+                );
+            }),
+            Actions.scaleTo(1.5f, 0.6f, STOMP_SQUASH_DURATION),
+            Actions.scaleTo(1f, 1f, STOMP_SETTLE_DURATION, Interpolation.elasticOut),
+            Actions.delay(HOLD_DURATION),
+            Actions.parallel(
+                Actions.scaleTo(1.8f, 1.8f, FADE_OUT_DURATION, Interpolation.exp10Out),
+                Actions.fadeOut(FADE_OUT_DURATION)
+            ),
+            Actions.removeActor()
+        ));
+    }
 
-            announcement.addAction(Actions.sequence(
-                Actions.delay(startDelay),
-                Actions.parallel(
-                    Actions.scaleTo(1.4f, 1.4f, POP_IN_DURATION, Interpolation.swingOut),
-                    Actions.fadeIn(0.15f)
-                ),
-                Actions.delay(HOLD_DURATION),
-                Actions.parallel(
-                    Actions.scaleTo(1.8f, 1.8f, FADE_OUT_DURATION, Interpolation.exp10Out),
-                    Actions.fadeOut(FADE_OUT_DURATION)
-                ),
-                Actions.removeActor()
-            ));
-        }
+    private void applyPopInAnimation(Label announcement, float targetX, float targetY, float startDelay) {
+        announcement.setPosition(targetX, targetY);
+        announcement.setScale(0.4f);
+        announcement.getColor().a = 0f;
 
-        mainLayer.addActor(announcement);
+        announcement.addAction(Actions.sequence(
+            Actions.delay(startDelay),
+            Actions.parallel(
+                Actions.scaleTo(1.4f, 1.4f, POP_IN_DURATION, Interpolation.swingOut),
+                Actions.fadeIn(0.15f)
+            ),
+            Actions.delay(HOLD_DURATION),
+            Actions.parallel(
+                Actions.scaleTo(1.8f, 1.8f, FADE_OUT_DURATION, Interpolation.exp10Out),
+                Actions.fadeOut(FADE_OUT_DURATION)
+            ),
+            Actions.removeActor()
+        ));
     }
 
     private void triggerScreenShake() {

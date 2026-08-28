@@ -47,62 +47,78 @@ public class GameMenuScreen extends BaseScreen {
         mainLayer.setFillParent(true);
         mainLayer.top();
 
+        Table topRow = buildTopRow(textures, skin);
+        mainLayer.add(topRow).growX().padTop(20).padLeft(30).padRight(30).row();
+
+        Table subRow = buildSubRow(textures, skin);
+        mainLayer.add(subRow).growX().padTop(5).padLeft(30).padRight(30).row();
+
+        Table islandContainer = buildIslandContainer(textures);
+        mainLayer.add(islandContainer).expand().fill().padTop(15);
+    }
+
+    private Table buildTopRow(TextureBank textures, Skin skin) {
         Table topRow = new Table();
+        Table topLeftGroup = buildTopLeftGroup(textures, skin);
 
-        Table topLeftGroup = new Table();
-        topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.BACK_ICON, 100, 100,
-            () -> ScreenManager.getInstance().popScreen())).padLeft(20).padRight(30);
-
-        topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.OPTIONS_ICON,100, 100,
-            () -> {
-                System.out.println("Options Clicked");
-                new SettingModalTable(skin).show(modalLayer,viewport);
-            })).padRight(30);
-
-        topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.ALMANAC_ICON,100, 100,
-            () -> ScreenManager.getInstance().pushScreen(new CollectionScreen(game,skin)))).padRight(30);
-
-        topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.GREENHOUSE_ICON,100, 100,
-            () -> ScreenManager.getInstance().pushScreenWithTransition(()-> new ZenGarden(game),1.5f))).padRight(30);
-
-        topLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON,100, 100,
-            () -> {
-                System.out.println("News Clicked");
-                new NewsModalTable(skin).show(modalLayer,viewport);
-            })).padRight(30);
-
-
-        Stack shopBtn = UiFactory.iconButton(textures, skin, Ids.GameScreen.SHOP_ICON,120, 120,
-            () -> menuController.open(Menu.SHOP_MENU));
+        Stack shopBtn = UiFactory.iconButton(textures, skin, Ids.GameScreen.SHOP_ICON, 120, 120,
+            () -> menuController.open(Menu.SHOP_MENU)
+        );
 
         topRow.add(topLeftGroup).left();
         topRow.add().expandX();
         topRow.add(shopBtn).padRight(20).right();
 
-        mainLayer.add(topRow).growX().padTop(20).padLeft(30).padRight(30).row();
+        return topRow;
+    }
 
+    private Table buildTopLeftGroup(TextureBank textures, Skin skin) {
+        Table group = new Table();
+
+        group.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.BACK_ICON, 100, 100,
+            () -> ScreenManager.getInstance().popScreen())).padLeft(20).padRight(30);
+
+        group.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.OPTIONS_ICON, 100, 100, () -> {
+            System.out.println("Options Clicked");
+            new SettingModalTable(skin).show(modalLayer, viewport);
+        })).padRight(30);
+
+        group.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.ALMANAC_ICON, 100, 100,
+            () -> ScreenManager.getInstance().pushScreen(new CollectionScreen(game, skin)))).padRight(30);
+
+        group.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.GREENHOUSE_ICON, 100, 100,
+            () -> ScreenManager.getInstance().pushScreenWithTransition(() -> new ZenGarden(game), 1.5f)
+        )).padRight(30);
+
+        group.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON, 100, 100, () -> {
+            System.out.println("News Clicked");
+            new NewsModalTable(skin).show(modalLayer, viewport);
+        })).padRight(30);
+
+        return group;
+    }
+
+    private Table buildSubRow(TextureBank textures, Skin skin) {
         Table subRow = new Table();
-
         Table subLeftGroup = new Table();
 
-        subLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON,90, 90,
-            () ->  {
-                menuController.open(Menu.TRAVELLOG_MENU);
-                TravelLogPanel travelLogPanel = new TravelLogPanel(skin, textures);
-                modalLayer.addActor(travelLogPanel);
-            }));
-
+        subLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON, 90, 90, () -> {
+            menuController.open(Menu.TRAVELLOG_MENU);
+            TravelLogPanel travelLogPanel = new TravelLogPanel(skin, textures);
+            modalLayer.addActor(travelLogPanel);
+        }));
 
         subRow.add(subLeftGroup).padTop(30).padLeft(30).left();
         subRow.add().expandX();
 
-        mainLayer.add(subRow).growX().padTop(5).padLeft(30).padRight(30).row();
+        return subRow;
+    }
 
-
+    private Table buildIslandContainer(TextureBank textures) {
         Table islandContainer = new Table();
         Image adventureIcon = UiFactory.imageFor(textures, Ids.GameScreen.ADVENTURE_ICON);
-        adventureIcon.setScaling(Scaling.fit);
 
+        adventureIcon.setScaling(Scaling.fit);
         adventureIcon.setTouchable(Touchable.enabled);
 
         ButtonAnimator.applyHoverAndClickEffect(adventureIcon, 1.05f, 0.95f, () -> {
@@ -112,9 +128,8 @@ public class GameMenuScreen extends BaseScreen {
 
         islandContainer.add(adventureIcon).size(500, 500).center();
 
-        mainLayer.add(islandContainer).expand().fill().padTop(15);
+        return islandContainer;
     }
-
     @Override
     public void render(float delta) {
         clearScreen(0.02f, 0.15f, 0.16f, 1f);

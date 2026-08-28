@@ -199,7 +199,7 @@ public class WorldItemRenderer {
         map.put(ProjectileType.BOWLING_BULB_CYAN, new ProjectileAnim(Ids.Projectiles.WALLNUT_BOWL, "animation"));
         map.put(ProjectileType.BOWLING_BULB_BLUE, new ProjectileAnim(Ids.Projectiles.EXPLODE_NUT_BOWL, "animation"));
         map.put(ProjectileType.BOWLING_BULB_ORANGE, new ProjectileAnim(Ids.Projectiles.GIANT_NUT_BOWL, "animation"));
-        map.put(ProjectileType.PUFF_SPORE, new ProjectileAnim("768/INITIAL/EFFECTS/T_PUFFSHROOM_PROJECTILE/T_PUFFSHROOM_PROJECTILE.PAM", "animation"));
+        map.put(ProjectileType.PUFF_SPORE, new ProjectileAnim(Ids.Projectiles.PUFFSHROOM, "animation"));
         map.put(ProjectileType.SHARK, new ProjectileAnim(Ids.Projectiles.SHARK, "walk"));
         return map;
     }
@@ -244,103 +244,130 @@ public class WorldItemRenderer {
     }
 
     private PamAnimatedActor spawnSun(Sun sun) {
-        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getSunAnimation(sun.getType());
+        PamAnimatedActor actor = createSunActor(sun);
+        float scale = calculateSunScale(sun.getType());
 
+        actor.setScale(scale, scale);
+        setupSunMovement(actor, sun);
+        setupSunListener(actor, sun, scale);
+
+        effectLayer.addActor(actor);
+        return actor;
+    }
+
+    private PamAnimatedActor createSunActor(Sun sun) {
+        AnimationCatalog.EntityAnimation anim = AnimationCatalog.getSunAnimation(sun.getType());
         String defaultClip = (sun.getType() == SunType.RADIOACTIVE_SUN) ? "animation2" : "animation";
 
-        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), defaultClip, anim.path);
-
+        PamAnimatedActor actor = new PamAnimatedActor(
+            AssetLoader.getInstance().getPlayer(), defaultClip, anim.path
+        );
         actor.setSize(80, 80);
         actor.setOrigin(Align.center);
+        return actor;
+    }
 
-        float scale = 1.0f;
-        if (sun.getType() != null) {
-            switch (sun.getType()) {
-                case TINY_SUN -> scale = 0.5f;
-                case LARGE_SUN -> scale = 1.3f;
-                case SPECIAL_SUN, HUGE_SUN -> scale = 1.6f;
-                default -> scale = 1.0f;
-            }
+    private float calculateSunScale(SunType type) {
+        if (type == null) {
+            return 1.0f;
         }
-        actor.setScale(scale, scale);
+        return switch (type) {
+            case TINY_SUN -> 0.5f;
+            case LARGE_SUN -> 1.3f;
+            case SPECIAL_SUN, HUGE_SUN -> 1.6f;
+            default -> 1.0f;
+        };
+    }
 
+    private void setupSunMovement(PamAnimatedActor actor, Sun sun) {
         float baseX = sun.getPosition().getX() - actor.getWidth() / 2f;
         float targetY = sun.getPosition().getY() - actor.getHeight() / 2f + 15f;
 
         if (sun.isProducedByPlant()) {
-            float offsetX = (float) ((Math.random() - 0.5) * 40.0);
-            float targetX = baseX + offsetX;
-
-            actor.setPosition(targetX, targetY + 10f);
-            actor.addAction(Actions.sequence(
-                Actions.moveTo(targetX, targetY + 60f, 0.35f, Interpolation.sineOut),
-                Actions.moveTo(targetX, targetY, 0.35f, Interpolation.bounceOut)
-            ));
-
-            sun.getPosition().setX(baseX + offsetX + actor.getWidth() / 2f);
-
+            applyPlantSunMovement(actor, sun, baseX, targetY);
         } else {
-            actor.setPosition(baseX, 1180f);
-            actor.addAction(Actions.moveTo(baseX, targetY, 4.0f, Interpolation.linear));
+            applySkySunMovement(actor, baseX, targetY);
         }
+    }
 
-        float finalScale = scale;
+    private void applyPlantSunMovement(PamAnimatedActor actor, Sun sun, float baseX, float targetY) {
+        float offsetX = (float) ((Math.random() - 0.5) * 40.0);
+        float targetX = baseX + offsetX;
+
+        actor.setPosition(targetX, targetY + 10f);
+        actor.addAction(Actions.sequence(
+            Actions.moveTo(targetX, targetY + 60f, 0.35f, Interpolation.sineOut),
+            Actions.moveTo(targetX, targetY, 0.35f, Interpolation.bounceOut)
+        ));
+
+        sun.getPosition().setX(baseX + offsetX + actor.getWidth() / 2f);
+    }
+
+    private void applySkySunMovement(PamAnimatedActor actor, float baseX, float targetY) {
+        actor.setPosition(baseX, 1180f);
+        actor.addAction(Actions.moveTo(baseX, targetY, 4.0f, Interpolation.linear));
+    }
+
+    private void setupSunListener(PamAnimatedActor actor, Sun sun, float finalScale) {
         actor.setTouchable(Touchable.enabled);
         actor.addListener(new InputListener() {
-
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                tryCollectSun();
+                tryCollectSun(sun, actor, finalScale);
                 return true;
             }
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 if (pointer == -1 || pointer == 0) {
-                    tryCollectSun();
-                }
-            }
-
-            private void tryCollectSun() {
-                if (MatchController.getInstance().isCouchPlay())
-                    return;
-
-                if (!sun.isCollected()) {
-                    if (MatchController.getInstance().isOnlineMatch()) {
-                        if (MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE) {
-                            MatchController.getInstance().collectSun(sun.getCol(), sun.getRow(), response -> {
-                                if (response != null && response.isSuccess()) {
-                                    sun.collect();
-                                    animateCollection();
-                                }
-                            });
-                        }
-                    } else {
-                        Result result = gameFlowController.collectSun(sun);
-                        if (result.isSuccessful()) {
-                            animateCollection();
-                        }
-                    }
-                }
-            }
-
-            private void animateCollection() {
-                if (sun.isExploded() || (sun.getType() == SunType.RADIOACTIVE_SUN && sun.isFalling())) {
-                    return;
-                } else {
-                    actor.addAction(Actions.sequence(
-                        Actions.parallel(
-                            Actions.scaleTo(finalScale * 1.5f, finalScale * 1.5f, 0.2f),
-                            Actions.fadeOut(0.2f)
-                        ),
-                        Actions.removeActor()
-                    ));
+                    tryCollectSun(sun, actor, finalScale);
                 }
             }
         });
+    }
 
-        effectLayer.addActor(actor);
-        return actor;
+    private void tryCollectSun(Sun sun, PamAnimatedActor actor, float finalScale) {
+        if (MatchController.getInstance().isCouchPlay() || sun.isCollected()) {
+            return;
+        }
+
+        if (MatchController.getInstance().isOnlineMatch()) {
+            handleOnlineCollect(sun, actor, finalScale);
+        } else {
+            handleOfflineCollect(sun, actor, finalScale);
+        }
+    }
+
+    private void handleOnlineCollect(Sun sun, PamAnimatedActor actor, float finalScale) {
+        if (MatchController.getInstance().getCurrentRole() == PlayerRole.ZOMBIE) {
+            MatchController.getInstance().collectSun(sun.getCol(), sun.getRow(), response -> {
+                if (response != null && response.isSuccess()) {
+                    sun.collect();
+                    animateCollection(sun, actor, finalScale);
+                }
+            });
+        }
+    }
+
+    private void handleOfflineCollect(Sun sun, PamAnimatedActor actor, float finalScale) {
+        Result result = gameFlowController.collectSun(sun);
+        if (result.isSuccessful()) {
+            animateCollection(sun, actor, finalScale);
+        }
+    }
+
+    private void animateCollection(Sun sun, PamAnimatedActor actor, float finalScale) {
+        if (sun.isExploded() || (sun.getType() == SunType.RADIOACTIVE_SUN && sun.isFalling())) {
+            return;
+        }
+
+        actor.addAction(Actions.sequence(
+            Actions.parallel(
+                Actions.scaleTo(finalScale * 1.5f, finalScale * 1.5f, 0.2f),
+                Actions.fadeOut(0.2f)
+            ),
+            Actions.removeActor()
+        ));
     }
 
     private void updateSunActor(Sun sun, PamAnimatedActor actor) {
@@ -513,7 +540,8 @@ public class WorldItemRenderer {
             String plantAnimName = UiFactory.getAnimationName(ib.getFrozenPlant());
             AnimationCatalog.EntityAnimation plantAnim = AnimationCatalog.getPlantAnimation(plantAnimName);
             if (plantAnim != null) {
-                PamAnimatedActor fakePlant = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "idle", plantAnim.path) {
+                PamAnimatedActor fakePlant = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
+                    "idle", plantAnim.path) {
                     @Override
                     public void act(float delta) {
                         super.act(0f);
