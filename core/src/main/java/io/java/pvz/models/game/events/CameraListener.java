@@ -22,15 +22,12 @@ public class CameraListener implements GameEventListener {
     @Override
     public void onEvent(GameEvent event, GameEventPayload payload) {
         switch (event) {
-            case GARGANTUAR_MOVES -> {
+            case GARGANTUAR_MOVES, LAWNMOWER_TRIGGERED -> {
                 shakeCamera(0.2f, 4f);
             }
             case PLANT_EXPLODED ->
                 shakeCamera(0.2f, 4f);
-            case LAWNMOWER_TRIGGERED -> {
-                shakeCamera(0.2f, 4f);
-            }
-            case GO_DISPLAYED -> {
+            case GO_DISPLAYED, RELEASED_NUKE -> {
                 shakeCamera(0.4f, 7f);
             }
 

@@ -86,11 +86,14 @@ public class GameHUD {
         this.announceListener = new GameEventListener() {
             @Override
             public void onEvent(GameEvent event, GameEventPayload payload) {
-                showBigAnnouncementText("Ready!!!-GO!");
+                if(event == GameEvent.FINAL_WAVE_STARTED)
+                    createAnnounce("FINAL WAVE",0f,true);
+                else if (event == GameEvent.WAVE_STARTED_PLAYTIME)
+                    showBigAnnouncementText("Ready!!!-GO!");
             }
         };
-        GameEventMessenger.getInstance().addListener(GameEvent.WAVE_STARTED_PLAYTIME, announceListener
-        );
+        GameEventMessenger.getInstance().addListener(GameEvent.WAVE_STARTED_PLAYTIME, announceListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.FINAL_WAVE_STARTED, announceListener);
     }
 
     public void buildUI() {

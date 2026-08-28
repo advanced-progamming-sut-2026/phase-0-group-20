@@ -97,6 +97,7 @@ public class GameFlowScreen extends BaseScreen {
         GameEventMessenger.getInstance().addListener(GameEvent.PLANT_EXPLODED, cameraListener);
         GameEventMessenger.getInstance().addListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);
         GameEventMessenger.getInstance().addListener(GameEvent.GO_DISPLAYED, cameraListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.RELEASED_NUKE, cameraListener);
 
         MatchController.getInstance().setOnMatchEnd(message -> {
             String winnerRoleStr = message.getString("winnerRole");
@@ -391,8 +392,11 @@ public class GameFlowScreen extends BaseScreen {
         if (shapeRenderer != null) shapeRenderer.dispose();
         if (debugFont != null) debugFont.dispose();
         GameEventMessenger.getInstance().removeListener(GameEvent.WAVE_STARTED_PLAYTIME,gameHUD.getAnnounceListener());
+        GameEventMessenger.getInstance().removeListener(GameEvent.FINAL_WAVE_STARTED, gameHUD.getAnnounceListener());
         GameEventMessenger.getInstance().removeListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
         GameEventMessenger.getInstance().removeListener(GameEvent.PLANT_EXPLODED, cameraListener);
         GameEventMessenger.getInstance().removeListener(GameEvent.LAWNMOWER_TRIGGERED, cameraListener);
+        GameEventMessenger.getInstance().removeListener(GameEvent.GO_DISPLAYED, cameraListener);
+        GameEventMessenger.getInstance().removeListener(GameEvent.RELEASED_NUKE, cameraListener);
     }
 }

@@ -67,25 +67,27 @@ public class LevelResultTable extends BorderedTable {
 
         Table buttonsTable = new Table();
 
-        TextButton restartBtn = UiFactory.textButton(
-            "Restart",
-            skin, "brown", 1.05f, 0.95f,
-            () -> {
-                GameFlowController flowController = new GameFlowController();
-                Result res = flowController.restartLevel();
+        if(!won){
+            TextButton restartBtn = UiFactory.textButton(
+                "Restart",
+                skin, "brown", 1.05f, 0.95f,
+                () -> {
+                    GameFlowController flowController = new GameFlowController();
+                    Result res = flowController.restartLevel();
 
-                if (res.isSuccessful()) {
-                    Gdx.app.postRunnable(() -> {
-                        String mapId = new GameMenuController().getCurrentMapTextureId();
-                        ScreenManager.getInstance().popScreen();
-                        ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
-                    });
+                    if (res.isSuccessful()) {
+                        Gdx.app.postRunnable(() -> {
+                            String mapId = new GameMenuController().getCurrentMapTextureId();
+                            ScreenManager.getInstance().popScreen();
+                            ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
+                        });
+                    }
+                    remove();
                 }
-                remove();
-            }
-        );
-        restartBtn.getLabel().setFontScale(1.3f);
-        buttonsTable.add(restartBtn).size(250, 80).padRight(20);
+            );
+            restartBtn.getLabel().setFontScale(1.3f);
+            buttonsTable.add(restartBtn).size(250, 80).padRight(20);
+        }
 
         TextButton continueBtn = UiFactory.textButton(
             won ? "Continue" : "Try Again Later",

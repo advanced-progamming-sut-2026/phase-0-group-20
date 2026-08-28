@@ -102,9 +102,6 @@ public abstract class Level implements GameMode {
         currentActiveWave = session.getArena().getCurrentActiveWave();
 
         if (currentWave == 0) {
-            session.getTimeManager().registerNewTicker(
-                new DelayedEventTicker(GameEvent.WAVE_STARTED_PLAYTIME, 18f)
-            );
             startNextWave(session);
         } else if (currentActiveWave != null && currentActiveWave.is75PercentHpDestroyed()) {
             startNextWave(session);
@@ -129,6 +126,16 @@ public abstract class Level implements GameMode {
             seasonModifier.onWaveStart(newWave);
 
         notify(isLastWave ? "The final wave has come." : "Wave " + currentWave + " started.");
+        if(isLastWave){
+            session.getTimeManager().registerNewTicker(
+                new DelayedEventTicker(GameEvent.FINAL_WAVE_STARTED, 3f)
+            );
+        }
+        else {
+            session.getTimeManager().registerNewTicker(
+                new DelayedEventTicker(GameEvent.WAVE_STARTED_PLAYTIME, 3f)
+            );
+        }
 
         spawnWave(newWave, session);
         if (isLastWave) {
