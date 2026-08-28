@@ -136,7 +136,9 @@ public class GameFlowController {
                 GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBIE_KILLED, payload);
             }
         }
-
+        GameEventMessenger.getInstance().dispatch(GameEvent.RELEASED_NUKE,
+            new GameEventPayload.Builder(GameEvent.RELEASED_NUKE)
+                .build());
         return new Result(true, "Nuked the whole arena!! Dast Khosh Donald.J.Trump.");
     }
 
