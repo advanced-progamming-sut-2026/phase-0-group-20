@@ -36,12 +36,7 @@ public class GameMenuScreen extends BaseScreen {
         TextureBank textures = AssetLoader.getInstance().getTextures();
         Skin skin = AssetLoader.getInstance().getSkin();
          menuController.register(Menu.SHOP_MENU, () -> ShopModalMenu.build(menuController, textures, skin,modalLayer));
-//         menuController.register(Menu.COLLECTION_MENU, () -> CollectionMenu.build());
-//         menuController.register(Menu.GREENHOUSE_MENU, () -> GreenHouseMenu.build());
          menuController.register(Menu.LEADERBOARD_MENU, () -> LeaderboardMenu.build(menuController, textures, skin));
-//         menuController.register(Menu.PLANTSELECTION_MENU, () -> PlantSelectionMenu.build());
-//         menuController.register(Menu.TRAVELLOG_MENU, () -> TravelLogMenu.build());
-//         menuController.register(Menu.LEVEL_SELECTION_MENU, () -> LevelSelectionMenu.build());
     }
 
     private void buildTopBar() {
@@ -89,8 +84,6 @@ public class GameMenuScreen extends BaseScreen {
         Table subRow = new Table();
 
         Table subLeftGroup = new Table();
-        subLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.GameScreen.EVENT_ICON, 90, 90,
-            () -> System.out.println("Event Clicked"))).padRight(30).padLeft(20);
 
         subLeftGroup.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON,90, 90,
             () ->  {
@@ -100,7 +93,7 @@ public class GameMenuScreen extends BaseScreen {
             }));
 
 
-        subRow.add(subLeftGroup).padTop(30).left();
+        subRow.add(subLeftGroup).padTop(30).padLeft(30).left();
         subRow.add().expandX();
 
         mainLayer.add(subRow).growX().padTop(5).padLeft(30).padRight(30).row();
@@ -120,37 +113,6 @@ public class GameMenuScreen extends BaseScreen {
         islandContainer.add(adventureIcon).size(500, 500).center();
 
         mainLayer.add(islandContainer).expand().fill().padTop(15);
-    }
-
-
-    private Stack createResourceDisplay(TextureBank textures, Skin skin, String imageId, String initialValue) {
-        Stack displayStack = new Stack();
-
-        Image bgImage = UiFactory.imageFor(textures, imageId);
-        bgImage.setScaling(Scaling.fit);
-        Container<Image> bgContainer = new Container<>(bgImage);
-        bgContainer.size(200, 55);
-
-        Label.LabelStyle labelStyle = skin.get(Label.LabelStyle.class);
-        Label valueLabel = new Label(initialValue, labelStyle);
-        valueLabel.setAlignment(Align.left | Align.center);
-
-        Container<Label> labelContainer = new Container<>(valueLabel);
-        labelContainer.padLeft(45);
-
-        displayStack.add(bgContainer);
-        displayStack.add(labelContainer);
-
-        displayStack.setUserObject(valueLabel);
-
-        return displayStack;
-    }
-
-    private TextButton createEarnButton(Skin skin, ButtonAnimator.OnClickListener clickListener) {
-        TextButton earnBtn = new TextButton("Earn", skin, "green_small");
-
-        ButtonAnimator.applyHoverAndClickEffect(earnBtn, 1.1f, 0.9f, clickListener);
-        return earnBtn;
     }
 
     @Override

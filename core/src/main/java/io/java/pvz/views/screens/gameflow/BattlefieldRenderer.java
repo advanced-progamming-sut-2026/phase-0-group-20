@@ -225,6 +225,11 @@ public class BattlefieldRenderer implements GameEventListener {
         plantRenderer.clear();
         zombieRenderer.clear();
         effectLayer.clearChildren();
+
+        zombieLastHp.clear();
+        zombieFlashTimers.clear();
+        plantLastHp.clear();
+        plantFlashTimers.clear();
     }
 
     @Override

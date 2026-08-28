@@ -2,6 +2,7 @@ package io.java.pvz.models.entities.plants.strategy.category_strategy;
 
 import io.java.pvz.models.entities.obstacle.GraveHolder;
 import io.java.pvz.models.entities.obstacle.IceHolder;
+import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.zombies.Zombie;
@@ -163,7 +164,7 @@ public class MeleeStrategy implements IPlantStrategy {
             }
         }
 
-        for (io.java.pvz.models.entities.obstacle.PushableObstacle obs : GameSession.getInstance().getArena().getActiveObstacles()) {
+        for (PushableObstacle obs : GameSession.getInstance().getArena().getActiveObstacles()) {
             if (!obs.isDestroyed() && obs.getRow() == plantRow) {
                 double dist = obs.getCol() - plantCol;
                 if (dist >= backwardRange && dist <= forwardRange) {
@@ -176,13 +177,13 @@ public class MeleeStrategy implements IPlantStrategy {
         }
 
         if (targetObstacle != null) {
-            if (targetObstacle instanceof io.java.pvz.models.entities.obstacle.GraveHolder gh) {
+            if (targetObstacle instanceof GraveHolder gh) {
                 gh.takeDamage(damage, plantRow, ((Tile) targetObstacle).getCol());
-            } else if (targetObstacle instanceof io.java.pvz.models.entities.obstacle.IceHolder ih) {
+            } else if (targetObstacle instanceof IceHolder ih) {
                 ih.takeIceDamage(damage);
             } else if (targetObstacle instanceof Plant p) {
                 p.damageIceBlock(damage);
-            } else if (targetObstacle instanceof io.java.pvz.models.entities.obstacle.PushableObstacle obs) {
+            } else if (targetObstacle instanceof PushableObstacle obs) {
                 obs.takeDamage(damage);
             }
 
@@ -238,12 +239,12 @@ public class MeleeStrategy implements IPlantStrategy {
             for (int c = minCol; c <= maxCol; c++) {
                 Tile tile = GameSession.getInstance().getArena().getTile(r, c);
 
-                if (tile instanceof io.java.pvz.models.entities.obstacle.GraveHolder gh && gh.getGraveStone() != null) {
+                if (tile instanceof GraveHolder gh && gh.getGraveStone() != null) {
                     gh.takeDamage(finalDamage, r, c);
                     attacked = true;
                 }
 
-                if (tile instanceof io.java.pvz.models.entities.obstacle.IceHolder ih && ih.hasIceBlock()) {
+                if (tile instanceof IceHolder ih && ih.hasIceBlock()) {
                     ih.takeIceDamage(finalDamage);
                     attacked = true;
                 }
@@ -257,7 +258,7 @@ public class MeleeStrategy implements IPlantStrategy {
             }
         }
 
-        for (io.java.pvz.models.entities.obstacle.PushableObstacle obs : GameSession.getInstance().getArena().getActiveObstacles()) {
+        for (PushableObstacle obs : GameSession.getInstance().getArena().getActiveObstacles()) {
             if (!obs.isDestroyed() && obs.getRow() >= minRow && obs.getRow() <= maxRow && obs.getCol() >= minCol && obs.getCol() <= maxCol) {
                 obs.takeDamage(finalDamage);
                 attacked = true;

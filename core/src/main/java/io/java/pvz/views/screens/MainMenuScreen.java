@@ -107,19 +107,6 @@ public class MainMenuScreen extends BaseScreen {
             ScreenManager.getInstance().pushScreen(new LoginScreen(game));
         });
 
-        Stack questBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.QUESTS_ICON, 100, 100,
-            () -> {
-                System.out.println("Quests Menu Opened!");
-                modalLayer.clear();
-
-                TravelLogPanel travelLogPanel = new TravelLogPanel(skin, textures);
-
-                modalLayer.addActor(travelLogPanel);
-
-            });
-
-        topContainer.add(questBtn).padLeft(50).padTop(40).top().left();
-
         topContainer.add(center).expandX().padBottom(70).center().bottom();
         topContainer.add(borderedLogoutBtn).right().padRight(30).padTop(40).width(200).height(100).top();
 
@@ -132,7 +119,6 @@ public class MainMenuScreen extends BaseScreen {
         playBtn.getLabel().setFontScale(1.5f);
         ButtonAnimator.applyHoverAndClickEffect(playBtn, 1.1f, 0.9f, () -> {
             System.out.println("Play Button clicked!");
-            // TODO : push game menu later
             ScreenManager.getInstance().pushScreen(new GameMenuScreen(game));
 
         });
@@ -140,11 +126,6 @@ public class MainMenuScreen extends BaseScreen {
 
         Table bottomContainer = new Table();
 
-        Stack cloudBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.CLOUD_ICON, 100, 100,
-            () -> {
-                System.out.println("Cloud Icon Clicked!");
-                // TODO : push later
-            });
         Stack newsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON, 100, 100,
             () -> {
                 System.out.println("News Icon Clicked!");
@@ -174,8 +155,8 @@ public class MainMenuScreen extends BaseScreen {
                 new SettingModalTable(skin).show(modalLayer, viewport);
             });
 
-        bottomContainer.add(cloudBtn).padLeft(50).padRight(50).bottom();
-        bottomContainer.add(newsBtn).bottom();
+        bottomContainer.add(newsBtn).padLeft(50).padRight(50).bottom();
+        bottomContainer.add().bottom();
 
         bottomContainer.add(center).expandX().padBottom(70).center().bottom();
 

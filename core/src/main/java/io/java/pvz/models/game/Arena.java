@@ -317,5 +317,4 @@ public class Arena {
         if (obj instanceof PushableObstacle obstacle) return obstacle.getCol();
         return -1;
     }
-
 }

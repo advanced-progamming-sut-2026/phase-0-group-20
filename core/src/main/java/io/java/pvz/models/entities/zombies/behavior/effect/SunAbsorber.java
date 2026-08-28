@@ -1,6 +1,7 @@
 package io.java.pvz.models.entities.zombies.behavior.effect;
 
 import io.java.pvz.models.entities.Sun;
+import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.game.GameSession;
@@ -137,7 +138,7 @@ public class SunAbsorber extends Effect {
         List<Sun> stealableSuns = new ArrayList<>();
 
         for (Sun s : activeSuns) {
-            if (!s.isCollected() && !s.isBeingAbsorbed()) {
+            if (!s.isCollected() && !s.isBeingAbsorbed() && !s.getType().equals(SunType.RADIOACTIVE_SUN)) {
                 stealableSuns.add(s);
             }
         }
@@ -165,13 +166,6 @@ public class SunAbsorber extends Effect {
             GameSession.getInstance().getArena().getActiveSuns().remove(targetedSun);
             GameSession.getInstance().getTimeManager().unregisterTicker(targetedSun);
             targetedSun = null;
-        } else {
-            int currentBank = GameSession.getInstance().getCurrentSun();
-            if (currentBank >= sunAmount) {
-                GameSession.getInstance().useSun(sunAmount);
-            } else if (currentBank > 0) {
-                GameSession.getInstance().useSun(currentBank);
-            }
         }
     }
 

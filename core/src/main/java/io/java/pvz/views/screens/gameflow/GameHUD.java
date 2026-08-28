@@ -667,6 +667,7 @@ public class GameHUD {
             }
         }
         calculateProgressBar(delta);
+        updatePlantFoodCount();
     }
 
     private void calculateProgressBar(float delta) {
