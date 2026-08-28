@@ -31,69 +31,96 @@ public class HomingStrategy implements IPlantStrategy {
 
     @Override
     public void execute(Plant context, int currentTick) {
-        if (pendingBurstShots > 0) {
-            if (burstCooldownTicks > 0) {
-                burstCooldownTicks--;
-            } else {
-                if (pendingTarget != null && !pendingTarget.isDead()) {
-                    context.triggerAction("attack");
-                    ProjectileMechanism.executeTargetedProjectile(context, pendingTarget, 0.5f);
-                } else if (targetingObstacle) {
-                    context.triggerAction("attack");
-                    ProjectileMechanism.executeNewProjectile(context, true, false, 0.5f);
-                }
-
-                pendingBurstShots--;
-                burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
-
-                if (pendingBurstShots <= 0) {
-                    targetingObstacle = false;
-                }
-            }
+        if (handlePendingBurst(context)) {
             return;
         }
 
         int intervalInTicks = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
+
         if (intervalInTicks > 0 && (currentTick - lastShotTick) >= intervalInTicks) {
-            List<Zombie> activeZombies = GameSession.getInstance().getArena().getActiveZombies();
-            List<Zombie> validTargets = activeZombies.stream().filter(z -> !z.isDead()).toList();
+            processNewShot(context, currentTick);
+        }
+    }
 
-            if (!validTargets.isEmpty()) {
-                Zombie target = selectTarget(context, validTargets);
-                if (target != null && target.getCol() < GameSession.getInstance().getArena().getCols()) {
-                    context.triggerAction("attack");
-                    ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
-                    notify(context.getName() + " locked onto " + target.getName() + "!");
+    private boolean handlePendingBurst(Plant context) {
+        if (pendingBurstShots <= 0) {
+            return false;
+        }
 
-                    if (burstCount > 1) {
-                        pendingBurstShots = burstCount - 1;
-                        burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
-                        pendingTarget = target;
-                        targetingObstacle = false;
-                    }
+        if (burstCooldownTicks > 0) {
+            burstCooldownTicks--;
+        } else {
+            fireBurstShot(context);
+            updateBurstState();
+        }
+        return true;
+    }
 
-                    lastShotTick = currentTick;
-                }
-            } else {
-                int plantRow = context.getPlacedTile().getRow();
-                int plantCol = context.getPlacedTile().getCol();
-                int obstacleCol = GameSession.getInstance().getArena().getFrontmostObstacleColInRow(plantRow, plantCol);
+    private void fireBurstShot(Plant context) {
+        if (pendingTarget != null && !pendingTarget.isDead()) {
+            context.triggerAction("attack");
+            ProjectileMechanism.executeTargetedProjectile(context, pendingTarget, 0.5f);
+        } else if (targetingObstacle) {
+            context.triggerAction("attack");
+            ProjectileMechanism.executeNewProjectile(context, true, false, 0.5f);
+        }
+    }
 
-                if (obstacleCol != -1) {
-                    context.triggerAction("attack");
-                    ProjectileMechanism.executeNewProjectile(context, true, false, 0.5f);
-                    notify(context.getName() + " fired at an obstacle!");
+    private void updateBurstState() {
+        pendingBurstShots--;
+        burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
 
-                    if (burstCount > 1) {
-                        pendingBurstShots = burstCount - 1;
-                        burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
-                        pendingTarget = null;
-                        targetingObstacle = true;
-                    }
+        if (pendingBurstShots <= 0) {
+            targetingObstacle = false;
+        }
+    }
 
-                    lastShotTick = currentTick;
-                }
-            }
+    private void processNewShot(Plant context, int currentTick) {
+        List<Zombie> activeZombies = GameSession.getInstance().getArena().getActiveZombies();
+        List<Zombie> validTargets = activeZombies.stream().filter(z -> !z.isDead()).toList();
+
+        if (!validTargets.isEmpty()) {
+            attemptZombieTargeting(context, currentTick, validTargets);
+        } else {
+            attemptObstacleTargeting(context, currentTick);
+        }
+    }
+
+    private void attemptZombieTargeting(Plant context, int currentTick, List<Zombie> validTargets) {
+        Zombie target = selectTarget(context, validTargets);
+
+        if (target != null && target.getCol() < GameSession.getInstance().getArena().getCols()) {
+            context.triggerAction("attack");
+            ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
+            notify(context.getName() + " locked onto " + target.getName() + "!");
+
+            setupBurstMode(target, false);
+            lastShotTick = currentTick;
+        }
+    }
+
+    private void attemptObstacleTargeting(Plant context, int currentTick) {
+        int plantRow = context.getPlacedTile().getRow();
+        int plantCol = context.getPlacedTile().getCol();
+        int obstacleCol = GameSession.getInstance().getArena()
+            .getFrontmostObstacleColInRow(plantRow, plantCol);
+
+        if (obstacleCol != -1) {
+            context.triggerAction("attack");
+            ProjectileMechanism.executeNewProjectile(context, true, false, 0.5f);
+            notify(context.getName() + " fired at an obstacle!");
+
+            setupBurstMode(null, true);
+            lastShotTick = currentTick;
+        }
+    }
+
+    private void setupBurstMode(Zombie target, boolean isObstacle) {
+        if (burstCount > 1) {
+            pendingBurstShots = burstCount - 1;
+            burstCooldownTicks = ProjectileTuning.VOLLEY_STAGGER_TICKS;
+            pendingTarget = target;
+            targetingObstacle = isObstacle;
         }
     }
 

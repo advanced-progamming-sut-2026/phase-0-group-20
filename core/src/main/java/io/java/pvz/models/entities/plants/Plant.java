@@ -585,7 +585,8 @@ public class Plant implements IPlant, Ticker {
         }
 
         this.currentAction = action;
-        this.actionTimer = (int) (AnimationCatalog.getPlantAnimation(this).getDuration(action) * TimeManager.TICKS_PER_SECOND);
+        this.actionTimer =
+            (int) (AnimationCatalog.getPlantAnimation(this).getDuration(action) * TimeManager.TICKS_PER_SECOND);
     }
 
     public String getCurrentAction() {

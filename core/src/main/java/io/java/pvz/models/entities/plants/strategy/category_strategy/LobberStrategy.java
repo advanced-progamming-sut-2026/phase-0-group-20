@@ -41,7 +41,8 @@ public class LobberStrategy implements IPlantStrategy {
 
             int obstacleCol = -1;
             if (targetZombie == null) {
-                obstacleCol = GameSession.getInstance().getArena().getFrontmostObstacleColInRow(plantRow, (int) plantCol);
+                obstacleCol = GameSession.getInstance().getArena()
+                    .getFrontmostObstacleColInRow(plantRow, (int) plantCol);
             }
 
             if (targetZombie != null || obstacleCol != -1) {
@@ -53,76 +54,83 @@ public class LobberStrategy implements IPlantStrategy {
 
 
     private void executeNewLobbedProjectile(Plant context, Zombie targetZombie, int obstacleCol) {
+        Projectile projectile = createBaseLobbedProjectile(context);
+
+        if (projectile != null) {
+            setProjectileTrajectory(projectile, targetZombie, obstacleCol, context.getPlacedTile().getRow());
+
+            projectile.setSpawnDelayTicks(0.5f);
+            Projectile.spawnCustom(projectile);
+
+            triggerLobAnimation(context, projectile.getType());
+        }
+    }
+
+    private Projectile createBaseLobbedProjectile(Plant context) {
         String name = context.getName();
+        int damage = context.getDamage();
         int spawnX = context.getPlacedTile().getCol() - 1;
         int spawnY = context.getPlacedTile().getRow();
 
         ProjectileType type = null;
-        int damage = 0;
         ProjectileEffect effect = new NormalEffect();
 
         switch (name) {
             case "Cabbage-pult":
                 type = ProjectileType.CABBAGE;
-                damage = context.getDamage();
                 break;
-            case "Kernel-pult": //25% for butter and 75% for corn
-                double finalButterChance = 0.25 + butterChanceBonus;
-                if (Math.random() < finalButterChance) {
+            case "Kernel-pult":
+                if (Math.random() < 0.25 + butterChanceBonus) {
                     type = ProjectileType.BUTTER;
-                    damage = context.getDamage();
                     effect = new ButterEffect();
                 } else {
                     type = ProjectileType.CORN;
-                    damage = context.getDamage();
                 }
                 break;
             case "Melon-pult":
                 type = ProjectileType.MELON;
-                damage = context.getDamage();
                 effect = new SplashEffect(damage + splashDamageBonus);
                 break;
             case "Winter Melon":
                 type = ProjectileType.WINTER_MELON;
-                damage = context.getDamage();
                 effect = new IceSplashEffect(damage + splashDamageBonus);
                 break;
             case "Pepper-pult":
                 type = ProjectileType.PEPPER;
-                damage = context.getDamage();
                 effect = new FireSplashEffect(paperRadiusBonus + 1.5);
                 break;
         }
 
-        if (type != null) {
-            Projectile projectile = new Projectile(
-                context,
-                type, effect, damage,
-                new Position(spawnX, spawnY),
-                0, 0,
-                false,
-                true // canPassObstacles
-            );
+        if (type == null) return null;
 
-            if (targetZombie != null) {
-                projectile.setArcTrajectory(targetZombie, ProjectileTuning.LOB_SPEED_TILES_PER_SEC,
-                    ProjectileTuning.LOB_ARC_HEIGHT_TILES);
-            } else if (obstacleCol != -1) {
-                projectile.setArcTrajectory(new Position(obstacleCol, spawnY), ProjectileTuning.LOB_SPEED_TILES_PER_SEC,
-                    ProjectileTuning.LOB_ARC_HEIGHT_TILES);
-            }
+        return new Projectile(
+            context, type, effect, damage,
+            new Position(spawnX, spawnY),
+            0, 0, false, true
+        );
+    }
 
-            projectile.setSpawnDelayTicks(0.5f);
+    private void setProjectileTrajectory(Projectile projectile, Zombie target, int obstacleCol, int spawnY) {
+        float speed = ProjectileTuning.LOB_SPEED_TILES_PER_SEC;
+        float height = ProjectileTuning.LOB_ARC_HEIGHT_TILES;
 
-            Projectile.spawnCustom(projectile);
-
-            if (name.equals("Kernel-pult") && type == ProjectileType.BUTTER) {
-                context.triggerAction("attack2");
-            } else {
-                context.triggerAction("attack");
-            }
-            notify("🥔 " + name + " lobbed a " + type.name() + "!");
+        if (target != null) {
+            projectile.setArcTrajectory(target, speed, height);
+        } else if (obstacleCol != -1) {
+            projectile.setArcTrajectory(new Position(obstacleCol, spawnY), speed, height);
         }
+    }
+
+    private void triggerLobAnimation(Plant context, ProjectileType type) {
+        String name = context.getName();
+
+        if (name.equals("Kernel-pult") && type == ProjectileType.BUTTER) {
+            context.triggerAction("attack2");
+        } else {
+            context.triggerAction("attack");
+        }
+
+        notify("🥔 " + name + " lobbed a " + type.name() + "!");
     }
 
     public void increaseSplashDamage(int damage) {

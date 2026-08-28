@@ -10,7 +10,7 @@ public class SunOnHitStrategy implements IPlantStrategy {
     private int sunPerHit = 5;
 
     private int totalSunDropped = 0;
-    private final int MAX_SUN_DROPS = 3;
+    private static final int MAX_SUN_DROPS = 3;
     private int cooldownTicks = 0;
 
     @Override
