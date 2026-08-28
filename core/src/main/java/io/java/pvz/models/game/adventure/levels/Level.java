@@ -169,7 +169,7 @@ public abstract class Level implements GameMode {
 
             newZombie.setCol(session.getArena().getCols() - 1);
             if (!newZombie.getName().equalsIgnoreCase("ZombieDarkKing"))
-                newZombie.setX(GRID_START_X + TILE_WIDTH * 9 + 300 + randomX * 6);
+                newZombie.setX(GRID_START_X + TILE_WIDTH * 11 + randomX * 4);
 
             wave.addZombie(newZombie);
             accumulatedCost += newZombie.getWaveCost();

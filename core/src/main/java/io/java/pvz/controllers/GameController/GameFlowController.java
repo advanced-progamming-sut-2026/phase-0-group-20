@@ -422,9 +422,8 @@ public class GameFlowController {
             GameSession.setMinigameLevel(levelToRestart);
         } else {
             GameSession.setPendingLevel(levelToRestart);
-            if (currentChapter != null) {
+            if (currentChapter != null)
                 GameSession.setPendingChapter(currentChapter);
-            }
         }
 
         if (levelToRestart instanceof ConveyorBelt conveyorBelt) {
@@ -433,23 +432,25 @@ public class GameFlowController {
 
         if (levelToRestart.skipsPlantSelection()) {
             if (levelToRestart instanceof BowlingLevel bowlingLevel) {
-                if (levelToRestart.getSeason() == SeasonType.MINI_GAME) {
+                if (levelToRestart.getSeason() == SeasonType.MINI_GAME)
                     GameSession.startMiniGame(levelToRestart, bowlingLevel.getBelt());
-                } else {
+                else
                     GameSession.startNewGame(bowlingLevel.getBelt());
-                }
             } else if (levelToRestart instanceof ConveyorBelt conveyorBelt) {
                 conveyorBelt.getBelt().clear();
-                if (levelToRestart.getSeason() == SeasonType.MINI_GAME) {
+                if (levelToRestart.getSeason() == SeasonType.MINI_GAME)
                     GameSession.startMiniGame(levelToRestart, conveyorBelt.getBelt());
-                } else {
+                else
                     GameSession.startNewGame(conveyorBelt.getBelt());
-                }
+            } else {
+                if (levelToRestart.getSeason() == SeasonType.MINI_GAME)
+                    GameSession.startMiniGame(levelToRestart, null);
+                else
+                    GameSession.startNewGame(null);
             }
             App.setActiveMenu(Menu.GAME_FLOW_MENU);
-        } else {
+        } else
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
-        }
 
         return new Result(true, "Level restarted successfully.");
     }
