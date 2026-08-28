@@ -16,6 +16,8 @@ import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.obstacle.*;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileType;
+import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.fields.Brain;
 import io.java.pvz.models.fields.LawnMower;
 import io.java.pvz.models.game.Arena;
@@ -86,12 +88,13 @@ public class WorldItemRenderer {
     public void clear() {
         projectileActors.clear();
         projectileActorTypes.clear();
-        sunActors.clear();
-        lawnMowerActors.clear();
-        obstacleActors.clear();
         for (Image actor : brainActors.values()) actor.remove();
         brainActors.clear();
-        if (redLineActor != null) redLineActor.remove();
+
+        if (redLineActor != null) {
+            redLineActor.remove();
+            redLineActor = null;
+        }
     }
 
     private void syncProjectiles(List<Projectile> liveProjectiles) {
@@ -456,6 +459,8 @@ public class WorldItemRenderer {
         Set<PushableObstacle> liveObstacles = new HashSet<>();
         for (PushableObstacle obs : obstacles) {
 
+            if ((obs instanceof ArcadeMachine) && !isZombieExistInMatch(ZombieType.ARCADE)) continue;
+            if ((obs instanceof Piano) && !isZombieExistInMatch(ZombieType.PIANIST)) continue;
             if (obs instanceof Barrel) continue;
 
             if (obs != null && !obs.isDestroyed()) {
@@ -484,6 +489,14 @@ public class WorldItemRenderer {
         }
     }
 
+    private boolean isZombieExistInMatch(ZombieType type) {
+        for (Zombie z : GameSession.getInstance().getChosenZombies()) {
+            if (z.getType() == type)
+                return true;
+        }
+        return false;
+    }
+
     private PamAnimatedActor spawnObstacle(PushableObstacle obs) {
         String pamPath;
         String defaultClip = "idle";
@@ -508,7 +521,7 @@ public class WorldItemRenderer {
                 };
                 fakePlant.setSize(TILE_WIDTH, TILE_HEIGHT);
                 fakePlant.setOrigin(Align.center);
-                zombieLayer.addActor(fakePlant);
+                effectLayer.addActor(fakePlant);
                 fakePlantActors.put(ib, fakePlant);
             }
         } else
@@ -517,7 +530,7 @@ public class WorldItemRenderer {
         PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, defaultClip);
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
-        zombieLayer.addActor(actor);
+        effectLayer.addActor(actor);
         return actor;
     }
 

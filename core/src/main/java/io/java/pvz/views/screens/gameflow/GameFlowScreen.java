@@ -217,12 +217,14 @@ public class GameFlowScreen extends BaseScreen {
 
     private void advanceSimulation(float delta) {
         GameSession session = GameSession.getInstance();
-        if (session == null || session.getState() == GameState.PAUSED) return;
+        if (session == null) return;
 
-        simulationAccumulator += delta;
-        while (simulationAccumulator >= TICK_DURATION) {
-            gameFlowController.advanceTime(1);
-            simulationAccumulator -= TICK_DURATION;
+        if (session.getState() != GameState.PAUSED && !session.isGameOver()) {
+            simulationAccumulator += delta;
+            while (simulationAccumulator >= TICK_DURATION) {
+                gameFlowController.advanceTime(1);
+                simulationAccumulator -= TICK_DURATION;
+            }
         }
 
         battlefieldRenderer.sync(session.getArena());

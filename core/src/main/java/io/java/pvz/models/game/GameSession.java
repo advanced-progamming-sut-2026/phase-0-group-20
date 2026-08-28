@@ -468,7 +468,7 @@ public class GameSession {
     }
 
     public void pauseGame() {
-        if (this.state == GameState.RUNNING) {
+        if (this.state == GameState.RUNNING || this.state == GameState.WON || this.state == GameState.LOST) {
             this.state = GameState.PAUSED;
         }
     }
