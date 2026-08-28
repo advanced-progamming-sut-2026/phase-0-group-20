@@ -14,6 +14,7 @@ import io.java.pvz.models.quest.QuestCategory;
 import io.java.pvz.utils.MinigameItemUi;
 import io.java.pvz.utils.QuestItemUi;
 import io.java.pvz.utils.UiFactory;
+import org.jspecify.annotations.NonNull;
 import pvz.libpvz.textures.TextureBank;
 
 import java.time.Duration;
@@ -52,18 +53,9 @@ public class TravelLogPanel extends Table {
         tabGroup.setMaxCheckCount(1);
         tabGroup.setMinCheckCount(1);
 
-        TextButton.TextButtonStyle tabStyle = new TextButton.TextButtonStyle();
-        tabStyle.font = skin.getFont("FBUSV8C5EI_1");
-        tabStyle.fontColor = Color.WHITE;
-        tabStyle.up = UiFactory.imageFor(textures,"IMAGE_UI_QUESTS_DAILY_INACTIVE").getDrawable();
-        tabStyle.checked = UiFactory.imageFor(textures,"IMAGE_UI_QUESTS_DAILY_ACTIVE").getDrawable();
+        TextButton.TextButtonStyle tabStyle = createTabStyle();
 
-        Table tabsRow = new Table();
-        tabsRow.left();
-        tabsRow.add(createTab("Daily", QuestCategory.DAILY, tabStyle)).padRight(2).size(110, 50);
-        tabsRow.add(createTab("Main", QuestCategory.MAIN, tabStyle)).padRight(2).size(110, 50);
-        tabsRow.add(createTab("Epic", QuestCategory.EPIC, tabStyle)).padRight(2).size(110, 50);
-        tabsRow.add(createMinigameTab("Minigame")).padRight(2).size(140, 50);
+        Table tabsRow = crateTabRow(tabStyle);
 
         ImageButton closeBtn = new ImageButton(skin, "generic_close");
         closeBtn.addListener(new ClickListener() {
@@ -110,6 +102,25 @@ public class TravelLogPanel extends Table {
         this.add(mainLayoutStack).width(1000).height(830);
 
         loadCategory(QuestCategory.DAILY);
+    }
+
+    private TextButton.@NonNull TextButtonStyle createTabStyle() {
+        TextButton.TextButtonStyle tabStyle = new TextButton.TextButtonStyle();
+        tabStyle.font = skin.getFont("FBUSV8C5EI_1");
+        tabStyle.fontColor = Color.WHITE;
+        tabStyle.up = UiFactory.imageFor(textures,"IMAGE_UI_QUESTS_DAILY_INACTIVE").getDrawable();
+        tabStyle.checked = UiFactory.imageFor(textures,"IMAGE_UI_QUESTS_DAILY_ACTIVE").getDrawable();
+        return tabStyle;
+    }
+
+    private @NonNull Table crateTabRow(TextButton.TextButtonStyle tabStyle) {
+        Table tabsRow = new Table();
+        tabsRow.left();
+        tabsRow.add(createTab("Daily", QuestCategory.DAILY, tabStyle)).padRight(2).size(110, 50);
+        tabsRow.add(createTab("Main", QuestCategory.MAIN, tabStyle)).padRight(2).size(110, 50);
+        tabsRow.add(createTab("Epic", QuestCategory.EPIC, tabStyle)).padRight(2).size(110, 50);
+        tabsRow.add(createMinigameTab("Minigame")).padRight(2).size(140, 50);
+        return tabsRow;
     }
 
     private TextButton createTab(String title, QuestCategory category, TextButton.TextButtonStyle style) {

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import io.java.pvz.controllers.GameController.CollectionController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
@@ -54,38 +55,72 @@ public class CollectionScreen extends BaseScreen {
     private void buildUI() {
         TextureBank textures = AssetLoader.getInstance().getTextures();
 
-        Table topTable = new Table();
-
         TextButton toggleBtn = new TextButton("Zombies", skin);
+        ImageButton closeBtn = createCloseButton(textures);
+        Table topTable = createTopTable(toggleBtn, closeBtn);
 
-        Image closeClicked = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_TABS_CLOSE_TAB_DOWN");
-        Image closeUnClicked = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_TABS_CLOSE_TAB");
-        ImageButton closeBtn = new ImageButton(closeUnClicked.getDrawable(), closeClicked.getDrawable());
-        closeBtn.setColor(Color.WHITE);
-
-        topTable.add(toggleBtn).expand().bottom().left().padLeft(25).padBottom(0);
-        topTable.add(closeBtn).expand().bottom().right().padRight(25).padBottom(0);
-
-        Table bottomTable = new Table();
-        bottomTable.setBackground(skin.getDrawable("image_ui_quests_panel_edge_to_edge_ten"));
-
-        final Table plantsTable = buildPlantsTable(textures);
-        final Table zombiesTable = buildZombiesTable(textures);
+        Table plantsTable = buildPlantsTable(textures);
+        Table zombiesTable = buildZombiesTable(textures);
 
         ScrollPane scrollPane = new ScrollPane(plantsTable);
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.setFadeScrollBars(false);
 
+        Table sortBar = createSortBar(textures, plantsTable);
+
+        Table barContainer = new Table();
+        barContainer.bottom();
+        barContainer.add(sortBar).fillX().size(600, 80).padBottom(30);
+        barContainer.setVisible(isShowingPlants);
+
+        Stack contentStack = new Stack();
+        contentStack.add(scrollPane);
+        contentStack.add(barContainer);
+
+        Table bottomTable = new Table();
+        bottomTable.setBackground(skin.getDrawable("image_ui_quests_panel_edge_to_edge_ten"));
+        bottomTable.add(contentStack).expand().fill().pad(30);
+
+        setupListeners(toggleBtn, closeBtn, scrollPane, plantsTable, zombiesTable, barContainer);
+
+        mainLayer.add(topTable).growX().height(Value.percentHeight(0.1f, mainLayer)).row();
+        mainLayer.add(bottomTable).grow().height(Value.percentHeight(0.9f, mainLayer));
+    }
+
+    private Table createTopTable(TextButton toggleBtn, ImageButton closeBtn) {
+        Table topTable = new Table();
+        topTable.add(toggleBtn).expand().bottom().left().padLeft(25).padBottom(0);
+        topTable.add(closeBtn).expand().bottom().right().padRight(25).padBottom(0);
+        return topTable;
+    }
+
+    private ImageButton createCloseButton(TextureBank textures) {
+        Image closeClicked = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_TABS_CLOSE_TAB_DOWN");
+        Image closeUnClicked = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_TABS_CLOSE_TAB");
+
+        ImageButton closeBtn = new ImageButton(closeUnClicked.getDrawable(), closeClicked.getDrawable());
+        closeBtn.setColor(Color.WHITE);
+        return closeBtn;
+    }
+
+    private Table createSortBar(TextureBank textures, Table plantsTable) {
         Table sortBar = new Table();
-
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.valueOf("#F4F0DD"));
-        pixmap.fill();
-        sortBar.setBackground(new Image(new Texture(pixmap)).getDrawable());
-        pixmap.dispose();
-
+        sortBar.setBackground(createSolidBackground(Color.valueOf("#F4F0DD")));
         sortBar.pad(12, 25, 12, 25);
 
+        Label filterLabel = new Label(currentFilterState.text, skin);
+        filterLabel.setColor(Color.valueOf("#2B7A0B"));
+        filterLabel.setFontScale(1.3f);
+
+        Table filterTable = createFilterTable(textures, plantsTable, filterLabel);
+        Label collectionLabel = createCollectionLabel();
+
+        sortBar.add(filterTable).left().expandX();
+        sortBar.add(collectionLabel).right();
+        return sortBar;
+    }
+
+    private Table createFilterTable(TextureBank textures, Table plantsTable, Label filterLabel) {
         Table filterTable = new Table();
 
         ImageButton filterButton = new ImageButton(
@@ -93,60 +128,45 @@ public class CollectionScreen extends BaseScreen {
             UiFactory.imageFor(textures, Ids.PlantCards.FILTER_CLICKED).getDrawable()
         );
 
-        Label filterLabel = new Label(currentFilterState.text, skin);
-        filterLabel.setColor(Color.valueOf("#2B7A0B"));
-        filterLabel.setFontScale(1.3f);
-
         filterButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                FilterState[] states = FilterState.values();
-                int nextIndex = (currentFilterState.ordinal() + 1) % states.length;
-                currentFilterState = states[nextIndex];
-
-                filterLabel.setText(currentFilterState.text);
-                applyFilterToTable(plantsTable);
-
+                cycleFilterState(filterLabel, plantsTable);
             }
         });
 
         filterTable.add(filterButton).padRight(8f);
         filterTable.add(filterLabel);
         filterTable.setTouchable(Touchable.enabled);
+        return filterTable;
+    }
 
+    private void cycleFilterState(Label filterLabel, Table plantsTable) {
+        FilterState[] states = FilterState.values();
+        int nextIndex = (currentFilterState.ordinal() + 1) % states.length;
+        currentFilterState = states[nextIndex];
+
+        filterLabel.setText(currentFilterState.text);
+        applyFilterToTable(plantsTable);
+    }
+
+    private Label createCollectionLabel() {
         int collected = App.getActiveUser().getUnlockedPlants().size();
         int total = App.getAllPlants().size();
+
         Label collectionLabel = new Label("Plants Collected: " + collected + " of " + total, skin, "medium");
         collectionLabel.setColor(Color.valueOf("#4A3018"));
         collectionLabel.setFontScale(1.1f);
 
-        sortBar.add(filterTable).left().expandX();
-        sortBar.add(collectionLabel).right();
+        return collectionLabel;
+    }
 
-        Stack contentStack = new Stack();
-        contentStack.add(scrollPane);
-
-        Table barContainer = new Table();
-        barContainer.bottom();
-        barContainer.add(sortBar).fillX().size(600, 80).padBottom(30);
-
-        barContainer.setVisible(isShowingPlants);
-        contentStack.add(barContainer);
-
+    private void setupListeners(TextButton toggleBtn, ImageButton closeBtn, ScrollPane scrollPane,
+                                Table plantsTable, Table zombiesTable, Table barContainer) {
         toggleBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                isShowingPlants = !isShowingPlants;
-
-                if (isShowingPlants) {
-                    scrollPane.setActor(plantsTable);
-                    toggleBtn.setText("Zombies");
-                    barContainer.setVisible(true);
-                } else {
-                    scrollPane.setActor(zombiesTable);
-                    toggleBtn.setText("Plants");
-                    barContainer.setVisible(false);
-                }
+                toggleAlmanacView(toggleBtn, scrollPane, plantsTable, zombiesTable, barContainer);
             }
         });
 
@@ -157,11 +177,32 @@ public class CollectionScreen extends BaseScreen {
                 ScreenManager.getInstance().popScreen();
             }
         });
+    }
 
-        bottomTable.add(contentStack).expand().fill().pad(30);
+    private void toggleAlmanacView(TextButton toggleBtn, ScrollPane scrollPane, Table plantsTable,
+                                   Table zombiesTable, Table barContainer) {
+        isShowingPlants = !isShowingPlants;
 
-        mainLayer.add(topTable).growX().height(Value.percentHeight(0.1f, mainLayer)).row();
-        mainLayer.add(bottomTable).grow().height(Value.percentHeight(0.9f, mainLayer));
+        if (isShowingPlants) {
+            scrollPane.setActor(plantsTable);
+            toggleBtn.setText("Zombies");
+            barContainer.setVisible(true);
+        } else {
+            scrollPane.setActor(zombiesTable);
+            toggleBtn.setText("Plants");
+            barContainer.setVisible(false);
+        }
+    }
+
+    private Drawable createSolidBackground(Color color) {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(color);
+        pixmap.fill();
+
+        Drawable drawable = new Image(new Texture(pixmap)).getDrawable();
+        pixmap.dispose();
+
+        return drawable;
     }
 
     private void applyFilterToTable(Table table) {

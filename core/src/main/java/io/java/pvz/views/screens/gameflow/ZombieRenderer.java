@@ -43,9 +43,7 @@ public class ZombieRenderer {
             ZombieType lastRenderedType = zombieActorTypes.get(zombie);
 
             if (actor == null || lastRenderedType != zombie.getType()) {
-                if (actor != null) {
-                    actor.remove();
-                }
+                if (actor != null) actor.remove();
                 actor = spawnZombie(zombie);
                 zombieActors.put(zombie, actor);
                 zombieActorTypes.put(zombie, zombie.getType());
@@ -61,7 +59,6 @@ public class ZombieRenderer {
             Map.Entry<Zombie, PamAnimatedActor> entry = it.next();
             Zombie zombie = entry.getKey();
             PamAnimatedActor actor = entry.getValue();
-
             if (!stillAlive.contains(zombie)) {
                 if (zombie.isBurnedToAsh()) {
                     spawnAshEffect(zombie);
@@ -72,18 +69,13 @@ public class ZombieRenderer {
 
                     float lingerTime = DESPAWN_LINGER_SECONDS;
                     AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
-
-                    if (anim != null && anim.hasClip(deathClip)) {
+                    if (anim != null && anim.hasClip(deathClip))
                         lingerTime = anim.getDuration(deathClip);
-                    }
-
-                    if (zombie instanceof Zomboss) {
+                    if (zombie instanceof Zomboss)
                         lingerTime = Math.max(lingerTime, 4.0f);
-                    }
 
                     despawn(actor, lingerTime - 0.5f);
                 }
-
                 zombieActorTypes.remove(zombie);
                 it.remove();
             }
@@ -213,15 +205,19 @@ public class ZombieRenderer {
         if (zombie.getType() == ZombieType.BARREL_ROLLER) {
             boolean hasBarrel = zombieHasBarrel(zombie);
             if (zombie.isDead()) {
-                return new Result(true, hasBarrel ? pickClip(anim, CLIP_WALK, "die") : pickClip(anim, CLIP_WALK, "die2"));
+                return new Result(true, hasBarrel ?
+                    pickClip(anim, CLIP_WALK, "die") : pickClip(anim, CLIP_WALK, "die2"));
             }
             if (zombie.isAttacking()) {
-                return new Result(true, hasBarrel ? pickClip(anim, CLIP_WALK, "eat") : pickClip(anim, CLIP_WALK, "eat2"));
+                return new Result(true, hasBarrel ?
+                    pickClip(anim, CLIP_WALK, "eat") : pickClip(anim, CLIP_WALK, "eat2"));
             }
             if (zombie.getState() == ZombieState.STUNNED) {
-                return new Result(true, hasBarrel ? pickClip(anim, CLIP_WALK, "idle") : pickClip(anim, CLIP_WALK, "idle2"));
+                return new Result(true, hasBarrel ?
+                    pickClip(anim, CLIP_WALK, "idle") : pickClip(anim, CLIP_WALK, "idle2"));
             }
-            return new Result(true, hasBarrel ? pickClip(anim, CLIP_WALK, "walk") : pickClip(anim, CLIP_WALK, "walk2"));
+            return new Result(true, hasBarrel ?
+                pickClip(anim, CLIP_WALK, "walk") : pickClip(anim, CLIP_WALK, "walk2"));
         }
         return new Result(false, null);
     }

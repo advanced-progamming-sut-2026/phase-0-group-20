@@ -40,10 +40,8 @@ public class ZombieInfoScreen extends BaseScreen {
     private void buildUI() {
         TextureBank textures = AssetLoader.getInstance().getTextures();
         backgroundRegion = textures.region(Ids.MainMenu.BACKGROUND);
-
         Table rootTable = new Table();
         rootTable.setFillParent(true);
-
         Label closeBtn = new Label("X", skin, "big");
         closeBtn.setColor(Color.WHITE);
         closeBtn.addListener(new ClickListener() {
@@ -56,14 +54,11 @@ public class ZombieInfoScreen extends BaseScreen {
         Table topBar = new Table();
         topBar.add(closeBtn).expandX().right().pad(20);
         rootTable.add(topBar).growX().row();
-
         Label titleLabel = new Label(zombie.getName(), skin, "big");
         titleLabel.setAlignment(Align.center);
         rootTable.add(titleLabel).padBottom(20).row();
-
         Table contentTable = new Table();
         PamAnimatedActor zombieActor = PamAnimatedActor.createZombieIdle(zombie.getType());
-
         contentTable.add(zombieActor).size(200, 200).expand().bottom().padBottom(300).padLeft(350);
 
         BorderedTable statsTable = new BorderedTable();
@@ -76,7 +71,6 @@ public class ZombieInfoScreen extends BaseScreen {
         informationLabel.setColor(Color.valueOf("#4A3018"));
         informationLabel.setFontScale(1.8f);
         informationLabel.setAlignment(Align.center);
-
         statsTable.add(informationLabel).colspan(2).padTop(50).padBottom(cellPadding * 2).row();
 
         float padX = 35f;

@@ -16,6 +16,7 @@ import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
+import org.jspecify.annotations.NonNull;
 import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
 
@@ -158,7 +159,6 @@ public class LoginScreen extends BaseScreen {
         mainLayer.clear();
         modalLayer.clearChildren();
         TextField.TextFieldStyle style = buildStyle();
-
         BorderedTable popup = new BorderedTable();
 
         popup.pad(40);
@@ -258,7 +258,6 @@ public class LoginScreen extends BaseScreen {
     private void showForgotPasswordStep3() {
         modalLayer.clearChildren();
         TextField.TextFieldStyle style = buildStyle();
-
         BorderedTable popup = new BorderedTable();
 
         popup.pad(40);
@@ -280,7 +279,18 @@ public class LoginScreen extends BaseScreen {
         repeatPassField.setPasswordCharacter('*');
         repeatPassField.setAlignment(Align.center);
 
-        TextButton changeBtn = UiFactory.textButton("Change Password", skin, "purple", 1.05f, 0.95f, () -> {
+        TextButton changeBtn = createChangeBtn(passField, repeatPassField);
+        changeBtn.getLabel().setFontScale(1.2f);
+
+        popup.add(passField).height(65).width(350).padBottom(10).row();
+        popup.add(repeatPassField).height(65).width(350).padBottom(20).row();
+        popup.add(changeBtn).height(70).width(250).row();
+
+        modalLayer.add(popup).center();
+    }
+
+    private @NonNull TextButton createChangeBtn(TextField passField, TextField repeatPassField) {
+        return UiFactory.textButton("Change Password", skin, "purple", 1.05f, 0.95f, () -> {
             Result result = loginController.resetPassword(passField.getText(), repeatPassField.getText());
             if (result.isSuccessful()) {
                 modalLayer.clearChildren();
@@ -300,13 +310,6 @@ public class LoginScreen extends BaseScreen {
                 buildUI();
             }
         });
-        changeBtn.getLabel().setFontScale(1.2f);
-
-        popup.add(passField).height(65).width(350).padBottom(10).row();
-        popup.add(repeatPassField).height(65).width(350).padBottom(20).row();
-        popup.add(changeBtn).height(70).width(250).row();
-
-        modalLayer.add(popup).center();
     }
 
     @Override

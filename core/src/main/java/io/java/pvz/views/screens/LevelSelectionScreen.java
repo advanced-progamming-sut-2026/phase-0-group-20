@@ -22,6 +22,7 @@ import io.java.pvz.models.game.minigame.MiniGameType;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.views.screens.gameflow.GameFlowScreen;
+import org.jspecify.annotations.NonNull;
 import pvz.libpvz.textures.TextureBank;
 
 public class LevelSelectionScreen extends BaseScreen {
@@ -33,7 +34,7 @@ public class LevelSelectionScreen extends BaseScreen {
     private static final float LOWER_Y = 100f;
     private static final float UPPER_Y = 420f;
     private static final float GROUP_HEIGHT = UPPER_Y + NODE_SIZE + 40f;
-    private MiniGameType MINIGAME_TYPE;
+    private MiniGameType minigameType;
 
 
     private final Chapter chapter;
@@ -50,7 +51,7 @@ public class LevelSelectionScreen extends BaseScreen {
     public LevelSelectionScreen(Game game, MiniGameType miniGameType, TravelLogController travellog) {
         super(game);
         this.chapter = null;
-        MINIGAME_TYPE = miniGameType;
+        minigameType = miniGameType;
         this.travelLogController = travellog;
         buildUi();
     }
@@ -74,7 +75,7 @@ public class LevelSelectionScreen extends BaseScreen {
         if (chapter != null) {
             mainLayer.add(UiFactory.screenTitle(chapter.getDisplayName(), skin, 1.8f)).padTop(10).padBottom(40).row();
         } else {
-            mainLayer.add(UiFactory.screenTitle(MINIGAME_TYPE.getName(), skin, 1.8f)).padTop(10).padBottom(40).row();
+            mainLayer.add(UiFactory.screenTitle(minigameType.getName(), skin, 1.8f)).padTop(10).padBottom(40).row();
         }
 
 
@@ -85,55 +86,50 @@ public class LevelSelectionScreen extends BaseScreen {
         Group group = new Group();
         group.setSize(PATH_AREA_WIDTH, GROUP_HEIGHT);
 
-        float[] centerX;
-        float[] centerY;
-        float spacingX;
+        int levelCount = (chapter != null) ? LEVELS_PER_CHAPTER : MINI_GAME_LEVELS;
 
-        if (chapter != null) {
-            centerX = new float[LEVELS_PER_CHAPTER];
-            centerY = new float[LEVELS_PER_CHAPTER];
-            spacingX = (PATH_AREA_WIDTH - NODE_SIZE) / (LEVELS_PER_CHAPTER - 1);
+        float[] centerX = new float[levelCount];
+        float[] centerY = new float[levelCount];
 
-            for (int i = 0; i < LEVELS_PER_CHAPTER; i++) {
-                centerX[i] = NODE_SIZE / 2f + i * spacingX;
-                float y = (i % 2 == 0) ? LOWER_Y : UPPER_Y;
-                centerY[i] = y + NODE_SIZE / 2f;
-            }
+        calculateNodePositions(centerX, centerY, levelCount);
+        addConnectorsToGroup(group, textures, centerX, centerY, levelCount);
+        addNodesToGroup(group, textures, skin, centerX, centerY, levelCount);
 
-            for (int i = 0; i < LEVELS_PER_CHAPTER - 1; i++) {
-                boolean pathReached = isLevelUnlocked(i + 1);
-                group.addActor(createConnector(textures, centerX[i], centerY[i], centerX[i + 1], centerY[i + 1], pathReached));
-            }
-
-            for (int i = 0; i < LEVELS_PER_CHAPTER; i++) {
-                Stack node = buildLevelNode(textures, skin, i);
-                node.setPosition(centerX[i] - NODE_SIZE / 2f, centerY[i] - NODE_SIZE / 2f);
-                group.addActor(node);
-            }
-
-        } else {
-            centerX = new float[MINI_GAME_LEVELS];
-            centerY = new float[MINI_GAME_LEVELS];
-            spacingX = (PATH_AREA_WIDTH - NODE_SIZE) / (MINI_GAME_LEVELS - 1);
-
-            for (int i = 0; i < MINI_GAME_LEVELS; i++) {
-                centerX[i] = NODE_SIZE / 2f + i * spacingX;
-                float y = (i % 2 == 0) ? LOWER_Y : UPPER_Y;
-                centerY[i] = y + NODE_SIZE / 2f;
-            }
-
-            for (int i = 0; i < MINI_GAME_LEVELS - 1; i++) {
-                boolean pathReached = isLevelUnlocked(i + 1);
-                group.addActor(createConnector(textures, centerX[i], centerY[i], centerX[i + 1], centerY[i + 1], pathReached));
-            }
-
-            for (int i = 0; i < MINI_GAME_LEVELS; i++) {
-                Stack node = buildLevelNode(textures, skin, i);
-                node.setPosition(centerX[i] - NODE_SIZE / 2f, centerY[i] - NODE_SIZE / 2f);
-                group.addActor(node);
-            }
-        }
         return group;
+    }
+
+    private void calculateNodePositions(float[] centerX, float[] centerY, int levelCount) {
+        float spacingX = (PATH_AREA_WIDTH - NODE_SIZE) / (levelCount - 1);
+
+        for (int i = 0; i < levelCount; i++) {
+            centerX[i] = NODE_SIZE / 2f + i * spacingX;
+            float y = (i % 2 == 0) ? LOWER_Y : UPPER_Y;
+            centerY[i] = y + NODE_SIZE / 2f;
+        }
+    }
+
+    private void addConnectorsToGroup(
+        Group group, TextureBank textures, float[] centerX, float[] centerY, int levelCount
+    ) {
+        for (int i = 0; i < levelCount - 1; i++) {
+            boolean pathReached = isLevelUnlocked(i + 1);
+            group.addActor(createConnector(
+                textures,
+                centerX[i], centerY[i],
+                centerX[i + 1], centerY[i + 1],
+                pathReached
+            ));
+        }
+    }
+
+    private void addNodesToGroup(
+        Group group, TextureBank textures, Skin skin, float[] centerX, float[] centerY, int levelCount
+    ) {
+        for (int i = 0; i < levelCount; i++) {
+            Stack node = buildLevelNode(textures, skin, i);
+            node.setPosition(centerX[i] - NODE_SIZE / 2f, centerY[i] - NODE_SIZE / 2f);
+            group.addActor(node);
+        }
     }
 
     private Image createConnector(TextureBank textures, float x1, float y1, float x2, float y2, boolean reached) {
@@ -164,7 +160,8 @@ public class LevelSelectionScreen extends BaseScreen {
                     Result result;
 
                     if (chapter == null) {
-                        result = travelLogController.startMiniGame(MINIGAME_TYPE.getName(), String.valueOf(levelIndex + 1));
+                        result =
+                            travelLogController.startMiniGame(minigameType.getName(), String.valueOf(levelIndex + 1));
                     } else {
                         result = gameMenuController.enterLevel(String.valueOf(levelIndex + 1));
                     }
@@ -196,21 +193,26 @@ public class LevelSelectionScreen extends BaseScreen {
             nodeStack.add(lockContainer);
         }
 
+        Container<Label> numberContainer = createLevelContainer(skin, levelIndex);
+        nodeStack.add(numberContainer);
+
+        return nodeStack;
+    }
+
+    private static @NonNull Container<Label> createLevelContainer(Skin skin, int levelIndex) {
         Label numberLabel = new Label(String.valueOf(levelIndex + 1), skin, "big");
         numberLabel.setFontScale(1.6f);
         numberLabel.setColor(Color.WHITE);
         numberLabel.setAlignment(Align.bottomRight);
         Container<Label> numberContainer = new Container<>(numberLabel);
         numberContainer.bottom().right().padBottom(5).padRight(10);
-        nodeStack.add(numberContainer);
-
-        return nodeStack;
+        return numberContainer;
     }
 
     private boolean isLevelUnlocked(int levelIndex) {
         if (chapter == null) {
             try {
-                int maxUnlocked = App.getActiveUser().getUnlockedLevelInMinigame(MINIGAME_TYPE);
+                int maxUnlocked = App.getActiveUser().getUnlockedLevelInMinigame(minigameType);
                 return (levelIndex) <= maxUnlocked;
             } catch (Exception e) {
                 return false;

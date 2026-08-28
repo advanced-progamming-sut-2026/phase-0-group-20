@@ -242,14 +242,16 @@ public class SignupScreen extends BaseScreen {
                                 });
                             } else {
                                 System.out.println("Server-side signup step 2 failed: "
-                                    + (finishResponse != null ? finishResponse.getErrorMessage() : "server unreachable"));
+                                    + (finishResponse != null ? finishResponse.getErrorMessage()
+                                    : "server unreachable"));
                             }
                         });
                 } else {
                     NetworkController.getInstance().login(pendingUsername, pendingPassword, loginResponse -> {
                         if (loginResponse == null || !loginResponse.isSuccess()) {
                             System.out.println("Online account unavailable: "
-                                + (registerResponse != null ? registerResponse.getErrorMessage() : "server unreachable"));
+                                + (registerResponse != null ? registerResponse.getErrorMessage()
+                                : "server unreachable"));
                         }
                     });
                 }
