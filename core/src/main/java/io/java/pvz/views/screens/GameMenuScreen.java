@@ -115,37 +115,6 @@ public class GameMenuScreen extends BaseScreen {
         mainLayer.add(islandContainer).expand().fill().padTop(15);
     }
 
-
-    private Stack createResourceDisplay(TextureBank textures, Skin skin, String imageId, String initialValue) {
-        Stack displayStack = new Stack();
-
-        Image bgImage = UiFactory.imageFor(textures, imageId);
-        bgImage.setScaling(Scaling.fit);
-        Container<Image> bgContainer = new Container<>(bgImage);
-        bgContainer.size(200, 55);
-
-        Label.LabelStyle labelStyle = skin.get(Label.LabelStyle.class);
-        Label valueLabel = new Label(initialValue, labelStyle);
-        valueLabel.setAlignment(Align.left | Align.center);
-
-        Container<Label> labelContainer = new Container<>(valueLabel);
-        labelContainer.padLeft(45);
-
-        displayStack.add(bgContainer);
-        displayStack.add(labelContainer);
-
-        displayStack.setUserObject(valueLabel);
-
-        return displayStack;
-    }
-
-    private TextButton createEarnButton(Skin skin, ButtonAnimator.OnClickListener clickListener) {
-        TextButton earnBtn = new TextButton("Earn", skin, "green_small");
-
-        ButtonAnimator.applyHoverAndClickEffect(earnBtn, 1.1f, 0.9f, clickListener);
-        return earnBtn;
-    }
-
     @Override
     public void render(float delta) {
         clearScreen(0.02f, 0.15f, 0.16f, 1f);
