@@ -26,8 +26,8 @@ public class PianistMove implements MoveBehavior, GameEventListener {
 
     private static final float PIANO_OFFSET_X = 45f;
 
-    private static final int PLAY_DURATION_TICKS = 4 * TimeManager.TICKS_PER_SECOND;
-    private static final int IDLE_DURATION_TICKS = 8 * TimeManager.TICKS_PER_SECOND;
+    private static final int PLAY_DURATION_TICKS = 8 * TimeManager.TICKS_PER_SECOND;
+    private static final int IDLE_DURATION_TICKS = 4 * TimeManager.TICKS_PER_SECOND;
 
     private boolean isPlaying = false;
     private int phaseTimer = 0;
@@ -60,7 +60,7 @@ public class PianistMove implements MoveBehavior, GameEventListener {
             return;
         }
 
-        if (piano != null && !piano.isDestroyed()) {
+        if (piano != null && !piano.isDestroyed() && zombie.getCol() < 11) {
             phaseTimer++;
 
             if (isPlaying) {

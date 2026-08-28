@@ -32,8 +32,16 @@ public class Pvz extends Game {
         Pixmap original = new Pixmap(Gdx.files.internal(
             "Icon_And_Cursor/Plants vs. Zombies Crazy Dave Cursor - pointer - SweezyCursors.png"));
 
-        Pixmap cursorPixmap = new Pixmap(original.getWidth(), original.getHeight(), Pixmap.Format.RGBA8888);
-        cursorPixmap.drawPixmap(original, 0, 0);
+        int newWidth = original.getWidth() * 2;
+        int newHeight = original.getHeight() * 2;
+
+        Pixmap cursorPixmap = new Pixmap(newWidth, newHeight, Pixmap.Format.RGBA8888);
+
+        cursorPixmap.drawPixmap(
+            original,
+            0, 0, original.getWidth(), original.getHeight(),
+            0, 0, newWidth, newHeight
+        );
 
         Cursor customCursor = Gdx.graphics.newCursor(cursorPixmap, 0, 0);
         Gdx.graphics.setCursor(customCursor);

@@ -4,8 +4,10 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.TimeManager;
-import io.java.pvz.utils.AnimationCatalog;
 
 import java.util.List;
 
@@ -44,9 +46,20 @@ public class BurstEffectFoodStrategy implements PlantFoodStrategy {
             int damage = 1800;//damage ziad haminghad khoobe Hossein?
 
             if (name.equalsIgnoreCase("fume-shroom")) {
+                if (setupTicks == 0) {
+                    setupTicks = TimeManager.TICKS_PER_SECOND * 3 / 2;
+                    return;
+                }
+                GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+                    new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                        .message("FUME_PLANTFOOD")
+                        .coordinate(row, col)
+                        .build()
+                );
+
                 for (Zombie zombie : gameSession.getArena().zombieInRow(row)) {
                     if (!zombie.isDead() && zombie.getCol() >= col) {
-                        zombie.takeDamage(damage);
+                        zombie.takeDamage(damage / 3);
                         if (zombie.isDead()) {
                             plant.onZombieDeath(zombie);
                         }
