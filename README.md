@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/icon.png" width="140" alt="Plants vs. Zombies 2 icon" />
+  <img src="assets/docs/icon.png" width="140" alt="Plants vs. Zombies 2 icon" />
 </div>
 
 # 🌻 Plants vs. Zombies 2 — Java / libGDX Edition 🧟
