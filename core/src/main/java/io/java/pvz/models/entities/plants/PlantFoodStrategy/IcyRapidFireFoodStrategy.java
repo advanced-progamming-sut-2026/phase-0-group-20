@@ -3,7 +3,7 @@ package io.java.pvz.models.entities.plants.PlantFoodStrategy;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
+import io.java.pvz.models.entities.zombies.behavior.effect.ChillEffect;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
@@ -34,9 +34,11 @@ public class IcyRapidFireFoodStrategy implements PlantFoodStrategy {
 
             if (!frozenExecuted) {
                 int row = plant.getPlacedTile().getRow();
-                for (Zombie zombie : GameSession.getInstance().getArena().zombieInRow(row))
-                    if (!zombie.isDead())
-                        zombie.addEffect(new FreezeEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
+                for (Zombie zombie : GameSession.getInstance().getArena().zombieInRow(row)) {
+                    if (!zombie.isDead()) {
+                        zombie.addEffect(new ChillEffect(zombie, 15 * TimeManager.TICKS_PER_SECOND));
+                    }
+                }
                 frozenExecuted = true;
             }
 
@@ -56,5 +58,4 @@ public class IcyRapidFireFoodStrategy implements PlantFoodStrategy {
         this.tickTimer = 0;
         this.frozenExecuted = false;
     }
-
 }

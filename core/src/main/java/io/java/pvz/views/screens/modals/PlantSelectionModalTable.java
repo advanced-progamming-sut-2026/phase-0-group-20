@@ -79,7 +79,14 @@ public class PlantSelectionModalTable extends Table {
         }
 
         Table gridTable = buildPlantGridTable(availablePlants, textures);
-        ScrollPane scrollPane = new ScrollPane(gridTable);
+        ScrollPane scrollPane = new ScrollPane(gridTable, skin) {
+            @Override
+            protected void setStage(Stage stage) {
+                super.setStage(stage);
+                if (stage != null) stage.setScrollFocus(this);
+            }
+        };
+
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.setFadeScrollBars(false);
 

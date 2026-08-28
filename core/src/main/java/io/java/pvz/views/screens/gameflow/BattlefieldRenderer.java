@@ -295,6 +295,7 @@ public class BattlefieldRenderer implements GameEventListener {
                 effectRenderer.spawnPrimalPotatoMineExplosion(payload.getCol(), payload.getRow());
             case "CHERRYBOMB_EXPLODE" -> effectRenderer.spawnCherryBombExplosion(payload.getCol(), payload.getRow());
             case "JALAPENO_EXPLODE" -> effectRenderer.spawnJalapenoFire(payload.getRow());
+            case "FUME_PLANTFOOD" -> effectRenderer.spawnFumePlantFoodEffect(payload.getCol(), payload.getRow());
         }
     }
 

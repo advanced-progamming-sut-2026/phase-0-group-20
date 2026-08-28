@@ -487,6 +487,27 @@ public class EffectRenderer {
         })));
     }
 
+    public void spawnFumePlantFoodEffect(int col, int row) {
+        String pamPath = Ids.Projectiles.FUME;
+
+        PamAnimatedActor actor = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(), "plantfood", pamPath);
+
+        actor.setSize(TILE_WIDTH * 8, TILE_HEIGHT * 1.5f);
+        actor.setOrigin(Align.center);
+
+        float x = GRID_START_X + ((col-2.7f) * TILE_WIDTH);
+        float y = GRID_START_Y + (row * TILE_HEIGHT) + (TILE_HEIGHT / 2f) - (actor.getHeight() / 2f) + 100f;
+
+        actor.setPosition(x, y);
+        effectLayer.addActor(actor);
+
+        actor.addAction(Actions.sequence(
+            Actions.delay(1.5f),
+            Actions.fadeOut(0.3f),
+            Actions.removeActor()
+        ));
+    }
+
     private static Map<ProjectileType, HitAnim> buildHitAnimMap() {
         Map<ProjectileType, HitAnim> map = new EnumMap<>(ProjectileType.class);
         map.put(ProjectileType.PEA, new HitAnim(Ids.ProjectileHits.PEA, "animation", 0.8333f));

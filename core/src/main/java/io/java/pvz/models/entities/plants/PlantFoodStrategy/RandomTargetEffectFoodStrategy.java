@@ -4,8 +4,6 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.game.GameSession;
-import io.java.pvz.models.timeManager.TimeManager;
-import io.java.pvz.utils.AnimationCatalog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,23 +47,31 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
             int hits = Math.min(targetCount, pool.size());
             List<Zombie> targets = new ArrayList<>();
 
-            for (int i = 0; i < pool.size(); i++) {
+            for (int i = 0; i < hits; i++) {
+                if (pool.isEmpty()) break;
                 int rnd = new Random().nextInt(pool.size());
                 targets.add(pool.get(rnd));
                 pool.remove(rnd);
-                if (targets.size() >= hits) break;
             }
 
-            boolean isLobbedProjectile = plant.getName().equalsIgnoreCase("Cabbage-pult")
-                || plant.getName().equalsIgnoreCase("Melon-pult")
-                || plant.getName().equalsIgnoreCase("Winter Melon")
-                || plant.getName().equalsIgnoreCase("Pepper-pult")
-                || plant.getName().equalsIgnoreCase("Bowling Bulb");
+            String pName = plant.getName().toLowerCase();
+            boolean firesTargetedProjectile = pName.equals("cabbage-pult")
+                || pName.equals("melon-pult")
+                || pName.equals("winter melon")
+                || pName.equals("pepper-pult")
+                || pName.equals("bowling bulb")
+                || pName.equals("electric blueberry");
 
             for (Zombie target : targets) {
-                if (isLobbedProjectile)
-                    ProjectileMechanism.executeTargetedProjectile(plant, target, 0.1f);
-                else
+                if (firesTargetedProjectile) {
+
+                    int pfDamage = plant.getDamage() * 20;
+                    if (pName.equals("electric blueberry"))
+                        pfDamage = 99999;
+
+                    ProjectileMechanism.executeTargetedProjectile(plant, target, 0.1f, pfDamage);
+
+                } else
                     applyDirectEffect(target, plant);
             }
             executed = true;
@@ -74,7 +80,7 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
 
     private void applyDirectEffect(Zombie target, Plant plant) {
         switch (plant.getName().toLowerCase()) {
-            case "electric blueberry", "tangle kelp", "chomper" -> {
+            case "tangle kelp", "chomper" -> {
                 target.takeDamage(10000);
                 if (target.isDead()) plant.onZombieDeath(target);
             }

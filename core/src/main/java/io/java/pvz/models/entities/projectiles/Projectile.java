@@ -142,6 +142,10 @@ public class Projectile implements Ticker {
         else if (speedY < 0)
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 2);
 
+        if (type == ProjectileType.PUFF_SPORE ||
+            (plant.getName().equalsIgnoreCase("Pea Pod") && !plant.isBoosted()))
+            position.moveY(-PhysicalConstants.TILE_HEIGHT / 3);
+
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
@@ -188,7 +192,7 @@ public class Projectile implements Ticker {
 
     private static ProjectileEffect projectileEffect(ProjectileType projectileType, int damage) {
         return switch (projectileType) {
-            case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE, PUFF_SPORE-> new NormalEffect();
+            case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE, PUFF_SPORE -> new NormalEffect();
             case ICE_PEA -> new IceEffect();
             case FIRE_PEA, BLUE_FIRE_PEA -> new FireEffect();
             case GOO_PEA, FUME -> new PoisonProjectileEffect();
@@ -200,8 +204,8 @@ public class Projectile implements Ticker {
             case PEPPER -> new FireSplashEffect(1.5);
             case GRAPE -> new AreaOfEffect(new NormalEffect(), damage / 2, 1.0);
             case PLASMA_BALL -> new AreaOfEffect(new NormalEffect(), damage / 2, 1.5);
-            case WALLNUT_BOWL, EXPLODE_NUT_BOWL, GIANT_NUT_BOWL, SHARK, BOWLING_BULB_BLUE, BOWLING_BULB_CYAN, BOWLING_BULB_ORANGE
-                -> new NormalEffect();
+            case WALLNUT_BOWL, EXPLODE_NUT_BOWL, GIANT_NUT_BOWL, SHARK, BOWLING_BULB_BLUE, BOWLING_BULB_CYAN,
+                 BOWLING_BULB_ORANGE -> new NormalEffect();
         };
     }
 

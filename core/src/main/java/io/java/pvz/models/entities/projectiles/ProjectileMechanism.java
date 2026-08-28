@@ -56,11 +56,14 @@ public class ProjectileMechanism {
     }
 
     public static void executeTargetedProjectile(Plant plant, Zombie target, float delaySeconds) {
-        int damage = plant.getDamage();
+        executeTargetedProjectile(plant, target, delaySeconds, plant.getDamage());
+    }
+
+    public static void executeTargetedProjectile(Plant plant, Zombie target, float delaySeconds, int customDamage) {
         ProjectileType type = getProjectileType(plant.getName());
         ProjectileEffect effect = getProjectileEffect(plant.getName());
 
-        if (damage == -1 || type == null) return;
+        if (customDamage == -1 || type == null) return;
 
         int spawnCol = plant.getPlacedTile().getCol();
         int spawnRow = plant.getPlacedTile().getRow();
@@ -68,7 +71,7 @@ public class ProjectileMechanism {
         Projectile projectile = Projectile.spawnNewProjectile(
             plant,
             type,
-            damage,
+            customDamage,
             new Position(spawnCol, spawnRow),
             0,
             0,

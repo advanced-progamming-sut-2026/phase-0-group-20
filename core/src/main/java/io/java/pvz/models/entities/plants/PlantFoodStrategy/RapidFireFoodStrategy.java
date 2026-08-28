@@ -1,3 +1,4 @@
+// file: core/src/main/java/io/java/pvz/models/entities/plants/PlantFoodStrategy/RapidFireFoodStrategy.java
 package io.java.pvz.models.entities.plants.PlantFoodStrategy;
 
 import io.java.pvz.models.Position;
@@ -7,7 +8,6 @@ import io.java.pvz.models.entities.projectiles.ProjectileMechanism;
 import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.timeManager.TimeManager;
-import io.java.pvz.utils.AnimationCatalog;
 
 public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
@@ -18,7 +18,7 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
     private final boolean doesRapidFire;
     private int tickTimer = 0;
     private int giantShotsFired = 0;
-    private int totalGiantShots = -1;
+    private int totalGiantShots = 0;
 
     public RapidFireFoodStrategy() {
         this(0, true);
@@ -33,11 +33,19 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
     public void onEnter(Plant plant) {
         PlantFoodStrategy.super.onEnter(plant);
         this.tickTimer = 0;
+        this.giantShotsFired = 0;
 
         int[] timings = calculateTimings(plant);
         this.setupTicks = timings[0];
 
-        this.durationTicks = Math.max(minDuration + setupTicks, timings[1]);
+        if (plant.getName().equalsIgnoreCase("Pea Pod")) {
+            this.totalGiantShots = plant.getStackCount();
+
+            this.durationTicks = this.setupTicks + (this.totalGiantShots * (TimeManager.TICKS_PER_SECOND));
+        } else {
+            this.totalGiantShots = extraGiantShots;
+            this.durationTicks = Math.max(minDuration + setupTicks, timings[1]);
+        }
     }
 
     @Override
@@ -47,13 +55,6 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
         if (tickTimer > setupTicks) {
             int activeTick = tickTimer - setupTicks;
 
-            if (totalGiantShots == -1) {
-                if (plant.getName().equalsIgnoreCase("Pea Pod"))
-                    totalGiantShots = plant.getStackCount();
-                else
-                    totalGiantShots = extraGiantShots;
-            }
-
             if (doesRapidFire && tickTimer <= durationTicks) {
                 if (activeTick % (TimeManager.TICKS_PER_SECOND / 5) == 0)
                     ProjectileMechanism.executeNewProjectile(plant, true, false, 0.1f);
@@ -61,6 +62,9 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
 
             if (giantShotsFired < totalGiantShots) {
                 if (activeTick % (TimeManager.TICKS_PER_SECOND / 2) == 0) {
+                    if (plant.getName().equalsIgnoreCase("Pea Pod") &&
+                        (activeTick + TimeManager.TICKS_PER_SECOND / 2) % (TimeManager.TICKS_PER_SECOND) != 0)
+                        return;
                     ProjectileType type = ProjectileMechanism.getProjectileType(plant.getName());
                     int giantDamage = plant.getDamage() * 20;
                     int col = plant.getPlacedTile().getCol();
@@ -95,6 +99,5 @@ public class RapidFireFoodStrategy implements PlantFoodStrategy {
     public void reset() {
         this.tickTimer = 0;
         this.giantShotsFired = 0;
-        this.totalGiantShots = -1;
     }
 }
