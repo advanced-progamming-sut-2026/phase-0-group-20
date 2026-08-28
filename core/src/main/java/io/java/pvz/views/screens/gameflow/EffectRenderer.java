@@ -509,7 +509,8 @@ public class EffectRenderer {
         map.put(ProjectileType.EXPLODE_NUT_BOWL, new HitAnim(Ids.ProjectileHits.EXPLODE_NUT_BOWL,
             "explosion", 1.6667f));
         map.put(ProjectileType.SHARK,new HitAnim(Ids.ProjectileHits.SHARK,"attack", 2.1f));
-        map.put(ProjectileType.PUFF_SPORE, new HitAnim("768/INITIAL/EFFECTS/T_PUFFSHROOM_HIT/T_PUFFSHROOM_HIT.PAM", "animation", 0.5f));
+        map.put(ProjectileType.PUFF_SPORE,
+            new HitAnim("768/INITIAL/EFFECTS/T_PUFFSHROOM_HIT/T_PUFFSHROOM_HIT.PAM", "animation", 0.5f));
         return map;
     }
 }

@@ -16,6 +16,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventListener;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,25 +47,30 @@ public class BattlefieldRenderer implements GameEventListener {
     public BattlefieldRenderer() {
         initShader();
 
-        plantLayer = new Group() {
-            @Override
-            public void drawChildren(Batch batch, float parentAlpha) {
-                batch.setShader(entityShader);
-                for (Actor child : getChildren()) {
-                    if (!child.isVisible()) continue;
-                    Plant plant = (Plant) child.getUserObject();
-                    if (plant != null) {
-                        applyPlantShaderUniforms(plant);
-                    } else {
-                        entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
-                        entityShader.setUniformf("u_damageFlash", 0f);
-                    }
-                    child.draw(batch, parentAlpha);
-                }
-                batch.setShader(null);
-            }
-        };
+        plantLayer = getPlantLayer();
 
+        zombieLayer = getZombieLayer();
+
+        masterGroup.addActor(environmentLayer);
+        masterGroup.addActor(highlightLayer);
+        masterGroup.addActor(mowerLayer);
+        masterGroup.addActor(plantLayer);
+        masterGroup.addActor(zombieLayer);
+        masterGroup.addActor(effectLayer);
+
+        environmentRenderer = new EnvironmentRenderer(environmentLayer);
+        effectRenderer = new EffectRenderer(effectLayer);
+        worldItemRenderer = new WorldItemRenderer(effectLayer, mowerLayer, zombieLayer, highlightLayer);
+        plantRenderer = new PlantRenderer(plantLayer);
+        zombieRenderer = new ZombieRenderer(zombieLayer);
+
+        GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
+        GameEventMessenger.getInstance().addListener(GameEvent.SPAWN_EFFECT, this);
+        GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
+    }
+
+    private @NonNull Group getZombieLayer() {
+        final Group zombieLayer;
         zombieLayer = new Group() {
             @Override
             public void drawChildren(Batch batch, float parentAlpha) {
@@ -83,23 +89,30 @@ public class BattlefieldRenderer implements GameEventListener {
                 batch.setShader(null);
             }
         };
+        return zombieLayer;
+    }
 
-        masterGroup.addActor(environmentLayer);
-        masterGroup.addActor(highlightLayer);
-        masterGroup.addActor(mowerLayer);
-        masterGroup.addActor(plantLayer);
-        masterGroup.addActor(zombieLayer);
-        masterGroup.addActor(effectLayer);
-
-        environmentRenderer = new EnvironmentRenderer(environmentLayer);
-        effectRenderer = new EffectRenderer(effectLayer);
-        worldItemRenderer = new WorldItemRenderer(effectLayer, mowerLayer, zombieLayer, highlightLayer);
-        plantRenderer = new PlantRenderer(plantLayer);
-        zombieRenderer = new ZombieRenderer(zombieLayer);
-
-        GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
-        GameEventMessenger.getInstance().addListener(GameEvent.SPAWN_EFFECT, this);
-        GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
+    private @NonNull Group getPlantLayer() {
+        final Group plantLayer;
+        plantLayer = new Group() {
+            @Override
+            public void drawChildren(Batch batch, float parentAlpha) {
+                batch.setShader(entityShader);
+                for (Actor child : getChildren()) {
+                    if (!child.isVisible()) continue;
+                    Plant plant = (Plant) child.getUserObject();
+                    if (plant != null) {
+                        applyPlantShaderUniforms(plant);
+                    } else {
+                        entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
+                        entityShader.setUniformf("u_damageFlash", 0f);
+                    }
+                    child.draw(batch, parentAlpha);
+                }
+                batch.setShader(null);
+            }
+        };
+        return plantLayer;
     }
 
     private void initShader() {
@@ -135,29 +148,19 @@ public class BattlefieldRenderer implements GameEventListener {
         int col = zombie.getCol();
 
         if (col <= 1) {
-            r = 1.0f;
-            g = 0.0f;
-            b = 0.0f;
+            r = 1.0f;g = 0.0f;b = 0.0f;
             intensity = (float) (Math.abs(Math.sin(System.currentTimeMillis() / 150.0)) * 0.4 + 0.2);
         } else if (zombie.isHypnotized()) {
-            r = 1.0f;
-            g = 0.4f;
-            b = 1.0f;
+            r = 1.0f;g = 0.4f;b = 1.0f;
             intensity = 0.5f;
         } else if (isFrozen) {
-            r = 0.2f;
-            g = 0.5f;
-            b = 1.0f;
+            r = 0.2f;g = 0.5f;b = 1.0f;
             intensity = 0.5f;
         } else if (isChilled) {
-            r = 0.5f;
-            g = 0.8f;
-            b = 1.0f;
+            r = 0.5f;g = 0.8f;b = 1.0f;
             intensity = 0.3f;
         } else if (isPoisoned || zombie.isShiny()) {
-            r = 0.6f;
-            g = 0.1f;
-            b = 0.8f;
+            r = 0.6f;g = 0.1f;b = 0.8f;
             intensity = 0.5f;
         }
 

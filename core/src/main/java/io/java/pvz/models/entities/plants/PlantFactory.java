@@ -36,7 +36,6 @@ public class PlantFactory {
 
         switch (data.abilityType()) {
             case "PRODUCE_SUN", "INSTANT_SUN_BURST" -> plant.addStrategy(new SunProductionStrategy());
-
             case "SHOOT_PROJECTILE" -> {
                 switch (data.category()) {
                     case HOMING -> {
@@ -57,13 +56,10 @@ public class PlantFactory {
                     }
                 }
             }
-
             case "MELEE_ATTACK" -> {
                 if (!nameKey.equals("chomper")) plant.addStrategy(new MeleeStrategy());
             }
-
             case "MINT_FAMILY_BOOST" -> plant.addStrategy(new MintBuffStrategy());
-
             case "DELAYED_EXPLOSIVE", "INSTANT_EXPLOSIVE" -> {
                 if (!data.tags().contains(PlantTag.TRAP) && !ownsItsOwnDetonation(nameKey)) {
                     plant.addStrategy(new ExplosiveStrategy());

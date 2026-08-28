@@ -115,12 +115,7 @@ public class ShopModalMenu extends Table {
         dailyDealSlot.clear();
 
         Stack dailyStack = new Stack();
-
-        Image bg = UiFactory.imageFor(textures, Ids.Shop.DAILY_DEAL_BACKGROUND);
-        bg.setScaling(Scaling.stretch);
-        Container<Image> bgContainer = new Container<>(bg);
-        bgContainer.size(1470, 220);
-        dailyStack.add(bgContainer);
+        dailyStack.add(createDailyBackground());
 
         Plant dailyPlant = controller.getDailyDealPlant();
         boolean soldOut = controller.isDailyDealPurchased();
@@ -128,68 +123,126 @@ public class ShopModalMenu extends Table {
         Table content = new Table();
         content.pad(15, 35, 15, 35);
 
-        Image plantIcon = dailyPlant != null
-            ? UiFactory.imageFor(textures,
-            Ids.Shop.PLANT_PACKET_PREFIX + UiFactory.getAtlasName(dailyPlant).toUpperCase())
-            : UiFactory.imageFor(textures, Ids.Shop.SEED_PACKET_ICON);
-        plantIcon.setScaling(Scaling.fit);
-        content.add(plantIcon).size(150, 150).padRight(30);
-
-        Table info = new Table();
-        info.left().defaults().left();
-
-        Table clockRow = new Table();
-        Image clock = UiFactory.imageFor(textures, Ids.Shop.DAILY_DEAL_CLOCK_ICON);
-        clock.setScaling(Scaling.fit);
-        Label dailyLabel = new Label("DAILY DEAL", skin);
-        dailyLabel.setColor(Color.valueOf("#FFD37A"));
-        dailyLabel.setFontScale(1.3f);
-        clockRow.add(clock).size(24, 24).padRight(8);
-        clockRow.add(dailyLabel);
-        info.add(clockRow).padBottom(10).row();
-
-        String plantName = dailyPlant != null ? dailyPlant.getName() : "No plants unlocked yet";
-        Label nameLabel = new Label(dailyPlant != null ? ("10x " + plantName + " Seed Packets") :
-            plantName, skin, "big");
-        nameLabel.setColor(Color.WHITE);
-        nameLabel.setFontScale(1.25f);
-        info.add(nameLabel).row();
-
-        content.add(info).expandX().left();
-
-        Image ribbon = UiFactory.imageFor(textures, Ids.Shop.SALE_RIBBON);
-        ribbon.setScaling(Scaling.fit);
-        content.add(ribbon).size(85, 85).padRight(25);
-
-        Table buySection = new Table();
-        if (dailyPlant == null) {
-            Label lockedLabel = new Label("Unlock a plant first!", skin, "big");
-            lockedLabel.setColor(Color.LIGHT_GRAY);
-            buySection.add(lockedLabel);
-        } else if (soldOut) {
-            Label soldOutLabel = new Label("Sold Out\nToday", skin, "big");
-            soldOutLabel.setColor(Color.LIGHT_GRAY);
-            soldOutLabel.setAlignment(Align.center);
-            buySection.add(soldOutLabel);
-        } else {
-            Table priceRow = new Table();
-            Image coinIcon = UiFactory.imageFor(textures, Ids.Shop.COIN);
-            coinIcon.setScaling(Scaling.fit);
-            Label priceLabel = new Label("1600", skin, "big");
-            priceLabel.setColor(Color.WHITE);
-            priceRow.add(coinIcon).size(36, 36).padRight(8);
-            priceRow.add(priceLabel);
-            buySection.add(priceRow).padBottom(12).row();
-
-            TextButton buyBtn = UiFactory.textButton("Buy", skin, "green_small", 1.1f, 0.9f, () -> {
-                showConfirmDialog(() -> controller.buyItem("daily deal", 1, null), 1600, Shop.CurrencyType.COIN);
-            });
-            buySection.add(buyBtn).width(170).height(55);
-        }
-        content.add(buySection).width(220);
+        content.add(createPlantIcon(dailyPlant)).size(150, 150).padRight(30);
+        content.add(createDailyInfoTable(dailyPlant)).expandX().left();
+        content.add(createRibbonIcon()).size(85, 85).padRight(25);
+        content.add(createBuySection(dailyPlant, soldOut)).width(220);
 
         dailyStack.add(content);
         dailyDealSlot.add(dailyStack).width(1470).height(220);
+    }
+
+    private Container<Image> createDailyBackground() {
+        Image bg = UiFactory.imageFor(textures, Ids.Shop.DAILY_DEAL_BACKGROUND);
+        bg.setScaling(Scaling.stretch);
+
+        Container<Image> bgContainer = new Container<>(bg);
+        bgContainer.size(1470, 220);
+
+        return bgContainer;
+    }
+
+    private Image createPlantIcon(Plant dailyPlant) {
+        Image plantIcon;
+
+        if (dailyPlant != null) {
+            String atlasName = UiFactory.getAtlasName(dailyPlant).toUpperCase();
+            plantIcon = UiFactory.imageFor(textures, Ids.Shop.PLANT_PACKET_PREFIX + atlasName);
+        } else {
+            plantIcon = UiFactory.imageFor(textures, Ids.Shop.SEED_PACKET_ICON);
+        }
+
+        plantIcon.setScaling(Scaling.fit);
+        return plantIcon;
+    }
+
+    private Table createDailyInfoTable(Plant dailyPlant) {
+        Table info = new Table();
+        info.left().defaults().left();
+
+        info.add(createClockRow()).padBottom(10).row();
+        info.add(createNameLabel(dailyPlant)).row();
+
+        return info;
+    }
+
+    private Table createClockRow() {
+        Table clockRow = new Table();
+
+        Image clock = UiFactory.imageFor(textures, Ids.Shop.DAILY_DEAL_CLOCK_ICON);
+        clock.setScaling(Scaling.fit);
+
+        Label dailyLabel = new Label("DAILY DEAL", skin);
+        dailyLabel.setColor(Color.valueOf("#FFD37A"));
+        dailyLabel.setFontScale(1.3f);
+
+        clockRow.add(clock).size(24, 24).padRight(8);
+        clockRow.add(dailyLabel);
+
+        return clockRow;
+    }
+
+    private Label createNameLabel(Plant dailyPlant) {
+        String plantName = dailyPlant != null ? dailyPlant.getName() : "No plants unlocked yet";
+        String labelText = dailyPlant != null ? ("10x " + plantName + " Seed Packets") : plantName;
+
+        Label nameLabel = new Label(labelText, skin, "big");
+        nameLabel.setColor(Color.WHITE);
+        nameLabel.setFontScale(1.25f);
+
+        return nameLabel;
+    }
+
+    private Image createRibbonIcon() {
+        Image ribbon = UiFactory.imageFor(textures, Ids.Shop.SALE_RIBBON);
+        ribbon.setScaling(Scaling.fit);
+        return ribbon;
+    }
+
+    private Table createBuySection(Plant dailyPlant, boolean soldOut) {
+        Table buySection = new Table();
+
+        if (dailyPlant == null) {
+            buySection.add(createLockedLabel());
+        } else if (soldOut) {
+            buySection.add(createSoldOutLabel());
+        } else {
+            buildPurchaseUI(buySection);
+        }
+
+        return buySection;
+    }
+
+    private Label createLockedLabel() {
+        Label lockedLabel = new Label("Unlock a plant first!", skin, "big");
+        lockedLabel.setColor(Color.LIGHT_GRAY);
+        return lockedLabel;
+    }
+
+    private Label createSoldOutLabel() {
+        Label soldOutLabel = new Label("Sold Out\nToday", skin, "big");
+        soldOutLabel.setColor(Color.LIGHT_GRAY);
+        soldOutLabel.setAlignment(Align.center);
+        return soldOutLabel;
+    }
+
+    private void buildPurchaseUI(Table buySection) {
+        Table priceRow = new Table();
+        Image coinIcon = UiFactory.imageFor(textures, Ids.Shop.COIN);
+        coinIcon.setScaling(Scaling.fit);
+
+        Label priceLabel = new Label("1600", skin, "big");
+        priceLabel.setColor(Color.WHITE);
+
+        priceRow.add(coinIcon).size(36, 36).padRight(8);
+        priceRow.add(priceLabel);
+        buySection.add(priceRow).padBottom(12).row();
+
+        TextButton buyBtn = UiFactory.textButton("Buy", skin, "green_small", 1.1f, 0.9f, () -> {
+            showConfirmDialog(() -> controller.buyItem("daily deal", 1, null), 1600, Shop.CurrencyType.COIN);
+        });
+
+        buySection.add(buyBtn).width(170).height(55);
     }
 
     private void refreshItemsRow() {
@@ -264,74 +317,123 @@ public class ShopModalMenu extends Table {
         User user = App.getActiveUser();
         List<Plant> unlocked = user.getUnlockedPlants();
 
+        Table card = initializeCardBase();
+
+        card.add(createSeedPacketIcon()).size(85, 85).padTop(8).padBottom(10).row();
+        card.add(createTitleLabel()).width(200).padBottom(8).row();
+
+        if (unlocked.isEmpty()) {
+            return applyLockedState(card);
+        }
+
+        Plant selected = getSelectedPlant(unlocked);
+
+        card.add(buildPickerRow(unlocked, selected)).expandY().top().padBottom(10).row();
+        card.add(buildPriceRow(5, Shop.CurrencyType.DIAMOND)).padBottom(10).row();
+        card.add(createBuyButton(selected)).width(150).height(50);
+
+        return card;
+    }
+
+    private Table initializeCardBase() {
         Table card = new Table();
         card.pad(18);
         card.setBackground(UiFactory.imageFor(textures, Ids.Shop.CARD_PURPLE).getDrawable());
 
+        return card;
+    }
+
+    private Image createSeedPacketIcon() {
         Image icon = UiFactory.imageFor(textures, Ids.Shop.SELECTIVE_SEED_PACKET_ICON);
         icon.setScaling(Scaling.fit);
-        card.add(icon).size(85, 85).padTop(8).padBottom(10).row();
 
+        return icon;
+    }
+
+    private Label createTitleLabel() {
         Label titleLabel = new Label("Selective Seed Packet", skin, "big");
         titleLabel.setColor(BROWN);
         titleLabel.setFontScale(0.9f);
         titleLabel.setWrap(true);
         titleLabel.setAlignment(Align.center);
-        card.add(titleLabel).width(200).padBottom(8).row();
 
-        if (unlocked.isEmpty()) {
-            Label lockedLabel = new Label("Unlock a plant first!", skin);
-            lockedLabel.setColor(LIGHT_BROWN);
-            lockedLabel.setFontScale(0.9f);
-            lockedLabel.setWrap(true);
-            lockedLabel.setAlignment(Align.center);
-            card.add(lockedLabel).width(200).expandY().top();
-            return card;
-        }
+        return titleLabel;
+    }
 
+    private Table applyLockedState(Table card) {
+        Label lockedLabel = new Label("Unlock a plant first!", skin);
+        lockedLabel.setColor(LIGHT_BROWN);
+        lockedLabel.setFontScale(0.9f);
+        lockedLabel.setWrap(true);
+        lockedLabel.setAlignment(Align.center);
+
+        card.add(lockedLabel).width(200).expandY().top();
+        return card;
+    }
+
+    private Plant getSelectedPlant(List<Plant> unlocked) {
         if (selectivePlantIndex >= unlocked.size()) {
             selectivePlantIndex = 0;
         }
-        Plant selected = unlocked.get(selectivePlantIndex);
+        return unlocked.get(selectivePlantIndex);
+    }
 
+    private Table buildPickerRow(List<Plant> unlocked, Plant selected) {
         Table pickerRow = new Table();
-        Image leftArrow = UiFactory.imageFor(textures, Ids.Shop.ARROW_LEFT);
-        Image rightArrow = UiFactory.imageFor(textures, Ids.Shop.ARROW_RIGHT);
-        leftArrow.setScaling(Scaling.fit);
-        rightArrow.setScaling(Scaling.fit);
-        leftArrow.setTouchable(Touchable.enabled);
-        rightArrow.setTouchable(Touchable.enabled);
 
-        ButtonAnimator.applyHoverAndClickEffect(leftArrow, 1.15f, 0.9f, () -> {
-            selectivePlantIndex = (selectivePlantIndex - 1 + unlocked.size()) % unlocked.size();
-            refreshItemsRow();
-        });
-        ButtonAnimator.applyHoverAndClickEffect(rightArrow, 1.15f, 0.9f, () -> {
-            selectivePlantIndex = (selectivePlantIndex + 1) % unlocked.size();
-            refreshItemsRow();
-        });
+        Image leftArrow = createArrowImage(Ids.Shop.ARROW_LEFT);
+        Image rightArrow = createArrowImage(Ids.Shop.ARROW_RIGHT);
 
+        ButtonAnimator.applyHoverAndClickEffect(leftArrow, 1.15f, 0.9f, () -> handleLeftArrow(unlocked));
+        ButtonAnimator.applyHoverAndClickEffect(rightArrow, 1.15f, 0.9f, () -> handleRightArrow(unlocked));
+
+        Label plantNameLabel = createPlantNameLabel(selected);
+
+        pickerRow.add(leftArrow).size(22, 22).padRight(6);
+        pickerRow.add(plantNameLabel).width(110);
+        pickerRow.add(rightArrow).size(22, 22).padLeft(6);
+
+        return pickerRow;
+    }
+
+    private Image createArrowImage(String id) {
+        Image arrow = UiFactory.imageFor(textures, id);
+        arrow.setScaling(Scaling.fit);
+        arrow.setTouchable(Touchable.enabled);
+
+        return arrow;
+    }
+
+    private void handleLeftArrow(List<Plant> unlocked) {
+        selectivePlantIndex = (selectivePlantIndex - 1 + unlocked.size()) % unlocked.size();
+        refreshItemsRow();
+    }
+
+    private void handleRightArrow(List<Plant> unlocked) {
+        selectivePlantIndex = (selectivePlantIndex + 1) % unlocked.size();
+        refreshItemsRow();
+    }
+
+    private Label createPlantNameLabel(Plant selected) {
         Label plantNameLabel = new Label(selected.getName(), skin);
         plantNameLabel.setColor(BROWN);
         plantNameLabel.setFontScale(0.9f);
         plantNameLabel.setAlignment(Align.center);
         plantNameLabel.setWrap(true);
 
-        pickerRow.add(leftArrow).size(22, 22).padRight(6);
-        pickerRow.add(plantNameLabel).width(110);
-        pickerRow.add(rightArrow).size(22, 22).padLeft(6);
-        card.add(pickerRow).expandY().top().padBottom(10).row();
+        return plantNameLabel;
+    }
 
-        card.add(buildPriceRow(5, Shop.CurrencyType.DIAMOND)).padBottom(10).row();
-
+    private TextButton createBuyButton(Plant selected) {
         String targetPlantName = selected.getName();
-        TextButton buyBtn = UiFactory.textButton("Buy 10x", skin, "purple", 1.1f, 0.9f, () -> {
-            showConfirmDialog(() -> controller.buyItem("selective seed packet",
-                1, targetPlantName), 5, Shop.CurrencyType.DIAMOND);
-        });
-        card.add(buyBtn).width(150).height(50);
 
-        return card;
+        return UiFactory.textButton("Buy 10x", skin, "purple", 1.1f, 0.9f, () -> {
+            showConfirmDialog(
+                () -> controller.buyItem("selective seed packet", 1, targetPlantName),
+                5,
+                Shop.CurrencyType.DIAMOND
+            );
+        });
     }
 
     private Table buildPlantCard(String plantName, Shop.PlantPrice price) {

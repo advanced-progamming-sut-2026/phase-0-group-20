@@ -57,7 +57,6 @@ public class ChargeStrategy implements IPlantStrategy {
     @Override
     public void execute(Plant context, int currentTick) {
         if (context.getTags().contains(PlantTag.TRAP)) return;
-
         if (chargeStartTick == -1) {
             chargeStartTick = currentTick;
             chargeAnimTriggered = false;
@@ -65,10 +64,8 @@ public class ChargeStrategy implements IPlantStrategy {
             bowlingBulbAmmo = 1;
             bowlingBulbReloadStage = 0;
         }
-
         String name = context.getName();
         if (handleBowlingBulb(name, context)) return;
-
         if (name.equalsIgnoreCase("Citron")) {
             if (!recoveryAnimTriggered && context.getCurrentAction() == null) {
                 context.triggerAction("recovery");
@@ -95,7 +92,6 @@ public class ChargeStrategy implements IPlantStrategy {
                 context.triggerAction("idle" + r + "_" + sub);
             }
         }
-
         if (canFire && projectileType != null) {
             Zombie target = selectTarget(plantRow, plantCol, isHoming);
             if (target != null && context.getCurrentAction() == null) {
@@ -147,61 +143,81 @@ public class ChargeStrategy implements IPlantStrategy {
         this.effect = effect;
     }
 
-    private boolean handleBowlingBulb(String name , Plant context) {
-        if (name.equalsIgnoreCase("Bowling Bulb")) {
-            if (context.getCurrentAction() != null) return true;
+    private boolean handleBowlingBulb(String name, Plant context) {
+        if (!name.equalsIgnoreCase("Bowling Bulb")) {
+            return false;
+        }
 
-            if (bowlingBulbAmmo == 3) {
-                if (bowlingBulbReloadStage == 0) {
-                    context.triggerAction("reload");
-                    bowlingBulbReloadStage = 1;
-                } else if (bowlingBulbReloadStage == 1) {
-                    context.triggerAction("reload2");
-                    bowlingBulbReloadStage = 2;
-                } else if (bowlingBulbReloadStage == 2) {
-                    context.triggerAction("reload3");
-                    bowlingBulbReloadStage = 3;
-                } else if (bowlingBulbReloadStage == 3) {
-                    bowlingBulbAmmo = 1;
-                    bowlingBulbReloadStage = 0;
-                }
-                return true;
-            }
-
-            int spawnCol = context.getPlacedTile().getCol();
-            int spawnRow = context.getPlacedTile().getRow();
-            Zombie target = selectTarget(spawnRow, spawnCol, false);
-
-            if (target != null) {
-                int damage = 40;
-                String anim = "special";
-                ProjectileType pt = ProjectileType.BOWLING_BULB_CYAN;
-
-                if (bowlingBulbAmmo == 3) {
-                    damage = 180;
-                    anim = "special3";
-                    pt = ProjectileType.BOWLING_BULB_ORANGE;
-                } else if (bowlingBulbAmmo == 2) {
-                    damage = 120;
-                    anim = "special2";
-                    pt = ProjectileType.BOWLING_BULB_BLUE;
-                }
-
-                context.triggerAction(anim);
-                bowlingBulbAmmo++;
-
-                Projectile projectile = Projectile.spawnNewProjectile(context,
-                    pt, damage, new Position(spawnCol, spawnRow),
-                    0, 0, false, true
-                );
-
-                projectile.setEffect(effect);
-                projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
-                projectile.setSpawnDelayTicks(0.5f);
-            }
+        if (context.getCurrentAction() != null) {
             return true;
         }
-        return false;
+
+        if (bowlingBulbAmmo == 3) {
+            processBulbReload(context);
+            return true;
+        }
+
+        processBulbShooting(context);
+        return true;
+    }
+
+    private void processBulbReload(Plant context) {
+        if (bowlingBulbReloadStage == 0) {
+            context.triggerAction("reload");
+            bowlingBulbReloadStage = 1;
+        } else if (bowlingBulbReloadStage == 1) {
+            context.triggerAction("reload2");
+            bowlingBulbReloadStage = 2;
+        } else if (bowlingBulbReloadStage == 2) {
+            context.triggerAction("reload3");
+            bowlingBulbReloadStage = 3;
+        } else if (bowlingBulbReloadStage == 3) {
+            bowlingBulbAmmo = 1;
+            bowlingBulbReloadStage = 0;
+        }
+    }
+
+    private void processBulbShooting(Plant context) {
+        int spawnCol = context.getPlacedTile().getCol();
+        int spawnRow = context.getPlacedTile().getRow();
+        Zombie target = selectTarget(spawnRow, spawnCol, false);
+
+        if (target != null) {
+            fireBowlingBulb(context, target, spawnCol, spawnRow);
+        }
+    }
+
+    private void fireBowlingBulb(Plant context, Zombie target, int spawnCol, int spawnRow) {
+        int damage = 40;
+        String anim = "special";
+        ProjectileType pt = ProjectileType.BOWLING_BULB_CYAN;
+
+        if (bowlingBulbAmmo == 3) {
+            damage = 180;
+            anim = "special3";
+            pt = ProjectileType.BOWLING_BULB_ORANGE;
+        } else if (bowlingBulbAmmo == 2) {
+            damage = 120;
+            anim = "special2";
+            pt = ProjectileType.BOWLING_BULB_BLUE;
+        }
+
+        context.triggerAction(anim);
+        bowlingBulbAmmo++;
+
+        spawnBulbProjectile(context, target, pt, damage, spawnCol, spawnRow);
+    }
+
+    private void spawnBulbProjectile(Plant context, Zombie target, ProjectileType pt,
+                                     int damage, int spawnCol, int spawnRow) {
+        Projectile projectile = Projectile.spawnNewProjectile(
+            context, pt, damage, new Position(spawnCol, spawnRow),
+            0, 0, false, true
+        );
+
+        projectile.setEffect(effect);
+        projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
+        projectile.setSpawnDelayTicks(0.5f);
     }
 
 }

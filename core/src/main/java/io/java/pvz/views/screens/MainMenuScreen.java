@@ -32,16 +32,11 @@ public class MainMenuScreen extends BaseScreen {
     private void buildUI() {
         TextureBank textures = AssetLoader.getInstance().getTextures();
         Skin skin = AssetLoader.getInstance().getSkin();
-
         backgroundRegion = textures.region(Ids.MainMenu.BACKGROUND);
-
         mainLayer.clear();
         mainLayer.setFillParent(true);
-
         Table center = new Table();
-
         mainLayer.add(buildTopButtons(textures, skin, center)).growX().top().row();
-
 
         Table logoTable = new Table();
         Image logo = UiFactory.imageFor(textures, Ids.MainMenu.LOGO);
@@ -157,9 +152,7 @@ public class MainMenuScreen extends BaseScreen {
 
         bottomContainer.add(newsBtn).padLeft(50).padRight(50).bottom();
         bottomContainer.add().bottom();
-
         bottomContainer.add(center).expandX().padBottom(70).center().bottom();
-
         bottomContainer.add(settingsBtn).padRight(50).bottom();
         bottomContainer.add(leaderboardBtn).padRight(50).bottom();
 

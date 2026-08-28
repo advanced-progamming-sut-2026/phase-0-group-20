@@ -16,14 +16,12 @@ public class PlantCardButton extends Table {
     private final Image bgImage;
     private final Image boostedBgImage;
     private final Image plantImage;
-
     private final Image familyImage;
     private final Plant plant;
 
     private final ProgressBar progressBar;
     private final Label progressLabel;
     private final Stack progressStack;
-
     private final Container<Label> levelContainer;
     private final Container<Label> costContainer;
 
@@ -42,60 +40,95 @@ public class PlantCardButton extends Table {
 
         User user = App.getActiveUser();
         this.isUnlocked = user.isItUnlocked(plant);
-        if(builder.showLevel)
+        if (builder.showLevel) {
             builder.showLevel = isUnlocked;
-
-        if (builder.showProgressBar) {
-            Skin skin = builder.skin;
-            int mathPower = (int) Math.pow(2, plant.getLevel());
-            int seedPacketCost = BASE_SEED_PACKETS * mathPower;
-            this.progressBar = new ProgressBar(0, seedPacketCost, 1, false, skin, "xp_yellow");
-
-            int amount = user.getInventory().getSeedPackets().getOrDefault(plant.getName(), 0);
-            this.progressBar.setValue(amount);
-
-            this.progressLabel = new Label(amount + "/" + seedPacketCost, skin);
-            this.progressLabel.setAlignment(Align.center);
-            this.progressLabel.setFontScale(0.7f);
-
-            this.progressStack = new Stack();
-            this.progressStack.add(this.progressBar);
-            this.progressStack.add(this.progressLabel);
-
-            this.isReadyToUpgrade = seedPacketCost <= amount;
-        } else {
-            this.progressBar = null;
-            this.progressLabel = null;
-            this.progressStack = null;
-            this.isReadyToUpgrade = false;
         }
 
-        if (builder.showLevel && builder.skin != null) {
-            Label lbl = new Label("LVL " + plant.getLevel(), builder.skin,"medium_outline");
-            lbl.setFontScale(1f);
-            lbl.setAlignment(Align.center);
+        this.progressBar = createProgressBar(builder, user);
+        this.progressLabel = createProgressLabel(builder, user, this.progressBar);
+        this.progressStack = createProgressStack(this.progressBar, this.progressLabel);
+        this.isReadyToUpgrade = checkReadyToUpgrade(builder, user);
 
-            this.levelContainer = new Container<>(lbl);
-            this.levelContainer.setTransform(true);
-            this.levelContainer.setOrigin(Align.center);
-            this.levelContainer.setRotation(-40);
-        } else {
-            this.levelContainer = null;
+        this.levelContainer = createLevelContainer(builder);
+        this.costContainer = createCostContainer(builder);
+
+        initLockOverlay(builder);
+        buildUI(builder);
+    }
+
+    private ProgressBar createProgressBar(Builder builder, User user) {
+        if (!builder.showProgressBar) {
+            return null;
         }
+        int mathPower = (int) Math.pow(2, plant.getLevel());
+        int seedPacketCost = BASE_SEED_PACKETS * mathPower;
+        ProgressBar bar = new ProgressBar(0, seedPacketCost, 1, false, builder.skin, "xp_yellow");
+        bar.setValue(user.getInventory().getSeedPackets().getOrDefault(plant.getName(), 0));
+        return bar;
+    }
 
-        if (builder.costIncluded && builder.skin != null) {
-            int cost = (builder.cost == -1 )? plant.getCost() : builder.cost;
-            Label costLbl = new Label(String.valueOf(cost), builder.skin, "medium_outline");
-            costLbl.setFontScale(1.3f);
-            costLbl.setAlignment(Align.center);
-
-            this.costContainer = new Container<>(costLbl);
-            this.costContainer.setTransform(true);
-            this.costContainer.setOrigin(Align.center);
-        } else {
-            this.costContainer = null;
+    private Label createProgressLabel(Builder builder, User user, ProgressBar bar) {
+        if (!builder.showProgressBar || bar == null) {
+            return null;
         }
+        int amount = user.getInventory().getSeedPackets().getOrDefault(plant.getName(), 0);
+        Label label = new Label(amount + "/" + (int) bar.getMaxValue(), builder.skin);
+        label.setAlignment(Align.center);
+        label.setFontScale(0.7f);
+        return label;
+    }
 
+    private Stack createProgressStack(ProgressBar bar, Label label) {
+        if (bar == null || label == null) {
+            return null;
+        }
+        Stack stack = new Stack();
+        stack.add(bar);
+        stack.add(label);
+        return stack;
+    }
+
+    private boolean checkReadyToUpgrade(Builder builder, User user) {
+        if (!builder.showProgressBar) {
+            return false;
+        }
+        int mathPower = (int) Math.pow(2, plant.getLevel());
+        int seedPacketCost = BASE_SEED_PACKETS * mathPower;
+        int amount = user.getInventory().getSeedPackets().getOrDefault(plant.getName(), 0);
+        return seedPacketCost <= amount;
+    }
+
+    private Container<Label> createLevelContainer(Builder builder) {
+        if (!builder.showLevel || builder.skin == null) {
+            return null;
+        }
+        Label lbl = new Label("LVL " + plant.getLevel(), builder.skin, "medium_outline");
+        lbl.setFontScale(1f);
+        lbl.setAlignment(Align.center);
+
+        Container<Label> container = new Container<>(lbl);
+        container.setTransform(true);
+        container.setOrigin(Align.center);
+        container.setRotation(-40);
+        return container;
+    }
+
+    private Container<Label> createCostContainer(Builder builder) {
+        if (!builder.costIncluded || builder.skin == null) {
+            return null;
+        }
+        int cost = (builder.cost == -1) ? plant.getCost() : builder.cost;
+        Label costLbl = new Label(String.valueOf(cost), builder.skin, "medium_outline");
+        costLbl.setFontScale(1.3f);
+        costLbl.setAlignment(Align.center);
+
+        Container<Label> container = new Container<>(costLbl);
+        container.setTransform(true);
+        container.setOrigin(Align.center);
+        return container;
+    }
+
+    private void initLockOverlay(Builder builder) {
         if (!isUnlocked && builder.lockIncluded) {
             Pixmap dimPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
             dimPixmap.setColor(0, 0, 0, 0.65f);
@@ -106,13 +139,10 @@ public class PlantCardButton extends Table {
             TextureBank textures = AssetLoader.getInstance().getTextures();
             lockIcon = UiFactory.imageFor(textures, "IMAGE_ZEN_GARDEN_LOCKED_POT_ICON");
         }
-
-        buildUI(builder);
     }
 
     private void buildUI(Builder builder) {
         setBackground(bgImage.getDrawable());
-
         plantImage.setScaling(Scaling.fit);
 
         if (familyImage != null) {
@@ -148,36 +178,48 @@ public class PlantCardButton extends Table {
     @Override
     public void layout() {
         super.layout();
+        layoutFamilyImage();
+        layoutLevelContainer();
+        layoutCostContainer();
+        layoutLockOverlay();
+    }
 
-        float iconSize = 32f;
-        float padding = -5f;
-
+    private void layoutFamilyImage() {
         if (familyImage != null) {
+            float iconSize = 32f;
+            float padding = -5f;
             familyImage.setSize(iconSize, iconSize);
             familyImage.setPosition(padding, getHeight() - iconSize - padding);
         }
+    }
 
+    private void layoutLevelContainer() {
         if (levelContainer != null) {
             levelContainer.pack();
-            levelContainer.setPosition(getWidth() - levelContainer.getWidth() , getHeight() - levelContainer.getHeight() + 30f);
+            levelContainer.setPosition(getWidth() - levelContainer.getWidth(),
+                getHeight() - levelContainer.getHeight() + 30f);
         }
+    }
 
+    private void layoutCostContainer() {
         if (costContainer != null) {
             costContainer.pack();
             float padX = 8f;
             float padY = (progressStack != null) ? 12 : 8f;
             costContainer.setPosition(getWidth() - costContainer.getWidth() - padX, padY);
         }
+    }
 
+    private void layoutLockOverlay() {
         if (!isUnlocked) {
             if (darkOverlay != null) {
                 darkOverlay.setSize(getWidth(), getHeight());
                 darkOverlay.setPosition(0, 0);
             }
-
             if (lockIcon != null) {
                 lockIcon.setSize(45, 55);
-                lockIcon.setPosition((getWidth() - lockIcon.getWidth()) / 2, (getHeight() - lockIcon.getHeight()) / 2);
+                lockIcon.setPosition((getWidth() - lockIcon.getWidth()) / 2,
+                    (getHeight() - lockIcon.getHeight()) / 2);
             }
         }
     }
@@ -197,6 +239,10 @@ public class PlantCardButton extends Table {
             levelContainer.pack();
         }
 
+        updateLockOverlayState();
+    }
+
+    private void updateLockOverlayState() {
         if (this.isUnlocked) {
             if (darkOverlay != null) {
                 darkOverlay.remove();
@@ -230,6 +276,10 @@ public class PlantCardButton extends Table {
         setBackground(boostedBgImage.getDrawable());
     }
 
+    public Plant getPlant() {
+        return plant;
+    }
+
     public static class Builder {
         private Image bgImage;
         private Image plantImage;
@@ -241,77 +291,28 @@ public class PlantCardButton extends Table {
         private boolean lockIncluded = true;
         private boolean costIncluded = true;
         private int cost = -1;
-
         private boolean showLevel = true;
 
-        public Builder setBgImage(Image bgImage) {
-            this.bgImage = bgImage;
-            return this;
-        }
-
-        public Builder setPlantImage(Image plantImage) {
-            this.plantImage = plantImage;
-            return this;
-        }
-
-        public Builder setFamilyImage(Image familyImage) {
-            this.familyImage = familyImage;
-            return this;
-        }
-
-        public Builder setPlant(Plant plant) {
-            this.plant = plant;
-            return this;
-        }
-
-        public Builder setSkin(Skin skin) {
-            this.skin = skin;
-            return this;
-        }
-
-        public Builder setShowProgressBar(boolean showProgressBar) {
-            this.showProgressBar = showProgressBar;
-            return this;
-        }
-
-        public Builder setSize(float scale){
-            this.scale = scale;
-            return this;
-        }
-
-        public Builder setShowLevel(boolean showLevel) {
-            this.showLevel = showLevel;
-            return this;
-        }
-
-        public Builder setLockIncluded(boolean lockIncluded) {
-            this.lockIncluded = lockIncluded;
-            return this;
-        }
-
-        public Builder setCostIncluded(boolean costIncluded) {
-            this.costIncluded = costIncluded;
-            return this;
-        }
-
-        public Builder setCost(int cost ) {
-            this.cost = cost;
-            return this;
-        }
+        public Builder setBgImage(Image bgImage) { this.bgImage = bgImage; return this; }
+        public Builder setPlantImage(Image plantImage) { this.plantImage = plantImage; return this; }
+        public Builder setFamilyImage(Image familyImage) { this.familyImage = familyImage; return this; }
+        public Builder setPlant(Plant plant) { this.plant = plant; return this; }
+        public Builder setSkin(Skin skin) { this.skin = skin; return this; }
+        public Builder setShowProgressBar(boolean show) { this.showProgressBar = show; return this; }
+        public Builder setSize(float scale) { this.scale = scale; return this; }
+        public Builder setShowLevel(boolean show) { this.showLevel = show; return this; }
+        public Builder setLockIncluded(boolean included) { this.lockIncluded = included; return this; }
+        public Builder setCostIncluded(boolean included) { this.costIncluded = included; return this; }
+        public Builder setCost(int cost) { this.cost = cost; return this; }
 
         public PlantCardButton build() {
             if (bgImage == null || plantImage == null || plant == null) {
                 throw new IllegalStateException("Not all the necessary arguments are set!");
             }
-
             if ((showProgressBar || showLevel || costIncluded) && skin == null) {
                 throw new IllegalStateException("Skin is not set!");
             }
             return new PlantCardButton(this);
         }
-    }
-
-    public Plant getPlant() {
-        return plant;
     }
 }

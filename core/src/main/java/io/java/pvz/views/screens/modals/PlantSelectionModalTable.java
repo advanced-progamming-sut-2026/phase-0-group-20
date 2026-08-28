@@ -303,28 +303,12 @@ public class PlantSelectionModalTable extends Table {
     }
 
     private TextButton createSelectButton(TextureBank textures, PlantCardButton activeCard) {
-        boolean isBanned = false;
-        boolean isForced = false;
-
-        if (currentLevel instanceof LockedPlants lp) {
-            if (!lp.isPlantAllowed(clickedPlant)) isBanned = true;
-            if (lp.getForcedToUsePlant() != null && clickedPlant.getName().equals(lp.getForcedToUsePlant().getName())) {
-                isForced = true;
-            }
+        if (isPlantBanned()) {
+            return createDisabledButton("BANNED");
         }
 
-        if (isBanned) {
-            TextButton bannedBtn = new TextButton("BANNED", skin, "green");
-            bannedBtn.setDisabled(true);
-            bannedBtn.setTouchable(Touchable.disabled);
-            return bannedBtn;
-        }
-
-        if (isForced) {
-            TextButton forcedBtn = new TextButton("FORCED", skin, "green");
-            forcedBtn.setDisabled(true);
-            forcedBtn.setTouchable(Touchable.disabled);
-            return forcedBtn;
+        if (isPlantForced()) {
+            return createDisabledButton("FORCED");
         }
 
         boolean isSelected = activeCard != null && activeCard.getColor().equals(Color.DARK_GRAY);
@@ -333,43 +317,83 @@ public class PlantSelectionModalTable extends Table {
         selectBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (isSelected) {
-                    Result res = controller.removePlant(clickedPlant.getName());
-                    if (res != null && res.isSuccessful()) {
-                        if (activeCard != null) {
-                            activeCard.setColor(Color.WHITE);
-                        }
-                        updateSelectedSlots(textures);
-                        updateTopInfo(textures);
-                    }
-                } else {
-                    if (clickedPlant.getName().equalsIgnoreCase("Imitater")) {
-                        ImitaterSelectionModalTable imitaterModal = new ImitaterSelectionModalTable(skin,
-                            selectedTarget -> {
-                            controller.addImitater(selectedTarget.getName());
-                            Result res = controller.addPlant(clickedPlant.getName());
-                            if (res != null && res.isSuccessful()) {
-                                if (activeCard != null) activeCard.setColor(Color.DARK_GRAY);
-                                updateSelectedSlots(textures);
-                                updateTopInfo(textures);
-                            }
-                        });
-                        imitaterModal.show(modalLayer, viewport);
-                    } else {
-                        Result res = controller.addPlant(clickedPlant.getName());
-                        if (res != null && res.isSuccessful()) {
-                            if (activeCard != null) {
-                                activeCard.setColor(Color.DARK_GRAY);
-                            }
-                            updateSelectedSlots(textures);
-                            updateTopInfo(textures);
-                        }
-                    }
-                }
+                handleButtonClick(isSelected, textures, activeCard);
             }
         });
 
         return selectBtn;
+    }
+
+    private boolean isPlantBanned() {
+        if (currentLevel instanceof LockedPlants lp) {
+            return !lp.isPlantAllowed(clickedPlant);
+        }
+        return false;
+    }
+
+    private boolean isPlantForced() {
+        if (currentLevel instanceof LockedPlants lp) {
+            return lp.getForcedToUsePlant() != null &&
+                clickedPlant.getName().equals(lp.getForcedToUsePlant().getName());
+        }
+        return false;
+    }
+
+    private TextButton createDisabledButton(String text) {
+        TextButton disabledBtn = new TextButton(text, skin, "green");
+        disabledBtn.setDisabled(true);
+        disabledBtn.setTouchable(Touchable.disabled);
+
+        return disabledBtn;
+    }
+
+    private void handleButtonClick(boolean isSelected, TextureBank textures, PlantCardButton activeCard) {
+        if (isSelected) {
+            processDeselection(textures, activeCard);
+        } else {
+            processSelection(textures, activeCard);
+        }
+    }
+
+    private void processDeselection(TextureBank textures, PlantCardButton activeCard) {
+        Result res = controller.removePlant(clickedPlant.getName());
+
+        if (res != null && res.isSuccessful()) {
+            if (activeCard != null) {
+                activeCard.setColor(Color.WHITE);
+            }
+            updateSelectedSlots(textures);
+            updateTopInfo(textures);
+        }
+    }
+
+    private void processSelection(TextureBank textures, PlantCardButton activeCard) {
+        if (clickedPlant.getName().equalsIgnoreCase("Imitater")) {
+            handleImitaterSelection(textures, activeCard);
+        } else {
+            executePlantAddition(textures, activeCard);
+        }
+    }
+
+    private void handleImitaterSelection(TextureBank textures, PlantCardButton activeCard) {
+        ImitaterSelectionModalTable imitaterModal = new ImitaterSelectionModalTable(skin, selectedTarget -> {
+            controller.addImitater(selectedTarget.getName());
+            executePlantAddition(textures, activeCard);
+        });
+
+        imitaterModal.show(modalLayer, viewport);
+    }
+
+    private void executePlantAddition(TextureBank textures, PlantCardButton activeCard) {
+        Result res = controller.addPlant(clickedPlant.getName());
+
+        if (res != null && res.isSuccessful()) {
+            if (activeCard != null) {
+                activeCard.setColor(Color.DARK_GRAY);
+            }
+            updateSelectedSlots(textures);
+            updateTopInfo(textures);
+        }
     }
 
     private @NonNull TextButton generateBoostBtn(TextureBank textures) {

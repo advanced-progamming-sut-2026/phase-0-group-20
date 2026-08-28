@@ -24,6 +24,7 @@ import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
 
 public class PlantInfoScreen extends BaseScreen {
+    private static final int BASE_SEED_PACKETS = 10;
     private final Skin skin;
     private final Plant plant;
     private TextureRegion backgroundRegion;
@@ -97,12 +98,8 @@ public class PlantInfoScreen extends BaseScreen {
 
         PamAnimatedActor plantActor = PamAnimatedActor.createPlantIdle(atlasName);
         plantActor.setScale(1.5f);
-
         previewTable.add(plantActor).size(200, 200).expand().center().row();
-
         Stack progressStack = new Stack();
-        final int BASE_SEED_PACKETS = 10;
-
 
         ProgressBar progressBar = new ProgressBar(0, 10, 1, false, skin, "xp_yellow") {
             @Override

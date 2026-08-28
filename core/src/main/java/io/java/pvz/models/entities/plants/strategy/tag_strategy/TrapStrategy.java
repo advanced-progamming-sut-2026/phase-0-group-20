@@ -43,12 +43,10 @@ public class TrapStrategy implements IPlantStrategy {
         if (!handleArming(context, currentTick, name)) {
             return;
         }
-
         if (name.equals("Squash") && squashState == 2) {
             handleSquashParabolicLoop(context);
             return;
         }
-
         if (name.equals("Squash") && squashState == 1) {
             handleSquashAttackSequence(context);
             return;
@@ -60,10 +58,10 @@ public class TrapStrategy implements IPlantStrategy {
         List<Zombie> targets = findTargets(name, plantRow, plantCol);
 
         if (!targets.isEmpty()) {
-
             if (name.equals("Squash")) {
                 lockedTarget = targets.getFirst();
-                double zColFloat = (lockedTarget.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH;
+                double zColFloat =
+                    (lockedTarget.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH;
                 jumpRight = zColFloat >= plantCol;
 
                 originalPlantX = context.getPosition().getX();
@@ -78,14 +76,11 @@ public class TrapStrategy implements IPlantStrategy {
                 squashState = 1;
                 return;
             }
-
             notify("💥 " + name + " TRAP TRIGGERED!");
             int baseDamage = context.getDamage() > 0 ? context.getDamage() : 1800;
-
             boolean shouldDie = executeTrapEffect(
                 name, context, targets, baseDamage, currentTick, plantCol, plantRow
             );
-
             if (shouldDie) {
                 context.takeDamage(context.getCurrentHp());
             }
@@ -213,7 +208,8 @@ public class TrapStrategy implements IPlantStrategy {
             case "Potato Mine", "Primal Potato Mine" -> {
                 context.triggerAction("attack");
 
-                String explosionMsg = name.equals("Primal Potato Mine") ? "PRIMAL_POTATOMINE_EXPLODE" : "POTATOMINE_EXPLODE";
+                String explosionMsg = name.equals("Primal Potato Mine") ?
+                    "PRIMAL_POTATOMINE_EXPLODE" : "POTATOMINE_EXPLODE";
                 GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
                     new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
                         .message(explosionMsg)

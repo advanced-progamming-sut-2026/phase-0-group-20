@@ -155,107 +155,41 @@ public final class UiFactory {
     public static String getZombieAddress(Zombie zombie) {
         ZombieType zombieType = zombie.getType();
         return switch (zombieType) {
-            // Ordinary
-            case NORMAL -> {
-                yield "TUTORIAL";
-            }
-            case CONE -> {
-                yield "MUMMY_ARMOR1";
-            }
-            case BUCKET -> {
-                yield "MUMMY_ARMOR2";
-            }
-            case BRICK -> {
-                yield "CARNIE_ARMOR4";
-            }
-            case DARK_ARMOR -> {
-                yield "DARK_ARMOR3";
-            }
-            case GARGANTUAR -> {
-                yield "EGYPT_GARGANTUAR";
-            }
-            case IMP -> {
-                yield "DARK_IMP";
-            }
-            case ALL_STAR -> {
-                yield "MODERN_ALLSTAR";
-            }
-            case ARCADE -> {
-                yield "EIGHTIES_ARCADE";
-            }
-            case JANE -> {
-                yield "LOSTCITY_JANE";
-            }
-            case CRYSTAL_SKULL -> {
-                yield "LOSTCITY_CRYSTALSKULL";
-            }
-            case PROSPECTOR -> {
-                yield "PROSPECTOR";
-            }
-            case PIANIST -> {
-                yield "PIANO";
-            }
-            case NEWSPAPER -> {
-                yield "MODERN_NEWSPAPER";
-            }
-            case BARREL_ROLLER -> {
-                yield "BARRELROLLER";
-            }
+            case NORMAL -> "TUTORIAL";
+            case CONE -> "MUMMY_ARMOR1";
+            case BUCKET -> "MUMMY_ARMOR2";
+            case BRICK -> "CARNIE_ARMOR4";
+            case DARK_ARMOR -> "DARK_ARMOR3";
+            case GARGANTUAR -> "EGYPT_GARGANTUAR";
+            case IMP -> "DARK_IMP";
+            case ALL_STAR -> "MODERN_ALLSTAR";
+            case ARCADE -> "EIGHTIES_ARCADE";
+            case JANE -> "LOSTCITY_JANE";
+            case CRYSTAL_SKULL -> "LOSTCITY_CRYSTALSKULL";
+            case PROSPECTOR -> "PROSPECTOR";
+            case PIANIST -> "PIANO";
+            case NEWSPAPER -> "MODERN_NEWSPAPER";
+            case BARREL_ROLLER -> "BARRELROLLER";
 
-            // Ancient Egypt
-            case RA -> {
-                yield "RA";
-            }
-            case EXPLORER -> {
-                yield "EXPLORER_VETERAN";
-            }
-            case TOMB_RAISER -> {
-                yield "TOMB_RAISER";
-            }
+            case RA -> "RA";
+            case EXPLORER -> "EXPLORER_VETERAN";
+            case TOMB_RAISER -> "TOMB_RAISER";
 
-            // Frostbite Caves
-            case DODO -> {
-                yield "ICEAGE_DODO";
-            }
-            case HUNTER -> {
-                yield "ICEAGE_HUNTER";
-            }
-            case TROGLOBITE -> {
-                yield "ICEAGE_TROGLOBITE";
-            }
+            case DODO -> "ICEAGE_DODO";
+            case HUNTER -> "ICEAGE_HUNTER";
+            case TROGLOBITE -> "ICEAGE_TROGLOBITE";
 
-            // Big Wave Beach
-            case FISHERMAN -> {
-                yield "BEACH_FISHERMAN";
-            }
-            case OCTOPUS -> {
-                yield "BEACH_OCTOPUS";
-            }
-            case SNORKEL -> {
-                yield "BEACH_SNORKEL";
-            }
+            case FISHERMAN -> "BEACH_FISHERMAN";
+            case OCTOPUS -> "BEACH_OCTOPUS";
+            case SNORKEL -> "BEACH_SNORKEL";
 
-            // Dark Age
-            case JUGGLER -> {
-                yield "DARK_JUGGLER";
-            }
-            case WIZARD -> {
-                yield "DARK_WIZARD";
-            }
-            case KING -> {
-                yield "DARK_KING";
-            }
-            case IMP_DRAGON -> {
-                yield "DARK_IMP_DRAGON";
-            }
+            case JUGGLER -> "DARK_JUGGLER";
+            case WIZARD -> "DARK_WIZARD";
+            case KING -> "DARK_KING";
+            case IMP_DRAGON -> "DARK_IMP_DRAGON";
 
-            // Minigame / Zombotany
-            case ZOMBOTANY_PEASHOOTER, ZOMBOTANY_WALLNUT, ZOMBOTANY_JALAPENO, ZOMBOTANY_SQUASH -> {
-                yield "TUTORIAL";
-            }
-            default -> {
-                yield "TUTORIAL";
-            }
+            case ZOMBOTANY_PEASHOOTER, ZOMBOTANY_WALLNUT, ZOMBOTANY_JALAPENO, ZOMBOTANY_SQUASH -> "TUTORIAL";
+            default -> "TUTORIAL";
         };
     }
 

@@ -38,65 +38,86 @@ public class RobotDashAttack implements IZombossAttack {
     @Override
     public void execute() {
         if (isDashing) {
-            float newX = zomboss.getX() - DASH_SPEED_SCALE_PER_TICK;
-            zomboss.setX(newX);
-
-            int newCol = (int) ((newX - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH);
-
-            if (newCol != zomboss.getCol()) {
-                zomboss.setCol(newCol);
-            }
-
-            if (newX <= PhysicalConstants.GRID_START_X + 50f) {
-                isDashing = false;
-                jumpTimer = 0;
-
-                jumpStartX = zomboss.getX();
-                targetX = 8 * PhysicalConstants.TILE_WIDTH + PhysicalConstants.GRID_START_X;
-
-                zomboss.setState(ZombieState.BOSS_JUMP_START);
-                GameSession.notify("Robot Zomboss reached the end and is preparing to jump!");
-            }
-
+            handleDashState();
         } else {
-            jumpTimer++;
-
-            if (jumpTimer <= JUMP_START_TICKS) {
-                if (zomboss.getState() != ZombieState.BOSS_JUMP_START) {
-                    zomboss.setState(ZombieState.BOSS_JUMP_START);
-                }
-            }
-            else if (jumpTimer <= JUMP_START_TICKS + JUMP_MID_TICKS) {
-                if (zomboss.getState() != ZombieState.BOSS_JUMP_MID) {
-                    zomboss.setState(ZombieState.BOSS_JUMP_MID);
-                }
-
-                int midTicks = jumpTimer - JUMP_START_TICKS;
-                float progress = (float) midTicks / JUMP_MID_TICKS;
-
-                float newX = jumpStartX + (targetX - jumpStartX) * progress;
-                zomboss.setX(newX);
-
-                int newCol = (int) ((newX - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH);
-                if (newCol != zomboss.getCol()) {
-                    zomboss.setCol(newCol);
-                }
-
-            }
-            else if (jumpTimer <= JUMP_START_TICKS + JUMP_MID_TICKS + JUMP_LAND_TICKS) {
-                if (zomboss.getState() != ZombieState.BOSS_JUMP_LAND) {
-                    zomboss.setState(ZombieState.BOSS_JUMP_LAND);
-                    zomboss.setX(targetX);
-                    zomboss.setCol(8);
-                    GameSession.notify("Robot Zomboss landed on column 9!");
-                }
-            }
-            else {
-                this.onExit();
-                idleState.onEnter();
-                zomboss.setAttackBehavior(idleState);
-            }
+            handleJumpState();
         }
+    }
+
+    private void handleDashState() {
+        float newX = zomboss.getX() - DASH_SPEED_SCALE_PER_TICK;
+        zomboss.setX(newX);
+
+        updateZombossColumn(newX);
+
+        if (newX <= PhysicalConstants.GRID_START_X + 50f) {
+            finalizeDash();
+        }
+    }
+
+    private void updateZombossColumn(float xPosition) {
+        int newCol = (int) ((xPosition - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH);
+        if (newCol != zomboss.getCol()) {
+            zomboss.setCol(newCol);
+        }
+    }
+
+    private void finalizeDash() {
+        isDashing = false;
+        jumpTimer = 0;
+        jumpStartX = zomboss.getX();
+        targetX = 8 * PhysicalConstants.TILE_WIDTH + PhysicalConstants.GRID_START_X;
+
+        zomboss.setState(ZombieState.BOSS_JUMP_START);
+        GameSession.notify("Robot Zomboss reached the end and is preparing to jump!");
+    }
+
+    private void handleJumpState() {
+        jumpTimer++;
+
+        if (jumpTimer <= JUMP_START_TICKS) {
+            handleJumpStart();
+        } else if (jumpTimer <= JUMP_START_TICKS + JUMP_MID_TICKS) {
+            handleJumpMid();
+        } else if (jumpTimer <= JUMP_START_TICKS + JUMP_MID_TICKS + JUMP_LAND_TICKS) {
+            handleJumpLand();
+        } else {
+            transitionToIdle();
+        }
+    }
+
+    private void handleJumpStart() {
+        if (zomboss.getState() != ZombieState.BOSS_JUMP_START) {
+            zomboss.setState(ZombieState.BOSS_JUMP_START);
+        }
+    }
+
+    private void handleJumpMid() {
+        if (zomboss.getState() != ZombieState.BOSS_JUMP_MID) {
+            zomboss.setState(ZombieState.BOSS_JUMP_MID);
+        }
+
+        int midTicks = jumpTimer - JUMP_START_TICKS;
+        float progress = (float) midTicks / JUMP_MID_TICKS;
+        float newX = jumpStartX + (targetX - jumpStartX) * progress;
+
+        zomboss.setX(newX);
+        updateZombossColumn(newX);
+    }
+
+    private void handleJumpLand() {
+        if (zomboss.getState() != ZombieState.BOSS_JUMP_LAND) {
+            zomboss.setState(ZombieState.BOSS_JUMP_LAND);
+            zomboss.setX(targetX);
+            zomboss.setCol(8);
+            GameSession.notify("Robot Zomboss landed on column 9!");
+        }
+    }
+
+    private void transitionToIdle() {
+        this.onExit();
+        idleState.onEnter();
+        zomboss.setAttackBehavior(idleState);
     }
 
     @Override
