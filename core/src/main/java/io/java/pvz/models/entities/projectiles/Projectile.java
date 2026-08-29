@@ -203,7 +203,7 @@ public class Projectile implements Ticker {
             case WINTER_MELON -> new IceSplashEffect(damage / 2);
             case PEPPER -> new FireSplashEffect(1.5);
             case GRAPE -> new AreaOfEffect(new NormalEffect(), damage / 2, 1.0);
-            case PLASMA_BALL -> new AreaOfEffect(new NormalEffect(), damage / 2, 1.5);
+            case PLASMA_BALL, ELECTRIC_SPIKE -> new AreaOfEffect(new NormalEffect(), damage / 2, 1.5);
             case WALLNUT_BOWL, EXPLODE_NUT_BOWL, GIANT_NUT_BOWL, SHARK, BOWLING_BULB_BLUE, BOWLING_BULB_CYAN,
                  BOWLING_BULB_ORANGE -> new NormalEffect();
         };

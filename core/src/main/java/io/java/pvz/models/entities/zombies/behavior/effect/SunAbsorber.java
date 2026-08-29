@@ -13,10 +13,9 @@ import java.util.List;
 import java.util.Random;
 
 public class SunAbsorber extends Effect {
-    private enum AbsorbPhase { IDLE, POWER_UP, POWER, POWER_DOWN }
+    private enum AbsorbPhase {IDLE, POWER_UP, POWER, POWER_DOWN}
 
     private final int stealIntervalTicks;
-    private final int sunAmount;
     private final Random random = new Random();
 
     private AbsorbPhase currentPhase;
@@ -30,15 +29,16 @@ public class SunAbsorber extends Effect {
     private int powerUpTicks;
     private int powerTicks;
     private int powerDownTicks;
+    private int sunAmount;
 
-    public SunAbsorber(Zombie zombie, int stealIntervalTicks, int sunAmount) {
+
+    public SunAbsorber(Zombie zombie, int stealIntervalTicks) {
         super(zombie, -1);
         this.stealIntervalTicks = stealIntervalTicks;
-        this.sunAmount = sunAmount;
         this.currentPhase = AbsorbPhase.IDLE;
         this.intervalTicksCounter = 0;
         this.phaseTicksCounter = 0;
-
+        this.sunAmount = 0;
         loadAnimationDurations();
     }
 
@@ -155,7 +155,7 @@ public class SunAbsorber extends Effect {
             targetZombieX = zombie.getX() - 40f;
             targetZombieY = zombie.getY() + 110f;
 
-            notify("Ra zombie locked on a sun at (" + (targetedSun.getCol()+1) + "," + (targetedSun.getRow()+1) + ")");
+            notify("Ra zombie locked on a sun at (" + (targetedSun.getCol() + 1) + "," + (targetedSun.getRow() + 1) + ")");
         } else {
             targetedSun = null;
         }
@@ -165,12 +165,15 @@ public class SunAbsorber extends Effect {
         if (targetedSun != null && !targetedSun.isCollected()) {
             GameSession.getInstance().getArena().getActiveSuns().remove(targetedSun);
             GameSession.getInstance().getTimeManager().unregisterTicker(targetedSun);
+            sunAmount += targetedSun.getAmountProduced();
             targetedSun = null;
         }
     }
 
     @Override
-    public float getRemainingSeconds() { return 0f; }
+    public float getRemainingSeconds() {
+        return 0f;
+    }
 
     @Override
     public void onRemove() {
@@ -179,7 +182,9 @@ public class SunAbsorber extends Effect {
     }
 
     @Override
-    public boolean isFinished() { return zombie.isDead(); }
+    public boolean isFinished() {
+        return zombie.isDead();
+    }
 
     public void stopAbsorbing() {
         this.currentPhase = AbsorbPhase.IDLE;
@@ -194,5 +199,13 @@ public class SunAbsorber extends Effect {
             zombie.setState(ZombieState.WALKING);
             zombie.resetSpeed();
         }
+    }
+
+    public int getSunAmount() {
+        return sunAmount;
+    }
+
+    public void setSunAmount(int sunAmount) {
+        this.sunAmount = sunAmount;
     }
 }

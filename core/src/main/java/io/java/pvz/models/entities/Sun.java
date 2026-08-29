@@ -158,4 +158,8 @@ public class Sun implements Ticker {
     public void setNetworkId(String networkId) {
         this.networkId = networkId;
     }
+
+    public int getAmountProduced(){
+        return amountProduced;
+    }
 }

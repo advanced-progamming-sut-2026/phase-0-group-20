@@ -192,6 +192,7 @@ public class WorldItemRenderer {
         map.put(ProjectileType.GRAPE, new ProjectileAnim(Ids.Projectiles.GRAPE, "animation_forward"));
         map.put(ProjectileType.FUME, new ProjectileAnim(Ids.Projectiles.FUME, "special"));
         map.put(ProjectileType.SPIKE, new ProjectileAnim(Ids.Projectiles.SPIKE, "idle"));
+        map.put(ProjectileType.ELECTRIC_SPIKE, new ProjectileAnim(Ids.Projectiles.ELECTRIC_SPIKE,  "idle"));
         map.put(ProjectileType.PLASMA_BALL, new ProjectileAnim(Ids.Projectiles.PLASMA_BALL, "Citron_Citrus_Orb"));
         map.put(ProjectileType.WALLNUT_BOWL, new ProjectileAnim(Ids.Projectiles.WALLNUT_BOWL, "animation"));
         map.put(ProjectileType.EXPLODE_NUT_BOWL, new ProjectileAnim(Ids.Projectiles.EXPLODE_NUT_BOWL, "animation"));

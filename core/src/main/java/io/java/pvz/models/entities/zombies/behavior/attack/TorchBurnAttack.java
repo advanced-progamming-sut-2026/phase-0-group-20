@@ -7,6 +7,7 @@ import io.java.pvz.models.entities.zombies.behavior.context.ExplorerContext;
 import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.game.GameSession;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TorchBurnAttack implements AttackBehavior {
@@ -23,7 +24,10 @@ public class TorchBurnAttack implements AttackBehavior {
     @Override
     public void execute() {
         GameSession session = GameSession.getInstance();
-        List<Plant> targetsPlant = session.getArena().getTile(zombie.getRow(), zombie.getCol()).getPlants();
+
+        List<Plant> targetsPlant = new ArrayList<>(
+            session.getArena().getTile(zombie.getRow(), zombie.getCol()).getPlants()
+        );
 
         for (Plant plant : targetsPlant) {
             if (plant.getTags().contains(PlantTag.ICE)) {

@@ -9,6 +9,7 @@ import io.java.pvz.models.entities.zombies.behavior.attack.HypnotizeAttack;
 import io.java.pvz.models.entities.zombies.behavior.defense.DefenseBehavior;
 import io.java.pvz.models.entities.zombies.behavior.effect.ChillEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
+import io.java.pvz.models.entities.zombies.behavior.effect.SunAbsorber;
 import io.java.pvz.models.entities.zombies.behavior.effect.ZombieEffect;
 import io.java.pvz.models.entities.zombies.behavior.move.MoveBehavior;
 import io.java.pvz.models.enums.PhysicalConstants;
@@ -137,6 +138,9 @@ public class Zombie implements Ticker {
         if (this.health <= 0) {
             this.health = 0;
             dead = true;
+            if (this.getEffect() instanceof SunAbsorber sunAbsorber) {
+                GameSession.getInstance().addSun(sunAbsorber.getSunAmount());
+            }
         }
     }
 
@@ -169,6 +173,10 @@ public class Zombie implements Ticker {
         if (this.isHypnotized || this.dead) return;
 
         this.isHypnotized = true;
+        if (this.getEffect() instanceof SunAbsorber sunAbsorber) {
+            GameSession.getInstance().addSun(sunAbsorber.getSunAmount());
+            sunAbsorber.setSunAmount(0);
+        }
 
         attackBehavior = new HypnotizeAttack(this);
     }

@@ -166,7 +166,7 @@ public class ZombieFactory {
 
     private static void applyInherentEffects(ZombieType type, Zombie zombie) { // effects that execute from birth
         if (Objects.requireNonNull(type) == ZombieType.RA) {
-            zombie.addEffect(new SunAbsorber(zombie, 10 * TimeManager.TICKS_PER_SECOND, 50));
+            zombie.addEffect(new SunAbsorber(zombie, 10 * TimeManager.TICKS_PER_SECOND));
         }
         if (type == ZombieType.ZOMBOTANY_JALAPENO)
             zombie.addEffect(new JalapenoTimerEffect(zombie));
