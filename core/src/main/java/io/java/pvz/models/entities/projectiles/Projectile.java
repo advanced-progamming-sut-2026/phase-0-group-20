@@ -108,7 +108,7 @@ public class Projectile implements Ticker {
         this.canPassObstacles = canPassObstacles;
         this.isDestroyed = false;
         if (GameSession.getInstance() != null) {
-            String ownerId = (plant != null) ? plant.getNetworkId() : (zombie != null ? zombie.getNetworkId() : "SKY");
+            String ownerId = zombie != null ? zombie.getNetworkId() : "SKY";
             this.networkId = NetworkIdGenerator.generateProjectileId(
                 ownerId, GameSession.getInstance().getTimeManager().getCurrentTick()
             );
@@ -146,6 +146,8 @@ public class Projectile implements Ticker {
         if (type == ProjectileType.PUFF_SPORE ||
             (plant.getName().equalsIgnoreCase("Pea Pod") && !plant.isBoosted()))
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 3);
+        if (type == ProjectileType.SEA_SHROOM)
+            position.moveY(-PhysicalConstants.TILE_HEIGHT / 4);
 
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
@@ -193,7 +195,7 @@ public class Projectile implements Ticker {
 
     private static ProjectileEffect projectileEffect(ProjectileType projectileType, int damage) {
         return switch (projectileType) {
-            case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE, PUFF_SPORE -> new NormalEffect();
+            case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE, PUFF_SPORE, STAR, SEA_SHROOM -> new NormalEffect();
             case ICE_PEA -> new IceEffect();
             case FIRE_PEA, BLUE_FIRE_PEA -> new io.java.pvz.models.entities.projectiles.FireEffect();
             case GOO_PEA, FUME -> new PoisonProjectileEffect();

@@ -25,8 +25,7 @@ public class CameraListener implements GameEventListener {
             case GARGANTUAR_MOVES, LAWNMOWER_TRIGGERED -> {
                 shakeCamera(0.2f, 4f);
             }
-            case PLANT_EXPLODED ->
-                shakeCamera(0.2f, 4f);
+            case PLANT_EXPLODED -> shakeCamera(0.2f, 4f);
             case GO_DISPLAYED, RELEASED_NUKE -> {
                 shakeCamera(0.4f, 7f);
             }

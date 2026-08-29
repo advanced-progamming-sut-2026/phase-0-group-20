@@ -2,7 +2,6 @@ package io.java.pvz.models.game.events;
 
 import io.java.pvz.models.App;
 import io.java.pvz.models.entities.zombies.Zombie;
-import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.greenhouse.GreenHouse;
 import io.java.pvz.models.greenhouse.Pot;
 import io.java.pvz.models.greenhouse.PotCondition;

@@ -1,11 +1,11 @@
 package io.java.pvz.models.game.adventure;
 
 import io.java.pvz.models.App;
+import io.java.pvz.models.enums.GameConstants;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
-import io.java.pvz.models.enums.GameConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,9 +67,9 @@ public class Adventure {
 
     public void notify(String message) {
         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(message)
+                .build());
     }
 
     public List<Chapter> getChapters() {

@@ -17,8 +17,8 @@ public class SheepEffect implements PlantEffect {
     public void apply(Plant plant) {
         plant.setStunned(true);
 
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-            new GameEventPayload.Builder(GameEvent.NOTIFY)
+        GameEventMessenger.getInstance().dispatch(GameEvent.EFFECTS,
+            new GameEventPayload.Builder(GameEvent.EFFECTS)
                 .message("SHEEP_APPLY")
                 .plant(plant)
                 .build());
@@ -33,8 +33,8 @@ public class SheepEffect implements PlantEffect {
     public void remove(Plant plant) {
         plant.setStunned(false);
 
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-            new GameEventPayload.Builder(GameEvent.NOTIFY)
+        GameEventMessenger.getInstance().dispatch(GameEvent.EFFECTS,
+            new GameEventPayload.Builder(GameEvent.EFFECTS)
                 .message("SHEEP_REMOVE")
                 .plant(plant)
                 .build());

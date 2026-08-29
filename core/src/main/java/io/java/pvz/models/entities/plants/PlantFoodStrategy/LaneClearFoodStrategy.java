@@ -44,7 +44,7 @@ public class LaneClearFoodStrategy implements PlantFoodStrategy {
 
         int fireTick = setupTicks;
         if (plant.getName().equalsIgnoreCase("Citron")) {
-            fireTick = Math.max(setupTicks, durationTicks - (int)(0.5f * TimeManager.TICKS_PER_SECOND));
+            fireTick = Math.max(setupTicks, durationTicks - (int) (0.5f * TimeManager.TICKS_PER_SECOND));
         }
 
         if (!executed && tickTimer > fireTick) {

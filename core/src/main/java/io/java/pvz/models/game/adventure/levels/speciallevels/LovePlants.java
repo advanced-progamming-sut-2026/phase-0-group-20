@@ -15,7 +15,7 @@ public class LovePlants extends SpecialLevel {
 
     public LovePlants(String name, SeasonType season, int waveCount, int baseWaveBudget, int globalLevelNumber) {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
-        limit = new Random().nextInt(3)+3;
+        limit = new Random().nextInt(3) + 3;
         this.loseCondition = new LovePlantLoseCondition(limit);
         this.addLoseCondition(loseCondition);
 
@@ -34,6 +34,6 @@ public class LovePlants extends SpecialLevel {
 
     @Override
     public String toString() {
-        return "Don't Let Zombies Eat Your Brain-Don't Lose Over "+limit+" Plants.";
+        return "Don't Let Zombies Eat Your Brain-Don't Lose Over " + limit + " Plants.";
     }
 }

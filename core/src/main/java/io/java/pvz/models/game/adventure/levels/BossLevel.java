@@ -10,9 +10,6 @@ import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.conditions.BossWinCondition;
 import io.java.pvz.models.game.adventure.levels.conditions.NormalLoseCondition;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
-import io.java.pvz.models.game.events.GameEvent;
-import io.java.pvz.models.game.events.GameEventMessenger;
-import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -192,7 +189,7 @@ public class BossLevel extends ConveyorBelt {
         List<String> plantPool = new ArrayList<>(Arrays.asList(
             "Peashooter", "Wall-nut", "Cabbage-pult",
             "Snow Pea", "Repeater", "Snapdragon",
-             "Bonk Choy", "Threepeater",
+            "Bonk Choy", "Threepeater",
             "Melon-pult", "Kernel-pult", "Cactus",
             "Wasabi Whip", "Torchwood"
         ));

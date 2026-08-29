@@ -119,6 +119,8 @@ public class ProjectileMechanism {
             case "Pepper-pult" -> ProjectileType.PEPPER;
             case "Puff-shroom" -> ProjectileType.PUFF_SPORE;
             case "Cactus" -> ProjectileType.ELECTRIC_SPIKE;
+            case "Sea-shroom" -> ProjectileType.SEA_SHROOM;
+            case "Starfruit" -> ProjectileType.STAR;
             default -> ProjectileType.PEA;
         };
     }

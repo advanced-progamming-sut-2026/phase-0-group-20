@@ -6,15 +6,14 @@ import io.java.pvz.models.InGameEntityGenerator;
 import io.java.pvz.models.entities.PlantFood;
 import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.entities.plants.PlantCategory;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.enums.GameState;
-import io.java.pvz.models.entities.plants.PlantCategory;
 import io.java.pvz.models.fields.modifiers.SeasonModifier;
 import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.game.adventure.Chapter;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.game.adventure.levels.BonusLevel;
-import io.java.pvz.models.game.adventure.levels.BossLevel;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.events.*;
 import io.java.pvz.models.timeManager.TimeManager;
@@ -302,8 +301,8 @@ public class GameSession {
             return false;
         });
 
-        getArena().getActiveSuns().removeIf(sun->{
-            if(sun.isExploded() ||( sun.isCollected()&&sun.getType()!= SunType.RADIOACTIVE_SUN)){
+        getArena().getActiveSuns().removeIf(sun -> {
+            if (sun.isExploded() || (sun.isCollected() && sun.getType() != SunType.RADIOACTIVE_SUN)) {
                 return true;
             }
             return false;
@@ -480,27 +479,23 @@ public class GameSession {
     }
 
     public void playTheme(GameMode gameMode) {
-        if(!(gameMode instanceof Level level) )return;
+        if (!(gameMode instanceof Level level)) return;
         SeasonType seasonType = level.getSeason();
         System.out.println(level.getName() + " " + seasonType);
-        if(level.getName().contains("Boss")){
+        if (level.getName().contains("Boss")) {
             GameEventMessenger.getInstance().dispatch(GameEvent.ZOMBOSS_PHASE_1,
                 new GameEventPayload.Builder(GameEvent.ZOMBOSS_PHASE_1).build());
             return;
         }
         switch (seasonType) {
-            case DARK_AGES ->
-                GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_DARK_AGES,
-                    new GameEventPayload.Builder(GameEvent.ENTERED_DARK_AGES).build());
-            case FROZEN_CAVES ->
-                GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_FROZEN_CAVES,
-                    new GameEventPayload.Builder(GameEvent.ENTERED_FROZEN_CAVES).build());
-            case ANCIENT_EGYPT ,MINI_GAME->
-                GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_EGYPT,
-                    new GameEventPayload.Builder(GameEvent.ENTERED_EGYPT).build());
-            case BIG_WAVE_BEACH ->
-                GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_BIG_WAVE_BEACH,
-                    new GameEventPayload.Builder(GameEvent.ENTERED_BIG_WAVE_BEACH).build());
+            case DARK_AGES -> GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_DARK_AGES,
+                new GameEventPayload.Builder(GameEvent.ENTERED_DARK_AGES).build());
+            case FROZEN_CAVES -> GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_FROZEN_CAVES,
+                new GameEventPayload.Builder(GameEvent.ENTERED_FROZEN_CAVES).build());
+            case ANCIENT_EGYPT, MINI_GAME -> GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_EGYPT,
+                new GameEventPayload.Builder(GameEvent.ENTERED_EGYPT).build());
+            case BIG_WAVE_BEACH -> GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_BIG_WAVE_BEACH,
+                new GameEventPayload.Builder(GameEvent.ENTERED_BIG_WAVE_BEACH).build());
         }
     }
 }

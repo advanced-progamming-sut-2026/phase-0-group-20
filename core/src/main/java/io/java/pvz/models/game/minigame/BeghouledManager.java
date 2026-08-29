@@ -215,9 +215,9 @@ public class BeghouledManager {
             session.addSun(sunGained);
 
             GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                            .message("Cascade Match! You gained bonus " + sunGained + " suns.")
-                            .build());
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("Cascade Match! You gained bonus " + sunGained + " suns.")
+                    .build());
 
             applyGravity(session);
         }

@@ -4,8 +4,6 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.IPlantStrategy;
 import io.java.pvz.models.entities.plants.strategy.LifespanStrategy;
 import io.java.pvz.models.game.GameSession;
-import io.java.pvz.models.timeManager.TimeManager;
-import io.java.pvz.utils.AnimationCatalog;
 
 public class ResetLifespanFoodStrategy implements PlantFoodStrategy {
 

@@ -60,7 +60,7 @@ public class PianistMove implements MoveBehavior, GameEventListener {
             return;
         }
 
-        if (piano != null && !piano.isDestroyed() && zombie.getCol() < 11) {
+        if (piano != null && !piano.isDestroyed()) {
             phaseTimer++;
 
             if (isPlaying) {
@@ -107,7 +107,7 @@ public class PianistMove implements MoveBehavior, GameEventListener {
 
     private void triggerZombieRowSwitch() {
         GameSession session = GameSession.getInstance();
-        if (session == null || session.getArena() == null) return;
+        if (session == null || session.getArena() == null || zombie.getCol() > 11) return;
 
         List<ZombieType> noEffects = Arrays.asList(
             ZombieType.ZOMBOSS_BEACH,

@@ -2,12 +2,7 @@ package io.java.pvz.views.screens.modals;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -33,7 +28,10 @@ import org.jspecify.annotations.NonNull;
 import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PlantSelectionModalTable extends Table {
     private final Skin skin;
@@ -286,8 +284,10 @@ public class PlantSelectionModalTable extends Table {
             buttonsTable.add(upgradeBtn).size(130, 50).padRight(10);
         }
 
-        TextButton boostBtn = generateBoostBtn(textures);
-        buttonsTable.add(boostBtn).size(110, 50).padRight(10);
+        if (!clickedPlant.getPlantFoodType().equals("NONE")) {
+            TextButton boostBtn = generateBoostBtn(textures);
+            buttonsTable.add(boostBtn).size(110, 50).padRight(10);
+        }
 
         TextButton selectBtn = createSelectButton(textures, activeCard);
         buttonsTable.add(selectBtn).size(110, 50);

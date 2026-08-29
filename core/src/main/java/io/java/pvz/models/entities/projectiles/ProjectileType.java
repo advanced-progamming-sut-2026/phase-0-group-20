@@ -27,6 +27,8 @@ public enum ProjectileType {
     BOWLING_BULB_BLUE,
     BOWLING_BULB_ORANGE,
     PUFF_SPORE,
+    STAR,
+    SEA_SHROOM,
     SHARK;
 
     public static final int NORMAL_PEA_DAMAGE = 40;

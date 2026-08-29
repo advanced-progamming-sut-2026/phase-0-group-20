@@ -54,8 +54,8 @@ public class JugglerDefense implements DefenseBehavior {
         }
 
         if (targetPlant != null) {
-            GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
+            GameEventMessenger.getInstance().dispatch(GameEvent.EFFECTS,
+                new GameEventPayload.Builder(GameEvent.EFFECTS)
                     .message("DEFLECT_PROJECTILE")
                     .zombie(zombie)
                     .plant(targetPlant)
