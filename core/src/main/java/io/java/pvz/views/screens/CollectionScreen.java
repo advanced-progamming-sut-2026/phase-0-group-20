@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -62,7 +63,14 @@ public class CollectionScreen extends BaseScreen {
         Table plantsTable = buildPlantsTable(textures);
         Table zombiesTable = buildZombiesTable(textures);
 
-        ScrollPane scrollPane = new ScrollPane(plantsTable);
+        ScrollPane scrollPane = new ScrollPane(plantsTable, skin) {
+            @Override
+            protected void setStage(Stage stage) {
+                super.setStage(stage);
+                if (stage != null) stage.setScrollFocus(this);
+            }
+        };
+
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.setFadeScrollBars(false);
 

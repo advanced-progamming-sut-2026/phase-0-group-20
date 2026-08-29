@@ -30,10 +30,10 @@ public class Pvz extends Game {
 
     private void setCursor() {
         Pixmap original = new Pixmap(Gdx.files.internal(
-            "Icon_And_Cursor/Plants vs. Zombies Crazy Dave Cursor - pointer - SweezyCursors.png"));
+            "Icon_And_Cursor/Wood Cursor--cursor--SweezyCursors.png"));
 
-        int newWidth = original.getWidth() * 2;
-        int newHeight = original.getHeight() * 2;
+        int newWidth = original.getWidth() / 2;
+        int newHeight = original.getHeight() / 2;
 
         Pixmap cursorPixmap = new Pixmap(newWidth, newHeight, Pixmap.Format.RGBA8888);
 

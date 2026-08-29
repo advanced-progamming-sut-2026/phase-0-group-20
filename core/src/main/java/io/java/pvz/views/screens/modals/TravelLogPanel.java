@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import io.java.pvz.controllers.GameController.TravelLogController;
@@ -72,7 +73,7 @@ public class TravelLogPanel extends Table {
         boardStack.add(boardBg);
 
         Table boardContent = new Table();
-        Label refreshLabel = new Label("Daily Activities refresh in "+getTimeUntilMidnight()
+        Label refreshLabel = new Label("Daily Activities refresh in " + getTimeUntilMidnight()
             , skin, "FBUSV8C5EI_1", Color.GOLD);
         refreshLabel.setFontScale(0.8f);
         boardContent.add(refreshLabel).padTop(25).padBottom(10).row();
@@ -108,8 +109,8 @@ public class TravelLogPanel extends Table {
         TextButton.TextButtonStyle tabStyle = new TextButton.TextButtonStyle();
         tabStyle.font = skin.getFont("FBUSV8C5EI_1");
         tabStyle.fontColor = Color.WHITE;
-        tabStyle.up = UiFactory.imageFor(textures,"IMAGE_UI_QUESTS_DAILY_INACTIVE").getDrawable();
-        tabStyle.checked = UiFactory.imageFor(textures,"IMAGE_UI_QUESTS_DAILY_ACTIVE").getDrawable();
+        tabStyle.up = UiFactory.imageFor(textures, "IMAGE_UI_QUESTS_DAILY_INACTIVE").getDrawable();
+        tabStyle.checked = UiFactory.imageFor(textures, "IMAGE_UI_QUESTS_DAILY_ACTIVE").getDrawable();
         return tabStyle;
     }
 
@@ -158,6 +159,7 @@ public class TravelLogPanel extends Table {
         });
         return tabBtn;
     }
+
     private void loadCategory(QuestCategory category) {
         Table itemsTable = new Table();
         itemsTable.top();
@@ -171,7 +173,13 @@ public class TravelLogPanel extends Table {
             }
         }
 
-        ScrollPane scrollPane = new ScrollPane(itemsTable, skin);
+        ScrollPane scrollPane = new ScrollPane(itemsTable, skin) {
+            @Override
+            protected void setStage(Stage stage) {
+                super.setStage(stage);
+                if (stage != null) stage.setScrollFocus(this);
+            }
+        };
         scrollPane.setScrollingDisabled(true, false);
         listContainer.setActor(scrollPane);
     }
@@ -185,7 +193,13 @@ public class TravelLogPanel extends Table {
             itemsTable.add(item).center().padBottom(30).fillX().width(700).height(200).row();
         }
 
-        ScrollPane scrollPane = new ScrollPane(itemsTable, skin);
+        ScrollPane scrollPane = new ScrollPane(itemsTable, skin) {
+            @Override
+            protected void setStage(Stage stage) {
+                super.setStage(stage);
+                if (stage != null) stage.setScrollFocus(this);
+            }
+        };
         scrollPane.setScrollingDisabled(true, false);
 
         listContainer.setActor(scrollPane);

@@ -190,6 +190,8 @@ public class PlantFactory {
         } else if (data.category() != PlantCategory.LOBBER && data.category() != PlantCategory.HOMING
             && !nameKey.equals("torchwood")) {
             plant.addPlantFoodStrategy(new RapidFireFoodStrategy());
+        } else if (nameKey.equals("cat-tail")) {
+            plant.addPlantFoodStrategy(new HomingRapidFireFoodStrategy());
         }
 
         if (data.tags().contains(PlantTag.SHROOM) && foodValue == 60.0) {
