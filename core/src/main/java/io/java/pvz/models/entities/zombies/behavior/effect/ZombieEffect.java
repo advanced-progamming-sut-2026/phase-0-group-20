@@ -8,9 +8,9 @@ public interface ZombieEffect {
     void execute();
 
     default void notify(String message) {
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
+//        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+//                new GameEventPayload.Builder(GameEvent.NOTIFY)
+//                        .message(message)
+//                        .build());
     }
 }

@@ -114,14 +114,10 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
         });
 
         int numPlants = rand.nextInt(6) + 4 + levelNumber; // min: 4 different types
+
         List<Plant> availableTemplates = App.getActiveUser().getUnlockedPlants().stream()
-            .filter(plant -> {
-                String plantName = plant.getName().toLowerCase();
-                return !plantName.contains("sun") && !plantName.equals("gold bloom") &&
-                    !plantName.equals("grave buster") && !plantName.equals("hot potato") &&
-                    !plantName.equals("lily pad") && !plantName.equals("tangle kelp") &&
-                    !plantName.equals("sea-shroom") && !plantName.contains("mint");
-            }).toList();
+            .filter(this::isValidIZombiePlant).toList();
+
         List<Plant> selectedTemplates = availableTemplates.subList(0, Math.min(numPlants, availableTemplates.size()));
 
         for (int i = 0; i < redLineCol; i++) {
@@ -156,19 +152,30 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
     private Plant generateRandomBeltPlant() {
         if (beltPlantTemplates == null) {
             beltPlantTemplates = App.getActiveUser().getUnlockedPlants().stream()
-                .filter(plant -> {
-                    String plantName = plant.getName().toLowerCase();
-                    return !plantName.contains("sun") && !plantName.equals("gold bloom") &&
-                        !plantName.equals("grave buster") && !plantName.equals("hot potato") &&
-                        !plantName.equals("lily pad") && !plantName.equals("tangle kelp") &&
-                        !plantName.equals("sea-shroom") && !plantName.contains("mint");
-                }).toList();
+                .filter(this::isValidIZombiePlant).toList();
         }
 
         if (beltPlantTemplates.isEmpty()) return null;
 
         Plant template = beltPlantTemplates.get(rand.nextInt(beltPlantTemplates.size()));
         return PlantFactory.create(template.getId());
+    }
+
+    private boolean isValidIZombiePlant(Plant plant) {
+        String plantName = plant.getName().toLowerCase();
+        return !plantName.contains("sun") &&
+            !plantName.equals("gold bloom") &&
+            !plantName.equals("grave buster") &&
+            !plantName.equals("hot potato") &&
+            !plantName.equals("lily pad") &&
+            !plantName.equals("tangle kelp") &&
+            !plantName.equals("sea-shroom") &&
+            !plantName.contains("mint") &&
+            !plantName.equals("cherry bomb") &&
+            !plantName.equals("jalapeno") &&
+            !plantName.equals("doom-shroom") &&
+            !plantName.equals("ice-shroom") &&
+            !plantName.equals("grapeshot");
     }
 
     public boolean isValidZombiePlacement(int col) {

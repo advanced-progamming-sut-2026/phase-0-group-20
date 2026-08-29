@@ -13,8 +13,6 @@ import io.java.pvz.models.entities.projectiles.LightningEffect;
 import io.java.pvz.models.entities.projectiles.NormalEffect;
 import io.java.pvz.models.entities.projectiles.ProjectileType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class PlantFactory {
@@ -109,15 +107,15 @@ public class PlantFactory {
             case "hypno-shroom" -> plant.addStrategy(new HypnotizeStrategy());
             case "imitater" -> plant.addStrategy(new ImitateStrategy());
             case "puff-shroom", "sea-shroom" ->
-                    plant.addStrategy(new LifespanStrategy((int) plant.getPlantFoodValue()));
+                plant.addStrategy(new LifespanStrategy((int) plant.getPlantFoodValue()));
         }
     }
 
     private static boolean ownsItsOwnDetonation(String nameKey) {
         return nameKey.equalsIgnoreCase("grave buster")
-                || nameKey.equalsIgnoreCase("ice-shroom")
-                || nameKey.equalsIgnoreCase("hot potato")
-                || nameKey.equalsIgnoreCase("chomper");
+            || nameKey.equalsIgnoreCase("ice-shroom")
+            || nameKey.equalsIgnoreCase("hot potato")
+            || nameKey.equalsIgnoreCase("chomper");
     }
 
 
@@ -141,7 +139,7 @@ public class PlantFactory {
             case "MAP_WIDE_FREEZE" -> {
                 if (!nameKey.equals("kernel-pult"))
                     plant.addPlantFoodStrategy(
-                            new FieldWideEffectFoodStrategy("freezes every zombie currently visible")
+                        new FieldWideEffectFoodStrategy("freezes every zombie currently visible")
                     );
             }
             case "PULL_UNDERWATER" -> {
@@ -155,7 +153,7 @@ public class PlantFactory {
             case "KNOCKBACK_BLAST" -> {
                 if (!nameKey.equals("garlic") && !nameKey.equals("magnet-shroom"))
                     plant.addPlantFoodStrategy(new BurstEffectFoodStrategy(
-                            "a giant smoke cloud that pushes zombies back"));
+                        "a giant smoke cloud that pushes zombies back"));
             }
             case "NONE" -> plant.addPlantFoodStrategy(new NoFoodEffectStrategy());
 
@@ -172,6 +170,7 @@ public class PlantFactory {
     private static void handleTheBurst(Plant plant, PlantData data, String nameKey, int foodValue) {
         if (data.tags().contains(PlantTag.ICE)) {
             plant.addPlantFoodStrategy(new IcyRapidFireFoodStrategy());
+        } else if (nameKey.equals("citron") || nameKey.equals("cactus")) {
         } else if (nameKey.equals("repeater")) {
             plant.addPlantFoodStrategy(new RapidFireFoodStrategy(1, true));
         } else if (nameKey.equals("split pea")) {
@@ -189,7 +188,7 @@ public class PlantFactory {
         } else if (nameKey.equals("starfruit")) {
             plant.addPlantFoodStrategy(new MultiDirectionRapidFireFoodStrategy(5));
         } else if (data.category() != PlantCategory.LOBBER && data.category() != PlantCategory.HOMING
-                && !nameKey.equals("torchwood")) {
+            && !nameKey.equals("torchwood")) {
             plant.addPlantFoodStrategy(new RapidFireFoodStrategy());
         }
 
@@ -201,34 +200,34 @@ public class PlantFactory {
     private static void assembleThePlantFoodStrategy(Plant plant, String nameKey) {
         switch (nameKey) {
             case "citron" -> plant.addPlantFoodStrategy(new LaneClearFoodStrategy(
-                    "purifying plasma ball clears the whole lane"));
+                "purifying plasma ball clears the whole lane"));
             case "cactus" -> plant.addPlantFoodStrategy(new LaneClearFoodStrategy(
-                    "electrified, high-damage, infinitely piercing spikes"));
+                "electrified, high-damage, infinitely piercing spikes"));
             case "cabbage-pult" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    4, "cabbage lob"));
+                4, "cabbage lob"));
             case "melon-pult" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    4, "giant watermelon lob"));
+                4, "giant watermelon lob"));
             case "winter melon" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    4, "icy watermelon lob (slows)"));
+                4, "icy watermelon lob (slows)"));
             case "pepper-pult" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    4, "large pepper lob (fire)"));
+                4, "large pepper lob (fire)"));
             case "chomper" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(
-                    4, "swallowed instantly from range"));
+                4, "swallowed instantly from range"));
             case "squash" -> plant.addPlantFoodStrategy(new RandomTargetEffectFoodStrategy(2, "crushed"));
             case "garlic" -> plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy(
-                    "forces every zombie in the lane to move to another lane"));
+                "forces every zombie in the lane to move to another lane"));
             case "kernel-pult" -> plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy(
-                    "drops butter on every zombie on the field"));
+                "drops butter on every zombie on the field"));
             case "sweet potato" -> plant.addPlantFoodStrategy(new FieldWideEffectFoodStrategy(
-                    "pulls in every nearby zombie and fully heals itself"));
+                "pulls in every nearby zombie and fully heals itself"));
             case "bonk choy" -> plant.addPlantFoodStrategy(new BurstEffectFoodStrategy(
-                    "rapid 3x3 punches"));
+                "rapid 3x3 punches"));
             case "phat beet" -> plant.addPlantFoodStrategy(new BurstEffectFoodStrategy(
-                    "powerful 3x3 sonic blast"));
+                "powerful 3x3 sonic blast"));
             case "wasabi whip" -> plant.addPlantFoodStrategy(new BurstEffectFoodStrategy(
-                    "spinning whip across a 3x3 area"));
+                "spinning whip across a 3x3 area"));
             case "kiwibeast" -> plant.addPlantFoodStrategy(new BurstEffectFoodStrategy(
-                    "jumps and slams the ground for AoE damage"));
+                "jumps and slams the ground for AoE damage"));
             case "torchwood" -> plant.addPlantFoodStrategy(new BlueFlameFoodStrategy());
             case "magnet-shroom" -> plant.addPlantFoodStrategy(new MultiMagnetFoodStrategy());
             case "hypno-shroom" -> plant.addPlantFoodStrategy(new GargantuarHypnotizeFoodStrategy());
@@ -241,14 +240,16 @@ public class PlantFactory {
             case "citron" -> new ChargeStrategy(ProjectileType.PEA, new NormalEffect(), 800, false);
             case "caulipower" -> new ChargeStrategy(ProjectileType.MAGIC_BEAM, new HypnotizeEffect(), 0, true);
             case "electric blueberry" ->
-                    new ChargeStrategy(ProjectileType.LIGHTNING_CLOUD, new LightningEffect(), 5000, true);
+                new ChargeStrategy(ProjectileType.LIGHTNING_CLOUD, new LightningEffect(), 5000, true);
             case "bowling bulb" -> ChargeStrategy.createBowlingBulbStrategy();
             default -> new ChargeStrategy();
         };
     }
 
     private static IPlantStrategy createHomingStrategyFor(String plantName) {
-        if ("Cat-tail".equals(plantName)) {return new HomingStrategy(HomingStrategy.TargetMode.NEAREST, 2);}
+        if ("Cat-tail".equals(plantName)) {
+            return new HomingStrategy(HomingStrategy.TargetMode.NEAREST, 2);
+        }
         return new HomingStrategy(HomingStrategy.TargetMode.RANDOM, 1);
     }
 }

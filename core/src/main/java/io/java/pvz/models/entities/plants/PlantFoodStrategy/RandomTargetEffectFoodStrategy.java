@@ -60,7 +60,8 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
                 || pName.equals("winter melon")
                 || pName.equals("pepper-pult")
                 || pName.equals("bowling bulb")
-                || pName.equals("electric blueberry");
+                || pName.equals("electric blueberry")
+                || pName.equals("caulipower");
 
             for (Zombie target : targets) {
                 if (firesTargetedProjectile) {
@@ -88,7 +89,6 @@ public class RandomTargetEffectFoodStrategy implements PlantFoodStrategy {
                 target.takeDamage(plant.getDamage());
                 if (target.isDead()) plant.onZombieDeath(target);
             }
-            case "caulipower" -> target.hypnotize();
         }
     }
 

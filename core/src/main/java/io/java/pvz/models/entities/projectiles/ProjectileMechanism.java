@@ -116,6 +116,7 @@ public class ProjectileMechanism {
             case "Winter Melon" -> ProjectileType.WINTER_MELON;
             case "Pepper-pult" -> ProjectileType.PEPPER;
             case "Puff-shroom" -> ProjectileType.PUFF_SPORE;
+            case "Cactus" -> ProjectileType.ELECTRIC_SPIKE;
             default -> ProjectileType.PEA;
         };
     }

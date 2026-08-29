@@ -57,6 +57,13 @@ public class ChargeStrategy implements IPlantStrategy {
     @Override
     public void execute(Plant context, int currentTick) {
         if (context.getTags().contains(PlantTag.TRAP)) return;
+
+        if (context.getCurrentAction() != null && context.getCurrentAction().equals("recovery")) {
+            chargeStartTick = currentTick;
+            chargeAnimTriggered = false;
+            recoveryAnimTriggered = true;
+        }
+
         if (chargeStartTick == -1) {
             chargeStartTick = currentTick;
             chargeAnimTriggered = false;
