@@ -15,6 +15,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
+import static io.java.pvz.models.enums.PhysicalConstants.GRID_START_X;
+import static io.java.pvz.models.enums.PhysicalConstants.TILE_WIDTH;
+
 public class BonusLevel extends Level implements GameEventListener {
 
     private boolean isDailyChallenge;
@@ -81,7 +84,6 @@ public class BonusLevel extends Level implements GameEventListener {
         if (isDailyChallenge) {
             long waveSeed = (LocalDate.now().toEpochDay() * 1000L) + wave.getCurrentNumber();
             waveRandom = new Random(waveSeed);
-
             availableZombies = InGameEntityGenerator.getZombiesForDailyChallenge(this);
         } else {
             waveRandom = new Random();
@@ -92,16 +94,25 @@ public class BonusLevel extends Level implements GameEventListener {
 
         GameEventPayload payload = new GameEventPayload.Builder(GameEvent.WAVE_STARTED).build();
         GameEventMessenger.getInstance().dispatch(GameEvent.WAVE_STARTED, payload);
+
         while (accumulatedCost < targetDifficulty) {
             Zombie template = availableZombies.get(waveRandom.nextInt(availableZombies.size()));
-
             int lane = waveRandom.nextInt(session.getArena().getRows());
 
             Zombie newZombie = InGameEntityGenerator.getZombieForGame(template.getType(), lane);
             if (shinyZombie()) {
                 newZombie.setShiny(true);
             }
+
+            int waveCount = wave.getCurrentNumber();
+            int randomX = waveRandom.nextInt(100);
+
+            if (waveCount == 1)
+                randomX += (int) (TILE_WIDTH) / 2;
+
             newZombie.setCol(session.getArena().getCols() - 1);
+            if (!newZombie.getName().equalsIgnoreCase("ZombieDarkKing"))
+                newZombie.setX(GRID_START_X + TILE_WIDTH * 11 + randomX * 4);
 
             wave.addZombie(newZombie);
             accumulatedCost += newZombie.getWaveCost();
@@ -112,7 +123,6 @@ public class BonusLevel extends Level implements GameEventListener {
             if (seasonModifier != null) {
                 seasonModifier.onZombieSpawn(newZombie, session.getArena());
             }
-
         }
     }
 
