@@ -19,7 +19,8 @@ public class RageEffect extends Effect {
         this.extraEatDps = extraEatDps;
 
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie.getType());
-        float animDuration = (anim != null && anim.hasClip("newspaper_defeat")) ? anim.getDuration("newspaper_defeat") : 1.4f;
+        float animDuration = (anim != null && anim.hasClip("newspaper_defeat")) ?
+            anim.getDuration("newspaper_defeat") : 1.4f;
         this.enrageAnimTicks = (int) (animDuration * TimeManager.TICKS_PER_SECOND);
     }
 

@@ -147,9 +147,7 @@ public class QuestFactory {
                 condition = new KillWithNoLawnmowerCondition(10, 0);
                 reward = new CurrencyReward(false, 300);
             }
-            default -> {
-                return null;
-            }
+            default -> { return null; }
         }
         return getQuest(title, category, priority, onMission, conditionStr, condition, reward);
     }

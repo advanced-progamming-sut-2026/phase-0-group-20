@@ -152,7 +152,8 @@ public class KingKnightEffect extends Effect {
                 targetZombie.addArmor(new Armor(shoulderArmorData));
                 targetZombie.setType(ZombieType.DARK_ARMOR);
 
-                notify(zombie.getName() + " granted shoulder armor to a zombie in row " + (targetZombie.getRow() + 1) + "!");
+                notify(zombie.getName() + " granted shoulder armor to a zombie in row "
+                    + (targetZombie.getRow() + 1) + "!");
             } catch (Exception e) {
                 notify("Warning: Shoulder armor data not found in loader.");
             }

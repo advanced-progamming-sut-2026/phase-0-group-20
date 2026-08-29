@@ -54,7 +54,6 @@ public class TravelLogPanel extends Table {
         tabGroup.setMinCheckCount(1);
 
         TextButton.TextButtonStyle tabStyle = createTabStyle();
-
         Table tabsRow = crateTabRow(tabStyle);
 
         ImageButton closeBtn = new ImageButton(skin, "generic_close");
@@ -66,7 +65,6 @@ public class TravelLogPanel extends Table {
         });
 
         Stack boardStack = new Stack();
-
         Table boardBg = new Table();
         boardBg.setBackground(skin.getDrawable("image_ui_quests_panel_edge_to_edge_ten"));
         boardStack.add(boardBg);
@@ -88,19 +86,15 @@ public class TravelLogPanel extends Table {
         boardStack.add(closeBtnLayer);
 
         Stack mainLayoutStack = new Stack();
-
         Table boardLayer = new Table();
         boardLayer.bottom();
         boardLayer.add(boardStack).width(1000).height(800);
         mainLayoutStack.add(boardLayer);
-
         Table tabsLayer = new Table();
         tabsLayer.top().left();
         tabsLayer.add(tabsRow).padLeft(30).padTop(-5);
         mainLayoutStack.add(tabsLayer);
-
         this.add(mainLayoutStack).width(1000).height(830);
-
         loadCategory(QuestCategory.DAILY);
     }
 

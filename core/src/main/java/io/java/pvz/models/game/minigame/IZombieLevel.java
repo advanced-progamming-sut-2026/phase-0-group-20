@@ -242,7 +242,8 @@ public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
                 ticksPassed++;
                 if (ticksPassed >= currentInterval) {
                     Sun sun = new Sun(SunType.NORMAL_SUN, sunZombie.getCol(), sunZombie.getRow());
-                    sun.setNetworkId(NetworkIdGenerator.generateSunId(sunZombie.getCol(), sunZombie.getRow(), currentTick));
+                    sun.setNetworkId(NetworkIdGenerator.generateSunId(
+                        sunZombie.getCol(), sunZombie.getRow(), currentTick));
                     session.getArena().addSun(sun);
                     sun.setProducedByPlant(true);
                     ticksPassed = 0;

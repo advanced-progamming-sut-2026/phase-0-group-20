@@ -49,27 +49,19 @@ public class LaserAttack implements AttackBehavior {
                 normalAttack.execute();
                 return;
             }
-
             if (GameSession.getInstance().getCurrentSun() < STEAL_AMOUNT) {
                 zombie.setState(ZombieState.WALKING);
                 zombie.resetSpeed();
                 return;
             }
-
             context.startCharging();
             hasFired = false;
             notify("Crystal Skull Zombie is warming up its laser!");
         }
-
         context.incrementCharge();
         int ticks = context.getChargeTicks();
-
         zombie.applySpeedMultiplier(0f);
-
-        if (ticks <= powerUpTicks) {
-            zombie.setState(ZombieState.POWER_UP);
-        }
-
+        if (ticks <= powerUpTicks) zombie.setState(ZombieState.POWER_UP);
         else if (ticks <= powerUpTicks + powerTicks) {
             zombie.setState(ZombieState.POWER);
             if (ticks % (TimeManager.TICKS_PER_SECOND / 2) == 0) {

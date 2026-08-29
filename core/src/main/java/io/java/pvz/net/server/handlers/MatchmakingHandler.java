@@ -27,7 +27,8 @@ public class MatchmakingHandler {
     private final RandomMatchQueue randomQueue = new RandomMatchQueue();
     private final Map<String, PendingChallenge> pendingChallenges = new ConcurrentHashMap<>();
 
-    public MatchmakingHandler(SessionRegistry sessionRegistry, MatchRegistry matchRegistry, MatchGameEngine gameEngine) {
+    public MatchmakingHandler(SessionRegistry sessionRegistry, MatchRegistry matchRegistry,
+                              MatchGameEngine gameEngine) {
         this.sessionRegistry = sessionRegistry;
         this.matchRegistry = matchRegistry;
         this.gameEngine = gameEngine;

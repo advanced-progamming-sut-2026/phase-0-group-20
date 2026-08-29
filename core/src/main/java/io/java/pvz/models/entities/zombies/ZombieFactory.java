@@ -41,89 +41,107 @@ public class ZombieFactory {
 
     private static void assignBehaviors(Zombie zombie, ZombieType type, ZombieData data) {
         switch (type) {
-            case PROSPECTOR -> {
-                ProspectorContext ctx = new ProspectorContext();
-                zombie.setMoveBehavior(new ProspectorMove(zombie, ctx));
-                zombie.setDefenseBehavior(new ProspectorDefense( ctx));
-                zombie.setAttackBehavior(new ProspectorAttack(zombie));
-            }
-            case EXPLORER -> {
-                ExplorerContext ctx = new ExplorerContext();
-                zombie.setMoveBehavior(new NormalMove(zombie));
-                zombie.setAttackBehavior(new TorchBurnAttack(zombie, ctx));
-                zombie.setDefenseBehavior(new ExplorerDefense(ctx));
-            }
-            case CRYSTAL_SKULL -> {
-                TurquoiseContext ctx = new TurquoiseContext(zombie);
-                zombie.setMoveBehavior(new TurquoiseMove(zombie, ctx));
-                zombie.setAttackBehavior(new LaserAttack(zombie, ctx));
-                zombie.setDefenseBehavior(new NormalDefense());
-            }
-            case ALL_STAR -> {
-                AllStarContext ctx = new AllStarContext();
-                zombie.setMoveBehavior(new AllStarMove(zombie, ctx));
-                zombie.setAttackBehavior(new AllStarSmashAttack(zombie, ctx));
-                zombie.setDefenseBehavior(new NormalDefense());
-            }
-            case JUGGLER -> {
-                JugglerContext ctx = new JugglerContext();
-                zombie.setMoveBehavior(new JugglerMove(zombie, ctx));
-                zombie.setDefenseBehavior(new JugglerDefense(zombie, ctx));
-                zombie.setAttackBehavior(new NormalAttack(zombie));
-            }
-            case SNORKEL -> {
-                SnorkelContext ctx = new SnorkelContext();
-                zombie.setMoveBehavior(new SnorkelMove(zombie, ctx));
-                zombie.setAttackBehavior(new SnorkelAttack(zombie, ctx));
-                zombie.setDefenseBehavior(new SnorkelDefense(ctx));
-            }
-            case BARREL_ROLLER -> {
-                int barrelCol = Math.max(0, zombie.getCol() - 1);
-                Barrel barrel = new Barrel(barrelCol, zombie.getRow());
-
-                barrel.getPosition().setX(zombie.getX() - PhysicalConstants.TILE_WIDTH);
-
-                GameSession session = GameSession.getInstance();
-                if (session != null && session.getArena() != null) {
-                    session.getArena().getActiveObstacles().add(barrel);
-                }
-
-                zombie.setMoveBehavior(new BarrelRollerMove(zombie, barrel));
-                zombie.setDefenseBehavior(new BarrelRollerDefense(zombie));
-                zombie.setAttackBehavior(new NormalAttack(zombie));
-            }
-            case ARCADE -> {
-                int machineCol = Math.max(0, zombie.getCol() - 1);
-                ArcadeMachine machine = new ArcadeMachine(machineCol, zombie.getRow());
-                machine.getPosition().setX(zombie.getX() - PhysicalConstants.TILE_WIDTH);
-
-                GameSession session = GameSession.getInstance();
-                if (session != null && session.getArena() != null) {
-                    session.getArena().getActiveObstacles().add(machine);
-                }
-
-                zombie.setMoveBehavior(new ArcadeMove(zombie, machine));
-                zombie.setDefenseBehavior(new ArcadeDefense(zombie));
-                zombie.setAttackBehavior(new NormalAttack(zombie));
-            }
-            case PIANIST -> {
-                Piano piano = new Piano(zombie.getCol(), zombie.getRow());
-                piano.getPosition().setX(zombie.getX() - 45f);
-
-                GameSession session = GameSession.getInstance();
-                if (session != null && session.getArena() != null) {
-                    session.getArena().getActiveObstacles().add(piano);
-                }
-
-                zombie.setMoveBehavior(new PianistMove(zombie, piano));
-                zombie.setDefenseBehavior(new PianistDefense(zombie));
-            }
+            case PROSPECTOR -> assignProspector(zombie);
+            case EXPLORER -> assignExplorer(zombie);
+            case CRYSTAL_SKULL -> assignTurquoise(zombie);
+            case ALL_STAR -> assignAllStar(zombie);
+            case JUGGLER -> assignJuggler(zombie);
+            case SNORKEL -> assignSnorkel(zombie);
+            case BARREL_ROLLER -> assignBarrel(zombie);
+            case ARCADE -> assignArcade(zombie);
+            case PIANIST -> assignPiano(zombie);
             default -> {
                 zombie.setMoveBehavior(getMoveAI(type, zombie));
                 zombie.setAttackBehavior(getAttackAI(type, zombie, data));
                 zombie.setDefenseBehavior(getDefenseAI(type, zombie));
             }
         }
+    }
+
+    private static void assignProspector(Zombie zombie) {
+        ProspectorContext ctx = new ProspectorContext();
+        zombie.setMoveBehavior(new ProspectorMove(zombie, ctx));
+        zombie.setDefenseBehavior(new ProspectorDefense( ctx));
+        zombie.setAttackBehavior(new ProspectorAttack(zombie));
+    }
+
+    private static void assignExplorer(Zombie zombie) {
+        ExplorerContext ctx = new ExplorerContext();
+        zombie.setMoveBehavior(new NormalMove(zombie));
+        zombie.setAttackBehavior(new TorchBurnAttack(zombie, ctx));
+        zombie.setDefenseBehavior(new ExplorerDefense(ctx));
+    }
+
+    private static void assignTurquoise(Zombie zombie) {
+        TurquoiseContext ctx = new TurquoiseContext(zombie);
+        zombie.setMoveBehavior(new TurquoiseMove(zombie, ctx));
+        zombie.setAttackBehavior(new LaserAttack(zombie, ctx));
+        zombie.setDefenseBehavior(new NormalDefense());
+    }
+
+    private static void assignAllStar(Zombie zombie) {
+        AllStarContext ctx = new AllStarContext();
+        zombie.setMoveBehavior(new AllStarMove(zombie, ctx));
+        zombie.setAttackBehavior(new AllStarSmashAttack(zombie, ctx));
+        zombie.setDefenseBehavior(new NormalDefense());
+    }
+
+    private static void assignJuggler(Zombie zombie) {
+        JugglerContext ctx = new JugglerContext();
+        zombie.setMoveBehavior(new JugglerMove(zombie, ctx));
+        zombie.setDefenseBehavior(new JugglerDefense(zombie, ctx));
+        zombie.setAttackBehavior(new NormalAttack(zombie));
+    }
+
+    private static void assignSnorkel(Zombie zombie) {
+        SnorkelContext ctx = new SnorkelContext();
+        zombie.setMoveBehavior(new SnorkelMove(zombie, ctx));
+        zombie.setAttackBehavior(new SnorkelAttack(zombie, ctx));
+        zombie.setDefenseBehavior(new SnorkelDefense(ctx));
+    }
+
+    private static void assignBarrel(Zombie zombie) {
+        int barrelCol = Math.max(0, zombie.getCol() - 1);
+        Barrel barrel = new Barrel(barrelCol, zombie.getRow());
+
+        barrel.getPosition().setX(zombie.getX() - PhysicalConstants.TILE_WIDTH);
+
+        GameSession session = GameSession.getInstance();
+        if (session != null && session.getArena() != null) {
+            session.getArena().getActiveObstacles().add(barrel);
+        }
+
+        zombie.setMoveBehavior(new BarrelRollerMove(zombie, barrel));
+        zombie.setDefenseBehavior(new BarrelRollerDefense(zombie));
+        zombie.setAttackBehavior(new NormalAttack(zombie));
+    }
+
+    private static void assignArcade(Zombie zombie) {
+        int machineCol = Math.max(0, zombie.getCol() - 1);
+        ArcadeMachine machine = new ArcadeMachine(machineCol, zombie.getRow());
+        machine.getPosition().setX(zombie.getX() - PhysicalConstants.TILE_WIDTH);
+
+        GameSession session = GameSession.getInstance();
+        if (session != null && session.getArena() != null) {
+            session.getArena().getActiveObstacles().add(machine);
+        }
+
+        zombie.setMoveBehavior(new ArcadeMove(zombie, machine));
+        zombie.setDefenseBehavior(new ArcadeDefense(zombie));
+        zombie.setAttackBehavior(new NormalAttack(zombie));
+    }
+
+    private static void assignPiano(Zombie zombie) {
+        Piano piano = new Piano(zombie.getCol(), zombie.getRow());
+        piano.getPosition().setX(zombie.getX() - 45f);
+
+        GameSession session = GameSession.getInstance();
+        if (session != null && session.getArena() != null) {
+            session.getArena().getActiveObstacles().add(piano);
+        }
+
+        zombie.setMoveBehavior(new PianistMove(zombie, piano));
+        zombie.setDefenseBehavior(new PianistDefense(zombie));
     }
 
     private static MoveBehavior getMoveAI(ZombieType type, Zombie zombie) {

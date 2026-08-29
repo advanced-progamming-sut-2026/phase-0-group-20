@@ -12,7 +12,8 @@ import java.util.List;
 public class ProjectileMechanism {
 
 
-    public static void executeNewProjectile(Plant plant, boolean shootForward, boolean shootBackward, float delaySeconds) {
+    public static void executeNewProjectile(Plant plant, boolean shootForward, boolean shootBackward,
+                                            float delaySeconds) {
         int damage = plant.getDamage();
         ProjectileType type = getProjectileType(plant.getName());
         int plantRow = plant.getPlacedTile().getRow();
@@ -82,7 +83,8 @@ public class ProjectileMechanism {
         projectile.setEffect(effect);
 
         if (ProjectileType.isLobbed(type)) {
-            projectile.setArcTrajectory(target, ProjectileTuning.LOB_SPEED_TILES_PER_SEC, ProjectileTuning.LOB_ARC_HEIGHT_TILES);
+            projectile.setArcTrajectory(target, ProjectileTuning.LOB_SPEED_TILES_PER_SEC,
+                ProjectileTuning.LOB_ARC_HEIGHT_TILES);
         } else {
             projectile.setHomingTarget(target, ProjectileTuning.HOMING_SPEED_TILES_PER_SEC);
         }

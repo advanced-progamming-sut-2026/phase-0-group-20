@@ -108,15 +108,13 @@ public class CollisionManager {
     private void handleProjectiles() {
         for (Projectile proj : arena.getActiveProjectiles()) {
             if (proj.isDestroyed() || !proj.isSpawned()) continue;
-
             Tile currentTile = arena.getTile(proj.getPosition().getRow(), proj.getPosition().getCol());
             if (currentTile == null) continue;
             if (!proj.isFiredByZombie()) {
                 for (Plant p : currentTile.getPlants()) {
                     for (IPlantStrategy strategy : p.getStrategies()) {
-                        if (strategy instanceof TorchwoodStrategy torchwoodStrategy) {
+                        if (strategy instanceof TorchwoodStrategy torchwoodStrategy)
                             torchwoodStrategy.igniteProjectile(proj);
-                        }
                     }
                 }
             }
@@ -128,10 +126,8 @@ public class CollisionManager {
                 }
             }
             if (frozenPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {
-
                 frozenPlantInTile.damageIceBlock(proj.getDamage());
-                proj.setDestroyed(true);
-                continue;
+                proj.setDestroyed(true); continue;
             }
             Plant octopusPlantInTile = null;
             for (Plant p : currentTile.getPlants()) {
@@ -145,23 +141,16 @@ public class CollisionManager {
                 proj.setDestroyed(true);
                 continue;
             }
-            if (proj.isFiredByZombie())
-                checkProjectileForPlantCollision(proj);
+            if (proj.isFiredByZombie()) checkProjectileForPlantCollision(proj);
             else {
                 boolean hitObstacle = checkProjectileForObstaclesCollision(proj);
-                if (!hitObstacle && !proj.isDestroyed())
-                    checkProjectileForZombieCollision(proj);
-
+                if (!hitObstacle && !proj.isDestroyed()) checkProjectileForZombieCollision(proj);
                 if (!proj.isDestroyed() && proj.isArcTrajectory() && proj.getArcProgress() >= 1f) {
                     proj.setDestroyed(true);
                     GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
                         new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
-                            .pixelCoordinate(proj.getX(), proj.getY())
-                            .projectileType(proj.getType())
-                            .build());
-                    if (proj.getEffect() != null) {
-                        proj.getEffect().applyEffect(null, proj);
-                    }
+                            .pixelCoordinate(proj.getX(), proj.getY()).projectileType(proj.getType()).build());
+                    if (proj.getEffect() != null) proj.getEffect().applyEffect(null, proj);
                 }
             }
         }
@@ -185,54 +174,40 @@ public class CollisionManager {
         boolean hitObstacle = false;
         for (PushableObstacle obstacle : arena.getActiveObstacles()) {
             if (!obstacle.isDestroyed() && obstacle.getRow() == projectile.getPosition().getRow()) {
-
                 if (Math.abs(projectile.getPosition().getX() - obstacle.getX()) < 20) {
                     obstacle.takeDamage(projectile.getDamage());
                     projectile.setDestroyed(true);
-                    hitObstacle = true;
-                    break;
+                    hitObstacle = true; break;
                 }
             }
         }
-
         if (hitObstacle) return;
-
         float projectileHitRadius = 0.25f;
         float zombieHitRadius = 0.25f;
         float physProjectileRadius = projectileHitRadius * PhysicalConstants.TILE_WIDTH;
         float physZombieRadius = zombieHitRadius * PhysicalConstants.TILE_WIDTH;
-
         int bottomRow = (int) Math.floor((projectile.getY() - physProjectileRadius - PhysicalConstants.GRID_START_Y)
             / PhysicalConstants.TILE_HEIGHT);
         int topRow = (int) Math.floor((projectile.getY() + physProjectileRadius - PhysicalConstants.GRID_START_Y)
             / PhysicalConstants.TILE_HEIGHT);
-
         bottomRow = Math.max(0, bottomRow);
         topRow = Math.min(arena.getRows() - 1, topRow);
-
         List<Zombie> nearbyZombies = new ArrayList<>();
-        for (int row = bottomRow; row <= topRow; row++)
-            nearbyZombies.addAll(arena.zombieInRow(row));
-
+        for (int row = bottomRow; row <= topRow; row++) nearbyZombies.addAll(arena.zombieInRow(row));
         float combinedRadius = physProjectileRadius + physZombieRadius;
-
         for (Zombie z : nearbyZombies) {
             if (z.isDead()) continue;
-
-            if (projectile.getTarget() != null && projectile.getTarget() != z) {
-                continue;
-            }
-
+            if (projectile.getTarget() != null && projectile.getTarget() != z) continue;
             double dx = projectile.getX() - z.getX();
             double dy = projectile.getY() - z.getY();
             float effectiveRadius = combinedRadius;
-
 
             if (z instanceof Zomboss zomboss) {
                 effectiveRadius = combinedRadius * 2.5f;
 
                 if (projectile.getPosition().getRow() == zomboss.getSecondRow()) {
-                    float secondRowY = zomboss.getSecondRow() * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y;
+                    float secondRowY = zomboss.getSecondRow() * PhysicalConstants.TILE_HEIGHT +
+                        PhysicalConstants.GRID_START_Y;
                     dy = projectile.getY() - secondRowY;
                 }
             }
@@ -262,9 +237,9 @@ public class CollisionManager {
         int projectileRow = proj.getPosition().getRow();
         int projectileCol = (int) ((proj.getX() - PhysicalConstants.GRID_START_X) / PhysicalConstants.TILE_WIDTH);
 
-        if (projectileRow < 0 || projectileRow >= arena.getRows() || projectileCol < 0 || projectileCol >= arena.getCols())
+        if (projectileRow < 0 || projectileRow >= arena.getRows() ||
+            projectileCol < 0 || projectileCol >= arena.getCols())
             return false;
-
 
         Tile currentTile = arena.getTile(projectileRow, projectileCol);
 
@@ -350,31 +325,24 @@ public class CollisionManager {
             for (int i = plantToEat.size() - 1; i >= 0; i--) {
                 Plant p = plantToEat.get(i);
                 boolean canEat = true;
-
                 for (IPlantStrategy strategy : p.getStrategies()) {
                     if (strategy instanceof TrapStrategy trap) {
-                        if (trap.isArmed()) {
-                            canEat = false;
-                        }
+                        if (trap.isArmed()) canEat = false;
                     }
-
                     if (strategy instanceof HypnotizeStrategy hypno) {
                         hypno.onEatenBy(p, z);
                         canEat = false;
                         break;
                     }
                 }
-
                 if (canEat) {
                     eatingPlant = p;
                     break;
                 }
             }
         }
-
         Zombie targetZombie = null;
         float collisionRadius = PhysicalConstants.TILE_WIDTH * 0.5f;
-
         for (Zombie enemyZ : arena.zombieInRow(z.getRow())) {
             if (enemyZ.isHypnotized() && !enemyZ.isDead()) {
                 if (Math.abs(enemyZ.getX() - z.getX()) <= collisionRadius) {
@@ -383,9 +351,7 @@ public class CollisionManager {
                 }
             }
         }
-
         z.setTargetZombie(targetZombie);
-
         if (eatingPlant != null) {
             if (!z.isAttacking()) {
                 z.setAttacking(true);
