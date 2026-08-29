@@ -108,7 +108,7 @@ public class Projectile implements Ticker {
         this.canPassObstacles = canPassObstacles;
         this.isDestroyed = false;
         if (GameSession.getInstance() != null) {
-            String ownerId = (plant != null) ? plant.getNetworkId() : (zombie != null ? zombie.getNetworkId() : "SKY");
+            String ownerId = zombie != null ? zombie.getNetworkId() : "SKY";
             this.networkId = NetworkIdGenerator.generateProjectileId(
                 ownerId, GameSession.getInstance().getTimeManager().getCurrentTick()
             );
@@ -148,7 +148,7 @@ public class Projectile implements Ticker {
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 3);
         if (type == ProjectileType.SEA_SHROOM)
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 4);
-        
+
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;

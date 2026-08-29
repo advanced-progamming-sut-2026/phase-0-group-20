@@ -17,8 +17,9 @@ public class FireSplashEffect implements ProjectileEffect {
         int splashDamage = projectile.getDamage() / 2;
 
 
+        if (zombie == null || zombie.isDead()) return;
         List<Zombie> nearbyZombies = GameSession.getInstance().getArena().getZombiesInRadius(
-                zombie.getCol(), zombie.getRow(), splashRadius
+            zombie.getCol(), zombie.getRow(), splashRadius
         );
 
         for (Zombie z : nearbyZombies) {

@@ -13,11 +13,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class LockedPlants extends SpecialLevel {
-    private static final int NUMBER_OF_LOCKED_PLANTS = 1 ;
-    private static final int NUMBER_OF_LOCKED_SLOTS = 2 ;
+    private static final int NUMBER_OF_LOCKED_PLANTS = 1;
+    private static final int NUMBER_OF_LOCKED_SLOTS = 2;
 
-    private  List<PlantCategory> lockedCategories;
-    private  Plant forcedToUsePlant;
+    private List<PlantCategory> lockedCategories;
+    private Plant forcedToUsePlant;
     private final int mode;
     private int lockedSlots = 0;
 
@@ -25,7 +25,7 @@ public class LockedPlants extends SpecialLevel {
                         int mode) {
         super(name, season, waveCount, baseWaveBudget, globalLevelNumber);
         this.forcedToUsePlant = null;
-        this.lockedCategories =  new ArrayList<>();
+        this.lockedCategories = new ArrayList<>();
         this.mode = mode;
     }
 
@@ -37,7 +37,7 @@ public class LockedPlants extends SpecialLevel {
     @Override
     public boolean isPlantAllowed(Plant plant) {
         return lockedCategories.stream()
-                .noneMatch(category -> category == plant.getCategory());
+            .noneMatch(category -> category == plant.getCategory());
     }
 
     public List<PlantCategory> getLockedCategories() {
@@ -48,13 +48,13 @@ public class LockedPlants extends SpecialLevel {
         return forcedToUsePlant;
     }
 
-    public void createModEntities(){
-        switch(mode){
-            case 1->{// locked categories mode
+    public void createModEntities() {
+        switch (mode) {
+            case 1 -> {// locked categories mode
                 lockedCategories = getRandomCategories();
             }
-            case 2->{// locked slots
-                lockedSlots = (App.getSettings().getDifficulty()>=4)? NUMBER_OF_LOCKED_SLOTS+1 : NUMBER_OF_LOCKED_SLOTS;
+            case 2 -> {// locked slots
+                lockedSlots = (App.getSettings().getDifficulty() >= 4) ? NUMBER_OF_LOCKED_SLOTS + 1 : NUMBER_OF_LOCKED_SLOTS;
             }
             default -> {//forced to use plants
                 forcedToUsePlant = getRandomPlant();
@@ -69,8 +69,8 @@ public class LockedPlants extends SpecialLevel {
         return allCategories.subList(0, Math.min(NUMBER_OF_LOCKED_PLANTS, allCategories.size()));
     }
 
-    private static Plant getRandomPlant(){
-        List <Plant> unlockedPlants = App.getActiveUser().getUnlockedPlants();
+    private static Plant getRandomPlant() {
+        List<Plant> unlockedPlants = App.getActiveUser().getUnlockedPlants();
         Collections.shuffle(unlockedPlants);
 
         return unlockedPlants.get(0);
@@ -87,7 +87,7 @@ public class LockedPlants extends SpecialLevel {
             }
             default -> {
                 String plantName = (forcedToUsePlant != null) ?
-                        forcedToUsePlant.getName(): "a specific plant";
+                    forcedToUsePlant.getName() : "a specific plant";
                 yield "Forced Plant: You are forced to include " + plantName + " in your loadout. Good luck!";
             }
         };

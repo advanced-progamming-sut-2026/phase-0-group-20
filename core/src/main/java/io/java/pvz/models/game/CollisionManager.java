@@ -127,7 +127,8 @@ public class CollisionManager {
             }
             if (frozenPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {
                 frozenPlantInTile.damageIceBlock(proj.getDamage());
-                proj.setDestroyed(true); continue;
+                proj.setDestroyed(true);
+                continue;
             }
             Plant octopusPlantInTile = null;
             for (Plant p : currentTile.getPlants()) {
@@ -177,7 +178,8 @@ public class CollisionManager {
                 if (Math.abs(projectile.getPosition().getX() - obstacle.getX()) < 20) {
                     obstacle.takeDamage(projectile.getDamage());
                     projectile.setDestroyed(true);
-                    hitObstacle = true; break;
+                    hitObstacle = true;
+                    break;
                 }
             }
         }

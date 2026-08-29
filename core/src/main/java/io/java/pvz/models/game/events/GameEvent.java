@@ -17,6 +17,7 @@ public enum GameEvent {
     PLANT_UNLOCKED,
     PROJECTILE_HIT,
     SPAWN_EFFECT,
+    EFFECTS,
 
     ENTERED_EGYPT,
     ENTERED_FROZEN_CAVES,

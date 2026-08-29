@@ -7,7 +7,6 @@ import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
 
-import java.lang.classfile.instruction.ReturnInstruction;
 import java.util.Random;
 
 public class SunManager implements Ticker {
@@ -37,8 +36,8 @@ public class SunManager implements Ticker {
         Settings settings = App.getSettings();
 
         this.timeToNextSun = (int) (nextSunInSeconds *
-                TimeManager.TICKS_PER_SECOND *
-                settings.getSunSpawnIntervalMultiplier());
+            TimeManager.TICKS_PER_SECOND *
+            settings.getSunSpawnIntervalMultiplier());
     }
 
     private void spawnSun(int currentTick) {

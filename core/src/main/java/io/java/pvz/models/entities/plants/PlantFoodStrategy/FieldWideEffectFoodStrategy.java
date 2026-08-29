@@ -10,7 +10,6 @@ import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.SeasonType;
 import io.java.pvz.models.timeManager.TimeManager;
-import io.java.pvz.utils.AnimationCatalog;
 
 import java.util.List;
 import java.util.Random;

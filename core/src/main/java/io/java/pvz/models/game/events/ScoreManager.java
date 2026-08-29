@@ -1,7 +1,6 @@
 package io.java.pvz.models.game.events;
 
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.Ticker;
 
 import java.util.HashMap;

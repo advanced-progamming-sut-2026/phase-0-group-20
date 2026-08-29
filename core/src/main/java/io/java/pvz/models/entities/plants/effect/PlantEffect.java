@@ -1,9 +1,6 @@
 package io.java.pvz.models.entities.plants.effect;
 
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.game.events.GameEvent;
-import io.java.pvz.models.game.events.GameEventMessenger;
-import io.java.pvz.models.game.events.GameEventPayload;
 
 public interface PlantEffect {
     void apply(Plant plant);

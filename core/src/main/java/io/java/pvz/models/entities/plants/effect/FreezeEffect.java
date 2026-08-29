@@ -74,11 +74,17 @@ public class FreezeEffect implements PlantEffect {
         }
     }
 
-    public boolean isFullyFrozen() { return stacks >= 3; }
-    public int getHp() { return hp; }
+    public boolean isFullyFrozen() {
+        return stacks >= 3;
+    }
+
+    public int getHp() {
+        return hp;
+    }
 
     @Override
-    public void execute(Plant plant, int currentTick) { }
+    public void execute(Plant plant, int currentTick) {
+    }
 
     @Override
     public void remove(Plant plant) {

@@ -9,8 +9,8 @@ public interface WinCondition {
 
     default void notify(String message) {
         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message(message)
-                        .build());
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(message)
+                .build());
     }
 }

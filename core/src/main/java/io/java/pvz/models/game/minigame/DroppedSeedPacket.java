@@ -33,9 +33,9 @@ public class DroppedSeedPacket implements Ticker {
             GameSession.getInstance().getArena().getDroppedSeedPackets().remove(this);
             GameSession.getInstance().getTimeManager().unregisterTicker(this);
             GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                            .message("A " + plant.getName() + " seed packet vanished!")
-                            .build());
+                new GameEventPayload.Builder(GameEvent.NOTIFY)
+                    .message("A " + plant.getName() + " seed packet vanished!")
+                    .build());
         }
     }
 

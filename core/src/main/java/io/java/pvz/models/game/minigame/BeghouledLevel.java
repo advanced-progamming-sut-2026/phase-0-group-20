@@ -303,6 +303,6 @@ public class BeghouledLevel extends Level implements IMinigame {
 
     @Override
     public String toString() {
-        return "Don't Let Zombies Eat Your Brain-Make "+targetMatches +"Matches To Win.";
+        return "Don't Let Zombies Eat Your Brain-Make " + targetMatches + "Matches To Win.";
     }
 }

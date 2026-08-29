@@ -55,8 +55,8 @@ public class BattlefieldRenderer implements GameEventListener {
         masterGroup.addActor(highlightLayer);
         masterGroup.addActor(mowerLayer);
         masterGroup.addActor(plantLayer);
-        masterGroup.addActor(zombieLayer);
         masterGroup.addActor(effectLayer);
+        masterGroup.addActor(zombieLayer);
 
         environmentRenderer = new EnvironmentRenderer(environmentLayer);
         effectRenderer = new EffectRenderer(effectLayer);
@@ -241,7 +241,7 @@ public class BattlefieldRenderer implements GameEventListener {
             handleProjectileHitEvent(payload);
         } else if (event == GameEvent.SPAWN_EFFECT) {
             handleSpawnEffectEvent(payload);
-        } else if (event == GameEvent.NOTIFY && payload.getMessage() != null) {
+        } else if (event == GameEvent.EFFECTS && payload.getMessage() != null) {
             handleNotifyEvent(payload);
         }
     }

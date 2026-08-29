@@ -8,7 +8,6 @@ import io.java.pvz.models.entities.projectiles.ProjectileTuning;
 import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
-import io.java.pvz.utils.AnimationCatalog;
 
 public class MultiLaneRapidFireFoodStrategy implements PlantFoodStrategy {
 

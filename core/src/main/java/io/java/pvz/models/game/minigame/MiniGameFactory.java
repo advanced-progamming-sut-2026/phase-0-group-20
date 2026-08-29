@@ -14,40 +14,40 @@ public class MiniGameFactory {
         int waveBudget = BASE_WAVE_COST + (levelNumber * LEVEL_EFFECTS_SCALE);
         return switch (type) {
             case VASE_BREAKER -> new VaseBreakerLevel(
-                    getLevelName(type, levelNumber),
-                    SeasonType.MINI_GAME,
-                    WAVE_FREE_WAVE_COUNT,
-                    levelNumber
+                getLevelName(type, levelNumber),
+                SeasonType.MINI_GAME,
+                WAVE_FREE_WAVE_COUNT,
+                levelNumber
             );
 
             case I_ZOMBIE -> new IZombieLevel(
-                    getLevelName(type, levelNumber),
-                    SeasonType.MINI_GAME,
-                    WAVE_FREE_WAVE_COUNT,
-                    levelNumber
+                getLevelName(type, levelNumber),
+                SeasonType.MINI_GAME,
+                WAVE_FREE_WAVE_COUNT,
+                levelNumber
             );
 
             case BOWLING -> new BowlingLevel(
-                    getLevelName(type, levelNumber),
-                    SeasonType.ANCIENT_EGYPT,
-                    waveCount,
-                    waveBudget,
-                    levelNumber
+                getLevelName(type, levelNumber),
+                SeasonType.ANCIENT_EGYPT,
+                waveCount,
+                waveBudget,
+                levelNumber
             );
 
             case BEGHOULED -> new BeghouledLevel(
-                    getLevelName(type, levelNumber),
-                    SeasonType.MINI_GAME,
-                    WAVE_FREE_WAVE_COUNT, waveBudget,
-                    levelNumber
+                getLevelName(type, levelNumber),
+                SeasonType.MINI_GAME,
+                WAVE_FREE_WAVE_COUNT, waveBudget,
+                levelNumber
             );
 
             case ZOMBOTANY -> new ZombotanyLevel(
-                    getLevelName(type, levelNumber),
-                    SeasonType.MINI_GAME,
-                    waveCount,
-                    waveBudget,
-                    levelNumber
+                getLevelName(type, levelNumber),
+                SeasonType.MINI_GAME,
+                waveCount,
+                waveBudget,
+                levelNumber
             );
         };
     }

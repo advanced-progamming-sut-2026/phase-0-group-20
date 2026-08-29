@@ -6,8 +6,6 @@ import io.java.pvz.models.entities.plants.strategy.LilyPadStrategy;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.fields.tiles.WaterTile;
 import io.java.pvz.models.game.GameSession;
-import io.java.pvz.models.timeManager.TimeManager;
-import io.java.pvz.utils.AnimationCatalog;
 
 public class DuplicateSelfFoodStrategy implements PlantFoodStrategy {
 

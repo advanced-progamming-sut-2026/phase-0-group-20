@@ -4,9 +4,8 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.game.GameSession;
-import io.java.pvz.models.timeManager.TimeManager;
-import io.java.pvz.utils.AnimationCatalog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MultiMagnetFoodStrategy implements PlantFoodStrategy {
@@ -37,12 +36,12 @@ public class MultiMagnetFoodStrategy implements PlantFoodStrategy {
             int col = plant.getPlacedTile().getCol();
             double range = 15.0;
 
-            List<Zombie> targets = gameSession.getArena().getZombiesInRadius(col, row, range);
+            List<Zombie> targets = new ArrayList<>(gameSession.getArena().getZombiesInRadius(col, row, range));
 
             for (Zombie zombie : targets) {
                 if (zombie.isDead() || zombie.getRow() != row) continue;
-
-                for (Armor armor : zombie.getArmorPieces()) {
+                List<Armor> armors = new ArrayList<>(zombie.getArmorPieces());
+                for (Armor armor : armors) {
                     if (!armor.isDestroyed() && armor.isMetallic())
                         armor.takeDamage(99999);
 

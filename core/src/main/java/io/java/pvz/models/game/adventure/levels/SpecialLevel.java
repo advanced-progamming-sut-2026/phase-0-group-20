@@ -10,6 +10,7 @@ public abstract class SpecialLevel extends Level {
         this.addLoseCondition(new NormalLoseCondition());
         this.addWinCondition(new NormalWinCondition());
     }
+
     @Override
     public String toString() {
         return "Don't Let Zombies Eat Your Brain";

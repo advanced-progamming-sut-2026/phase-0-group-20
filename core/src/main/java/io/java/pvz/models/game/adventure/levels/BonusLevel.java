@@ -137,6 +137,7 @@ public class BonusLevel extends Level implements GameEventListener {
     public void setDailyChallenge(boolean dailyChallenge) {
         this.isDailyChallenge = dailyChallenge;
     }
+
     @Override
     public String toString() {
         return "Don't Let Zombies Eat Your Brain-Get As Much Mew Points As Possible";
