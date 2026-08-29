@@ -103,37 +103,27 @@ public class PlantRenderer {
     private String resolvePlantClip(Plant plant) {
         AnimationCatalog.EntityAnimation anim = AnimationCatalog.getPlantAnimation(plant);
         if (anim == null) return CLIP_IDLE;
-
         String action = plant.getCurrentAction();
-        if (action != null && anim.hasClip(action)) {
-            return action;
-        }
-
+        if (action != null && anim.hasClip(action)) return action;
         if (plant.isBoosted() && action == null) {
             if (anim.hasClip("plantfood_loop")) return "plantfood_loop";
             if (anim.hasClip("plantfood_stage" + plant.getSize())) return "plantfood_stage" + plant.getSize();
             if (anim.hasClip("plantfood")) return "plantfood";
         }
-
         DigestionStrategy digestion = plant.getStrategy(DigestionStrategy.class);
         if (digestion != null && digestion.isDigesting()) {
             if (anim.hasClip("special_idle")) return "special_idle";
             if (anim.hasClip("special")) return "special";
         }
-
         TrapStrategy trap = plant.getStrategy(TrapStrategy.class);
         if (trap != null && !trap.isArmed()) {
             if (anim.hasClip("plant_idle")) return "plant_idle";
             if (anim.hasClip("plant")) return "plant";
         }
-
         if (plant.isAsleep() && anim.hasClip("sleep")) return "sleep";
-
         if (plant.getStackCount() > 1 && plant.getName().equalsIgnoreCase("Pea Pod")) {
-            String peaIdle = "idle" + plant.getStackCount();
-            if (anim.hasClip(peaIdle)) return peaIdle;
+            if (anim.hasClip("idle" + plant.getStackCount())) return "idle" + plant.getStackCount();
         }
-
         int size = plant.getSize();
         if (size > 1) {
             String stageIdle = "idle_stage" + size;
@@ -142,7 +132,6 @@ public class PlantRenderer {
             if (anim.hasClip(altStageIdle)) return altStageIdle;
             if (anim.hasClip("stage" + size + "_idle")) return "stage" + size + "_idle";
         }
-
         float hpRatio = (float) plant.getCurrentHp() / plant.getMaxHp();
         if (hpRatio <= 0.33f) {
             if (anim.hasClip("damage3")) return "damage3";
@@ -154,15 +143,12 @@ public class PlantRenderer {
             if (anim.hasClip("damage")) return "damage";
             if (anim.hasClip("idle_damage")) return "idle_damage";
         }
-
         if (anim.hasClip("idle")) return "idle";
         if (anim.hasClip("loop")) return "loop";
         if (anim.hasClip("idle_stage1")) return "idle_stage1";
         if (anim.hasClip("idle1_1")) return "idle1_1";
         if (anim.hasClip("stage1_idle")) return "stage1_idle";
-
-        Iterator<String> anyClip = anim.getClipNames().iterator();
-        return anyClip.hasNext() ? anyClip.next() : CLIP_IDLE;
+        Iterator<String> anyClip = anim.getClipNames().iterator();return anyClip.hasNext() ? anyClip.next() : CLIP_IDLE;
     }
 
     public void spawnSheepOnPlant(Plant plant) {

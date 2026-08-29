@@ -56,9 +56,29 @@ public class ChargeStrategy implements IPlantStrategy {
 
     @Override
     public void execute(Plant context, int currentTick) {
-        if (context.getTags().contains(PlantTag.TRAP)) return;
+        if (context.getTags().contains(PlantTag.TRAP)) {
+            return;
+        }
 
-        if (context.getCurrentAction() != null && context.getCurrentAction().equals("recovery")) {
+        updateChargeState(context, currentTick);
+
+        String name = context.getName();
+        if (handleBowlingBulb(name, context)) {
+            return;
+        }
+
+        handleCitronPreFireAnimations(name, context);
+
+        boolean canFire = isFullyCharged(context, currentTick);
+        handleChargingIdleAnimations(context, name, canFire);
+
+        if (canFire && projectileType != null) {
+            attemptAttack(context, currentTick, name);
+        }
+    }
+
+    private void updateChargeState(Plant context, int currentTick) {
+        if ("recovery".equals(context.getCurrentAction())) {
             chargeStartTick = currentTick;
             chargeAnimTriggered = false;
             recoveryAnimTriggered = true;
@@ -71,45 +91,56 @@ public class ChargeStrategy implements IPlantStrategy {
             bowlingBulbAmmo = 1;
             bowlingBulbReloadStage = 0;
         }
-        String name = context.getName();
-        if (handleBowlingBulb(name, context)) return;
-        if (name.equalsIgnoreCase("Citron")) {
-            if (!recoveryAnimTriggered && context.getCurrentAction() == null) {
-                context.triggerAction("recovery");
-                recoveryAnimTriggered = true;
-            } else if (!chargeAnimTriggered && recoveryAnimTriggered && context.getCurrentAction() == null) {
-                context.triggerAction("charge");
-                chargeAnimTriggered = true;
-            }
+    }
+
+    private void handleCitronPreFireAnimations(String name, Plant context) {
+        if (!name.equalsIgnoreCase("Citron") || context.getCurrentAction() != null) {
+            return;
         }
 
-        int plantRow = context.getPlacedTile().getRow();
-        float plantCol = context.getPlacedTile().getCol();
+        if (!recoveryAnimTriggered) {
+            context.triggerAction("recovery");
+            recoveryAnimTriggered = true;
+        } else if (!chargeAnimTriggered) {
+            context.triggerAction("charge");
+            chargeAnimTriggered = true;
+        }
+    }
+
+    private boolean isFullyCharged(Plant context, int currentTick) {
         int chargedTicks = currentTick - chargeStartTick;
         int requiredCharge = (int) (context.getActionInterval() * TimeManager.TICKS_PER_SECOND);
-        boolean canFire = chargedTicks >= requiredCharge;
+        return chargedTicks >= requiredCharge;
+    }
 
-        if (context.getCurrentAction() == null && !context.isBoosted() && !canFire) {
-            if (name.equalsIgnoreCase("Caulipower")) {
-                int r = random.nextInt(4) + 1;
-                context.triggerAction("idle" + r + "_1");
-            } else if (name.equalsIgnoreCase("Electric Blueberry")) {
-                int r = random.nextInt(4) + 1;
-                int sub = random.nextInt(2) + 1;
-                context.triggerAction("idle" + r + "_" + sub);
-            }
+    private void handleChargingIdleAnimations(Plant context, String name, boolean canFire) {
+        if (context.getCurrentAction() != null || context.isBoosted() || canFire) {
+            return;
         }
-        if (canFire && projectileType != null) {
-            Zombie target = selectTarget(plantRow, plantCol, isHoming);
-            if (target != null && context.getCurrentAction() == null) {
-                context.triggerAction("attack");
-                if (name.equalsIgnoreCase("Citron")) {
-                    recoveryAnimTriggered = false;
-                    chargeAnimTriggered = false;
-                }
-                ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
-                chargeStartTick = currentTick;
+
+        if (name.equalsIgnoreCase("Caulipower")) {
+            int r = random.nextInt(4) + 1;
+            context.triggerAction("idle" + r + "_1");
+        } else if (name.equalsIgnoreCase("Electric Blueberry")) {
+            int r = random.nextInt(4) + 1;
+            int sub = random.nextInt(2) + 1;
+            context.triggerAction("idle" + r + "_" + sub);
+        }
+    }
+
+    private void attemptAttack(Plant context, int currentTick, String name) {
+        int plantRow = context.getPlacedTile().getRow();
+        float plantCol = context.getPlacedTile().getCol();
+
+        Zombie target = selectTarget(plantRow, plantCol, isHoming);
+        if (target != null && context.getCurrentAction() == null) {
+            context.triggerAction("attack");
+            if (name.equalsIgnoreCase("Citron")) {
+                recoveryAnimTriggered = false;
+                chargeAnimTriggered = false;
             }
+            ProjectileMechanism.executeTargetedProjectile(context, target, 0.5f);
+            chargeStartTick = currentTick;
         }
     }
 

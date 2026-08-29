@@ -49,7 +49,6 @@ public class ImitaterSelectionModalTable extends Table {
 
         for (Plant plant : App.getActiveUser().getUnlockedPlants()) {
         if (plant.getName().equalsIgnoreCase("Imitater")) continue;
-
         PlantCardButton card = createPlantCard(textures, plant);
         if (card != null) {
             card.addListener(new ClickListener() {

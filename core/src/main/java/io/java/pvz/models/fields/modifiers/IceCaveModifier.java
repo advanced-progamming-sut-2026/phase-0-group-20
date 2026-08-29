@@ -187,33 +187,21 @@ public class IceCaveModifier implements SeasonModifier {
 
     private void setupInitialIceBlocks(Arena arena) {
         if (GameSession.getInstance().getCurrentMode() instanceof BossLevel) return;
-        int rows = arena.getRows();
-        int cols = arena.getCols();
+        int rows = arena.getRows(); int cols = arena.getCols();
         int numberOfIceBlocks = rand.nextInt(3) + getCurrentLevelNumber();
-
         int placed = 0;
         GameSession session = GameSession.getInstance();
-
         while (placed < numberOfIceBlocks) {
             int randomRow = rand.nextInt(rows);
             int randomCol = rand.nextInt(cols / 2) + 2;
             int rnd;
-
-            if (placed == 0)
-                rnd = 1;
-            else if (placed == 1)
-                rnd = 0;
-            else
-                rnd = rand.nextInt(2);
-
+            if (placed == 0) rnd = 1;
+            else if (placed == 1) rnd = 0;
+            else rnd = rand.nextInt(2);
             randomCol = (rnd == 1) ? randomCol : arena.getCols() - randomCol;
-
             Tile tile = arena.getTile(randomRow, randomCol);
-
             if (tile instanceof IceHolder iceHolder && tile.getPlants().isEmpty() && !iceHolder.hasIceBlock()) {
-
                 IceBlock iceBlock = null;
-
                 if (rnd == 1) {
                     List<Plant> plants = GameSession.getInstance().getChosenPlants();
                     if (!plants.isEmpty()) {
@@ -238,7 +226,6 @@ public class IceCaveModifier implements SeasonModifier {
                         iceBlock = new IceBlock(newZombie, randomRow, randomCol);
                     }
                 }
-
                 if (iceBlock != null) {
                     iceHolder.setIceBlock(iceBlock);
                     session.getTimeManager().registerNewTicker(iceBlock);

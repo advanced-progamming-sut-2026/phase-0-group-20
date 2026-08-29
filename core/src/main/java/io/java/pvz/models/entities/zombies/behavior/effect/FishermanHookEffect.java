@@ -58,90 +58,119 @@ public class FishermanHookEffect extends Effect {
     @Override
     public void execute() {
         super.execute();
-        if (isFinished()) return;
+        if (isFinished()) {
+            return;
+        }
 
         switch (currentPhase) {
             case INTRO:
-                phaseTicksCounter++;
-                if (phaseTicksCounter >= introTicks) {
-                    resetToIdle();
-                }
+                handleIntroPhase();
                 break;
-
             case IDLE:
-                intervalTicksCounter++;
-                if (intervalTicksCounter >= hookIntervalTicks) {
-                    targetPlant = findTargetPlant();
-                    if (targetPlant != null) {
-                        currentPhase = Phase.CAST;
-                        phaseTicksCounter = 0;
-                        intervalTicksCounter = 0;
-
-                        zombie.setAttacking(false);
-                        zombie.setState(ZombieState.CAST);
-                    } else {
-                        intervalTicksCounter = 0;
-                    }
-                }
+                handleIdlePhase();
                 break;
-
             case CAST:
-                phaseTicksCounter++;
-                if (phaseTicksCounter >= castTicks) {
-                    currentPhase = Phase.CAST_LOOP;
-                    zombie.setState(ZombieState.CAST_LOOP);
-                    phaseTicksCounter = 0;
-                }
+                handleCastPhase();
                 break;
-
             case CAST_LOOP:
-                phaseTicksCounter++;
-                if (phaseTicksCounter >= castLoopTicks) {
-                    if (targetPlant != null && !targetPlant.isDead()) {
-                        currentPhase = Phase.REEL;
-                        zombie.setState(ZombieState.REEL);
-                        phaseTicksCounter = 0;
-                    } else {
-                        resetToIdle();
-                    }
-                }
+                handleCastLoopPhase();
                 break;
-
             case REEL:
-                phaseTicksCounter++;
-                if (phaseTicksCounter >= reelTicks) {
-                    if (targetPlant != null && !targetPlant.isDead()) {
-                        int pCol = targetPlant.getPlacedTile().getCol();
-                        int zCol = zombie.getCol();
-
-                        if (pCol >= zCol - 1) {
-                            currentPhase = Phase.TOSS;
-                            zombie.setState(ZombieState.TOSS);
-                            phaseTicksCounter = 0;
-                        } else {
-                            pullPlant();
-                            resetToIdle();
-                        }
-                    } else {
-                        resetToIdle();
-                    }
-                }
+                handleReelPhase();
                 break;
-
             case TOSS:
-                phaseTicksCounter++;
-                if (phaseTicksCounter == (int) (tossTicks * 0.5f)) {
-                    if (targetPlant != null && !targetPlant.isDead()) {
-                        targetPlant.takeDamage(99999);
-                        notify("Fisherman tossed " + targetPlant.getName() + " into water!");
-                    }
-                }
-
-                if (phaseTicksCounter >= tossTicks) {
-                    resetToIdle();
-                }
+                handleTossPhase();
                 break;
         }
+    }
+
+    private void handleIntroPhase() {
+        phaseTicksCounter++;
+        if (phaseTicksCounter >= introTicks) {
+            resetToIdle();
+        }
+    }
+
+    private void handleIdlePhase() {
+        intervalTicksCounter++;
+        if (intervalTicksCounter >= hookIntervalTicks) {
+            targetPlant = findTargetPlant();
+            if (targetPlant != null) {
+                currentPhase = Phase.CAST;
+                phaseTicksCounter = 0;
+                intervalTicksCounter = 0;
+
+                zombie.setAttacking(false);
+                zombie.setState(ZombieState.CAST);
+            } else {
+                intervalTicksCounter = 0;
+            }
+        }
+    }
+
+    private void handleCastPhase() {
+        phaseTicksCounter++;
+        if (phaseTicksCounter >= castTicks) {
+            currentPhase = Phase.CAST_LOOP;
+            zombie.setState(ZombieState.CAST_LOOP);
+            phaseTicksCounter = 0;
+        }
+    }
+
+    private void handleCastLoopPhase() {
+        phaseTicksCounter++;
+        if (phaseTicksCounter >= castLoopTicks) {
+            if (isTargetPlantValid()) {
+                currentPhase = Phase.REEL;
+                zombie.setState(ZombieState.REEL);
+                phaseTicksCounter = 0;
+            } else {
+                resetToIdle();
+            }
+        }
+    }
+
+    private void handleReelPhase() {
+        phaseTicksCounter++;
+        if (phaseTicksCounter >= reelTicks) {
+            if (isTargetPlantValid()) {
+                processPlantPullOrToss();
+            } else {
+                resetToIdle();
+            }
+        }
+    }
+
+    private void processPlantPullOrToss() {
+        int pCol = targetPlant.getPlacedTile().getCol();
+        int zCol = zombie.getCol();
+
+        if (pCol >= zCol - 1) {
+            currentPhase = Phase.TOSS;
+            zombie.setState(ZombieState.TOSS);
+            phaseTicksCounter = 0;
+        } else {
+            pullPlant();
+            resetToIdle();
+        }
+    }
+
+    private void handleTossPhase() {
+        phaseTicksCounter++;
+        if (phaseTicksCounter == (int) (tossTicks * 0.5f)) {
+            if (isTargetPlantValid()) {
+                targetPlant.takeDamage(99999);
+                notify("Fisherman tossed " + targetPlant.getName() + " into water!");
+            }
+        }
+
+        if (phaseTicksCounter >= tossTicks) {
+            resetToIdle();
+        }
+    }
+
+    private boolean isTargetPlantValid() {
+        return targetPlant != null && !targetPlant.isDead();
     }
 
     private void resetToIdle() {

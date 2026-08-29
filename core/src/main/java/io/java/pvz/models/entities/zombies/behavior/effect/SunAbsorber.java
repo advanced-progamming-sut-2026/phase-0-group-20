@@ -66,7 +66,6 @@ public class SunAbsorber extends Effect {
     public void execute() {
         super.execute();
         if (isFinished()) return;
-
         switch (currentPhase) {
             case IDLE:
                 intervalTicksCounter++;
@@ -75,51 +74,39 @@ public class SunAbsorber extends Effect {
                         currentPhase = AbsorbPhase.POWER_UP;
                         phaseTicksCounter = 0;
                         intervalTicksCounter = 0;
-
                         zombie.setAttacking(false);
                         zombie.setState(ZombieState.POWER_UP);
                         zombie.applySpeedMultiplier(0f);
-                    } else {
-                        intervalTicksCounter = 0;
-                    }
+                    } else intervalTicksCounter = 0;
                 }
                 break;
-
             case POWER_UP:
                 phaseTicksCounter++;
                 if (phaseTicksCounter >= powerUpTicks) {
                     currentPhase = AbsorbPhase.POWER;
                     zombie.setState(ZombieState.POWER);
                     phaseTicksCounter = 0;
-
                     lockOnTargetSun();
                 }
                 break;
-
             case POWER:
                 phaseTicksCounter++;
-
                 if (targetedSun != null && !targetedSun.isCollected()) {
                     float progress = (float) phaseTicksCounter / powerTicks;
                     float newX = startSunX + (targetZombieX - startSunX) * progress;
                     float newY = startSunY + (targetZombieY - startSunY) * progress;
                     targetedSun.getPosition().setPosition(newX, newY);
                 }
-
                 if (phaseTicksCounter >= powerTicks) {
                     currentPhase = AbsorbPhase.POWER_DOWN;
                     zombie.setState(ZombieState.POWER_DOWN);
                     phaseTicksCounter = 0;
-
                     executeSteal();
                 }
                 break;
-
             case POWER_DOWN:
                 phaseTicksCounter++;
-                if (phaseTicksCounter >= powerDownTicks) {
-                    stopAbsorbing();
-                }
+                if (phaseTicksCounter >= powerDownTicks) stopAbsorbing();
                 break;
         }
     }
@@ -155,7 +142,8 @@ public class SunAbsorber extends Effect {
             targetZombieX = zombie.getX() - 40f;
             targetZombieY = zombie.getY() + 110f;
 
-            notify("Ra zombie locked on a sun at (" + (targetedSun.getCol() + 1) + "," + (targetedSun.getRow() + 1) + ")");
+            notify("Ra zombie locked on a sun at (" +
+                (targetedSun.getCol() + 1) + "," + (targetedSun.getRow() + 1) + ")");
         } else {
             targetedSun = null;
         }

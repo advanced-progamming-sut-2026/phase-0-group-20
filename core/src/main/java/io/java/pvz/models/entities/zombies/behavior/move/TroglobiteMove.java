@@ -29,7 +29,8 @@ public class TroglobiteMove implements MoveBehavior {
             currentTargetIceBlock = null;
         }
 
-        if (currentTargetIceBlock != null && zombie.getRow() != currentTargetIceBlock.getRow()) currentTargetIceBlock = null;
+        if (currentTargetIceBlock != null && zombie.getRow() != currentTargetIceBlock.getRow())
+            currentTargetIceBlock = null;
 
         if (currentTargetIceBlock == null) {
             currentTargetIceBlock = findIceBlockInFront();

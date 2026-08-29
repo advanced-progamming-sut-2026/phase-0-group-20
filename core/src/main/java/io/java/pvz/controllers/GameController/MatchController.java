@@ -39,22 +39,18 @@ public class MatchController {
     private void registerPushListenersOnce() {
         if (pushListenersRegistered) return;
         pushListenersRegistered = true;
-
         NetworkClient client = NetworkClient.getInstance();
-
         client.onPush(MessageType.MATCH_STATE_SYNC, message -> Gdx.app.postRunnable(() -> {
             if (onStateSync != null) onStateSync.accept(message.getData());
             if (isOnlineMatch)
                 NetworkStateSyncer.syncWithServer(message.getData());
         }));
-
         client.onPush(MessageType.MATCH_END, message -> Gdx.app.postRunnable(() -> {
             if (onMatchEnd != null) onMatchEnd.accept(message);
 
             isOnlineMatch = false;
             currentRole = null;
         }));
-
         client.onPush(MessageType.MATCH_ACTION_BROADCAST, message -> Gdx.app.postRunnable(() -> {
             String action = message.getString("action");
             int col = message.getInt("col");

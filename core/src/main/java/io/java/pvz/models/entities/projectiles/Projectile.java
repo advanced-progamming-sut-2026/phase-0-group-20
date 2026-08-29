@@ -3,6 +3,7 @@ package io.java.pvz.models.entities.projectiles;
 import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.zombies.behavior.effect.FireEffect;
 import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
@@ -196,7 +197,7 @@ public class Projectile implements Ticker {
         return switch (projectileType) {
             case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE, PUFF_SPORE, STAR, SEA_SHROOM -> new NormalEffect();
             case ICE_PEA -> new IceEffect();
-            case FIRE_PEA, BLUE_FIRE_PEA -> new FireEffect();
+            case FIRE_PEA, BLUE_FIRE_PEA -> new io.java.pvz.models.entities.projectiles.FireEffect();
             case GOO_PEA, FUME -> new PoisonProjectileEffect();
             case MAGIC_BEAM -> new HypnotizeEffect();
             case LIGHTNING_CLOUD -> new LightningEffect();
@@ -255,7 +256,6 @@ public class Projectile implements Ticker {
             moveAlongArc();
             return;
         }
-
         if (target != null) {
             if (target.isDead()) {
                 target = null;
@@ -267,22 +267,17 @@ public class Projectile implements Ticker {
                 float dx = target.getX() - position.getX();
                 float dy = target.getY() - position.getY();
                 float distance = (float) Math.sqrt(dx * dx + dy * dy);
-
                 if (distance > 0) {
                     speedX = (dx / distance) * baseSpeed;
                     speedY = (dy / distance) * baseSpeed;
                 }
             }
         }
-
         position.moveX(speedX);
         position.moveY(speedY);
-
-        if (type == ProjectileType.WALLNUT_BOWL ||
-            type == ProjectileType.GIANT_NUT_BOWL ||
+        if (type == ProjectileType.WALLNUT_BOWL || type == ProjectileType.GIANT_NUT_BOWL ||
             type == ProjectileType.EXPLODE_NUT_BOWL) {
             int maxRow = GameSession.getInstance().getArena().getRows() - 1;
-
             if (position.getRow() > maxRow && speedY > 0) {
                 speedY = -Math.abs(speedY);
                 lastHitZombie = null;
@@ -292,11 +287,8 @@ public class Projectile implements Ticker {
                 lastHitZombie = null;
                 lastHitObstacleTile = null;
             }
-
-            if (position.getCol() >= (GameSession.getInstance().getArena().getCols()) + 3)
-                isDestroyed = true;
+            if (position.getCol() >= (GameSession.getInstance().getArena().getCols()) + 3) isDestroyed = true;
         }
-
         if (bouncesLeft > 0) {
             boolean bounced = false;
             if (position.getCol() >= (GameSession.getInstance().getArena().getCols() + 4) && speedX > 0) {
@@ -306,7 +298,6 @@ public class Projectile implements Ticker {
                 speedX = -speedX;
                 bounced = true;
             }
-
             if (position.getRow() >= GameSession.getInstance().getArena().getRows() && speedY > 0) {
                 speedY = -speedY;
                 bounced = true;
@@ -314,7 +305,6 @@ public class Projectile implements Ticker {
                 speedY = -speedY;
                 bounced = true;
             }
-
             if (bounced) bouncesLeft--;
         }
     }
@@ -497,7 +487,7 @@ public class Projectile implements Ticker {
             for (Zombie target : targets) {
                 if (!target.isDead()) {
                     if (target.getHealth() < 1800)
-                        target.addEffect(new io.java.pvz.models.entities.zombies.behavior.effect.FireEffect(target, 1800));
+                        target.addEffect(new FireEffect(target, 1800));
                     else
                         target.takeDamage(1800);
                     if (target.isDead() && plant != null) {
@@ -523,18 +513,14 @@ public class Projectile implements Ticker {
     public void onHitObstacle(Tile tile) {
         if (type == ProjectileType.WALLNUT_BOWL || type == ProjectileType.EXPLODE_NUT_BOWL ||
             type == ProjectileType.GIANT_NUT_BOWL) {
-
             if (tile == lastHitObstacleTile) return;
             lastHitObstacleTile = tile;
 
             if (type == ProjectileType.WALLNUT_BOWL) {
                 Random rand = new Random();
-                if (speedY == 0)
-                    speedY = rand.nextBoolean() ? Math.abs(speedX) : -Math.abs(speedX);
-                else
-                    speedY = -speedY;
+                if (speedY == 0) speedY = rand.nextBoolean() ? Math.abs(speedX) : -Math.abs(speedX);
+                else speedY = -speedY;
                 return;
-
             } else if (type == ProjectileType.EXPLODE_NUT_BOWL) {
                 GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
                     new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
@@ -542,18 +528,13 @@ public class Projectile implements Ticker {
                         .projectileType(this.type)
                         .coordinate(tile.getRow(), tile.getCol())
                         .build());
-
                 List<Zombie> targets = GameSession.getInstance().getArena()
                     .getZombiesInRadius(position.getCol(), position.getRow(), 1.8);
                 for (Zombie target : targets) {
                     if (!target.isDead()) {
-                        if (target.getHealth() < 1800)
-                            target.addEffect(new io.java.pvz.models.entities.zombies.behavior.effect.FireEffect(target, 1800));
-                        else
-                            target.takeDamage(1800);
-                        if (target.isDead() && plant != null) {
-                            plant.onZombieDeath(target);
-                        }
+                        if (target.getHealth() < 1800) target.addEffect(new FireEffect(target, 1800));
+                        else target.takeDamage(1800);
+                        if (target.isDead() && plant != null) plant.onZombieDeath(target);
                     }
                 }
                 isDestroyed = true;
@@ -562,26 +543,19 @@ public class Projectile implements Ticker {
                 return;
             }
         }
-
         if (!canPassObstacles || (isArcTrajectory && getArcProgress() >= 1f)) {
-
             if (piercing && !canPassObstacles) {
                 pierceCount--;
                 if (pierceCount <= 0) isDestroyed = true;
             } else {
                 isDestroyed = true;
             }
-
             GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
                 new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
                     .pixelCoordinate(this.getX(), this.getY())
                     .projectileType(this.type)
                     .coordinate(tile.getRow(), tile.getCol())
                     .build());
-
-//            if (canPassObstacles && this.effect != null) {
-//                this.effect.applyEffect(null, this);
-//            }
         }
     }
 
