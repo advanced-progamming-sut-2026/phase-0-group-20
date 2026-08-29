@@ -102,7 +102,7 @@ public class GameMenuController {
 
         BonusLevel bonusLevel = new BonusLevel("Scoring Challenge", season, 3, 1200,
             levelNumber, true);
-
+        System.out.println(season.getName());
         GameSession.setPendingBonusLevel(bonusLevel);
 
         App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
