@@ -10,6 +10,7 @@ import io.java.pvz.models.fields.tiles.*;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.SeasonType;
+import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.UiFactory;
@@ -209,7 +210,8 @@ public class EnvironmentRenderer {
 
     private void syncBigWaveBeach(Arena arena, List<Tile> allTiles) {
         if (GameSession.getInstance() != null &&
-            GameSession.getInstance().getCurrentChapter().getSeasonType() == SeasonType.BIG_WAVE_BEACH) {
+            GameSession.getInstance().getCurrentMode() instanceof Level level &&
+            level.getSeason() == SeasonType.BIG_WAVE_BEACH) {
             float gridCenterY = GRID_START_Y + (arena.getRows() * TILE_HEIGHT) / 2f;
 
             int maxCol = allTiles.stream()

@@ -77,8 +77,8 @@ public class CollectionScreen extends BaseScreen {
     private void buildUI() {
         TextureBank textures = AssetLoader.getInstance().getTextures();
 
-        TextButton toggleBtn = new TextButton("Zombies", skin);
-        TextButton filterMenuBtn = new TextButton("Filter", skin);
+        TextButton toggleBtn = new TextButton("Zombies", skin,"default");
+        TextButton filterMenuBtn = new TextButton("Filter", skin,"default");
         ImageButton closeBtn = createCloseButton(textures);
         Table topTable = createTopTable(toggleBtn, filterMenuBtn, closeBtn);
 
