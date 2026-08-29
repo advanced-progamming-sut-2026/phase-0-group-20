@@ -532,6 +532,10 @@ public class EffectRenderer {
         map.put(ProjectileType.SHARK,new HitAnim(Ids.ProjectileHits.SHARK,"attack", 2.1f));
         map.put(ProjectileType.PUFF_SPORE,
             new HitAnim("768/INITIAL/EFFECTS/T_PUFFSHROOM_HIT/T_PUFFSHROOM_HIT.PAM", "animation", 0.5f));
+        map.put(ProjectileType.STAR, new HitAnim(Ids.ProjectileHits.STAR, "idle2", 0.5f));
+        map.put(ProjectileType.SEA_SHROOM, new HitAnim(Ids.ProjectileHits.SEA_SHROOM, "animation", 0.5f));
+        map.put(ProjectileType.ELECTRIC_SPIKE, new HitAnim(Ids.ProjectileHits.ELECTRIC_SPIKE, "animation", 0.5f));
+        map.put(ProjectileType.SPIKE, new HitAnim(Ids.ProjectileHits.SPIKE, "animation", 0.5f));
         return map;
     }
 }

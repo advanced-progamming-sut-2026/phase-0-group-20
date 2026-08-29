@@ -4,10 +4,21 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import io.java.pvz.controllers.GameController.CollectionController;
@@ -15,25 +26,35 @@ import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
 import io.java.pvz.models.entities.plants.Plant;
-import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.plants.PlantCategory;
 import io.java.pvz.models.entities.plants.PlantTag;
+import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PlantCardButton;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.utils.ZombieCardButton;
+import io.java.pvz.views.screens.BaseScreen;
+import io.java.pvz.views.screens.PlantInfoScreen;
+import io.java.pvz.views.screens.ZombieInfoScreen;
 import pvz.libpvz.textures.TextureBank;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CollectionScreen extends BaseScreen {
     private final Skin skin;
     private boolean isShowingPlants = true;
+    private boolean isFilterMenuVisible = false;
     private final CollectionController controller = new CollectionController();
     private final List<PlantCardButton> allPlantCards = new ArrayList<>();
+    private final Set<PlantCategory> selectedCategories = new HashSet<>(Arrays.asList(PlantCategory.values()));
+    private final List<CheckBox> categoryCheckBoxes = new ArrayList<>();
+    private Table barContainer;
 
     private enum FilterState {
         ALL("Show All Plants"),
@@ -57,8 +78,9 @@ public class CollectionScreen extends BaseScreen {
         TextureBank textures = AssetLoader.getInstance().getTextures();
 
         TextButton toggleBtn = new TextButton("Zombies", skin);
+        TextButton filterMenuBtn = new TextButton("Filter", skin);
         ImageButton closeBtn = createCloseButton(textures);
-        Table topTable = createTopTable(toggleBtn, closeBtn);
+        Table topTable = createTopTable(toggleBtn, filterMenuBtn, closeBtn);
 
         Table plantsTable = buildPlantsTable(textures);
         Table zombiesTable = buildZombiesTable(textures);
@@ -75,29 +97,78 @@ public class CollectionScreen extends BaseScreen {
         scrollPane.setFadeScrollBars(false);
 
         Table sortBar = createSortBar(textures, plantsTable);
+        Table categorySelectionTable = buildCategorySelectionTable(plantsTable);
 
-        Table barContainer = new Table();
-        barContainer.bottom();
-        barContainer.add(sortBar).fillX().size(600, 80).padBottom(30);
-        barContainer.setVisible(isShowingPlants);
+        barContainer = new Table();
+        barContainer.setBackground(createSolidBackground(Color.valueOf("#F4F0DD")));
+        barContainer.add(sortBar).fillX().size(800, 80).row();
+        barContainer.add(categorySelectionTable).fillX().padBottom(15);
+        barContainer.pack();
 
         Stack contentStack = new Stack();
         contentStack.add(scrollPane);
-        contentStack.add(barContainer);
 
         Table bottomTable = new Table();
         bottomTable.setBackground(skin.getDrawable("image_ui_quests_panel_edge_to_edge_ten"));
         bottomTable.add(contentStack).expand().fill().pad(30);
 
-        setupListeners(toggleBtn, closeBtn, scrollPane, plantsTable, zombiesTable, barContainer);
+        setupListeners(toggleBtn, filterMenuBtn, closeBtn, scrollPane, plantsTable, zombiesTable);
 
         mainLayer.add(topTable).growX().height(Value.percentHeight(0.1f, mainLayer)).row();
         mainLayer.add(bottomTable).grow().height(Value.percentHeight(0.9f, mainLayer));
+
+        mainLayer.addActor(barContainer);
+        barContainer.setPosition(viewport.getWorldWidth() / 2f - barContainer.getWidth() / 2f,
+            -barContainer.getHeight() - 50f);
     }
 
-    private Table createTopTable(TextButton toggleBtn, ImageButton closeBtn) {
+    private Table buildCategorySelectionTable(Table plantsTable) {
+        Table table = new Table();
+        table.top().left();
+        table.pad(10, 25, 20, 25);
+
+        int cols = 4;
+        int count = 0;
+        boolean isCategoryState = currentFilterState == FilterState.CATEGORY;
+
+        for (PlantCategory category : PlantCategory.values()) {
+            CheckBox checkBox = new CheckBox(category.name(), skin);
+            checkBox.setChecked(true);
+            checkBox.getLabel().setColor(Color.valueOf("#4A3018"));
+            checkBox.getLabel().setFontScale(1.1f);
+
+            checkBox.setDisabled(!isCategoryState);
+            checkBox.getColor().a = isCategoryState ? 1f : 0.5f;
+
+            checkBox.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (checkBox.isDisabled()) return;
+                    if (checkBox.isChecked()) {
+                        selectedCategories.add(category);
+                    } else {
+                        selectedCategories.remove(category);
+                    }
+                    applyFilterToTable(plantsTable);
+                }
+            });
+
+            categoryCheckBoxes.add(checkBox);
+            table.add(checkBox).pad(5).left().expandX();
+            count++;
+
+            if (count % cols == 0) table.row();
+        }
+        return table;
+    }
+
+    private Table createTopTable(TextButton toggleBtn, TextButton filterMenuBtn, ImageButton closeBtn) {
         Table topTable = new Table();
-        topTable.add(toggleBtn).expand().bottom().left().padLeft(25).padBottom(0);
+        Table leftGroup = new Table();
+        leftGroup.add(toggleBtn).padRight(15);
+        leftGroup.add(filterMenuBtn);
+
+        topTable.add(leftGroup).expand().bottom().left().padLeft(25).padBottom(0);
         topTable.add(closeBtn).expand().bottom().right().padRight(25).padBottom(0);
         return topTable;
     }
@@ -113,7 +184,6 @@ public class CollectionScreen extends BaseScreen {
 
     private Table createSortBar(TextureBank textures, Table plantsTable) {
         Table sortBar = new Table();
-        sortBar.setBackground(createSolidBackground(Color.valueOf("#F4F0DD")));
         sortBar.pad(12, 25, 12, 25);
 
         Label filterLabel = new Label(currentFilterState.text, skin);
@@ -155,7 +225,21 @@ public class CollectionScreen extends BaseScreen {
         currentFilterState = states[nextIndex];
 
         filterLabel.setText(currentFilterState.text);
+
+        boolean isCategoryState = currentFilterState == FilterState.CATEGORY;
+        for (CheckBox cb : categoryCheckBoxes) {
+            cb.setDisabled(!isCategoryState);
+            cb.getColor().a = isCategoryState ? 1f : 0.5f;
+        }
+
         applyFilterToTable(plantsTable);
+    }
+
+    private void toggleFilterMenu() {
+        isFilterMenuVisible = !isFilterMenuVisible;
+        barContainer.clearActions();
+        float targetY = isFilterMenuVisible ? 30f : -barContainer.getHeight() - 50f;
+        barContainer.addAction(Actions.moveTo(barContainer.getX(), targetY, 0.4f, Interpolation.pow2Out));
     }
 
     private Label createCollectionLabel() {
@@ -169,36 +253,47 @@ public class CollectionScreen extends BaseScreen {
         return collectionLabel;
     }
 
-    private void setupListeners(TextButton toggleBtn, ImageButton closeBtn, ScrollPane scrollPane,
-                                Table plantsTable, Table zombiesTable, Table barContainer) {
+    private void setupListeners(TextButton toggleBtn, TextButton filterMenuBtn, ImageButton closeBtn,
+                                ScrollPane scrollPane, Table plantsTable, Table zombiesTable) {
         toggleBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                toggleAlmanacView(toggleBtn, scrollPane, plantsTable, zombiesTable, barContainer);
+                toggleAlmanacView(toggleBtn, filterMenuBtn, scrollPane, plantsTable, zombiesTable);
+            }
+        });
+
+        filterMenuBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                toggleFilterMenu();
             }
         });
 
         closeBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Closing Collection...");
                 ScreenManager.getInstance().popScreen();
             }
         });
     }
 
-    private void toggleAlmanacView(TextButton toggleBtn, ScrollPane scrollPane, Table plantsTable,
-                                   Table zombiesTable, Table barContainer) {
+    private void toggleAlmanacView(TextButton toggleBtn, TextButton filterMenuBtn, ScrollPane scrollPane,
+                                   Table plantsTable, Table zombiesTable) {
         isShowingPlants = !isShowingPlants;
 
         if (isShowingPlants) {
             scrollPane.setActor(plantsTable);
             toggleBtn.setText("Zombies");
-            barContainer.setVisible(true);
+            filterMenuBtn.setVisible(true);
+            if (isFilterMenuVisible) {
+                barContainer.addAction(Actions.moveTo(barContainer.getX(), 30f, 0.4f, Interpolation.pow2Out));
+            }
         } else {
             scrollPane.setActor(zombiesTable);
             toggleBtn.setText("Plants");
-            barContainer.setVisible(false);
+            filterMenuBtn.setVisible(false);
+            barContainer.addAction(Actions.moveTo(barContainer.getX(), -barContainer.getHeight() - 50f,
+                0.4f, Interpolation.pow2Out));
         }
     }
 
@@ -217,58 +312,47 @@ public class CollectionScreen extends BaseScreen {
         table.clearChildren();
         int columns = 8;
         int count = 0;
-        if(currentFilterState == FilterState.CATEGORY){
-            allPlantCards.sort(Comparator.comparing(card -> card.getPlant().getCategory()));
-            for(PlantCardButton card : allPlantCards){
-                table.add(card).size(150, 115).expandX().padBottom(20);
-                count++;
 
-                if (count % columns == 0) {
-                    table.row();
-                }
-            }
-            return;
-        }
+
 
         for (PlantCardButton card : allPlantCards) {
-            boolean shouldShow = false;
-
-            if (currentFilterState == FilterState.ALL) {
-                shouldShow = true;
-            } else if (currentFilterState == FilterState.UNLOCKED) {
-                Plant plant = card.getPlant();
-                shouldShow = App.getActiveUser().isItUnlocked(plant);
-            } else if (currentFilterState == FilterState.UPGRADABLE) {
-                shouldShow = card.isReadyToUpgrade();
-            }
-
-            if (shouldShow) {
+            if (shouldShowCard(card)) {
                 table.add(card).size(150, 115).expandX().padBottom(20);
                 count++;
 
-                if (count % columns == 0) {
-                    table.row();
-                }
+                if (count % columns == 0) table.row();
             }
         }
+    }
+
+    private boolean shouldShowCard(PlantCardButton card) {
+        if (currentFilterState == FilterState.ALL) return true;
+        if (currentFilterState == FilterState.UNLOCKED) return App.getActiveUser().isItUnlocked(card.getPlant());
+        if (currentFilterState == FilterState.UPGRADABLE) return card.isReadyToUpgrade();
+        if (currentFilterState == FilterState.CATEGORY) {
+            return selectedCategories.contains(card.getPlant().getCategory());
+        }
+        return false;
     }
 
     private Table buildPlantsTable(TextureBank textures) {
         Table table = new Table();
         table.top();
         User currentUser = App.getActiveUser();
+
         if (allPlantCards.isEmpty()) {
             for (Plant plant : App.getAllPlants()) {
-                if(currentUser.isItUnlocked(plant)){
+                if (currentUser.isItUnlocked(plant)) {
                     Plant foundPlant = currentUser.getUnlockedPlants().stream()
                         .filter(p -> p.getName().equals(plant.getName()))
                         .findFirst()
                         .orElse(null);
-                    if(foundPlant != null){
-                        createPlantCard(textures,foundPlant);
+                    if (foundPlant != null) {
+                        createPlantCard(textures, foundPlant);
                     }
-                }else
+                } else {
                     createPlantCard(textures, plant);
+                }
             }
         }
 
@@ -286,36 +370,24 @@ public class CollectionScreen extends BaseScreen {
         for (Zombie zombie : App.getAllZombies()) {
             Image background = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_READY");
             String zombiePath = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_" + UiFactory.getZombieAddress(zombie);
-            Image zombieImage =(App.getActiveUser().isZombieUnlocked(zombie))?
-                UiFactory.imageFor(textures, zombiePath):
-                null;
+            Image zombieImage = (App.getActiveUser().isZombieUnlocked(zombie)) ?
+                UiFactory.imageFor(textures, zombiePath) : null;
 
             if (background != null) {
-                ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie,skin);
-
-                table.add(card)
-                    .size(card.getWidth(), card.getHeight())
-                    .expandX()
-                    .padBottom(25)
-                    .padLeft(10)
-                    .padRight(10);
-
+                ZombieCardButton card = new ZombieCardButton(background, zombieImage, zombie, skin);
+                table.add(card).size(card.getWidth(), card.getHeight()).expandX()
+                    .padBottom(25).padLeft(10).padRight(10);
                 count++;
 
                 card.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        System.out.println("Zombie clicked: " + zombie.getName());
                         ZombieInfoScreen infoScreen = new ZombieInfoScreen(game, skin, zombie);
                         ScreenManager.getInstance().pushScreen(infoScreen);
                     }
                 });
 
-                if (count % columns == 0) {
-                    table.row();
-                }
-            } else {
-                System.err.println("❌ Texture missing for zombie: " + zombie.getName());
+                if (count % columns == 0) table.row();
             }
         }
 
@@ -340,9 +412,7 @@ public class CollectionScreen extends BaseScreen {
             Image plantImg = UiFactory.imageFor(textures, plantTextureKey);
             Image familyImg = UiFactory.imageFor(textures, familyTextureKey);
 
-            if (plantImg == null || familyImg == null) {
-                throw new NullPointerException("Image reference is null!");
-            }
+            if (plantImg == null || familyImg == null) throw new NullPointerException("Image is null");
 
             PlantCardButton card = new PlantCardButton.Builder()
                 .setBgImage(cardBg)
@@ -357,51 +427,33 @@ public class CollectionScreen extends BaseScreen {
             card.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    System.out.println("Plant clicked: " + plantName);
                     PlantInfoScreen infoScreen = new PlantInfoScreen(game, skin, plant, card, controller);
                     ScreenManager.getInstance().pushScreen(infoScreen);
                 }
             });
 
             return card;
-
         } catch (Exception e) {
-            System.err.println("=========================================");
-            System.err.println("❌ Error Loading Plant Card for: " + plantName);
-            System.err.println("Attempted Plant Texture: " + plantTextureKey);
-            System.err.println("Attempted Family Texture: " + familyTextureKey);
-            System.err.println("Reason: " + e.getMessage());
-            System.err.println("=========================================");
             return null;
         }
     }
 
     private String getCardAddress(Plant plant) {
         List<PlantTag> tags = plant.getTags();
-
-        if (tags.contains(PlantTag.ICE)) {
-            return "IMAGE_UI_PACKETS_ICEAGE";
-        } else if (tags.contains(PlantTag.WATER)) {
-            return "IMAGE_UI_PACKETS_BEACH";
-        } else if (tags.contains(PlantTag.EXPLOSIVE) || plant.getCategory() == PlantCategory.EXPLOSIVE) {
+        if (tags.contains(PlantTag.ICE)) return "IMAGE_UI_PACKETS_ICEAGE";
+        if (tags.contains(PlantTag.WATER)) return "IMAGE_UI_PACKETS_BEACH";
+        if (tags.contains(PlantTag.EXPLOSIVE) || plant.getCategory() == PlantCategory.EXPLOSIVE) {
             return "IMAGE_UI_PACKETS_DINO";
-        } else if (tags.contains(PlantTag.MAGIC)) {
-            return "IMAGE_UI_PACKETS_EIGHTIES";
-        } else if (tags.contains(PlantTag.NIGHT)) {
-            return "IMAGE_UI_PACKETS_DARK";
-        } else if (tags.contains(PlantTag.CHARGE)) {
-            return "IMAGE_UI_PACKETS_FUTURE";
-        } else if (tags.contains(PlantTag.TRAP)) {
-            return "IMAGE_UI_PACKETS_EGYPT";
-        } else if (plant.getCategory() == PlantCategory.WALL_NUT) {
-            return "IMAGE_UI_PACKETS_COWBOY";
-        } else if (plant.getCategory() == PlantCategory.SHOOTER) {
-            return "IMAGE_UI_PACKETS_LOSTCITY";
-        } else if (plant.getCategory() == PlantCategory.SUN_PRODUCER) {
-            return "IMAGE_UI_PACKETS_BOOST";
-        } else {
-            return "IMAGE_UI_PACKETS_HOMELESS";
         }
+        if (tags.contains(PlantTag.MAGIC)) return "IMAGE_UI_PACKETS_EIGHTIES";
+        if (tags.contains(PlantTag.NIGHT)) return "IMAGE_UI_PACKETS_DARK";
+        if (tags.contains(PlantTag.CHARGE)) return "IMAGE_UI_PACKETS_FUTURE";
+        if (tags.contains(PlantTag.TRAP)) return "IMAGE_UI_PACKETS_EGYPT";
+        if (plant.getCategory() == PlantCategory.WALL_NUT) return "IMAGE_UI_PACKETS_COWBOY";
+        if (plant.getCategory() == PlantCategory.SHOOTER) return "IMAGE_UI_PACKETS_LOSTCITY";
+        if (plant.getCategory() == PlantCategory.SUN_PRODUCER) return "IMAGE_UI_PACKETS_BOOST";
+
+        return "IMAGE_UI_PACKETS_HOMELESS";
     }
 
     @Override
@@ -424,7 +476,7 @@ public class CollectionScreen extends BaseScreen {
             case SHOOTER -> "IMAGE_UI_PACKETS_MINTFAM_PEASHOOTER";
             case MODIFIER -> "IMAGE_UI_PACKETS_MINTFAM_MAGIC";
             case WALL_NUT -> "IMAGE_UI_PACKETS_MINTFAM_DEFENSE";
-            case EXPLOSIVE ->  "IMAGE_UI_PACKETS_MINTFAM_EXPLOSIVE";
+            case EXPLOSIVE -> "IMAGE_UI_PACKETS_MINTFAM_EXPLOSIVE";
         };
     }
 }

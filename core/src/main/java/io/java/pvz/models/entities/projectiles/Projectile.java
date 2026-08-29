@@ -145,7 +145,9 @@ public class Projectile implements Ticker {
         if (type == ProjectileType.PUFF_SPORE ||
             (plant.getName().equalsIgnoreCase("Pea Pod") && !plant.isBoosted()))
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 3);
-
+        if (type == ProjectileType.SEA_SHROOM)
+            position.moveY(-PhysicalConstants.TILE_HEIGHT / 4);
+        
         GameSession.getInstance().getTimeManager().registerNewTicker(projectile);
         GameSession.getInstance().getArena().addProjectile(projectile);
         return projectile;
@@ -192,7 +194,7 @@ public class Projectile implements Ticker {
 
     private static ProjectileEffect projectileEffect(ProjectileType projectileType, int damage) {
         return switch (projectileType) {
-            case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE, PUFF_SPORE -> new NormalEffect();
+            case PEA, ROTOBAGA_SEED, CABBAGE, CORN, SPIKE, PUFF_SPORE, STAR, SEA_SHROOM -> new NormalEffect();
             case ICE_PEA -> new IceEffect();
             case FIRE_PEA, BLUE_FIRE_PEA -> new FireEffect();
             case GOO_PEA, FUME -> new PoisonProjectileEffect();

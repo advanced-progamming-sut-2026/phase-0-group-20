@@ -89,7 +89,7 @@ public final class Ids {
         public static final String PEPPER = "768/FULL/EFFECTS/T_PEPPERPULT_PROJECTILE/T_PEPPERPULT_PROJECTILE.PAM";
         public static final String GRAPE = "768/INITIAL/EFFECTS/GRAPESHOT_PROJECTILE/GRAPESHOT_PROJECTILE.PAM";
         public static final String FUME = "768/INITIAL/EFFECTS/FUMESHROOM_BUBBLES/FUMESHROOM_BUBBLES.PAM";
-        public static final String SPIKE = "768/INITIAL/EFFECTS/CACTUS_AIRATTACK/CACTUS_AIRATTACK.PAM";// bug? yes baby
+        public static final String SPIKE = "768/INITIAL/EFFECTS/CACTUS_PROJECTILE/CACTUS_PROJECTILE.PAM";// bug? yes baby
         public static final String ELECTRIC_SPIKE = "768/INITIAL/EFFECTS/CACTUS_PROJECTILE_PLANTFOOD/CACTUS_PROJECTILE_PLANTFOOD.PAM";
         public static final String PLASMA_BALL = "768/FULL/EFFECTS/CITRON_CITRUS_ORB/CITRON_CITRUS_ORB.PAM";
         public static final String WALLNUT_BOWL =
@@ -101,6 +101,9 @@ public final class Ids {
         public static final String SHARK = "768/FULL/EFFECTS/ZOMBOSS_SHARK_PROJECTILE/ZOMBOSS_SHARK_PROJECTILE.PAM";
         public static final String PUFFSHROOM =
             "768/INITIAL/EFFECTS/T_PUFFSHROOM_PROJECTILE/T_PUFFSHROOM_PROJECTILE.PAM";
+        public static final String SEA_SHROOM = "768/FULL/EFFECTS/SEASHROOM_PROJECTILE/SEASHROOM_PROJECTILE.PAM";
+        public static final String STAR =
+            "768/INITIAL/EFFECTS/STARFRUIT_PROJECTILE_PLANTFOOD/STARFRUIT_PROJECTILE_PLANTFOOD.PAM";
     }
 
     public static final class ProjectileHits {
@@ -108,7 +111,7 @@ public final class Ids {
         public static final String ICE_PEA = "768/INITIAL/EFFECTS/SPLAT_SNOW_PEA/SPLAT_SNOW_PEA.PAM";
         public static final String ROTOBAGA_SEED =
             "768/FULL/EFFECTS/ROTORUTABAGA_PROJECTILE_HIT/ROTORUTABAGA_PROJECTILE_HIT.PAM";
-        public static final String FIRE_PEA ="768/INITIAL/EFFECTS/T_SPLAT_FIRE_PEA/T_SPLAT_FIRE_PEA.PAM";
+        public static final String FIRE_PEA = "768/INITIAL/EFFECTS/T_SPLAT_FIRE_PEA/T_SPLAT_FIRE_PEA.PAM";
         public static final String BLUE_FIRE_PEA = "768/INITIAL/EFFECTS/SPLAT_FIRE_PEA_BLUE/SPLAT_FIRE_PEA_BLUE.PAM";
         public static final String GOO_PEA = "768/INITIAL/EFFECTS/FUMESHROOM_BUBBLES_HIT/FUMESHROOM_BUBBLES_HIT.PAM";
         public static final String FUME = "768/INITIAL/EFFECTS/FUMESHROOM_BUBBLES_HIT/FUMESHROOM_BUBBLES_HIT.PAM";
@@ -127,6 +130,10 @@ public final class Ids {
         public static final String EXPLODE_NUT_BOWL =
             "768/FULL/EFFECTS/BOWLINGBULB_PLANTFOOD_PROJECTILE/BOWLINGBULB_PLANTFOOD_PROJECTILE.PAM";
         public static final String SHARK = "768/FULL/EFFECTS/ZOMBOSS_SHARK_PROJECTILE/ZOMBOSS_SHARK_PROJECTILE.PAM";
+        public static final String SEA_SHROOM = "768/FULL/EFFECTS/SEASHOOTER_FX/SEASHOOTER_FX.PAM";
+        public static final String STAR = "768/INITIAL/EFFECTS/T_STARFRUIT_PROJECTILE_HIT/T_STARFRUIT_PROJECTILE_HIT.PAM";
+        public static final String SPIKE = "768/INITIAL/EFFECTS/CACTUS_PROJECTILE_HIT/CACTUS_PROJECTILE_HIT.PAM";
+        public static final String ELECTRIC_SPIKE = "768/FULL/EFFECTS/ZOMBIE_GATE_ELECTRICITY/ZOMBIE_GATE_ELECTRICITY.PAM";
     }
 
     public static final class Shop {
@@ -202,7 +209,7 @@ public final class Ids {
 
     public static final class PlantCards {
         public static final String BG_CARD = "IMAGE_UI_PACKETS_MODERNDAY";
-        public static final String BOOSTED_BG_CARD ="IMAGE_UI_PACKETS_BOOST";
+        public static final String BOOSTED_BG_CARD = "IMAGE_UI_PACKETS_BOOST";
         public static final String FILTER_UNCLICKED = "IMAGE_UI_ALMANAC_FILTER_BUTTON_UP";
         public static final String FILTER_CLICKED = "IMAGE_UI_ALMANAC_FILTER_BUTTON_DOWN";
     }
