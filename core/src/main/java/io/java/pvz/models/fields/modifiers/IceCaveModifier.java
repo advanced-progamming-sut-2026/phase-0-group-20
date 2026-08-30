@@ -148,41 +148,9 @@ public class IceCaveModifier implements SeasonModifier {
                 if (plant.getTags().contains(PlantTag.FIRE)) continue;
 
                 plant.receiveIceHit();
-
-                if (plant.isFrozen() && tile instanceof IceHolder iceHolder && !iceHolder.hasIceBlock()) {
-                    freezePlant(plant, arena);
-                }
             }
         }
         upcomingWindRows.clear();
-    }
-
-    private void freezePlant(Plant plant, Arena arena) {
-        Tile tile = plant.getPlacedTile();
-        if (tile == null) return;
-
-        int row = tile.getRow();
-        int col = tile.getCol();
-
-        GameSession session = GameSession.getInstance();
-        session.getTimeManager().unregisterTicker(plant);
-        arena.getActivePlants().remove(plant);
-        tile.getPlants().remove(plant);
-
-        GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
-            new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
-                .message("REMOVE_ICE_OVERLAY")
-                .plant(plant)
-                .build());
-
-        if (tile instanceof IceHolder) {
-            IceBlock iceBlock = new IceBlock(plant, row, col);
-            ((IceHolder) tile).setIceBlock(iceBlock);
-            session.getTimeManager().registerNewTicker(iceBlock);
-            arena.getActiveObstacles().add(iceBlock);
-            System.out.println(plant.getName() + " is completely frozen inside an IceBlock at row " +
-                (row + 1) + ", col " + (col + 1) + "!");
-        }
     }
 
     private void setupInitialIceBlocks(Arena arena) {
@@ -201,21 +169,25 @@ public class IceCaveModifier implements SeasonModifier {
             randomCol = (rnd == 1) ? randomCol : arena.getCols() - randomCol;
             Tile tile = arena.getTile(randomRow, randomCol);
             if (tile instanceof IceHolder iceHolder && tile.getPlants().isEmpty() && !iceHolder.hasIceBlock()) {
-                IceBlock iceBlock = null;
+
                 if (rnd == 1) {
                     List<Plant> plants = GameSession.getInstance().getChosenPlants();
                     if (!plants.isEmpty()) {
                         Plant templatePlant = plants.get(rand.nextInt(plants.size()));
                         Plant freshPlant = InGameEntityGenerator.getPlantForGame(templatePlant, false);
 
-                        freshPlant.setPlacedTile(tile);
-                        io.java.pvz.models.entities.plants.effect.FreezeEffect freezeEffect =
+                        tile.addPlant(freshPlant);
+                        session.getArena().addPlant(freshPlant);
+                        session.getTimeManager().registerNewTicker(freshPlant);
+
+                        io.java.pvz.models.entities.plants.effect.FreezeEffect freezeEffect = // do ta freeze effect darim tofff
                             new io.java.pvz.models.entities.plants.effect.FreezeEffect();
                         freshPlant.addEffect(freezeEffect);
+
                         freezeEffect.addStack(freshPlant);
                         freezeEffect.addStack(freshPlant);
 
-                        iceBlock = new IceBlock(freshPlant, randomRow, randomCol);
+                        placed++;
                     }
                 } else {
                     List<Zombie> zombies = GameSession.getInstance().getChosenZombies();
@@ -223,14 +195,14 @@ public class IceCaveModifier implements SeasonModifier {
                         Zombie randomZombie = zombies.get(rand.nextInt(zombies.size()));
                         Zombie newZombie = InGameEntityGenerator.getZombieForGame(randomZombie.getType(), randomRow);
                         newZombie.setCol(randomCol);
-                        iceBlock = new IceBlock(newZombie, randomRow, randomCol);
+
+                        IceBlock iceBlock = new IceBlock(newZombie, randomRow, randomCol);
+                        iceHolder.setIceBlock(iceBlock);
+                        session.getTimeManager().registerNewTicker(iceBlock);
+                        session.getArena().getActiveObstacles().add(iceBlock);
+
+                        placed++;
                     }
-                }
-                if (iceBlock != null) {
-                    iceHolder.setIceBlock(iceBlock);
-                    session.getTimeManager().registerNewTicker(iceBlock);
-                    session.getArena().getActiveObstacles().add(iceBlock);
-                    placed++;
                 }
             }
         }

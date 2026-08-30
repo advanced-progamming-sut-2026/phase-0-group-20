@@ -49,25 +49,29 @@ public class PlantRenderer {
         Iterator<Map.Entry<Plant, PamAnimatedActor>> it = plantActors.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Plant, PamAnimatedActor> entry = it.next();
-            if (!stillAlive.contains(entry.getKey())) {
-                despawn(entry.getValue());
-                removePlantIceOverlay(entry.getKey());
+            Plant plant = entry.getKey();
+            PamAnimatedActor actor = entry.getValue();
 
-                PamAnimatedActor octopusActor = plantOctopusOverlays.remove(entry.getKey());
+            if (!stillAlive.contains(plant)) {
+
+                if (plant.isFrozen() && plant.getCurrentHp() > 0) {
+                    actor.clearActions();
+                    actor.remove();
+                } else {
+                    despawn(actor);
+                }
+
+                removePlantIceOverlay(plant);
+
+                PamAnimatedActor octopusActor = plantOctopusOverlays.remove(plant);
                 if (octopusActor != null) octopusActor.remove();
 
-                PamAnimatedActor sheepActor = plantSheepOverlays.remove(entry.getKey());
+                PamAnimatedActor sheepActor = plantSheepOverlays.remove(plant);
                 if (sheepActor != null) sheepActor.remove();
 
                 it.remove();
             }
         }
-
-        plantLayer.getChildren().sort((a, b) -> {
-            float ay = a.getY();
-            float by = b.getY();
-            return Float.compare(by, ay);
-        });
     }
 
     private PamAnimatedActor spawnPlant(Plant plant) {
@@ -226,23 +230,6 @@ public class PlantRenderer {
                 chillActor.setClip(clipName);
             }
             chillActor.setPosition(targetX, targetY);
-
-        } else if (stacks >= 3) {
-            PamAnimatedActor chillActor = plantChillOverlays.remove(plant);
-            if (chillActor != null) chillActor.remove();
-
-            PamAnimatedActor freezeActor = plantFreezeOverlays.get(plant);
-            if (freezeActor == null) {
-                freezeActor = PamAnimatedActor.createEffectAnimated(
-                    "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_PLANT/FROSTBITE_ICE_BLOCK_PLANT.PAM", "freeze_idle");
-                freezeActor.setSize(TILE_WIDTH, TILE_HEIGHT);
-                freezeActor.setOrigin(Align.center);
-                plantLayer.addActor(freezeActor);
-                plantFreezeOverlays.put(plant, freezeActor);
-            }
-
-            freezeActor.getColor().a = 0.4f;
-            freezeActor.setPosition(targetX, targetY);
         }
     }
 
@@ -336,6 +323,7 @@ public class PlantRenderer {
     }
 
     private void despawn(PamAnimatedActor actor) {
+        actor.clearActions();
         actor.addAction(Actions.sequence(
             Actions.delay(DESPAWN_LINGER_SECONDS),
             Actions.fadeOut(DESPAWN_FADE_SECONDS),

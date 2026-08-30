@@ -27,15 +27,16 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Group environmentLayer = new Group();
     private final Group highlightLayer = new Group();
     private final Group mowerLayer = new Group();
-    private final Group plantLayer;
-    private final Group zombieLayer;
+    private final Group boardLayer;
     private final Group effectLayer = new Group();
+    private final Group topLayer = new Group();
 
     private final EnvironmentRenderer environmentRenderer;
     private final WorldItemRenderer worldItemRenderer;
     private final PlantRenderer plantRenderer;
     private final ZombieRenderer zombieRenderer;
     private final EffectRenderer effectRenderer;
+
 
     private ShaderProgram entityShader;
 
@@ -47,72 +48,51 @@ public class BattlefieldRenderer implements GameEventListener {
     public BattlefieldRenderer() {
         initShader();
 
-        plantLayer = getPlantLayer();
-
-        zombieLayer = getZombieLayer();
+        boardLayer = getBoardLayer();
 
         masterGroup.addActor(environmentLayer);
         masterGroup.addActor(highlightLayer);
         masterGroup.addActor(mowerLayer);
-        masterGroup.addActor(plantLayer);
         masterGroup.addActor(effectLayer);
-        masterGroup.addActor(zombieLayer);
+        masterGroup.addActor(boardLayer);
+        masterGroup.addActor(topLayer);
 
         environmentRenderer = new EnvironmentRenderer(environmentLayer);
-        effectRenderer = new EffectRenderer(effectLayer);
-        worldItemRenderer = new WorldItemRenderer(effectLayer, mowerLayer, zombieLayer, highlightLayer);
-        plantRenderer = new PlantRenderer(plantLayer);
-        zombieRenderer = new ZombieRenderer(zombieLayer);
+        worldItemRenderer = new WorldItemRenderer(effectLayer, boardLayer, topLayer, mowerLayer, highlightLayer);
+
+        plantRenderer = new PlantRenderer(boardLayer);
+        zombieRenderer = new ZombieRenderer(boardLayer);
+
+        effectRenderer = new EffectRenderer(topLayer);
 
         GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.SPAWN_EFFECT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
     }
 
-    private @NonNull Group getZombieLayer() {
-        final Group zombieLayer;
-        zombieLayer = new Group() {
+    private @NonNull Group getBoardLayer() {
+        return new Group() {
             @Override
             public void drawChildren(Batch batch, float parentAlpha) {
                 batch.setShader(entityShader);
                 for (Actor child : getChildren()) {
                     if (!child.isVisible()) continue;
-                    Zombie zombie = (Zombie) child.getUserObject();
-                    if (zombie != null) {
+
+                    Object userObj = child.getUserObject();
+                    if (userObj instanceof Plant plant) {
+                        applyPlantShaderUniforms(plant);
+                    } else if (userObj instanceof Zombie zombie) {
                         applyZombieShaderUniforms(zombie);
                     } else {
                         entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
                         entityShader.setUniformf("u_damageFlash", 0f);
                     }
-                    child.draw(batch, parentAlpha);
-                }
-                batch.setShader(null);
-            }
-        };
-        return zombieLayer;
-    }
 
-    private @NonNull Group getPlantLayer() {
-        final Group plantLayer;
-        plantLayer = new Group() {
-            @Override
-            public void drawChildren(Batch batch, float parentAlpha) {
-                batch.setShader(entityShader);
-                for (Actor child : getChildren()) {
-                    if (!child.isVisible()) continue;
-                    Plant plant = (Plant) child.getUserObject();
-                    if (plant != null) {
-                        applyPlantShaderUniforms(plant);
-                    } else {
-                        entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
-                        entityShader.setUniformf("u_damageFlash", 0f);
-                    }
                     child.draw(batch, parentAlpha);
                 }
                 batch.setShader(null);
             }
         };
-        return plantLayer;
     }
 
     private void initShader() {
@@ -148,19 +128,29 @@ public class BattlefieldRenderer implements GameEventListener {
         int col = zombie.getCol();
 
         if (col <= 1) {
-            r = 1.0f;g = 0.0f;b = 0.0f;
+            r = 1.0f;
+            g = 0.0f;
+            b = 0.0f;
             intensity = (float) (Math.abs(Math.sin(System.currentTimeMillis() / 150.0)) * 0.4 + 0.2);
         } else if (zombie.isHypnotized()) {
-            r = 1.0f;g = 0.4f;b = 1.0f;
+            r = 1.0f;
+            g = 0.4f;
+            b = 1.0f;
             intensity = 0.5f;
         } else if (isFrozen) {
-            r = 0.2f;g = 0.5f;b = 1.0f;
+            r = 0.2f;
+            g = 0.5f;
+            b = 1.0f;
             intensity = 0.5f;
         } else if (isChilled) {
-            r = 0.5f;g = 0.8f;b = 1.0f;
+            r = 0.5f;
+            g = 0.8f;
+            b = 1.0f;
             intensity = 0.3f;
         } else if (isPoisoned || zombie.isShiny()) {
-            r = 0.6f;g = 0.1f;b = 0.8f;
+            r = 0.6f;
+            g = 0.1f;
+            b = 0.8f;
             intensity = 0.5f;
         }
 
@@ -220,6 +210,11 @@ public class BattlefieldRenderer implements GameEventListener {
         worldItemRenderer.sync(arena);
         plantRenderer.syncPlants(arena.getActivePlants());
         zombieRenderer.syncZombies(arena.getActiveZombies());
+        boardLayer.getChildren().sort((a, b) -> {
+            float yA = a.getY() - (a.getUserObject() instanceof Zombie ? 3f : 0f);
+            float yB = b.getY() - (b.getUserObject() instanceof Zombie ? 3f : 0f);
+            return Float.compare(yB, yA);
+        });
     }
 
     public void clear() {

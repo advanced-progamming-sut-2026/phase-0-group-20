@@ -266,6 +266,8 @@ public class GameFlowController {
             List<Plant> belt = currentLevel.getBelt();
             if (belt.isEmpty()) return null;
             return belt.stream().filter(p -> p.getName().equalsIgnoreCase(plantName)).findFirst().orElse(null);
+        } else if (session.getCurrentMode() instanceof IZombieLevel zombieLevel) {
+            return App.findPlantByName(plantName);
         } else {
             return session.getChosenPlants().stream()
                 .filter(p -> p.getName().equalsIgnoreCase(plantName))
@@ -459,7 +461,9 @@ public class GameFlowController {
         User user = App.getActiveUser();
         return user.getUnlockedPlants().stream()
             .filter(p -> p.getName().equals(plant.getName()))
-            .findFirst().get().getLevel();
+            .findFirst()
+            .map(Plant::getLevel)
+            .orElse(1);
     }
 
     public void collectAllSuns() {

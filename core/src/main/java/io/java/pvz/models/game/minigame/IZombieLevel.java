@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class IZombieLevel extends Level implements IMinigame, RedLineCapable {
+public class
+IZombieLevel extends Level implements IMinigame, RedLineCapable {
     private static final int TIME_LIMIT = 180;
     private final Random rand = new Random();
     private int redLineCol = 6;

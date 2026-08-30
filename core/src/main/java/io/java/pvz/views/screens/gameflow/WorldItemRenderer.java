@@ -14,6 +14,7 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.obstacle.*;
+import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.entities.zombies.Zombie;
@@ -42,9 +43,11 @@ import static io.java.pvz.models.enums.PhysicalConstants.*;
 
 public class WorldItemRenderer {
     private final Group effectLayer;
+    private final Group boardLayer;
+    private final Group topLayer;
     private final Group mowerLayer;
-    private final Group zombieLayer;
     private final Group highlightLayer;
+
     private final GameFlowController gameFlowController = new GameFlowController();
 
     private final Map<Projectile, PamAnimatedActor> projectileActors = new HashMap<>();
@@ -63,10 +66,12 @@ public class WorldItemRenderer {
 
     private static final Map<ProjectileType, ProjectileAnim> PROJECTILE_ANIMS = buildProjectileAnimMap();
 
-    public WorldItemRenderer(Group effectLayer, Group mowerLayer, Group zombieLayer, Group highlightLayer) {
+    public WorldItemRenderer(Group effectLayer, Group boardLayer, Group topLayer,
+                             Group mowerLayer, Group highlightLayer) {
         this.effectLayer = effectLayer;
+        this.boardLayer = boardLayer;
+        this.topLayer = topLayer;
         this.mowerLayer = mowerLayer;
-        this.zombieLayer = zombieLayer;
         this.highlightLayer = highlightLayer;
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -137,7 +142,7 @@ public class WorldItemRenderer {
 
         actor.setOrigin(Align.center);
         if (proj.getSpeedX() < 0) actor.setScaleX(-1f);
-        effectLayer.addActor(actor);
+        topLayer.addActor(actor);
         GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_FIRED,
             new GameEventPayload.Builder(GameEvent.PROJECTILE_FIRED)
                 .projectileType(proj.getType())
@@ -254,7 +259,7 @@ public class WorldItemRenderer {
         setupSunMovement(actor, sun);
         setupSunListener(actor, sun, scale);
 
-        effectLayer.addActor(actor);
+        topLayer.addActor(actor);
         return actor;
     }
 
@@ -543,8 +548,21 @@ public class WorldItemRenderer {
             String plantAnimName = UiFactory.getAnimationName(ib.getFrozenPlant());
             AnimationCatalog.EntityAnimation plantAnim = AnimationCatalog.getPlantAnimation(plantAnimName);
             if (plantAnim != null) {
+                Plant p = ib.getFrozenPlant();
+                String targetClip = "idle";
+                int size = p.getSize();
+
+                if (plantAnim.hasClip("idle_stage" + size)) targetClip = "idle_stage" + size;
+                else if (plantAnim.hasClip("idle" + size)) targetClip = "idle" + size;
+                else if (plantAnim.hasClip("stage" + size + "_idle")) targetClip = "stage" + size + "_idle";
+                else if (!plantAnim.hasClip("idle")) {
+                    if (plantAnim.hasClip("idle_stage1")) targetClip = "idle_stage1";
+                    else if (plantAnim.hasClip("idle1_1")) targetClip = "idle1_1";
+                    else if (!plantAnim.getClipNames().isEmpty()) targetClip = plantAnim.getClipNames().iterator().next();
+                }
+
                 PamAnimatedActor fakePlant = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
-                    "idle", plantAnim.path) {
+                    targetClip, plantAnim.path) {
                     @Override
                     public void act(float delta) {
                         super.act(0f);
@@ -552,16 +570,18 @@ public class WorldItemRenderer {
                 };
                 fakePlant.setSize(TILE_WIDTH, TILE_HEIGHT);
                 fakePlant.setOrigin(Align.center);
-                effectLayer.addActor(fakePlant);
+
+                boardLayer.addActor(fakePlant);
                 fakePlantActors.put(ib, fakePlant);
             }
-        } else
+        } else {
             pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_ZOMBIE/FROSTBITE_ICE_BLOCK_ZOMBIE.PAM";
+        }
 
         PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, defaultClip);
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
-        effectLayer.addActor(actor);
+        boardLayer.addActor(actor);
         return actor;
     }
 
@@ -586,8 +606,7 @@ public class WorldItemRenderer {
 
                 PamAnimatedActor fakePlant = fakePlantActors.get(ib);
                 if (fakePlant != null) {
-                    centerOnPoint(fakePlant, targetX, targetY);
-                    fakePlant.toBack();
+                    centerOnPoint(fakePlant, targetX, targetY + 10);
                 }
             } else {
                 actor.getColor().a = 1.0f;
