@@ -1,6 +1,10 @@
 package io.java.pvz.models.entities.plants.effect;
 
+import io.java.pvz.models.entities.obstacle.IceBlock;
+import io.java.pvz.models.entities.obstacle.IceHolder;
 import io.java.pvz.models.entities.plants.Plant;
+import io.java.pvz.models.fields.tiles.Tile;
+import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
@@ -25,8 +29,34 @@ public class FreezeEffect implements PlantEffect {
         if (stacks < 3) {
             stacks++;
 
-            if (stacks >= 3)
+            if (stacks >= 3) {
                 plant.setFrozen(true);
+
+                GameSession session = GameSession.getInstance();
+                if (session != null && session.getArena() != null && plant.getPlacedTile() != null) {
+                    Tile tile = plant.getPlacedTile();
+
+                    if (tile instanceof IceHolder iceHolder && !iceHolder.hasIceBlock()) {
+
+                        session.getTimeManager().unregisterTicker(plant);
+                        session.getArena().getActivePlants().remove(plant);
+                        tile.getPlants().remove(plant);
+
+                        GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,
+                            new GameEventPayload.Builder(GameEvent.SPAWN_EFFECT)
+                                .message("REMOVE_ICE_OVERLAY")
+                                .plant(plant)
+                                .build());
+
+                        IceBlock newIceBlock = new IceBlock(plant, tile.getRow(), tile.getCol());
+                        iceHolder.setIceBlock(newIceBlock);
+                        session.getTimeManager().registerNewTicker(newIceBlock);
+                        session.getArena().getActiveObstacles().add(newIceBlock);
+
+                        return;
+                    }
+                }
+            }
 
             sendOverlayEvent(plant);
         }

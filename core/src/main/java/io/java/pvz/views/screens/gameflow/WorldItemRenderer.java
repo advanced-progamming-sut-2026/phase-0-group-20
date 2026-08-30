@@ -14,6 +14,7 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.Sun;
 import io.java.pvz.models.entities.SunType;
 import io.java.pvz.models.entities.obstacle.*;
+import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.entities.zombies.Zombie;
@@ -545,8 +546,21 @@ public class WorldItemRenderer {
             String plantAnimName = UiFactory.getAnimationName(ib.getFrozenPlant());
             AnimationCatalog.EntityAnimation plantAnim = AnimationCatalog.getPlantAnimation(plantAnimName);
             if (plantAnim != null) {
+                Plant p = ib.getFrozenPlant();
+                String targetClip = "idle";
+                int size = p.getSize();
+
+                if (plantAnim.hasClip("idle_stage" + size)) targetClip = "idle_stage" + size;
+                else if (plantAnim.hasClip("idle" + size)) targetClip = "idle" + size;
+                else if (plantAnim.hasClip("stage" + size + "_idle")) targetClip = "stage" + size + "_idle";
+                else if (!plantAnim.hasClip("idle")) {
+                    if (plantAnim.hasClip("idle_stage1")) targetClip = "idle_stage1";
+                    else if (plantAnim.hasClip("idle1_1")) targetClip = "idle1_1";
+                    else if (!plantAnim.getClipNames().isEmpty()) targetClip = plantAnim.getClipNames().iterator().next();
+                }
+
                 PamAnimatedActor fakePlant = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
-                    "idle", plantAnim.path) {
+                    targetClip, plantAnim.path) {
                     @Override
                     public void act(float delta) {
                         super.act(0f);
@@ -554,11 +568,13 @@ public class WorldItemRenderer {
                 };
                 fakePlant.setSize(TILE_WIDTH, TILE_HEIGHT);
                 fakePlant.setOrigin(Align.center);
-                effectLayer.addActor(fakePlant);
+
+                boardLayer.addActor(fakePlant);
                 fakePlantActors.put(ib, fakePlant);
             }
-        } else
+        } else {
             pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_ZOMBIE/FROSTBITE_ICE_BLOCK_ZOMBIE.PAM";
+        }
 
         PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, defaultClip);
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
@@ -588,8 +604,7 @@ public class WorldItemRenderer {
 
                 PamAnimatedActor fakePlant = fakePlantActors.get(ib);
                 if (fakePlant != null) {
-                    centerOnPoint(fakePlant, targetX, targetY);
-                    fakePlant.toBack();
+                    centerOnPoint(fakePlant, targetX, targetY + 10);
                 }
             } else {
                 actor.getColor().a = 1.0f;
