@@ -3,12 +3,15 @@ package io.java.pvz.views.screens.gameflow;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.strategy.DigestionStrategy;
 import io.java.pvz.models.entities.plants.strategy.tag_strategy.TrapStrategy;
 import io.java.pvz.utils.AnimationCatalog;
+import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PamAnimatedActor;
 import io.java.pvz.utils.UiFactory;
 
@@ -30,6 +33,7 @@ public class PlantRenderer {
     private final Map<Plant, PamAnimatedActor> plantFreezeOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantOctopusOverlays = new HashMap<>();
     private final Map<Plant, PamAnimatedActor> plantSheepOverlays = new HashMap<>();
+    private final Map<Plant, Image> plantArmorOverlays = new HashMap<>();
 
     public PlantRenderer(Group plantLayer) {
         this.plantLayer = plantLayer;
@@ -43,6 +47,7 @@ public class PlantRenderer {
                 plantActors.put(plant, actor);
             }
             updatePlantActor(plant, actor);
+            updatePlantArmorOverlay(plant, actor);
         }
 
         Set<Plant> stillAlive = new HashSet<>(livePlants);
@@ -68,6 +73,9 @@ public class PlantRenderer {
 
                 PamAnimatedActor sheepActor = plantSheepOverlays.remove(plant);
                 if (sheepActor != null) sheepActor.remove();
+
+                Image armorImage = plantArmorOverlays.remove(plant);
+                if (armorImage != null) armorImage.remove();
 
                 it.remove();
             }
@@ -152,7 +160,8 @@ public class PlantRenderer {
         if (anim.hasClip("idle_stage1")) return "idle_stage1";
         if (anim.hasClip("idle1_1")) return "idle1_1";
         if (anim.hasClip("stage1_idle")) return "stage1_idle";
-        Iterator<String> anyClip = anim.getClipNames().iterator();return anyClip.hasNext() ? anyClip.next() : CLIP_IDLE;
+        Iterator<String> anyClip = anim.getClipNames().iterator();
+        return anyClip.hasNext() ? anyClip.next() : CLIP_IDLE;
     }
 
     public void spawnSheepOnPlant(Plant plant) {
@@ -309,6 +318,35 @@ public class PlantRenderer {
         freezeActor.setVisibilityMap(visMap);
     }
 
+    private void updatePlantArmorOverlay(Plant plant, PamAnimatedActor plantActor) {
+        if (plant == null || plantActor == null) return;
+
+        if (plant.getCurrentHp() > plant.getMaxHp()) {
+            Image armorImage = plantArmorOverlays.get(plant);
+            if (armorImage == null) {
+                String textureId = getArmorTextureForPlant(plant.getName());
+                armorImage = UiFactory.imageFor(AssetLoader.getInstance().getTextures(), textureId);
+                armorImage.setOrigin(Align.center);
+                armorImage.setSize(armorImage.getWidth() * 1.6f, armorImage.getHeight() * 1.6f);
+                plantLayer.addActor(armorImage);
+                plantArmorOverlays.put(plant, armorImage);
+            }
+
+            Position offset = getArmorOffset(plant.getName());
+
+            float centerX = plantActor.getX() + (plantActor.getWidth() / 2f);
+            float bottomY = plantActor.getY();
+
+            float targetX = centerX - (armorImage.getWidth() / 2f) + offset.getX();
+            float targetY = bottomY - offset.getY();
+
+            armorImage.setPosition(targetX, targetY);
+        } else {
+            Image armorImage = plantArmorOverlays.remove(plant);
+            if (armorImage != null) armorImage.remove();
+        }
+    }
+
     public void removePlantIceOverlay(Plant plant) {
         if (plant == null) return;
         PamAnimatedActor chill = plantChillOverlays.remove(plant);
@@ -337,6 +375,33 @@ public class PlantRenderer {
         plantFreezeOverlays.clear();
         plantOctopusOverlays.clear();
         plantSheepOverlays.clear();
+        plantArmorOverlays.clear();
         plantLayer.clearChildren();
+    }
+
+    private String getArmorTextureForPlant(String plantName) {
+        String name = plantName.toLowerCase();
+        switch (name) {
+            case "tall-nut":
+                return Ids.Plants.ARMOR_TALLNUT;
+            case "explode-o-nut":
+                return Ids.Plants.ARMOR_EXPLODEONUT;
+            case "endurian":
+                return Ids.Plants.ARMOR_ENDURIAN;
+            case "pumpkin":
+                return Ids.Plants.ARMOR_PUMPKIN;
+            default:
+                return Ids.Plants.ARMOR_NUT;
+        }
+    }
+
+    private Position getArmorOffset(String plantName) {
+        String name = plantName.toLowerCase();
+        return switch (name) {
+            case "tall-nut" -> new Position(0f, 0f);
+            case "endurian" -> new Position(0f, 60f);
+            case "pumpkin" -> new Position(0f, 70f);
+            default -> new Position(0f, 50f);
+        };
     }
 }
