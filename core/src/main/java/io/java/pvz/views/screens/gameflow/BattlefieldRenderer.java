@@ -27,9 +27,9 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Group environmentLayer = new Group();
     private final Group highlightLayer = new Group();
     private final Group mowerLayer = new Group();
-    private final Group plantLayer;
-    private final Group zombieLayer;
+    private final Group boardLayer;
     private final Group effectLayer = new Group();
+    private final Group topLayer = new Group();
 
     private final EnvironmentRenderer environmentRenderer;
     private final WorldItemRenderer worldItemRenderer;
@@ -47,72 +47,51 @@ public class BattlefieldRenderer implements GameEventListener {
     public BattlefieldRenderer() {
         initShader();
 
-        plantLayer = getPlantLayer();
-
-        zombieLayer = getZombieLayer();
+        boardLayer = getBoardLayer();
 
         masterGroup.addActor(environmentLayer);
         masterGroup.addActor(highlightLayer);
         masterGroup.addActor(mowerLayer);
-        masterGroup.addActor(plantLayer);
         masterGroup.addActor(effectLayer);
-        masterGroup.addActor(zombieLayer);
+        masterGroup.addActor(boardLayer);
+        masterGroup.addActor(topLayer);
 
         environmentRenderer = new EnvironmentRenderer(environmentLayer);
-        effectRenderer = new EffectRenderer(effectLayer);
-        worldItemRenderer = new WorldItemRenderer(effectLayer, mowerLayer, zombieLayer, highlightLayer);
-        plantRenderer = new PlantRenderer(plantLayer);
-        zombieRenderer = new ZombieRenderer(zombieLayer);
+        worldItemRenderer = new WorldItemRenderer(effectLayer, boardLayer, topLayer, mowerLayer, highlightLayer);
+
+        plantRenderer = new PlantRenderer(boardLayer);
+        zombieRenderer = new ZombieRenderer(boardLayer);
+
+        effectRenderer = new EffectRenderer(topLayer);
 
         GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.SPAWN_EFFECT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
     }
 
-    private @NonNull Group getZombieLayer() {
-        final Group zombieLayer;
-        zombieLayer = new Group() {
+    private @NonNull Group getBoardLayer() {
+        return new Group() {
             @Override
             public void drawChildren(Batch batch, float parentAlpha) {
                 batch.setShader(entityShader);
                 for (Actor child : getChildren()) {
                     if (!child.isVisible()) continue;
-                    Zombie zombie = (Zombie) child.getUserObject();
-                    if (zombie != null) {
+
+                    Object userObj = child.getUserObject();
+                    if (userObj instanceof Plant plant) {
+                        applyPlantShaderUniforms(plant);
+                    } else if (userObj instanceof Zombie zombie) {
                         applyZombieShaderUniforms(zombie);
                     } else {
                         entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
                         entityShader.setUniformf("u_damageFlash", 0f);
                     }
-                    child.draw(batch, parentAlpha);
-                }
-                batch.setShader(null);
-            }
-        };
-        return zombieLayer;
-    }
 
-    private @NonNull Group getPlantLayer() {
-        final Group plantLayer;
-        plantLayer = new Group() {
-            @Override
-            public void drawChildren(Batch batch, float parentAlpha) {
-                batch.setShader(entityShader);
-                for (Actor child : getChildren()) {
-                    if (!child.isVisible()) continue;
-                    Plant plant = (Plant) child.getUserObject();
-                    if (plant != null) {
-                        applyPlantShaderUniforms(plant);
-                    } else {
-                        entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
-                        entityShader.setUniformf("u_damageFlash", 0f);
-                    }
                     child.draw(batch, parentAlpha);
                 }
                 batch.setShader(null);
             }
         };
-        return plantLayer;
     }
 
     private void initShader() {
@@ -220,6 +199,7 @@ public class BattlefieldRenderer implements GameEventListener {
         worldItemRenderer.sync(arena);
         plantRenderer.syncPlants(arena.getActivePlants());
         zombieRenderer.syncZombies(arena.getActiveZombies());
+        boardLayer.getChildren().sort((a, b) -> Float.compare(b.getY(), a.getY()));
     }
 
     public void clear() {

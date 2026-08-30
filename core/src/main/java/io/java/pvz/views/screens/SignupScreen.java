@@ -26,7 +26,7 @@ public class SignupScreen extends BaseScreen {
     private final SignupMenuController signupController;
     private TextureRegion backgroundRegion;
     private final Skin skin;
-    private final TextureBank  textures;
+    private final TextureBank textures;
 
     private String pendingUsername;
     private String pendingPassword;
@@ -60,7 +60,8 @@ public class SignupScreen extends BaseScreen {
         baseTable.add(repeatPasswordField).height(65).width(350).padBottom(5).row();
         baseTable.add(nicknameField).height(65).width(350).padBottom(5).row();
         baseTable.add(emailField).height(65).width(350).padBottom(5).row();
-        baseTable.add(genderField).height(65).width(350).padBottom(15).row();;
+        baseTable.add(genderField).height(65).width(350).padBottom(15).row();
+        ;
 
         TextButton registerBtn = new TextButton("Register", skin, "purple");
         ButtonAnimator.applyHoverAndClickEffect(registerBtn, 1.1f, 0.9f, () -> {
@@ -86,8 +87,8 @@ public class SignupScreen extends BaseScreen {
         });
         baseTable.add(registerBtn).height(70).padTop(15).row();
 
-        TextButton backBtn =  UiFactory.textButton("Already have account? Login", skin,
-            "green_small",1.05f, 0.95f, () -> {
+        TextButton backBtn = UiFactory.textButton("Already have account? Login", skin,
+            "green_small", 1.05f, 0.95f, () -> {
                 ScreenManager.getInstance().pushScreen(new LoginScreen(game));
             });
         baseTable.add(backBtn).height(50).padTop(5).row();
@@ -157,7 +158,7 @@ public class SignupScreen extends BaseScreen {
         Skin skin = AssetLoader.getInstance().getSkin();
         BorderedTable popup = new BorderedTable();
 
-        TextButton backBtn = UiFactory.textButton("Back", skin, "default", 1.05f, 0.95f, () -> {
+        TextButton backBtn = UiFactory.textButton("Back", skin, "green_small", 1.05f, 0.95f, () -> {
             modalLayer.clearChildren();
             buildUI();
         });
@@ -172,7 +173,7 @@ public class SignupScreen extends BaseScreen {
             final String qNumber = String.valueOf(i + 1);
             final String qText = questions[i].getQuestion();
 
-            TextButton qBtn = new TextButton(qText, skin, "default");
+            TextButton qBtn = new TextButton(qText, skin, "green_small");
             ButtonAnimator.applyHoverAndClickEffect(qBtn, 1.02f, 0.98f, () -> {
                 showAnswerPopup(qNumber, qText);
             });
@@ -189,7 +190,7 @@ public class SignupScreen extends BaseScreen {
 
         BorderedTable popup = new BorderedTable();
 
-        TextButton backBtn = UiFactory.textButton("Back", skin, "default",
+        TextButton backBtn = UiFactory.textButton("Back", skin, "green_small",
             1.05f, 0.95f, this::showSecurityQuestionsList);
 
         popup.add(backBtn).width(100).height(50).left().padBottom(15).row();

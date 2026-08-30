@@ -81,11 +81,6 @@ public class ZombieRenderer {
             }
         }
 
-        zombieLayer.getChildren().sort((a, b) -> {
-            float ay = a.getY();
-            float by = b.getY();
-            return Float.compare(by, ay);
-        });
     }
 
     private PamAnimatedActor spawnZombie(Zombie zombie) {

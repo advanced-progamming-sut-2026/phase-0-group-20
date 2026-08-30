@@ -63,11 +63,6 @@ public class PlantRenderer {
             }
         }
 
-        plantLayer.getChildren().sort((a, b) -> {
-            float ay = a.getY();
-            float by = b.getY();
-            return Float.compare(by, ay);
-        });
     }
 
     private PamAnimatedActor spawnPlant(Plant plant) {
@@ -336,6 +331,7 @@ public class PlantRenderer {
     }
 
     private void despawn(PamAnimatedActor actor) {
+        actor.clearActions();
         actor.addAction(Actions.sequence(
             Actions.delay(DESPAWN_LINGER_SECONDS),
             Actions.fadeOut(DESPAWN_FADE_SECONDS),

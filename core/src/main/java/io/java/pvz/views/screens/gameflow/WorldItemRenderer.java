@@ -42,8 +42,9 @@ import static io.java.pvz.models.enums.PhysicalConstants.*;
 
 public class WorldItemRenderer {
     private final Group effectLayer;
+    private final Group boardLayer;
+    private final Group topLayer;
     private final Group mowerLayer;
-    private final Group zombieLayer;
     private final Group highlightLayer;
     private final GameFlowController gameFlowController = new GameFlowController();
 
@@ -63,10 +64,11 @@ public class WorldItemRenderer {
 
     private static final Map<ProjectileType, ProjectileAnim> PROJECTILE_ANIMS = buildProjectileAnimMap();
 
-    public WorldItemRenderer(Group effectLayer, Group mowerLayer, Group zombieLayer, Group highlightLayer) {
+    public WorldItemRenderer(Group effectLayer, Group boardLayer, Group topLayer, Group mowerLayer, Group highlightLayer) {
         this.effectLayer = effectLayer;
+        this.boardLayer = boardLayer;
+        this.topLayer = topLayer;
         this.mowerLayer = mowerLayer;
-        this.zombieLayer = zombieLayer;
         this.highlightLayer = highlightLayer;
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -137,7 +139,7 @@ public class WorldItemRenderer {
 
         actor.setOrigin(Align.center);
         if (proj.getSpeedX() < 0) actor.setScaleX(-1f);
-        effectLayer.addActor(actor);
+        boardLayer.addActor(actor);
         GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_FIRED,
             new GameEventPayload.Builder(GameEvent.PROJECTILE_FIRED)
                 .projectileType(proj.getType())
@@ -254,7 +256,7 @@ public class WorldItemRenderer {
         setupSunMovement(actor, sun);
         setupSunListener(actor, sun, scale);
 
-        effectLayer.addActor(actor);
+        topLayer.addActor(actor);
         return actor;
     }
 
@@ -561,7 +563,7 @@ public class WorldItemRenderer {
         PamAnimatedActor actor = PamAnimatedActor.createEffectAnimated(pamPath, defaultClip);
         actor.setSize(TILE_WIDTH, TILE_HEIGHT);
         actor.setOrigin(Align.center);
-        effectLayer.addActor(actor);
+        boardLayer.addActor(actor);
         return actor;
     }
 
