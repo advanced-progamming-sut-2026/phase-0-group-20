@@ -313,22 +313,24 @@ public class GameHUD {
             mainLayer.addActor(sunStack);
         }
 
-        plantFoodBankUI = new PlantFoodUI(textures);
-        plantFoodBankUI.setPosition(200f, 20f);
+        if (!MatchController.getInstance().isOnlineMatch()) {
+            plantFoodBankUI = new PlantFoodUI(textures);
+            plantFoodBankUI.setPosition(200f, 20f);
 
-        plantFoodBankUI.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                inputHandler.onPlantFoodClicked();
-            }
-        });
+            plantFoodBankUI.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    inputHandler.onPlantFoodClicked();
+                }
+            });
 
-        mainLayer.addActor(plantFoodBankUI);
-        updatePlantFoodCount();
+            mainLayer.addActor(plantFoodBankUI);
+            updatePlantFoodCount();
+        }
     }
 
     private void setupActionButtons() {
-        if (App.getSettings().isDebug()) {
+        if (App.getSettings().isDebug() && !MatchController.getInstance().isOnlineMatch()) {
             Stack nukeBtn = UiFactory.iconButton(textures, skin, Ids.UI.NUKE_BUTTON, 50, 50,
                 gameFlowController::releaseNuke, false);
             nukeBtn.setPosition(50, 50);

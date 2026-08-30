@@ -47,6 +47,7 @@ public class WorldItemRenderer {
     private final Group topLayer;
     private final Group mowerLayer;
     private final Group highlightLayer;
+
     private final GameFlowController gameFlowController = new GameFlowController();
 
     private final Map<Projectile, PamAnimatedActor> projectileActors = new HashMap<>();
@@ -65,7 +66,8 @@ public class WorldItemRenderer {
 
     private static final Map<ProjectileType, ProjectileAnim> PROJECTILE_ANIMS = buildProjectileAnimMap();
 
-    public WorldItemRenderer(Group effectLayer, Group boardLayer, Group topLayer, Group mowerLayer, Group highlightLayer) {
+    public WorldItemRenderer(Group effectLayer, Group boardLayer, Group topLayer,
+                             Group mowerLayer, Group highlightLayer) {
         this.effectLayer = effectLayer;
         this.boardLayer = boardLayer;
         this.topLayer = topLayer;
@@ -140,7 +142,7 @@ public class WorldItemRenderer {
 
         actor.setOrigin(Align.center);
         if (proj.getSpeedX() < 0) actor.setScaleX(-1f);
-        boardLayer.addActor(actor);
+        topLayer.addActor(actor);
         GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_FIRED,
             new GameEventPayload.Builder(GameEvent.PROJECTILE_FIRED)
                 .projectileType(proj.getType())

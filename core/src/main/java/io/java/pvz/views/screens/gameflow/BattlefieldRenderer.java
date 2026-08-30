@@ -37,6 +37,7 @@ public class BattlefieldRenderer implements GameEventListener {
     private final ZombieRenderer zombieRenderer;
     private final EffectRenderer effectRenderer;
 
+
     private ShaderProgram entityShader;
 
     private final Map<Zombie, Integer> zombieLastHp = new HashMap<>();
@@ -127,19 +128,29 @@ public class BattlefieldRenderer implements GameEventListener {
         int col = zombie.getCol();
 
         if (col <= 1) {
-            r = 1.0f;g = 0.0f;b = 0.0f;
+            r = 1.0f;
+            g = 0.0f;
+            b = 0.0f;
             intensity = (float) (Math.abs(Math.sin(System.currentTimeMillis() / 150.0)) * 0.4 + 0.2);
         } else if (zombie.isHypnotized()) {
-            r = 1.0f;g = 0.4f;b = 1.0f;
+            r = 1.0f;
+            g = 0.4f;
+            b = 1.0f;
             intensity = 0.5f;
         } else if (isFrozen) {
-            r = 0.2f;g = 0.5f;b = 1.0f;
+            r = 0.2f;
+            g = 0.5f;
+            b = 1.0f;
             intensity = 0.5f;
         } else if (isChilled) {
-            r = 0.5f;g = 0.8f;b = 1.0f;
+            r = 0.5f;
+            g = 0.8f;
+            b = 1.0f;
             intensity = 0.3f;
         } else if (isPoisoned || zombie.isShiny()) {
-            r = 0.6f;g = 0.1f;b = 0.8f;
+            r = 0.6f;
+            g = 0.1f;
+            b = 0.8f;
             intensity = 0.5f;
         }
 
@@ -199,7 +210,11 @@ public class BattlefieldRenderer implements GameEventListener {
         worldItemRenderer.sync(arena);
         plantRenderer.syncPlants(arena.getActivePlants());
         zombieRenderer.syncZombies(arena.getActiveZombies());
-        boardLayer.getChildren().sort((a, b) -> Float.compare(b.getY(), a.getY()));
+        boardLayer.getChildren().sort((a, b) -> {
+            float yA = a.getY() - (a.getUserObject() instanceof Zombie ? 3f : 0f);
+            float yB = b.getY() - (b.getUserObject() instanceof Zombie ? 3f : 0f);
+            return Float.compare(yB, yA);
+        });
     }
 
     public void clear() {

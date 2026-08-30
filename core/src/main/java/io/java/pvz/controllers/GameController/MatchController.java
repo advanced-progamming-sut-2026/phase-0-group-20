@@ -1,6 +1,8 @@
 package io.java.pvz.controllers.GameController;
 
 import com.badlogic.gdx.Gdx;
+import io.java.pvz.models.App;
+import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.net.client.NetworkClient;
 import io.java.pvz.net.client.NetworkStateSyncer;
 import io.java.pvz.net.protocol.MessageType;
@@ -58,7 +60,10 @@ public class MatchController {
 
             if ("PLACE_PLANT".equals(action)) {
                 String plantName = message.getString("plantName");
-                new GameFlowController().plantPlant(plantName, String.valueOf(col), String.valueOf(row));
+               Plant template = App.findPlantByName(plantName);
+                if (template != null) {
+                    new GameFlowController().plantPlant(template, String.valueOf(col), String.valueOf(row));
+                }
             }
             else if ("RELEASE_ZOMBIE".equals(action)) {
                 String zombieAlias = message.getString("zombieAlias");
