@@ -58,6 +58,10 @@ public final class Ids {
     public static final class Plants {
         public static final String PICK_UP_PLANT_FOOD = "IMAGE_EFFECTS_PLANTFOOD_PICKUP_PLANTFOOD_PICKUP_79X79";
         public static final String ARMOR_NUT = "IMAGE_PLANT_WALLNUT_WALLNUT_120X139";
+        public static final String ARMOR_TALLNUT = "IMAGE_PLANT_TALLNUT_TALLNUT_138X157";
+        public static final String ARMOR_EXPLODEONUT = "IMAGE_PLANT_EXPLODEONUT_EXPLODEONUT_131X166";
+        public static final String ARMOR_ENDURIAN = "IMAGE_PLANT_ENDURIAN_ENDURIAN_172X182";
+        public static final String ARMOR_PUMPKIN = "IMAGE_PLANT_PUMPKIN_PUMPKIN_187X79";
     }
 
     public static final class Suns {
