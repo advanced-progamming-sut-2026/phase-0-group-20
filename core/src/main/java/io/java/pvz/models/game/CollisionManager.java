@@ -84,7 +84,7 @@ public class CollisionManager {
             if (mower == null || mower.isDestroyed()) continue;
 
             for (Zombie z : activeZombies) {
-                if (z.isDead() || z.getRow() != mower.getRow()) continue;
+                if (z.isDead() || z.getRow() != mower.getRow() || z.isSpawning()) continue;
 
                 if (!mower.isActivate() && z.getX() <= mower.getPosition().getX() + LAWN_MOWER_THRESHOLD) {
                     mower.trigger();
@@ -198,7 +198,7 @@ public class CollisionManager {
         for (int row = bottomRow; row <= topRow; row++) nearbyZombies.addAll(arena.zombieInRow(row));
         float combinedRadius = physProjectileRadius + physZombieRadius;
         for (Zombie z : nearbyZombies) {
-            if (z.isDead()) continue;
+            if (z.isDead() || z.isSpawning()) continue;
             if (projectile.getTarget() != null && projectile.getTarget() != z) continue;
             double dx = projectile.getX() - z.getX();
             double dy = projectile.getY() - z.getY();
@@ -262,7 +262,7 @@ public class CollisionManager {
     }
 
     private void checkZombiesAndZombiesCollision(Zombie z) {
-        if (z.isDead()) return;
+        if (z.isDead() || z.isSpawning()) return;
 
         Zombie targetZombie = null;
         float collisionRadius = PhysicalConstants.TILE_WIDTH * 0.5f;
@@ -288,7 +288,7 @@ public class CollisionManager {
     }
 
     private void checkZombiesAndPlantCollision(Zombie z) {
-        if (z.isDead()) return;
+        if (z.isDead() || z.isSpawning()) return;
 
         int row = z.getRow();
         int targetCol = z.getCol();
@@ -385,7 +385,7 @@ public class CollisionManager {
 
             for (Zombie z : arena.getActiveZombies()) {
                 Tile currentTile = arena.getTile(z.getRow(), z.getCol());
-                if (z.isDead() || !affectedTiles.contains(currentTile)) continue;
+                if (z.isDead() || !affectedTiles.contains(currentTile) || z.isSpawning()) continue;
                 z.takeDamage(150);
                 if (z.isDead()) {
                     GameEventPayload payload = new GameEventPayload.Builder(GameEvent.ZOMBIE_KILLED)

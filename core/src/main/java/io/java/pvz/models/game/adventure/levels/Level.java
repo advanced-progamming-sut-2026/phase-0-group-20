@@ -125,7 +125,7 @@ public abstract class Level implements GameMode {
         if (seasonModifier != null)
             seasonModifier.onWaveStart(newWave);
 
-        notify(isLastWave ? "The final wave has come." : "Wave " + currentWave + " started.");
+//        notify(isLastWave ? "The final wave has come." : "Wave " + currentWave + " started.");
         if (isLastWave) {
             session.getTimeManager().registerNewTicker(
                 new DelayedEventTicker(GameEvent.FINAL_WAVE_STARTED, 3f)

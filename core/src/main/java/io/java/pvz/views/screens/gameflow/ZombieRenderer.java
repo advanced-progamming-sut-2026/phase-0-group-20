@@ -117,6 +117,15 @@ public class ZombieRenderer {
                 case ZOMBOSS_DARK_AGES -> yOffset = actor.getHeight();
             }
         }
+
+        if (zombie.isSpawning() && zombie.getSpawnEffect() != Zombie.SpawnEffect.SANDSTORM) {
+            float progress = 1.0f - ((float) zombie.getSpawnTimer() / zombie.getTotalSpawnTicks());
+            yOffset -= 120f * (1.0f - Interpolation.sineOut.apply(progress));
+            actor.getColor().a = progress;
+        } else {
+            actor.getColor().a = 1.0f;
+        }
+
         float xOffset = (zombie instanceof Zomboss) ? 40f : 0f;
 
         centerOnPoint(actor, zombie.getPosition().getX() - xOffset, zombie.getPosition().getY() + yOffset);

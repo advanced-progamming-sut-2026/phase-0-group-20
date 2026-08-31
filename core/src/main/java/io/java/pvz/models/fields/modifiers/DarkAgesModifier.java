@@ -11,6 +11,7 @@ import io.java.pvz.models.fields.tiles.NormalTile;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,7 +75,6 @@ public class DarkAgesModifier implements SeasonModifier {
                 remainTiles--;
             }
         }
-        notify(numberOfTiles + " cursed necromancy grounds lie hidden on this map...");
     }
 
     private void spawnRandomGraves(Arena arena) {
@@ -131,7 +131,6 @@ public class DarkAgesModifier implements SeasonModifier {
         String contents = "";
         if (graveStone.hasSun()) contents = " It holds 50 sun!";
         else if (graveStone.hasPlantFood()) contents = " It holds a plant food!";
-        notify("A grave emerged from the ground at row " + (row + 1) + ", col " + (col + 1) + "!" + contents);
     }
 
     private void raiseZombiesFromGraves(Arena arena) {
@@ -144,9 +143,8 @@ public class DarkAgesModifier implements SeasonModifier {
         for (NecromanceTile tile : hauntedTiles) {
             if (rand.nextDouble() < 0.5) {
                 Zombie zombie = ZombieFactory.create(ZombieType.NORMAL, tile.getRow());
+                zombie.startSpawning(3 * TimeManager.TICKS_PER_SECOND, Zombie.SpawnEffect.GRAVE_RISE);
                 tile.spawnZombieFromBelow(zombie);
-                notify("A zombie crawled out from under the grave at row "
-                    + (tile.getRow() + 1) + ", col " + (tile.getCol() + 1) + "!");
             }
         }
     }

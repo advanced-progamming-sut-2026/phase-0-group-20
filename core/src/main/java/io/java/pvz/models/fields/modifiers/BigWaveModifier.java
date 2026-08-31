@@ -56,10 +56,8 @@ public class BigWaveModifier implements SeasonModifier {
         zombie.setRow(shore.getRow());
         zombie.setCol(shore.getCol());
 
-        zombie.setSpawnEffect(Zombie.SpawnEffect.WATER_SPLASH); //for graphic phase
+        zombie.startSpawning(3 * TimeManager.TICKS_PER_SECOND, Zombie.SpawnEffect.WATER_SPLASH);
 
-        notify("A zombie emerged from the water at row " + (shore.getRow() + 1)
-            + ", col " + (shore.getCol() + 1) + "!");
     }
 
     @Override
@@ -93,10 +91,6 @@ public class BigWaveModifier implements SeasonModifier {
 
         if (newWaterCols == currentWaterCols) newWaterCols = newWaterCols > 6 ? newWaterCols - 1 : newWaterCols + 1;
 
-        if (newWaterCols > currentWaterCols)
-            notify("The tide is rising! Water now covers the " + newWaterCols + " rightmost columns.");
-        else
-            notify("The tide is receding! Water now covers the " + newWaterCols + " rightmost columns.");
         currentWaterCols = newWaterCols;
 
         int cols = arena.getCols();
