@@ -33,7 +33,10 @@ public class LeaderboardHandler {
             row.put("myPoint", u.getHighestBonusScore());
             row.put("chapter", u.getHighestUnlockedChapterIndex() + 1);
             row.put("level", u.getHighestUnlockedLevelIndex() + 1);
-            row.put("minigameLevelsUnlocked", u.getUnlockedMinigames().size());
+
+            int totalMinigameLevels = u.getUnlockedMinigames().values().stream().mapToInt(Integer::intValue).sum();
+            row.put("minigameLevelsUnlocked", totalMinigameLevels);
+
             row.put("questsCompleted", u.getQuestManager().getCompletedQuestsCount());
             rows.add(row);
         }
@@ -76,8 +79,9 @@ public class LeaderboardHandler {
 
     private List<User> sortedByMinigame(List<User> users) {
         return users.stream()
-            .sorted(Comparator.comparingInt((User u) -> u.getUnlockedMinigames().size()).reversed()
-                .thenComparing(User::getUsername))
+            .sorted(Comparator.comparingInt((User u) ->
+                u.getUnlockedMinigames().values().stream().mapToInt(Integer::intValue).sum()
+            ).reversed().thenComparing(User::getUsername))
             .toList();
     }
 

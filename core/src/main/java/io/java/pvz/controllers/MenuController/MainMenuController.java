@@ -13,14 +13,10 @@ public class MainMenuController {
         if (currentUser == null)
             return new Result(false, "no user is currently logged in");
 
-        currentUser.setStayLoggedIn(false);
-
-        DataBaseManager.saveOrUpdateUser(currentUser);
-
         currentUser.getQuestManager().unregisterFromAllEvents();
         App.setActiveUser(null);
         App.setActiveMenu(Menu.LOGIN_MENU);
 
-        return new Result(true, "logged out successfully");
+        return new Result(true, "logged out successfully from client memory");
     }
 }

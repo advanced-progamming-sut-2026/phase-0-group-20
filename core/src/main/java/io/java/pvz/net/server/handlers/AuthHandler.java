@@ -1,8 +1,11 @@
 package io.java.pvz.net.server.handlers;
 
+import io.java.pvz.controllers.MenuController.LoginMenuController;
 import io.java.pvz.controllers.MenuController.SignupMenuController;
+import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.database.DataBaseManager;
+import io.java.pvz.models.users.PasswordUtils;
 import io.java.pvz.models.users.User;
 import io.java.pvz.net.protocol.NetworkMessage;
 import io.java.pvz.net.server.ClientConnection;
@@ -17,45 +20,32 @@ public class AuthHandler {
     }
 
     public NetworkMessage login(NetworkMessage request, ClientConnection connection) {
+        LoginMenuController controller = connection.getLoginController();
+
         String username = request.getString("username");
         String password = request.getString("password");
         boolean stayLoggedIn = Boolean.TRUE.equals(request.getBoolean("stayLoggedIn"));
-        boolean isHash = Boolean.TRUE.equals(request.getBoolean("isHash"));
 
         if (username == null || password == null) {
             return NetworkMessage.failure(request, "username and password are required");
         }
-        username = username.trim();
 
-        if (!DataBaseManager.usernameExists(username)) {
-            return NetworkMessage.failure(request, "username does not exist");
-        }
-
-        User user;
-        if (isHash) {
-            String finalUsername = username;
-            user = DataBaseManager.getAllUsers().stream()
-                .filter(u -> u.getUsername().equals(finalUsername) && u.getPasswordHash().equals(password))
-                .findFirst().orElse(null);
-        } else {
-            user = DataBaseManager.authenticateUser(username, password);
-        }
-
-        if (user == null) {
-            return NetworkMessage.failure(request, "incorrect password");
-        }
-
-        if (sessionRegistry.isOnline(user.getUsername())) {
+        if (sessionRegistry.isOnline(username)) {
             return NetworkMessage.failure(request, "this account is already logged in from another session");
         }
 
-        user.setStayLoggedIn(stayLoggedIn);
-        DataBaseManager.saveOrUpdateUser(user);
-        user.performDailyLoginCheck();
+        Result result = controller.login(username, password, stayLoggedIn);
 
+        if (!result.isSuccessful()) {
+            return NetworkMessage.failure(request, result.message());
+        }
+
+        User user = App.getActiveUser();
         connection.setAuthenticatedUser(user);
 
         NetworkMessage response = NetworkMessage.success(request);
+        response.put("user", user);
+
         response.put("nickname", user.getNickname());
         response.put("coin", user.getCoin());
         response.put("diamond", user.getDiamond());
@@ -100,24 +90,47 @@ public class AuthHandler {
     }
 
     public NetworkMessage forgotPassword(NetworkMessage request, ClientConnection connection) {
-        Result result = connection.getLoginController().forgetPassword(
-            request.getString("username"),
-            request.getString("email")
-        );
-        return toNetworkMessage(request, result, "securityQuestion");
+        String username = request.getString("username");
+        String email = request.getString("email");
+
+        User user = DataBaseManager.getUserForRecovery(username, email);
+        if (user == null) {
+            return NetworkMessage.failure(request, "username and email do not match");
+        }
+
+        NetworkMessage response = NetworkMessage.success(request);
+        response.put("securityQuestion", user.getSecurityQuestion().getQuestion());
+        return response;
     }
 
     public NetworkMessage checkSecurityQuestion(NetworkMessage request, ClientConnection connection) {
-        Result result = connection.getLoginController().checkSecurityQuestion(request.getString("answer"));
-        return toNetworkMessage(request, result, "message");
+        String username = request.getString("username");
+        String answer = request.getString("answer");
+
+        User user = DataBaseManager.getAllUsers().stream()
+            .filter(u -> u.getUsername().equals(username))
+            .findFirst().orElse(null);
+
+        if (user == null) {
+            return NetworkMessage.failure(request, "user not found");
+        }
+
+        String hashedAnswer = PasswordUtils.hashPassword(answer);
+        if (!user.getSecurityAnswerHash().equals(hashedAnswer)) {
+            return NetworkMessage.failure(request, "wrong answer to security question");
+        }
+
+        return NetworkMessage.success(request);
     }
 
     public NetworkMessage resetPassword(NetworkMessage request, ClientConnection connection) {
-        Result result = connection.getLoginController().resetPassword(
-            request.getString("newPassword"),
-            request.getString("confirmPassword")
-        );
-        return toNetworkMessage(request, result, "message");
+        String username = request.getString("username");
+        String newPassword = request.getString("newPassword");
+
+        String hashedNewPassword = PasswordUtils.hashPassword(newPassword);
+        DataBaseManager.updateForgotPassword(username, hashedNewPassword);
+
+        return NetworkMessage.success(request);
     }
 
     public NetworkMessage fetchUserState(NetworkMessage request, ClientConnection connection) {

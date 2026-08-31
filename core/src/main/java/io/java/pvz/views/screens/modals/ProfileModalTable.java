@@ -1,5 +1,6 @@
 package io.java.pvz.views.screens.modals;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.*;
@@ -12,6 +13,7 @@ import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.ProfileNetworkController;
 import io.java.pvz.controllers.MenuController.ProfileMenuController;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
@@ -26,7 +28,6 @@ import pvz.skin.BorderedTable;
 
 public class ProfileModalTable extends BorderedTable {
 
-    private final ProfileMenuController controller;
     private final ProfileNetworkController networkController;
     private final Skin skin;
     private final TextureBank textures;
@@ -44,7 +45,6 @@ public class ProfileModalTable extends BorderedTable {
         super();
         this.skin = skin;
         this.textures = AssetLoader.getInstance().getTextures();
-        this.controller = new ProfileMenuController();
         this.networkController = new ProfileNetworkController();
 
         pad(40, 45, 35, 45);
@@ -54,7 +54,7 @@ public class ProfileModalTable extends BorderedTable {
     }
 
     private void buildContent() {
-        User user = controller.getUserModel();
+        User user = App.getActiveUser();
         if (user == null) {
             this.remove();
             return;
@@ -184,27 +184,19 @@ public class ProfileModalTable extends BorderedTable {
     }
 
     private void saveProfileInfo(String newNickname, String newEmail, String newUsername) {
-        Result nicknameResult = controller.changeNickname(newNickname);
-        Result emailResult = controller.changeEmail(newEmail);
-        Result usernameResult = controller.changeUsername(newUsername);
-
-        handleResult(nicknameResult);
-        handleResult(emailResult);
-        handleResult(usernameResult);
-
-        if (!NetworkController.getInstance().isAuthenticated()) return;
-
-        if (nicknameResult.isSuccessful()) {
-            networkController.updateNickname(newNickname, response ->
-                reportSyncOutcome("Nickname", response));
+        if (!NetworkController.getInstance().isAuthenticated()) {
+            dispatchMessage("Error: You must be online to change profile info.");
+            return;
         }
-        if (emailResult.isSuccessful()) {
-            networkController.updateEmail(newEmail, response ->
-                reportSyncOutcome("Email", response));
+
+        if (!newNickname.isEmpty()) {
+            networkController.updateNickname(newNickname, response -> handleNetworkResponse("Nickname", response));
         }
-        if (usernameResult.isSuccessful()) {
-            networkController.updateUsername(newUsername, response ->
-                reportSyncOutcome("Username", response));
+        if (!newEmail.isEmpty()) {
+            networkController.updateEmail(newEmail, response -> handleNetworkResponse("Email", response));
+        }
+        if (!newUsername.isEmpty()) {
+            networkController.updateUsername(newUsername, response -> handleNetworkResponse("Username", response));
         }
     }
 
@@ -259,32 +251,49 @@ public class ProfileModalTable extends BorderedTable {
             String newPassword = newPassField.getText();
             String repeatPassword = repeatPassField.getText();
 
-            Result result = controller.changePassword(oldPassword, newPassword, repeatPassword);
-            handleResult(result);
+            if (!NetworkController.getInstance().isAuthenticated()) {
+                dispatchMessage("Error: You must be online to change password.");
+                return;
+            }
 
-            if (!result.isSuccessful()) return;
-
-            oldPassField.setText("");
-            newPassField.setText("");
-            repeatPassField.setText("");
-
-            if (!NetworkController.getInstance().isAuthenticated()) return;
-
-            networkController.updatePassword(oldPassword, newPassword, repeatPassword,
-                response -> reportSyncOutcome("Password", response));
+            networkController.updatePassword(oldPassword, newPassword, repeatPassword, response -> {
+                Gdx.app.postRunnable(() -> {
+                    handleNetworkResponse("Password", response);
+                    if (response != null && response.isSuccess()) {
+                        oldPassField.setText("");
+                        newPassField.setText("");
+                        repeatPassField.setText("");
+                    }
+                });
+            });
         });
     }
 
-    private void reportSyncOutcome(String fieldName, NetworkMessage response) {
-        if (response != null && response.isSuccess()) {
-            System.out.println(fieldName + " synced with server successfully");
-            return;
-        }
-        String error = response != null ? response.getErrorMessage() : "server unreachable";
+    private void handleNetworkResponse(String fieldName, NetworkMessage response) {
+        Gdx.app.postRunnable(() -> {
+            if (response != null && response.isSuccess()) {
+                dispatchMessage(fieldName + " updated successfully!");
+
+                User current = App.getActiveUser();
+                if (current != null) {
+                    if (fieldName.equals("Username") && response.getString("username") != null) {
+                        current.setUsername(response.getString("username"));
+                    } else if (fieldName.equals("Email") && response.getString("email") != null) {
+                        current.setEmail(response.getString("email"));
+                    } else if (fieldName.equals("Nickname") && response.getString("nickname") != null) {
+                        current.setNickname(response.getString("nickname"));
+                    }
+                }
+            } else {
+                String error = response != null ? response.getErrorMessage() : "server unreachable";
+                dispatchMessage("Failed to update " + fieldName + ": " + error);
+            }
+        });
+    }
+
+    private void dispatchMessage(String message) {
         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-            new GameEventPayload.Builder(GameEvent.NOTIFY)
-                .message(fieldName + " was saved locally but failed to sync with the server: " + error)
-                .build());
+            new GameEventPayload.Builder(GameEvent.NOTIFY).message(message).build());
     }
 
     private Label createStatLabel(String text) {
@@ -306,14 +315,6 @@ public class ProfileModalTable extends BorderedTable {
         label.setColor(brownColor);
         label.setFontScale(1.6f);
         return label;
-    }
-
-    private void handleResult(Result result) {
-        System.out.println(result);
-        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-            new GameEventPayload.Builder(GameEvent.NOTIFY)
-                .message(result.message())
-                .build());
     }
 
     public void show(Group targetLayer, Viewport viewport) {
