@@ -14,6 +14,8 @@ public class SwitchLaneZombossAttack implements IZombossAttack {
     private final IdleZombossAttack idleState;
     private int moveTimer;
     private int targetRow;
+    private float startY;
+    private float targetY;
     private final Random random = new Random();
 
     public SwitchLaneZombossAttack(Zomboss zomboss, IdleZombossAttack idleState) {
@@ -37,6 +39,9 @@ public class SwitchLaneZombossAttack implements IZombossAttack {
         } else {
             zomboss.setState(ZombieState.ZOMBOSS_WALK_DOWN);
         }
+
+        this.startY = zomboss.getY();
+        this.targetY = targetRow * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y;
     }
 
     @Override
@@ -44,15 +49,19 @@ public class SwitchLaneZombossAttack implements IZombossAttack {
         moveTimer++;
         int animationTicks = (int) (ANIMATION_DURATION * TimeManager.TICKS_PER_SECOND);
 
-        if (moveTimer == animationTicks) {
-            zomboss.setRow(targetRow);
-            zomboss.setSecondRow(targetRow + 1);
-
-            float newY = targetRow * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y;
-            zomboss.setY(newY);
+        float progress = (float) moveTimer / animationTicks;
+        if (progress > 1.0f) {
+            progress = 1.0f;
         }
 
+        float currentY = startY + (targetY - startY) * progress;
+        zomboss.setY(currentY);
+
         if (moveTimer >= animationTicks) {
+            zomboss.setRow(targetRow);
+            zomboss.setSecondRow(targetRow + 1);
+            zomboss.setY(targetY);
+
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);

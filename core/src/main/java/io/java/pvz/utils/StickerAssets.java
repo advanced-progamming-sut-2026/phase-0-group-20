@@ -32,7 +32,7 @@ public final class StickerAssets {
             return new Image();
         }
 
-        Texture texture = cache.computeIfAbsent(index, i -> {
+        Texture texture = CACHE.computeIfAbsent(index, i -> {
             String path = PATHS[i];
             if (!Gdx.files.internal(path).exists()) {
                 Gdx.app.error("StickerAssets", "Missing sticker file: " + path);
@@ -51,9 +51,9 @@ public final class StickerAssets {
     }
 
     public static void dispose() {
-        for (Texture t : cache.values()) {
+        for (Texture t : CACHE.values()) {
             if (t != null) t.dispose();
         }
-        cache.clear();
+        CACHE.clear();
     }
 }
