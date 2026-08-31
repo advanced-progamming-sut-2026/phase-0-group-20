@@ -26,6 +26,10 @@ public class ProfileMenuController {
         if (!(result = UserValidator.validateUsername(newUsername)).isSuccessful())
             return result;
 
+        if (DataBaseManager.usernameExists(newUsername)) {
+            return new Result(false, "username is already taken");
+        }
+
         DataBaseManager.updateUsername(current, newUsername);
 
         return new Result(true, "username has been changed successfully");
