@@ -79,17 +79,36 @@ public class BattlefieldRenderer implements GameEventListener {
                 for (Actor child : getChildren()) {
                     if (!child.isVisible()) continue;
 
+                    boolean isSpawningZombie = false;
+                    float groundClipY = 0f;
+                    batch.flush();
+
                     Object userObj = child.getUserObject();
                     if (userObj instanceof Plant plant) {
                         applyPlantShaderUniforms(plant);
                     } else if (userObj instanceof Zombie zombie) {
                         applyZombieShaderUniforms(zombie);
+
+                        if (zombie.isSpawning() && zombie.getSpawnEffect() != Zombie.SpawnEffect.SANDSTORM) {
+                            isSpawningZombie = true;
+                            groundClipY = zombie.getPosition().getY() - 50f;
+                        }
+
                     } else {
                         entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
                         entityShader.setUniformf("u_damageFlash", 0f);
                     }
 
-                    child.draw(batch, parentAlpha);
+                    if (isSpawningZombie) {
+                        batch.flush();
+                        if (clipBegin(child.getX() - 150f, groundClipY, child.getWidth() + 300f, child.getHeight() + 200f)) {
+                            child.draw(batch, parentAlpha);
+                            batch.flush();
+                            clipEnd();
+                        }
+                    } else
+                        child.draw(batch, parentAlpha);
+
                 }
                 batch.setShader(null);
             }

@@ -3,6 +3,7 @@ package io.java.pvz.controllers.GameController;
 import com.badlogic.gdx.Gdx;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.java.pvz.models.App;
+import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.users.User;
 import io.java.pvz.net.client.NetworkClient;
 import io.java.pvz.net.client.ServerConfig;
@@ -54,6 +55,7 @@ public class NetworkController {
                     if (response.getData().containsKey("user")) {
                         User loggedInUser = mapper.convertValue(response.get("user"), User.class);
                         App.setActiveUser(loggedInUser);
+                        App.setActiveAdventure(new Adventure());
                     }
                 } catch (Exception e) {
                     System.err.println("Error parsing user data on client: " + e.getMessage());

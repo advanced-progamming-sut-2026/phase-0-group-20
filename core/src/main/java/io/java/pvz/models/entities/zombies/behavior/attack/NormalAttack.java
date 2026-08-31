@@ -48,8 +48,9 @@ public class NormalAttack implements AttackBehavior {
             return;
         }
 
-        Plant targetPlant = currentTile.getPlants().get(0);
-        for (Plant p : currentTile.getPlants()) {
+        Plant targetPlant = currentTile.getPlants().getLast();
+        for (int i = currentTile.getPlants().size() - 1; i >= 0; i--) {
+            Plant p = currentTile.getPlants().get(i);
             boolean isCat = p.getActiveEffects().stream().anyMatch(e -> e instanceof SheepEffect);
             if (!isCat) {
                 targetPlant = p;

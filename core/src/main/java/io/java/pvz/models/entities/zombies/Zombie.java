@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Zombie implements Ticker {
-    public enum SpawnEffect {NORMAL, SANDSTORM, WATER_SPLASH}
+    public enum SpawnEffect {NORMAL, SANDSTORM, WATER_SPLASH, GRAVE_RISE}
 
     private static final Random RAND = new Random();
     private final List<Armor> armorPieces;
@@ -53,6 +53,9 @@ public class Zombie implements Ticker {
     private boolean shiny = false;
     private boolean burnedToAsh = false;
     private int smashDamage;
+
+    private int spawnTimer = 0;
+    private int totalSpawnTicks = 0;
 
     private final Position position;
 
@@ -84,6 +87,16 @@ public class Zombie implements Ticker {
     @Override
     public void onTick(int currentTick) {
         if (dead) return;
+
+        if (isSpawning()) {
+            spawnTimer--;
+            if (spawnTimer <= 0) {
+                state = ZombieState.WALKING;
+                spawnEffect = SpawnEffect.NORMAL;
+            }
+            updateTile();
+            return;
+        }
 
         if (spawnEffect == SpawnEffect.SANDSTORM) { //  || spawnEffect == SpawnEffect.WATER_SPLASH
             updateTile();
@@ -345,12 +358,15 @@ public class Zombie implements Ticker {
 
     public void move() {
         if (this.isHypnotized()) {
-            this.position.moveX(this.currentSpeed);
-            if (this.getCol() >= GameSession.getInstance().getArena().getCols()) {
+            this.position.moveX(Math.abs(this.currentSpeed));
+            if (this.getCol() >= GameSession.getInstance().getArena().getCols() + 3) {
                 this.setDead(true);
             }
         } else {
             this.position.moveX(-this.currentSpeed);
+            if (this.getCol() > 12 && this.getCurrentSpeed() < 0)
+                this.setDead(true);
+            if (this.getCol() < -2) this.setDead(true);
         }
     }
 
@@ -490,5 +506,24 @@ public class Zombie implements Ticker {
 
     public void setSmashDamage(int smashDamage) {
         this.smashDamage = smashDamage;
+    }
+
+    public void startSpawning(int ticks, SpawnEffect effect) {
+        this.spawnTimer = ticks;
+        this.totalSpawnTicks = ticks;
+        this.spawnEffect = effect;
+        this.state = ZombieState.INTRO;
+    }
+
+    public boolean isSpawning() {
+        return spawnTimer > 0;
+    }
+
+    public int getSpawnTimer() {
+        return spawnTimer;
+    }
+
+    public int getTotalSpawnTicks() {
+        return totalSpawnTicks;
     }
 }

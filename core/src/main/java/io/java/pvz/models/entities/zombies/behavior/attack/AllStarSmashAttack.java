@@ -51,7 +51,7 @@ public class AllStarSmashAttack implements AttackBehavior {
         Tile currentTile = session.getArena().getTile(zombie.getRow(), zombie.getCol());
         if (currentTile != null) {
             List<Plant> targets = currentTile.getPlants();
-            if (!targets.isEmpty() && !targets.get(0).isDead()) {
+            if (!targets.isEmpty() && !targets.getLast().isDead()) {
                 zombie.addEffect(new AllStarTackleEffect(zombie, context, targets));
                 return;
             }

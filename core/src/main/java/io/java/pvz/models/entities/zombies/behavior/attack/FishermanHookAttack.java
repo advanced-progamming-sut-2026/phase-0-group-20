@@ -25,7 +25,7 @@ public class FishermanHookAttack implements AttackBehavior {
 
         for (Plant p : session.getArena().getActivePlants()) {
             if (p.getPlacedTile().getRow() == zRow && p.getPlacedTile().getCol() < zCol) {
-                if (p.getPlacedTile().getCol() > rightmostCol) {
+                if (p.getPlacedTile().getCol() >= rightmostCol) {
                     rightmostCol = p.getPlacedTile().getCol();
                     targetPlant = p;
                 }

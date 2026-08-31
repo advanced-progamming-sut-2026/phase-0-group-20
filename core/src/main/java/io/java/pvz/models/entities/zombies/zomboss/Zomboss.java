@@ -34,7 +34,7 @@ public abstract class Zomboss extends Zombie {
                    DefenseBehavior defenseBehavior) {
         ZombieData data = new ZombieData (
             "Zomboss"
-            ,5100
+            ,9000
             ,0.3f
             ,1000
             ,1000
