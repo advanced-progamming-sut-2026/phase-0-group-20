@@ -8,9 +8,12 @@ import io.java.pvz.models.timeManager.TimeManager;
 import java.util.Random;
 
 public class SwitchLaneZombossAttack implements IZombossAttack {
+    private static final float ANIMATION_DURATION = 1.23f;
+
     private final Zomboss zomboss;
     private final IdleZombossAttack idleState;
     private int moveTimer;
+    private int targetRow;
     private final Random random = new Random();
 
     public SwitchLaneZombossAttack(Zomboss zomboss, IdleZombossAttack idleState) {
@@ -21,37 +24,39 @@ public class SwitchLaneZombossAttack implements IZombossAttack {
     @Override
     public void onEnter() {
         this.moveTimer = 0;
-        zomboss.setState(ZombieState.WALKING);
-//        GameSession.notify("Zomboss is preparing to switch lanes...");
+
+        int maxRows = GameSession.getInstance().getArena().getRows();
+        int currentRow = zomboss.getRow();
+
+        do {
+            targetRow = random.nextInt(maxRows - 1);
+        } while (targetRow == currentRow);
+
+        if (targetRow > currentRow) {
+            zomboss.setState(ZombieState.ZOMBOSS_WALK_UP);
+        } else {
+            zomboss.setState(ZombieState.ZOMBOSS_WALK_DOWN);
+        }
     }
 
     @Override
     public void execute() {
         moveTimer++;
+        int animationTicks = (int) (ANIMATION_DURATION * TimeManager.TICKS_PER_SECOND);
 
-        if (moveTimer == TimeManager.TICKS_PER_SECOND) {
-            int maxRows = GameSession.getInstance().getArena().getRows();
-            int currentRow = zomboss.getRow();
-            int newRow;
+        if (moveTimer == animationTicks) {
+            zomboss.setRow(targetRow);
+            zomboss.setSecondRow(targetRow + 1);
 
-            do {
-                newRow = random.nextInt(maxRows - 1);
-            } while (newRow == currentRow);
-
-            zomboss.setRow(newRow);
-            zomboss.setSecondRow(newRow + 1);
-
-            float newY = newRow * PhysicalConstants.TILE_HEIGHT +
-                PhysicalConstants.GRID_START_Y;
+            float newY = targetRow * PhysicalConstants.TILE_HEIGHT + PhysicalConstants.GRID_START_Y;
             zomboss.setY(newY);
-
-//            GameSession.notify("Zomboss switched to rows " + (newRow + 1) + " and " + (newRow + 2) + "!");
         }
 
-        if (moveTimer >= 2 * TimeManager.TICKS_PER_SECOND) {
+        if (moveTimer >= animationTicks) {
             this.onExit();
             idleState.onEnter();
             zomboss.setAttackBehavior(idleState);
+            zomboss.setState(ZombieState.BOSS_IDLE);
         }
     }
 

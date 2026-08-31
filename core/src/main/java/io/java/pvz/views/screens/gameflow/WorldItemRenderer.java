@@ -544,21 +544,20 @@ public class WorldItemRenderer {
         } else if (obs instanceof IceBlock ib && ib.getFrozenPlant() != null) {
             pamPath = "768/FULL/EFFECTS/FROSTBITE_ICE_BLOCK_PLANT/FROSTBITE_ICE_BLOCK_PLANT.PAM";
             defaultClip = "freeze_idle";
-
             String plantAnimName = UiFactory.getAnimationName(ib.getFrozenPlant());
             AnimationCatalog.EntityAnimation plantAnim = AnimationCatalog.getPlantAnimation(plantAnimName);
             if (plantAnim != null) {
                 Plant p = ib.getFrozenPlant();
                 String targetClip = "idle";
                 int size = p.getSize();
-
                 if (plantAnim.hasClip("idle_stage" + size)) targetClip = "idle_stage" + size;
                 else if (plantAnim.hasClip("idle" + size)) targetClip = "idle" + size;
                 else if (plantAnim.hasClip("stage" + size + "_idle")) targetClip = "stage" + size + "_idle";
                 else if (!plantAnim.hasClip("idle")) {
                     if (plantAnim.hasClip("idle_stage1")) targetClip = "idle_stage1";
                     else if (plantAnim.hasClip("idle1_1")) targetClip = "idle1_1";
-                    else if (!plantAnim.getClipNames().isEmpty()) targetClip = plantAnim.getClipNames().iterator().next();
+                    else if (!plantAnim.getClipNames().isEmpty()) targetClip =
+                        plantAnim.getClipNames().iterator().next();
                 }
 
                 PamAnimatedActor fakePlant = new PamAnimatedActor(AssetLoader.getInstance().getPlayer(),
@@ -570,7 +569,6 @@ public class WorldItemRenderer {
                 };
                 fakePlant.setSize(TILE_WIDTH, TILE_HEIGHT);
                 fakePlant.setOrigin(Align.center);
-
                 boardLayer.addActor(fakePlant);
                 fakePlantActors.put(ib, fakePlant);
             }

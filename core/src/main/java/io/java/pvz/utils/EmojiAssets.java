@@ -17,7 +17,7 @@ public final class EmojiAssets {
         "emojis/Very Angry Emoji.png"
     };
 
-    private static final Map<Integer, Texture> cache = new HashMap<>();
+    private static final Map<Integer, Texture> CACHE = new HashMap<>();
 
     private EmojiAssets() {
     }
@@ -32,7 +32,7 @@ public final class EmojiAssets {
             return new Image();
         }
 
-        Texture texture = cache.computeIfAbsent(index, i -> {
+        Texture texture = CACHE.computeIfAbsent(index, i -> {
             String path = PATHS[i];
             if (!Gdx.files.internal(path).exists()) {
                 Gdx.app.error("EmojiAssets", "Missing emoji file: " + path);
@@ -51,9 +51,9 @@ public final class EmojiAssets {
     }
 
     public static void dispose() {
-        for (Texture t : cache.values()) {
+        for (Texture t : CACHE.values()) {
             if (t != null) t.dispose();
         }
-        cache.clear();
+        CACHE.clear();
     }
 }

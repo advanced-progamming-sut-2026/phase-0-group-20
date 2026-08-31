@@ -175,18 +175,14 @@ public class IceCaveModifier implements SeasonModifier {
                     if (!plants.isEmpty()) {
                         Plant templatePlant = plants.get(rand.nextInt(plants.size()));
                         Plant freshPlant = InGameEntityGenerator.getPlantForGame(templatePlant, false);
-
                         tile.addPlant(freshPlant);
                         session.getArena().addPlant(freshPlant);
                         session.getTimeManager().registerNewTicker(freshPlant);
-
-                        io.java.pvz.models.entities.plants.effect.FreezeEffect freezeEffect = // do ta freeze effect darim tofff
+                        io.java.pvz.models.entities.plants.effect.FreezeEffect freezeEffect =
                             new io.java.pvz.models.entities.plants.effect.FreezeEffect();
                         freshPlant.addEffect(freezeEffect);
-
                         freezeEffect.addStack(freshPlant);
                         freezeEffect.addStack(freshPlant);
-
                         placed++;
                     }
                 } else {

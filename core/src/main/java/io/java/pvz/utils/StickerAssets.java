@@ -17,7 +17,7 @@ public final class StickerAssets {
         "stickers/emotes_goblin_cheater_dl.png"
     };
 
-    private static final Map<Integer, Texture> cache = new HashMap<>();
+    private static final Map<Integer, Texture> CACHE = new HashMap<>();
 
     private StickerAssets() {
     }

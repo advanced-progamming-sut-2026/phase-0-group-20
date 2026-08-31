@@ -129,29 +129,19 @@ public class BattlefieldRenderer implements GameEventListener {
         int col = zombie.getCol();
 
         if (col <= 1) {
-            r = 1.0f;
-            g = 0.0f;
-            b = 0.0f;
+            r = 1.0f;g = 0.0f;b = 0.0f;
             intensity = (float) (Math.abs(Math.sin(System.currentTimeMillis() / 150.0)) * 0.4 + 0.2);
         } else if (zombie.isHypnotized()) {
-            r = 1.0f;
-            g = 0.4f;
-            b = 1.0f;
+            r = 1.0f;g = 0.4f;b = 1.0f;
             intensity = 0.5f;
         } else if (isFrozen) {
-            r = 0.2f;
-            g = 0.5f;
-            b = 1.0f;
+            r = 0.2f;g = 0.5f;b = 1.0f;
             intensity = 0.5f;
         } else if (isChilled) {
-            r = 0.5f;
-            g = 0.8f;
-            b = 1.0f;
+            r = 0.5f;g = 0.8f;b = 1.0f;
             intensity = 0.3f;
         } else if (isPoisoned || zombie.isShiny()) {
-            r = 0.6f;
-            g = 0.1f;
-            b = 0.8f;
+            r = 0.6f;g = 0.1f;b = 0.8f;
             intensity = 0.5f;
         }
 
@@ -159,9 +149,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
         if (zombie.isDead()) {
             flash = 0f;
-            r = 1f;
-            g = 1f;
-            b = 1f;
+            r = 1f;g = 1f;b = 1f;
             intensity = 0f;
         }
 
