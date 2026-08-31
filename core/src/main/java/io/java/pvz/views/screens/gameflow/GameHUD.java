@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -55,6 +56,18 @@ public class GameHUD {
     private static final float STOMP_SQUASH_DURATION = 0.08f;
     private static final float STOMP_SETTLE_DURATION = 0.18f;
 
+    private static final float REACTION_BUBBLE_SIZE = 150f;
+    private static final float REACTION_POP_DURATION = 0.3f;
+    private static final float STICKER_HOLD_DURATION = 1.5f;
+    private static final float EMOJI_HOLD_DURATION = 1.5f;
+    private static final float REACTION_FADE_DURATION = 0.3f;
+    private static final long REACTION_COOLDOWN_MS = 2000L;
+
+    private static final float MY_REACTION_SLOT_X = 940f;
+    private static final float MY_REACTION_SLOT_Y = 260f;
+    private static final float OPPONENT_REACTION_SLOT_X = 940f;
+    private static final float OPPONENT_REACTION_SLOT_Y = 850f;
+
     private final Group mainLayer;
     private final Group modalLayer;
     private final Viewport viewport;
@@ -73,6 +86,11 @@ public class GameHUD {
     private Table zombieTopBar;
     private final List<ZombieCardButton> zombieTopBarCards = new ArrayList<>();
     private GameEventListener announceListener;
+
+    private final List<Actor> reactionImageButtons = new ArrayList<>();
+    private Group activeMyBubble;
+    private Group activeOpponentBubble;
+    private long lastReactionSentAt = 0L;
 
     public GameHUD(Group mainLayer, Group modalLayer, Viewport viewport,
                    GameInputHandler inputHandler, GameFlowController gameFlowController) {
@@ -786,20 +804,80 @@ public class GameHUD {
             reactionTable.add(btn).padTop(10).row();
         }
 
-        String[] emojis = {"[Smile]", "[Sad]", "[Angry]"};
-        for (int i = 0; i < emojis.length; i++) {
-            final int index = i;
-            TextButton btn = new TextButton(emojis[i], skin, "green_small");
-            btn.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    ReactionController.getInstance().sendReaction(ReactionController.Category.EMOJI, index, null);
-                }
-            });
-            reactionTable.add(btn).padTop(10).row();
-        }
+        buildEmojiButtons(reactionTable);
+        buildStickerButtons(reactionTable);
 
         mainLayer.addActor(reactionTable);
+    }
+
+    private void buildEmojiButtons(Table reactionTable) {
+        buildImageReactionButtons(reactionTable, ReactionController.Category.EMOJI,
+            EmojiAssets.count(), EmojiAssets::imageFor);
+    }
+
+    private void buildStickerButtons(Table reactionTable) {
+        buildImageReactionButtons(reactionTable, ReactionController.Category.STICKER,
+            StickerAssets.count(), StickerAssets::imageFor);
+    }
+
+    private void buildImageReactionButtons(Table reactionTable, ReactionController.Category category,
+                                           int count, java.util.function.IntFunction<Image> imageProvider) {
+        for (int i = 0; i < count; i++) {
+            final int index = i;
+
+            Image thumb = imageProvider.apply(index);
+            ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+            style.imageUp = thumb.getDrawable();
+            ImageButton reactionBtn = new ImageButton(style);
+            reactionBtn.setSize(70f, 70f);
+
+            reactionBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    onReactionButtonClicked(category, index);
+                }
+            });
+
+            reactionTable.add(reactionBtn).size(70f, 70f).padTop(14).row();
+            reactionImageButtons.add(reactionBtn);
+        }
+    }
+
+    private void onReactionButtonClicked(ReactionController.Category category, int index) {
+        long now = System.currentTimeMillis();
+        if (now - lastReactionSentAt < REACTION_COOLDOWN_MS) {
+            return;
+        }
+        lastReactionSentAt = now;
+
+        ReactionController.getInstance().sendReaction(category, index, response -> {
+            if (response == null || !response.isSuccess()) {
+                String reason = response != null ? response.getErrorMessage() : "network error";
+                GameSession.notify("Could not send reaction: " + reason);
+            }
+        });
+
+        String myName = App.getActiveUser() != null ? App.getActiveUser().getUsername() : "You";
+        if (category == ReactionController.Category.STICKER) {
+            spawnStickerBubble(myName, index, true);
+        } else if (category == ReactionController.Category.EMOJI) {
+            spawnEmojiBubble(myName, index, true);
+        }
+        applyReactionCooldownVisual();
+    }
+
+    private void applyReactionCooldownVisual() {
+        for (Actor button : reactionImageButtons) {
+            button.setTouchable(Touchable.disabled);
+            button.getColor().a = 0.5f;
+            button.addAction(Actions.sequence(
+                Actions.delay(REACTION_COOLDOWN_MS / 1000f),
+                Actions.run(() -> {
+                    button.setTouchable(Touchable.enabled);
+                    button.getColor().a = 1f;
+                })
+            ));
+        }
     }
 
     private void setupReactionListener() {
@@ -809,19 +887,93 @@ public class GameHUD {
     }
 
     private void showIncomingReaction(String opponentName, ReactionController.Category category, int index) {
-        String displayStr = "";
-
-        if (category == ReactionController.Category.TEXT) {
-            String[] texts = {"Good Luck!", "Oops!", "Well Played!"};
-            displayStr = texts[Math.min(index, 2)];
-        } else if (category == ReactionController.Category.EMOJI) {
-            String[] emojis = {"[Smile]", "[Sad]", "[Angry]"};
-            displayStr = emojis[Math.min(index, 2)];
-        } else if (category == ReactionController.Category.STICKER) {
-            displayStr = "(Animated Sticker " + index + ")";
+        if (category == ReactionController.Category.STICKER) {
+            spawnStickerBubble(opponentName, index, false);
+            return;
+        }
+        if (category == ReactionController.Category.EMOJI) {
+            spawnEmojiBubble(opponentName, index, false);
+            return;
         }
 
+        String[] texts = {"Good Luck!", "Oops!", "Well Played!"};
+        String displayStr = texts[Math.min(index, 2)];
         GameSession.notify(opponentName + " says: " + displayStr);
+    }
+
+    private void spawnStickerBubble(String username, int index, boolean mine) {
+        if (index < 0 || index >= StickerAssets.count()) return;
+        spawnReactionBubble(username, StickerAssets.imageFor(index), mine, true, STICKER_HOLD_DURATION);
+    }
+
+    private void spawnEmojiBubble(String username, int index, boolean mine) {
+        if (index < 0 || index >= EmojiAssets.count()) return;
+        spawnReactionBubble(username, EmojiAssets.imageFor(index), mine, false, EMOJI_HOLD_DURATION);
+    }
+
+    private void spawnReactionBubble(String username, Image contentImage, boolean mine, boolean wobble,
+                                     float holdDuration) {
+        float slotX = mine ? MY_REACTION_SLOT_X : OPPONENT_REACTION_SLOT_X;
+        float slotY = mine ? MY_REACTION_SLOT_Y : OPPONENT_REACTION_SLOT_Y;
+
+        if (mine && activeMyBubble != null) {
+            activeMyBubble.clearActions();
+            activeMyBubble.remove();
+        }
+        if (!mine && activeOpponentBubble != null) {
+            activeOpponentBubble.clearActions();
+            activeOpponentBubble.remove();
+        }
+
+        contentImage.setSize(REACTION_BUBBLE_SIZE, REACTION_BUBBLE_SIZE);
+        contentImage.setPosition(0, 20f);
+
+        Label nameLabel = new Label(username, skin);
+        nameLabel.setAlignment(Align.center);
+        nameLabel.setFontScale(0.9f);
+        nameLabel.setWidth(REACTION_BUBBLE_SIZE);
+        nameLabel.setPosition(0, 0);
+
+        Group bubble = new Group();
+        bubble.setSize(REACTION_BUBBLE_SIZE, REACTION_BUBBLE_SIZE + 20f);
+        bubble.setOrigin(REACTION_BUBBLE_SIZE / 2f, (REACTION_BUBBLE_SIZE + 20f) / 2f);
+        bubble.addActor(contentImage);
+        bubble.addActor(nameLabel);
+
+        bubble.setPosition(slotX - bubble.getWidth() / 2f, slotY - bubble.getHeight() / 2f);
+        bubble.setScale(0f);
+        bubble.getColor().a = 0f;
+
+        mainLayer.addActor(bubble);
+
+        if (mine) {
+            activeMyBubble = bubble;
+        } else {
+            activeOpponentBubble = bubble;
+        }
+
+        bubble.addAction(Actions.sequence(
+            Actions.parallel(
+                Actions.scaleTo(1.15f, 1.15f, REACTION_POP_DURATION, Interpolation.swingOut),
+                Actions.fadeIn(0.12f)
+            ),
+            Actions.scaleTo(1f, 1f, 0.1f, Interpolation.sine),
+            wobble ? Actions.repeat(3, Actions.sequence(
+                Actions.rotateBy(6f, 0.12f, Interpolation.sine),
+                Actions.rotateBy(-12f, 0.24f, Interpolation.sine),
+                Actions.rotateBy(6f, 0.12f, Interpolation.sine)
+            )) : Actions.delay(0f),
+            Actions.delay(holdDuration),
+            Actions.parallel(
+                Actions.fadeOut(REACTION_FADE_DURATION),
+                Actions.scaleTo(0.7f, 0.7f, REACTION_FADE_DURATION)
+            ),
+            Actions.run(() -> {
+                if (mine && activeMyBubble == bubble) activeMyBubble = null;
+                if (!mine && activeOpponentBubble == bubble) activeOpponentBubble = null;
+            }),
+            Actions.removeActor()
+        ));
     }
 
     private void buildZombieTopBar() {
