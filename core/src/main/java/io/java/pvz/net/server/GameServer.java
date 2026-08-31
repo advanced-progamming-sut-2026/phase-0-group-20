@@ -6,6 +6,7 @@ import io.java.pvz.net.server.handlers.AuthHandler;
 import io.java.pvz.net.server.handlers.LeaderboardHandler;
 import io.java.pvz.net.server.handlers.MatchmakingHandler;
 import io.java.pvz.net.server.handlers.MatchSyncHandler;
+import io.java.pvz.net.server.handlers.ProfileHandler;
 import io.java.pvz.net.server.handlers.ReactionHandler;
 
 import java.io.IOException;
@@ -46,6 +47,12 @@ public class GameServer {
         dispatcher.register(MessageType.CHECK_SECURITY_QUESTION, authHandler::checkSecurityQuestion);
         dispatcher.register(MessageType.RESET_PASSWORD, authHandler::resetPassword);
         dispatcher.register(MessageType.FETCH_USER_STATE, authHandler::fetchUserState);
+
+        ProfileHandler profileHandler = new ProfileHandler();
+        dispatcher.register(MessageType.UPDATE_USERNAME, profileHandler::updateUsername);
+        dispatcher.register(MessageType.UPDATE_EMAIL, profileHandler::updateEmail);
+        dispatcher.register(MessageType.UPDATE_NICKNAME, profileHandler::updateNickname);
+        dispatcher.register(MessageType.UPDATE_PASSWORD, profileHandler::updatePassword);
 
         matchmakingHandler = new MatchmakingHandler(sessionRegistry, matchRegistry, matchGameEngine);
         dispatcher.register(MessageType.CHECK_USER_ONLINE, matchmakingHandler::checkUserOnline);
