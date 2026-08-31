@@ -68,6 +68,7 @@ public class BattlefieldRenderer implements GameEventListener {
         GameEventMessenger.getInstance().addListener(GameEvent.PROJECTILE_HIT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.SPAWN_EFFECT, this);
         GameEventMessenger.getInstance().addListener(GameEvent.NOTIFY, this);
+        GameEventMessenger.getInstance().addListener(GameEvent.EFFECTS, this);
     }
 
     private @NonNull Group getBoardLayer() {

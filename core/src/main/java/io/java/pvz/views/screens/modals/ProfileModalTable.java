@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.java.pvz.controllers.GameController.NetworkController;
+import io.java.pvz.controllers.ProfileNetworkController;
 import io.java.pvz.controllers.MenuController.ProfileMenuController;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.Result;
@@ -15,6 +17,7 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
+import io.java.pvz.net.protocol.NetworkMessage;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import org.jspecify.annotations.NonNull;
@@ -24,6 +27,7 @@ import pvz.skin.BorderedTable;
 public class ProfileModalTable extends BorderedTable {
 
     private final ProfileMenuController controller;
+    private final ProfileNetworkController networkController;
     private final Skin skin;
     private final TextureBank textures;
 
@@ -41,6 +45,7 @@ public class ProfileModalTable extends BorderedTable {
         this.skin = skin;
         this.textures = AssetLoader.getInstance().getTextures();
         this.controller = new ProfileMenuController();
+        this.networkController = new ProfileNetworkController();
 
         pad(40, 45, 35, 45);
         setSize(800, 950);
@@ -168,16 +173,39 @@ public class ProfileModalTable extends BorderedTable {
         usernameField.setAlignment(Align.center);
         editTable.add(usernameField).width(400).height(60).row();
 
-        TextButton saveInfoBtn = UiFactory.textButton("Save Info", skin, "green_small", 1.1f, 0.9f, () -> {
-            controller.changeNickname(nicknameField.getText());
-            controller.changeEmail(emailField.getText());
-            handleResult(controller.changeUsername(usernameField.getText()));
-        });
+        TextButton saveInfoBtn = UiFactory.textButton("Save Info", skin, "green_small", 1.1f,
+            0.9f, () ->
+            saveProfileInfo(nicknameField.getText(), emailField.getText(), usernameField.getText()));
         saveInfoBtn.getLabel().setFontScale(1.2f);
         editTable.add();
         editTable.add(saveInfoBtn).width(200).height(60).padTop(10).center().row();
 
         parent.add(editTable).growX().pad(10, 20, 40, 20).row();
+    }
+
+    private void saveProfileInfo(String newNickname, String newEmail, String newUsername) {
+        Result nicknameResult = controller.changeNickname(newNickname);
+        Result emailResult = controller.changeEmail(newEmail);
+        Result usernameResult = controller.changeUsername(newUsername);
+
+        handleResult(nicknameResult);
+        handleResult(emailResult);
+        handleResult(usernameResult);
+
+        if (!NetworkController.getInstance().isAuthenticated()) return;
+
+        if (nicknameResult.isSuccessful()) {
+            networkController.updateNickname(newNickname, response ->
+                reportSyncOutcome("Nickname", response));
+        }
+        if (emailResult.isSuccessful()) {
+            networkController.updateEmail(newEmail, response ->
+                reportSyncOutcome("Email", response));
+        }
+        if (usernameResult.isSuccessful()) {
+            networkController.updateUsername(newUsername, response ->
+                reportSyncOutcome("Username", response));
+        }
     }
 
     private void buildPasswordSection(Table parent) {
@@ -226,20 +254,37 @@ public class ProfileModalTable extends BorderedTable {
     private @NonNull TextButton generatePassChange(TextField oldPassField,
                                                    TextField newPassField,
                                                    TextField repeatPassField) {
-        TextButton changePassBtn = UiFactory.textButton("Change Password", skin, "purple", 1.05f, 0.95f, () -> {
-            Result result = controller.changePassword(
-                oldPassField.getText(),
-                newPassField.getText(),
-                repeatPassField.getText()
-            );
+        return UiFactory.textButton("Change Password", skin, "purple", 1.05f, 0.95f, () -> {
+            String oldPassword = oldPassField.getText();
+            String newPassword = newPassField.getText();
+            String repeatPassword = repeatPassField.getText();
+
+            Result result = controller.changePassword(oldPassword, newPassword, repeatPassword);
             handleResult(result);
-            if (result.isSuccessful()) {
-                oldPassField.setText("");
-                newPassField.setText("");
-                repeatPassField.setText("");
-            }
+
+            if (!result.isSuccessful()) return;
+
+            oldPassField.setText("");
+            newPassField.setText("");
+            repeatPassField.setText("");
+
+            if (!NetworkController.getInstance().isAuthenticated()) return;
+
+            networkController.updatePassword(oldPassword, newPassword, repeatPassword,
+                response -> reportSyncOutcome("Password", response));
         });
-        return changePassBtn;
+    }
+
+    private void reportSyncOutcome(String fieldName, NetworkMessage response) {
+        if (response != null && response.isSuccess()) {
+            System.out.println(fieldName + " synced with server successfully");
+            return;
+        }
+        String error = response != null ? response.getErrorMessage() : "server unreachable";
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                .message(fieldName + " was saved locally but failed to sync with the server: " + error)
+                .build());
     }
 
     private Label createStatLabel(String text) {
