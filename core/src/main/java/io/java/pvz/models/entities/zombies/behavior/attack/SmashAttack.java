@@ -35,7 +35,8 @@ public class SmashAttack implements AttackBehavior {
         }
 
         Plant targetPlant = null;
-        for (Plant p : currentTile.getPlants()) {
+        for (int i = currentTile.getPlants().size() - 1; i >= 0; i--) {
+            Plant p = currentTile.getPlants().get(i);
             if (!p.isDead()) {
                 targetPlant = p;
                 break;

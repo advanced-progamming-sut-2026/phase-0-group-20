@@ -358,12 +358,15 @@ public class Zombie implements Ticker {
 
     public void move() {
         if (this.isHypnotized()) {
-            this.position.moveX(this.currentSpeed);
-            if (this.getCol() >= GameSession.getInstance().getArena().getCols()) {
+            this.position.moveX(Math.abs(this.currentSpeed));
+            if (this.getCol() >= GameSession.getInstance().getArena().getCols() + 3) {
                 this.setDead(true);
             }
         } else {
             this.position.moveX(-this.currentSpeed);
+            if (this.getCol() > 12 && this.getCurrentSpeed() < 0)
+                this.setDead(true);
+            if (this.getCol() < -2) this.setDead(true);
         }
     }
 

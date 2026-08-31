@@ -81,6 +81,7 @@ public class BattlefieldRenderer implements GameEventListener {
 
                     boolean isSpawningZombie = false;
                     float groundClipY = 0f;
+                    batch.flush();
 
                     Object userObj = child.getUserObject();
                     if (userObj instanceof Plant plant) {

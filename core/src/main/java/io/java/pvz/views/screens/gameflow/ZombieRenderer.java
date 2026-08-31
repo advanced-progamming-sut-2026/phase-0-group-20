@@ -133,7 +133,7 @@ public class ZombieRenderer {
 
         actor.setVisible(zombie.getSpawnEffect() != Zombie.SpawnEffect.SANDSTORM);
 
-        if (zombie.isHypnotized()) {
+        if (zombie.isHypnotized() || zombie.getCurrentSpeed() < 0) {
             actor.setScaleX(-1f);
         } else {
             actor.setScaleX(1f);
