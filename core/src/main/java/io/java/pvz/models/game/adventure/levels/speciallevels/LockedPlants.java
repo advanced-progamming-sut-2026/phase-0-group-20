@@ -54,7 +54,8 @@ public class LockedPlants extends SpecialLevel {
                 lockedCategories = getRandomCategories();
             }
             case 2 -> {// locked slots
-                lockedSlots = (App.getSettings().getDifficulty() >= 4) ? NUMBER_OF_LOCKED_SLOTS + 1 : NUMBER_OF_LOCKED_SLOTS;
+                lockedSlots = (App.getSettings().getDifficulty() >= 4) ?
+                    NUMBER_OF_LOCKED_SLOTS + 1 : NUMBER_OF_LOCKED_SLOTS;
             }
             default -> {//forced to use plants
                 forcedToUsePlant = getRandomPlant();
@@ -64,6 +65,7 @@ public class LockedPlants extends SpecialLevel {
 
     private static List<PlantCategory> getRandomCategories() {
         List<PlantCategory> allCategories = new ArrayList<>(Arrays.asList(PlantCategory.values()));
+        allCategories.remove(PlantCategory.SUN_PRODUCER);
         Collections.shuffle(allCategories);
 
         return allCategories.subList(0, Math.min(NUMBER_OF_LOCKED_PLANTS, allCategories.size()));

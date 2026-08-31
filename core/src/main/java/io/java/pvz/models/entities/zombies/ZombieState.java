@@ -49,5 +49,7 @@ public enum ZombieState {
     BOSS_VACUUM_LOOP,
     BOSS_VACUUM_END,
     BOSS_SHARK,
-    BOSS_IDLE;
+    BOSS_IDLE,
+    ZOMBOSS_WALK_UP,
+    ZOMBOSS_WALK_DOWN;
 }

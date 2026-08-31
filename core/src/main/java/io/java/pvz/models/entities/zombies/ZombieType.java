@@ -69,6 +69,15 @@ public enum ZombieType {
         return null;
     }
 
+    public static boolean isItZombotany(ZombieType zombieType) {
+        if (zombieType == null) return false;
+        if(zombieType == ZOMBOTANY_SQUASH) return true;
+        if(zombieType == ZOMBOTANY_WALLNUT) return true;
+        if(zombieType == ZOMBOTANY_JALAPENO) return true;
+        if (zombieType == ZOMBOTANY_PEASHOOTER) return true;
+        return false;
+    }
+
     public String getJsonAlias() {
         return jsonAlias;
     }

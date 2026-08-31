@@ -61,7 +61,6 @@ public class SignupScreen extends BaseScreen {
         baseTable.add(nicknameField).height(65).width(350).padBottom(5).row();
         baseTable.add(emailField).height(65).width(350).padBottom(5).row();
         baseTable.add(genderField).height(65).width(350).padBottom(15).row();
-        ;
 
         TextButton registerBtn = new TextButton("Register", skin, "purple");
         ButtonAnimator.applyHoverAndClickEffect(registerBtn, 1.1f, 0.9f, () -> {

@@ -77,7 +77,6 @@ public class BonusLevel extends Level implements GameEventListener {
     protected void spawnWave(Wave wave, GameSession session) {
         float targetDifficulty = wave.getDifficulty();
         int accumulatedCost = 0;
-
         Random waveRandom;
         List<Zombie> availableZombies;
 
