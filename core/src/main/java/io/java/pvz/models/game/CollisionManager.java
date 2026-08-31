@@ -206,7 +206,6 @@ public class CollisionManager {
 
             if (z instanceof Zomboss zomboss) {
                 effectiveRadius = combinedRadius * 2.5f;
-
                 if (projectile.getPosition().getRow() == zomboss.getSecondRow()) {
                     float secondRowY = zomboss.getSecondRow() * PhysicalConstants.TILE_HEIGHT +
                         PhysicalConstants.GRID_START_Y;

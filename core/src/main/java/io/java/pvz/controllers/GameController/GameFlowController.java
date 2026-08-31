@@ -175,7 +175,9 @@ public class GameFlowController {
         Arena arena = session.getArena();
 
         Result validationResult = validatePlantPlacement(session, plant);
-        if (validationResult != null) return validationResult;
+        if (validationResult != null) {
+            return validationResult;
+        }
 
         Tile desiredTile = arena.getTile(spawnY - 1, spawnX - 1);
         if (desiredTile == null) {
@@ -183,52 +185,61 @@ public class GameFlowController {
         }
 
         Plant existingPlant = desiredTile.getStackPlant();
-        if (existingPlant != null &&
-            existingPlant.getName().equals(plant.getName()) && existingPlant.getTags().contains(PlantTag.STACK)) {
-            if (existingPlant.addStack()) {
-                session.useSun(plant.getCost());
-                session.setCooldownForPlant(plant);
-                GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
-                    .plant(existingPlant)
-                    .arena(arena)
-                    .coordinate(existingPlant.getPlacedTile().getRow(), existingPlant.getPlacedTile().getCol())
-                    .build();
-                GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
-                return new Result(true, "You stacked " + plant.getName() + " to level " +
-                    existingPlant.getStackCount() + " in " + spawnX + "," + spawnY);
-            } else {
-                return new Result(false, "This " + plant.getName() + " is already fully stacked (Max 5)!");
-            }
+        if (isStackable(existingPlant, plant)) {
+            return handleStacking(session, arena, existingPlant, plant, spawnX, spawnY);
         }
 
         if (!desiredTile.isPlantable(plant)) {
             return new Result(false, "You can not plant this plant here");
         }
 
-        Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
-        for (int i = 1; i < getPlantLevel(plant); i++) {
-            newPlant.upgrade();
+        return placeNewPlant(session, arena, desiredTile, plant, spawnX, spawnY);
+    }
+
+    private boolean isStackable(Plant existingPlant, Plant newPlant) {
+        return existingPlant != null &&
+            existingPlant.getName().equals(newPlant.getName()) &&
+            existingPlant.getTags().contains(PlantTag.STACK);
+    }
+
+    private Result handleStacking(GameSession session, Arena arena, Plant existingPlant, Plant plant, int x, int y) {
+        if (existingPlant.addStack()) {
+            session.useSun(plant.getCost());
+            session.setCooldownForPlant(plant);
+            dispatchPlantPlacedEvent(existingPlant, arena);
+            return new Result(true, "You stacked " + plant.getName() + " to level " +
+                existingPlant.getStackCount() + " in " + x + "," + y);
+        } else {
+            return new Result(false, "This " + plant.getName() + " is already fully stacked (Max 5)!");
         }
+    }
+
+    private void dispatchPlantPlacedEvent(Plant plant, Arena arena) {
+        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
+            .plant(plant)
+            .arena(arena)
+            .coordinate(plant.getPlacedTile().getRow(), plant.getPlacedTile().getCol())
+            .build();
+        GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
+    }
+
+    private Result placeNewPlant(
+        GameSession session, Arena arena, Tile desiredTile, Plant plant, int x, int y
+    ) {
+        Plant newPlant = InGameEntityGenerator.getPlantForGame(plant, plant.isBoosted());
+        upgradePlantToLevel(newPlant, plant);
 
         if (newPlant.getName().equalsIgnoreCase("Imitater")) {
-            for (IPlantStrategy strategy : newPlant.getStrategies()) {
-                if (strategy instanceof ImitateStrategy imitateStrategy) {
-                    int targetId = session.getImitaterTargetId();
-
-                    if (targetId != -1) {
-                        imitateStrategy.setTargetPlantId(targetId);
-                    } else {
-                        return new Result(false, "You haven't selected a target for Imitater in your deck!");
-                    }
-                    break;
-                }
+            Result imitaterResult = configureImitater(session, newPlant);
+            if (imitaterResult != null) {
+                return imitaterResult;
             }
         }
 
         desiredTile.addPlant(newPlant);
         arena.addPlant(newPlant);
 
-        if (!((Level) GameSession.getInstance().getCurrentMode()).skipsPlantSelection()) {
+        if (!((Level) session.getCurrentMode()).skipsPlantSelection()) {
             session.useSun(newPlant.getCost());
         }
 
@@ -239,14 +250,37 @@ public class GameFlowController {
             newPlant.useFood();
         }
 
-        GameEventPayload payload = new GameEventPayload.Builder(GameEvent.PLANT_PLACED)
-            .plant(newPlant)
-            .arena(arena)
-            .coordinate(newPlant.getPlacedTile().getRow(), newPlant.getPlacedTile().getCol())
-            .build();
-        GameEventMessenger.getInstance().dispatch(GameEvent.PLANT_PLACED, payload);
+        dispatchPlantPlacedEvent(newPlant, arena);
         session.setCooldownForPlant(plant);
+        removeFromConveyorBelt(session, plant);
 
+        return new Result(true, "You plant a plant in " + x + "," + y +
+            " with the name of " + newPlant.getName() + ".");
+    }
+
+    private void upgradePlantToLevel(Plant newPlant, Plant basePlant) {
+        for (int i = 1; i < getPlantLevel(basePlant); i++) {
+            newPlant.upgrade();
+        }
+    }
+
+    private Result configureImitater(GameSession session, Plant newPlant) {
+        for (IPlantStrategy strategy : newPlant.getStrategies()) {
+            if (strategy instanceof ImitateStrategy imitateStrategy) {
+                int targetId = session.getImitaterTargetId();
+
+                if (targetId != -1) {
+                    imitateStrategy.setTargetPlantId(targetId);
+                } else {
+                    return new Result(false, "You haven't selected a target for Imitater in your deck!");
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
+    private void removeFromConveyorBelt(GameSession session, Plant plant) {
         if (session.getCurrentMode() instanceof ConveyorBelt conveyorBelt) {
             var belt = conveyorBelt.getBelt();
             for (int i = 0; i < belt.size(); i++) {
@@ -256,9 +290,6 @@ public class GameFlowController {
                 }
             }
         }
-
-        return new Result(true, "You plant a plant in " + spawnX + "," + spawnY +
-            " with the name of " + newPlant.getName() + ".");
     }
 
     private Plant findPlantForPlacement(GameSession session, String plantName) {

@@ -29,6 +29,7 @@ import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.plants.PlantCategory;
 import io.java.pvz.models.entities.plants.PlantTag;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.PlantCardButton;
@@ -368,6 +369,8 @@ public class CollectionScreen extends BaseScreen {
         int count = 0;
 
         for (Zombie zombie : App.getAllZombies()) {
+            if(ZombieType.isItZombotany(zombie.getType()))
+                continue;
             Image background = UiFactory.imageFor(textures, "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_READY");
             String zombiePath = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_" + UiFactory.getZombieAddress(zombie);
             Image zombieImage = (App.getActiveUser().isZombieUnlocked(zombie)) ?

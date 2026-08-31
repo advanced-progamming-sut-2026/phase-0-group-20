@@ -13,6 +13,7 @@ import io.java.pvz.models.entities.zombies.behavior.effect.RageEffect;
 import io.java.pvz.models.entities.zombies.behavior.move.BarrelRollerMove;
 import io.java.pvz.models.entities.zombies.zomboss.MammothFreezingColumn;
 import io.java.pvz.models.entities.zombies.zomboss.MammothZomboss;
+import io.java.pvz.models.entities.zombies.zomboss.SpiderZomboss;
 import io.java.pvz.models.entities.zombies.zomboss.Zomboss;
 import io.java.pvz.utils.AnimationCatalog;
 import io.java.pvz.utils.PamAnimatedActor;
@@ -189,6 +190,8 @@ public class ZombieRenderer {
                 case BOSS_SHARK -> "spawn";
                 case STUNNED -> pickClip(anim, "idle", "stun_loop", "stun");
                 case BOSS_IDLE -> "idle";
+                case ZOMBOSS_WALK_DOWN -> (zomboss instanceof SpiderZomboss)? "walk_down" : "idle";
+                case ZOMBOSS_WALK_UP -> (zomboss instanceof SpiderZomboss)? "walk_up" : "idle";
                 default -> pickClip(anim, "idle", "idle");
             };
             return new Result(true, clip);

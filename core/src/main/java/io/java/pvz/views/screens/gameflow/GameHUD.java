@@ -41,6 +41,7 @@ import io.java.pvz.views.screens.modals.DialogueModalTable;
 import io.java.pvz.views.screens.modals.LevelIntroModalTable;
 import io.java.pvz.views.screens.modals.PauseMenuTable;
 import io.java.pvz.views.screens.modals.PlantSelectionModalTable;
+import org.jspecify.annotations.NonNull;
 import pvz.libpvz.textures.TextureBank;
 
 import java.util.ArrayList;
@@ -330,18 +331,15 @@ public class GameHUD {
 
             mainLayer.addActor(sunStack);
         }
-
         if (!MatchController.getInstance().isOnlineMatch()) {
             plantFoodBankUI = new PlantFoodUI(textures);
             plantFoodBankUI.setPosition(200f, 20f);
-
             plantFoodBankUI.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     inputHandler.onPlantFoodClicked();
                 }
             });
-
             mainLayer.addActor(plantFoodBankUI);
             updatePlantFoodCount();
         }
@@ -934,18 +932,14 @@ public class GameHUD {
         nameLabel.setWidth(REACTION_BUBBLE_SIZE);
         nameLabel.setPosition(0, 0);
 
-        Group bubble = new Group();
-        bubble.setSize(REACTION_BUBBLE_SIZE, REACTION_BUBBLE_SIZE + 20f);
-        bubble.setOrigin(REACTION_BUBBLE_SIZE / 2f, (REACTION_BUBBLE_SIZE + 20f) / 2f);
-        bubble.addActor(contentImage);
-        bubble.addActor(nameLabel);
-
-        bubble.setPosition(slotX - bubble.getWidth() / 2f, slotY - bubble.getHeight() / 2f);
-        bubble.setScale(0f);
-        bubble.getColor().a = 0f;
+        Group bubble = makeBubble(contentImage, nameLabel, slotX, slotY);
 
         mainLayer.addActor(bubble);
 
+        addBubbleAction(mine, wobble, holdDuration, bubble);
+    }
+
+    private void addBubbleAction(boolean mine, boolean wobble, float holdDuration, Group bubble) {
         if (mine) {
             activeMyBubble = bubble;
         } else {
@@ -974,6 +968,19 @@ public class GameHUD {
             }),
             Actions.removeActor()
         ));
+    }
+
+    private static @NonNull Group makeBubble(Image contentImage, Label nameLabel, float slotX, float slotY) {
+        Group bubble = new Group();
+        bubble.setSize(REACTION_BUBBLE_SIZE, REACTION_BUBBLE_SIZE + 20f);
+        bubble.setOrigin(REACTION_BUBBLE_SIZE / 2f, (REACTION_BUBBLE_SIZE + 20f) / 2f);
+        bubble.addActor(contentImage);
+        bubble.addActor(nameLabel);
+
+        bubble.setPosition(slotX - bubble.getWidth() / 2f, slotY - bubble.getHeight() / 2f);
+        bubble.setScale(0f);
+        bubble.getColor().a = 0f;
+        return bubble;
     }
 
     private void buildZombieTopBar() {
