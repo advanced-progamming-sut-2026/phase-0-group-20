@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.controllers.ButtonAnimator;
+import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.MenuScreenController;
 import io.java.pvz.controllers.MenuController.MainMenuController;
 import io.java.pvz.controllers.ScreenManager;
@@ -96,10 +98,23 @@ public class MainMenuScreen extends BaseScreen {
         borderedLogoutBtn.add(logoutLabel).center();
 
         ButtonAnimator.applyHoverAndClickEffect(borderedLogoutBtn, 1.1f, 0.9f, () -> {
-            System.out.println("Logout Clicked!");
-            new MainMenuController().logout();
-            ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
-            ScreenManager.getInstance().pushScreen(new LoginScreen(game));
+            System.out.println("Logout Request Sent!");
+
+            NetworkController.getInstance().logout(response -> {
+                Gdx.app.postRunnable(() -> {
+                    if (response != null && response.isSuccess()) {
+                        System.out.println("Logout Confirmed by Server!");
+
+                        new MainMenuController().logout();
+
+                        ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
+                        ScreenManager.getInstance().pushScreen(new LoginScreen(game));
+                    } else {
+                        String error = response != null ? response.getErrorMessage() : "Server unreachable";
+                        System.out.println("Logout Failed: " + error);
+                    }
+                });
+            });
         });
 
         topContainer.add(center).expandX().padBottom(70).center().bottom();

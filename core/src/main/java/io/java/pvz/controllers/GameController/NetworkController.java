@@ -1,6 +1,9 @@
 package io.java.pvz.controllers.GameController;
 
 import com.badlogic.gdx.Gdx;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.java.pvz.models.App;
+import io.java.pvz.models.users.User;
 import io.java.pvz.net.client.NetworkClient;
 import io.java.pvz.net.client.ServerConfig;
 import io.java.pvz.net.protocol.MessageType;
@@ -33,6 +36,7 @@ public class NetworkController {
     }
 
     public void login(String username, String password, Consumer<NetworkMessage> callback) {
+        System.out.println("hiii");
         runAsync(() -> {
             NetworkClient client = connectIfNeeded();
             NetworkMessage request = NetworkMessage.request(MessageType.LOGIN);
@@ -44,6 +48,16 @@ public class NetworkController {
             if (response != null && response.isSuccess()) {
                 authenticated = true;
                 authenticatedUsername = username;
+
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    if (response.getData().containsKey("user")) {
+                        User loggedInUser = mapper.convertValue(response.get("user"), User.class);
+                        App.setActiveUser(loggedInUser);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error parsing user data on client: " + e.getMessage());
+                }
             }
             if (callback != null) callback.accept(response);
         });
@@ -96,6 +110,33 @@ public class NetworkController {
 
     private void sendAsync(Supplier<NetworkMessage> requestSupplier, Consumer<NetworkMessage> callback) {
         runAsync(() -> connectIfNeeded().sendAndWait(requestSupplier.get(), 10), callback);
+    }
+
+    public void forgotPasswordStep1(String username, String email, Consumer<NetworkMessage> callback) {
+        sendAsync(() -> {
+            NetworkMessage request = NetworkMessage.request(MessageType.FORGOT_PASSWORD);
+            request.put("username", username);
+            request.put("email", email);
+            return request;
+        }, callback);
+    }
+
+    public void forgotPasswordStep2(String username, String answer, Consumer<NetworkMessage> callback) {
+        sendAsync(() -> {
+            NetworkMessage request = NetworkMessage.request(MessageType.CHECK_SECURITY_QUESTION);
+            request.put("username", username);
+            request.put("answer", answer);
+            return request;
+        }, callback);
+    }
+
+    public void forgotPasswordStep3(String username, String newPassword, Consumer<NetworkMessage> callback) {
+        sendAsync(() -> {
+            NetworkMessage request = NetworkMessage.request(MessageType.RESET_PASSWORD);
+            request.put("username", username);
+            request.put("newPassword", newPassword);
+            return request;
+        }, callback);
     }
 
     private interface NetworkCall {
