@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -22,15 +23,16 @@ import pvz.skin.BorderedTable;
 
 public class LoginScreen extends BaseScreen {
 
-    private final LoginMenuController loginController;
     private TextureRegion backgroundRegion;
     private final Skin skin;
     private final TextureBank textures;
 
+    private String pendingForgotUser;
+    private String pendingForgotEmail;
+
     public LoginScreen(Game game) {
         super(game);
         skin = AssetLoader.getInstance().getSkin();
-        this.loginController = new LoginMenuController();
         textures = AssetLoader.getInstance().getTextures();
 
         buildUI();
@@ -96,22 +98,20 @@ public class LoginScreen extends BaseScreen {
         TextButton loginBtn = UiFactory.textButton("Login", skin, "purple", 1.05f, 0.95f, () -> {
             String user = usernameField.getText();
             String pass = passwordField.getText();
-            Result result = loginController.login(user, pass, stayLoggedIn.isChecked());
-            if (result.isSuccessful()) {
-                System.out.println("Login Success: " + result.message());
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message("Login Success: " + result.message())
-                        .build());
-                authenticateWithServer(user, pass);
-                ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
-            } else {
-                System.out.println("Login Failed: " + result.message());
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message("Login Failed: " + result.message())
-                        .build());
-            }
+
+            NetworkController.getInstance().login(user, pass, response -> {
+                Gdx.app.postRunnable(() -> {
+                    if (response != null && response.isSuccess()) {
+                        System.out.println("Connected to game server as " + user);
+                        dispatchMessage("Login Success!");
+                        ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
+                    } else {
+                        String error = response != null ? response.getErrorMessage() : "Server unreachable";
+                        System.out.println("Login Failed: " + error);
+                        dispatchMessage("Login Failed: " + error);
+                    }
+                });
+            });
         });
         loginBtn.getLabel().setFontScale(1.2f);
 
@@ -128,15 +128,9 @@ public class LoginScreen extends BaseScreen {
         baseTable.add(gotoSignupBtn).width(300).height(50).padTop(5).row();
     }
 
-    private void authenticateWithServer(String username, String password) {
-        NetworkController.getInstance().login(username, password, response -> {
-            if (response != null && response.isSuccess()) {
-                System.out.println("Connected to game server as " + username + " (online features enabled)");
-            } else {
-                String reason = response != null ? response.getErrorMessage() : "server unreachable";
-                System.out.println("Online features unavailable: " + reason);
-            }
-        });
+    private void dispatchMessage(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+            new GameEventPayload.Builder(GameEvent.NOTIFY).message(message).build());
     }
 
     @Override
@@ -184,18 +178,17 @@ public class LoginScreen extends BaseScreen {
         emailField.setAlignment(Align.center);
 
         TextButton nextBtn = UiFactory.textButton("Next", skin, "green_small", 1.05f, 0.95f, () -> {
-            Result result = loginController.forgetPassword(userField.getText(), emailField.getText());
-            if (result.isSuccessful()) {
-                showForgotPasswordStep2(result.message());
-            } else {
-                System.out.println("Error: " + result.message());
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message("Error: " + result.message())
-                        .build());
-                modalLayer.clearChildren();
-                buildUI();
-            }
+            NetworkController.getInstance().forgotPasswordStep1(userField.getText(), emailField.getText(), response -> {
+                Gdx.app.postRunnable(() -> {
+                    if (response != null && response.isSuccess()) {
+                        pendingForgotUser = userField.getText();
+                        showForgotPasswordStep2(response.getString("securityQuestion"));
+                    } else {
+                        String error = response != null ? response.getErrorMessage() : "Network error";
+                        dispatchMessage("Error: " + error);
+                    }
+                });
+            });
         });
         nextBtn.getLabel().setFontScale(1.2f);
 
@@ -234,18 +227,16 @@ public class LoginScreen extends BaseScreen {
         answerField.setAlignment(Align.center);
 
         TextButton verifyBtn = UiFactory.textButton("Verify", skin, "green_small", 1.05f, 0.95f, () -> {
-            Result result = loginController.checkSecurityQuestion(answerField.getText());
-            if (result.isSuccessful()) {
-                showForgotPasswordStep3();
-            } else {
-                System.out.println("Wrong Answer: " + result.message());
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message("Wrong Answer: " + result.message())
-                        .build());
-                modalLayer.clearChildren();
-                buildUI();
-            }
+            NetworkController.getInstance().forgotPasswordStep2(pendingForgotUser, answerField.getText(), response -> {
+                Gdx.app.postRunnable(() -> {
+                    if (response != null && response.isSuccess()) {
+                        showForgotPasswordStep3();
+                    } else {
+                        String error = response != null ? response.getErrorMessage() : "Network error";
+                        dispatchMessage("Wrong Answer: " + error);
+                    }
+                });
+            });
         });
         verifyBtn.getLabel().setFontScale(1.2f);
 
@@ -279,7 +270,25 @@ public class LoginScreen extends BaseScreen {
         repeatPassField.setPasswordCharacter('*');
         repeatPassField.setAlignment(Align.center);
 
-        TextButton changeBtn = createChangeBtn(passField, repeatPassField);
+        TextButton changeBtn = UiFactory.textButton("Change Password", skin, "purple", 1.05f, 0.95f, () -> {
+            if (!passField.getText().equals(repeatPassField.getText())) {
+                dispatchMessage("Passwords do not match!");
+                return;
+            }
+
+            NetworkController.getInstance().forgotPasswordStep3(pendingForgotUser, passField.getText(), response -> {
+                Gdx.app.postRunnable(() -> {
+                    if (response != null && response.isSuccess()) {
+                        dispatchMessage("Password changed successfully!");
+                        modalLayer.clearChildren();
+                        buildUI();
+                    } else {
+                        String error = response != null ? response.getErrorMessage() : "Network error";
+                        dispatchMessage("Error: " + error);
+                    }
+                });
+            });
+        });
         changeBtn.getLabel().setFontScale(1.2f);
 
         popup.add(passField).height(65).width(350).padBottom(10).row();
@@ -287,29 +296,6 @@ public class LoginScreen extends BaseScreen {
         popup.add(changeBtn).height(70).width(250).row();
 
         modalLayer.add(popup).center();
-    }
-
-    private @NonNull TextButton createChangeBtn(TextField passField, TextField repeatPassField) {
-        return UiFactory.textButton("Change Password", skin, "purple", 1.05f, 0.95f, () -> {
-            Result result = loginController.resetPassword(passField.getText(), repeatPassField.getText());
-            if (result.isSuccessful()) {
-                modalLayer.clearChildren();
-                buildUI();
-                System.out.println("Password changed successfully!");
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message("Password changed successfully!")
-                        .build());
-            } else {
-                System.out.println("error: " + result.message());
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message("Error: " + result.message())
-                        .build());
-                modalLayer.clearChildren();
-                buildUI();
-            }
-        });
     }
 
     @Override

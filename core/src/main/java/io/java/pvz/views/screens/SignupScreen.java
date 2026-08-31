@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -22,25 +23,18 @@ import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
 
 public class SignupScreen extends BaseScreen {
-
-    private final SignupMenuController signupController;
     private TextureRegion backgroundRegion;
     private final Skin skin;
     private final TextureBank textures;
 
     private String pendingUsername;
     private String pendingPassword;
-    private String pendingRepeatPassword;
-    private String pendingNickname;
-    private String pendingEmail;
-    private String pendingGender;
 
     public SignupScreen(Game game) {
         super(game);
         skin = AssetLoader.getInstance().getSkin();
         textures = AssetLoader.getInstance().getTextures();
 
-        this.signupController = new SignupMenuController();
         buildUI();
     }
 
@@ -64,25 +58,28 @@ public class SignupScreen extends BaseScreen {
 
         TextButton registerBtn = new TextButton("Register", skin, "purple");
         ButtonAnimator.applyHoverAndClickEffect(registerBtn, 1.1f, 0.9f, () -> {
-            Result result = signupController.register(usernameField.getText(), passwordField.getText(),
-                repeatPasswordField.getText(), nicknameField.getText(), emailField.getText(), genderField.getText()
-            );
 
-            if (result.isSuccessful()) {
-                pendingUsername = usernameField.getText().trim();
-                pendingPassword = passwordField.getText();
-                pendingRepeatPassword = repeatPasswordField.getText();
-                pendingNickname = nicknameField.getText().trim();
-                pendingEmail = emailField.getText().trim();
-                pendingGender = genderField.getText().trim();
-                showSecurityQuestionsList();
-            } else {
-                System.out.println("Registration Failed: " + result.message());
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message("Registration Failed: " + result.message())
-                        .build());
-            }
+            String user = usernameField.getText().trim();
+            String pass = passwordField.getText();
+            String repeatPass = repeatPasswordField.getText();
+            String nick = nicknameField.getText().trim();
+            String mail = emailField.getText().trim();
+            String gender = genderField.getText().trim();
+
+            NetworkController.getInstance().register(user, pass, repeatPass, nick, mail, gender, response -> {
+                Gdx.app.postRunnable(() -> {
+                    if (response != null && response.isSuccess()) {
+                        pendingUsername = user;
+                        pendingPassword = pass;
+                        showSecurityQuestionsList();
+                    } else {
+                        String errorMsg = response != null ? response.getErrorMessage() : "Network error";
+                        System.out.println("Registration Failed: " + errorMsg);
+                        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                            new GameEventPayload.Builder(GameEvent.NOTIFY).message("Registration Failed: " + errorMsg).build());
+                    }
+                });
+            });
         });
         baseTable.add(registerBtn).height(70).padTop(15).row();
 
@@ -208,17 +205,18 @@ public class SignupScreen extends BaseScreen {
 
         TextButton submitBtn = new TextButton("Submit Registration", skin, "purple");
         ButtonAnimator.applyHoverAndClickEffect(submitBtn, 1.1f, 0.9f, () -> {
-            Result result = signupController.pickQuestion(qNumber, answerField.getText(), confirmField.getText());
-            if (result.isSuccessful()) {
-                registerWithServer(qNumber, answerField.getText(), confirmField.getText());
-                ScreenManager.getInstance().pushScreen(new LoginScreen(game));
-            } else {
-                System.out.println("Error: " + result.message());
-                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                    new GameEventPayload.Builder(GameEvent.NOTIFY)
-                        .message("Error: " + result.message())
-                        .build());
-            }
+            NetworkController.getInstance().pickSecurityQuestion(qNumber, answerField.getText(), confirmField.getText(), response -> {
+                Gdx.app.postRunnable(() -> {
+                    if (response != null && response.isSuccess()) {
+                        System.out.println("Account completely set up on server.");
+                        dispatchMessage("Registration successful!");
+                        ScreenManager.getInstance().pushScreen(new LoginScreen(game));
+                    } else {
+                        String errorMsg = response != null ? response.getErrorMessage() : "Network error";
+                        dispatchMessage("Error: " + errorMsg);
+                    }
+                });
+            });
         });
 
         popup.add(answerField).height(50).width(350).padBottom(10).row();
@@ -228,34 +226,9 @@ public class SignupScreen extends BaseScreen {
         modalLayer.add(popup).center();
     }
 
-    private void registerWithServer(String questionNumber, String answer, String confirmAnswer) {
-        if (pendingUsername == null) return;
-
-        NetworkController.getInstance().register(pendingUsername, pendingPassword, pendingRepeatPassword,
-            pendingNickname, pendingEmail, pendingGender, registerResponse -> {
-                if (registerResponse != null && registerResponse.isSuccess()) {
-                    NetworkController.getInstance().pickSecurityQuestion(questionNumber, answer, confirmAnswer,
-                        finishResponse -> {
-                            if (finishResponse != null && finishResponse.isSuccess()) {
-                                System.out.println("Account created on game server: " + pendingUsername);
-                                NetworkController.getInstance().login(pendingUsername, pendingPassword, r -> {
-                                });
-                            } else {
-                                System.out.println("Server-side signup step 2 failed: "
-                                    + (finishResponse != null ? finishResponse.getErrorMessage()
-                                    : "server unreachable"));
-                            }
-                        });
-                } else {
-                    NetworkController.getInstance().login(pendingUsername, pendingPassword, loginResponse -> {
-                        if (loginResponse == null || !loginResponse.isSuccess()) {
-                            System.out.println("Online account unavailable: "
-                                + (registerResponse != null ? registerResponse.getErrorMessage()
-                                : "server unreachable"));
-                        }
-                    });
-                }
-            });
+    private void dispatchMessage(String message) {
+        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+            new GameEventPayload.Builder(GameEvent.NOTIFY).message(message).build());
     }
 
     @Override

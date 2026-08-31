@@ -98,22 +98,22 @@ public class LeaderboardMenu extends Table {
         int token = ++requestToken;
         String sortType = controller.getCurrentSortType();
 
-        if (NetworkController.getInstance().isAuthenticated()) {
-            showLoadingRow();
-            networkController.fetchLeaderboard(sortType, response -> {
-                if (token != requestToken) return; // a newer refresh already superseded this one
+        showLoadingRow();
+        networkController.fetchLeaderboard(sortType, response -> {
+            if (token != requestToken) return; // a newer refresh already superseded this one
 
-                if (response != null && response.isSuccess()) {
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> rows = (List<Map<String, Object>>) response.getData().get("rows");
-                    renderNetworkRows(rows != null ? rows : List.of(), sortType);
-                } else {
-                    renderLocalRows(sortType);
-                }
-            });
-        } else {
-            renderLocalRows(sortType);
-        }
+            if (response != null && response.isSuccess()) {
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> rows = (List<Map<String, Object>>) response.getData().get("rows");
+                renderNetworkRows(rows != null ? rows : List.of(), sortType);
+            } else {
+                rowsTable.clear();
+                Label errorLabel = new Label("Failed to load from server.", skin);
+                errorLabel.setColor(Color.RED);
+                errorLabel.setFontScale(1.3f);
+                rowsTable.add(errorLabel).colspan(3).padTop(20);
+            }
+        });
     }
 
     private void showLoadingRow() {
@@ -122,16 +122,6 @@ public class LeaderboardMenu extends Table {
         loadingLabel.setColor(LIGHT_BROWN);
         loadingLabel.setFontScale(1.3f);
         rowsTable.add(loadingLabel).colspan(3).padTop(20);
-    }
-
-    private void renderLocalRows(String sortType) {
-        rowsTable.clear();
-        List<User> sortedUsers = controller.getSortedUsers();
-
-        for (int i = 0; i < sortedUsers.size(); i++) {
-            User user = sortedUsers.get(i);
-            addRow(i, user.getUsername(), valueFor(user, sortType));
-        }
     }
 
     private void renderNetworkRows(List<Map<String, Object>> rows, String sortType) {

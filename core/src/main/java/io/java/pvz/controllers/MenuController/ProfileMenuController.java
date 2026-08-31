@@ -1,6 +1,5 @@
 package io.java.pvz.controllers.MenuController;
 
-import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.users.PasswordUtils;
@@ -9,14 +8,11 @@ import io.java.pvz.models.validation.UserValidator;
 
 public class ProfileMenuController {
 
-    public User getUserModel() {
-        return App.getActiveUser();
-    }
-
-    public Result changeUsername(String newUsername) {
-        User current = App.getActiveUser();
+    public Result changeUsername(User current, String newUsername) {
         if (current == null)
             return new Result(false, "no user is currently logged in");
+
+        if (newUsername != null) newUsername = newUsername.trim();
 
         if (current.getUsername().equals(newUsername)) {
             return new Result(false, "username is already in use");
@@ -31,12 +27,10 @@ public class ProfileMenuController {
         }
 
         DataBaseManager.updateUsername(current, newUsername);
-
         return new Result(true, "username has been changed successfully");
     }
 
-    public Result changePassword(String oldPassword, String newPassword, String repeatPassword) {
-        User current = App.getActiveUser();
+    public Result changePassword(User current, String oldPassword, String newPassword, String repeatPassword) {
         if (current == null)
             return new Result(false, "No user is currently logged in");
 
@@ -57,15 +51,14 @@ public class ProfileMenuController {
             return new Result(false, "Your new password is the same as your old password");
 
         DataBaseManager.updatePassword(current, oldPassword, newPassword);
-
         return new Result(true, "password has been changed successfully");
     }
 
-    public Result changeEmail(String newEmail) {
-        User current = App.getActiveUser();
-
+    public Result changeEmail(User current, String newEmail) {
         if (current == null)
             return new Result(false, "no user is currently logged in");
+
+        if (newEmail != null) newEmail = newEmail.trim();
 
         if (current.getEmail().equals(newEmail))
             return new Result(false, "Your new email is the same as your old email");
@@ -75,22 +68,20 @@ public class ProfileMenuController {
             return result;
 
         DataBaseManager.updateEmail(current, newEmail);
-
         return new Result(true, "email has been changed successfully");
     }
 
-    public Result changeNickname(String newNickname) {
-        User current = App.getActiveUser();
-
+    public Result changeNickname(User current, String newNickname) {
         if (current == null)
             return new Result(false, "no user is currently logged in");
+
+        if (newNickname != null) newNickname = newNickname.trim();
 
         Result result;
         if (!(result = UserValidator.validateNickname(newNickname)).isSuccessful())
             return result;
 
         DataBaseManager.updateNickname(current, newNickname);
-
         return new Result(true, "nickname has been changed successfully");
     }
 }
