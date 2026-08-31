@@ -47,13 +47,15 @@ public class InGameEntityGenerator {
             case 0 -> Arrays.asList(
                     ZombieType.NORMAL,
                     ZombieType.CONE,
-                    ZombieType.RA
+                    ZombieType.RA,
+                ZombieType.TOMB_RAISER
             );
             case 1 -> Arrays.asList(
                     ZombieType.NORMAL,
                     ZombieType.CONE,
                     ZombieType.BUCKET,
                     ZombieType.RA,
+                ZombieType.CRYSTAL_SKULL,
                     ZombieType.EXPLORER
             );
             // Special Level (ConveyorBelt)
@@ -62,8 +64,7 @@ public class InGameEntityGenerator {
                     ZombieType.CONE,
                     ZombieType.BUCKET,
                     ZombieType.EXPLORER,
-                    ZombieType.TOMB_RAISER,
-                    ZombieType.CRYSTAL_SKULL
+                    ZombieType.TOMB_RAISER
             );
             // Boss Level
             case 3 -> Arrays.asList(
@@ -93,7 +94,7 @@ public class InGameEntityGenerator {
                     ZombieType.CONE,
                     ZombieType.BUCKET,
                     ZombieType.DODO,
-                    ZombieType.HUNTER
+                ZombieType.PROSPECTOR
             );
             // Special Level (DeadLine)
             case 2 -> Arrays.asList(
@@ -101,8 +102,7 @@ public class InGameEntityGenerator {
                     ZombieType.CONE,
                     ZombieType.BUCKET,
                     ZombieType.HUNTER,
-                    ZombieType.TROGLOBITE,
-                    ZombieType.PROSPECTOR
+                    ZombieType.TROGLOBITE
             );
             // Boss Level
             case 3 -> Arrays.asList(
@@ -133,7 +133,8 @@ public class InGameEntityGenerator {
                     ZombieType.CONE,
                     ZombieType.DARK_ARMOR,
                     ZombieType.JUGGLER,
-                    ZombieType.WIZARD
+                    ZombieType.WIZARD,
+                ZombieType.PIANIST
             );
             // Special Level (LockedPlants)
             case 2 -> Arrays.asList(
@@ -141,8 +142,7 @@ public class InGameEntityGenerator {
                     ZombieType.CONE,
                     ZombieType.DARK_ARMOR,
                     ZombieType.WIZARD,
-                    ZombieType.KING,
-                    ZombieType.PIANIST
+                    ZombieType.KING
             );
             // Boss Level
             case 3 -> Arrays.asList(
@@ -152,7 +152,6 @@ public class InGameEntityGenerator {
                     ZombieType.JUGGLER,
                     ZombieType.WIZARD,
                     ZombieType.KING,
-                    ZombieType.PIANIST,
                     ZombieType.ARCADE,
                     ZombieType.GARGANTUAR,
                     ZombieType.IMP_DRAGON
