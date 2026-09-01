@@ -4,6 +4,8 @@ import io.java.pvz.models.Position;
 import io.java.pvz.models.entities.projectiles.Projectile;
 import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
+import io.java.pvz.models.entities.zombies.dismemberment.DismembermentData;
+import io.java.pvz.models.entities.zombies.dismemberment.DismembermentLoader;
 import io.java.pvz.models.entities.zombies.behavior.attack.AttackBehavior;
 import io.java.pvz.models.entities.zombies.behavior.attack.HypnotizeAttack;
 import io.java.pvz.models.entities.zombies.behavior.defense.DefenseBehavior;
@@ -53,7 +55,8 @@ public class Zombie implements Ticker {
     private boolean shiny = false;
     private boolean burnedToAsh = false;
     private int smashDamage;
-
+    private int armStagesRolled = 0;
+    private int armStagesLost = 0;
     private int spawnTimer = 0;
     private int totalSpawnTicks = 0;
 
@@ -72,7 +75,7 @@ public class Zombie implements Ticker {
         this.currentSpeed = this.baseSpeed;
         this.eatDPS = data.getEatDps();
         this.waveCost = data.getWaveCost();
-        this.position = new Position(9, row); // we will randomly choose the exact x due to map
+        this.position = new Position(9, row);
         this.smashDamage = data.getSmashDamage();
         this.moveBehavior = moveBehavior;
         this.defenseBehavior = defenseBehavior;
@@ -180,6 +183,36 @@ public class Zombie implements Ticker {
             dead = true;
             if (isFire) this.burnedToAsh = true;
         }
+
+        maybeLoseArm();
+    }
+
+    private void maybeLoseArm() {
+        if (dead || baseHp <= 0) return;
+
+        DismembermentData data = DismembermentLoader.getInstance().get(type.name());
+        if (data == null || !data.hasArmStages()) return;
+
+        List<DismembermentData.ArmStage> stages = data.getArmStages();
+        float healthPercent = 100f * health / baseHp;
+
+        while (armStagesRolled < stages.size()) {
+            DismembermentData.ArmStage stage = stages.get(armStagesRolled);
+            if (healthPercent > stage.getHealthPercent()) break;
+
+            armStagesRolled++;
+            if (RAND.nextInt(100) < stage.getChancePercent()) {
+                armStagesLost = armStagesRolled;
+            }
+        }
+    }
+
+    public boolean isArmLost() {
+        return armStagesLost > 0;
+    }
+
+    public int getArmStagesLost() {
+        return armStagesLost;
     }
 
     public void hypnotize() {

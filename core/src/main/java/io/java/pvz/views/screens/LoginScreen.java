@@ -89,17 +89,17 @@ public class LoginScreen extends BaseScreen {
 
     private void buildButtons(Table baseTable, TextField usernameField, TextField passwordField) {
 
-//        CheckBox stayLoggedIn = new CheckBox(" Stay logged in", skin);
-//        stayLoggedIn.getLabel().setFontScale(2);
-//        stayLoggedIn.getLabel().setColor(Color.BROWN);
-//        stayLoggedIn.setScale(2);
-//        baseTable.add(stayLoggedIn).left().padTop(15).padBottom(15).row();
+        CheckBox stayLoggedIn = new CheckBox(" Stay logged in", skin);
+        stayLoggedIn.getLabel().setFontScale(2);
+        stayLoggedIn.getLabel().setColor(Color.BROWN);
+        stayLoggedIn.setScale(2);
+        baseTable.add(stayLoggedIn).left().padTop(15).padBottom(15).row();
 
         TextButton loginBtn = UiFactory.textButton("Login", skin, "purple", 1.05f, 0.95f, () -> {
             String user = usernameField.getText();
             String pass = passwordField.getText();
 
-            NetworkController.getInstance().login(user, pass, response -> {
+            NetworkController.getInstance().login(user, pass, stayLoggedIn.isChecked() ,response -> {
                 Gdx.app.postRunnable(() -> {
                     if (response != null && response.isSuccess()) {
                         System.out.println("Connected to game server as " + user);

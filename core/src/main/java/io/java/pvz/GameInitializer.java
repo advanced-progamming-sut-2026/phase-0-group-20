@@ -37,24 +37,21 @@ public class GameInitializer {
 
     public static void loadAllResources() {
         loadGameData();
-        DailyResetListener dailyResetListener = new DailyResetListener();
-        User stayedUser = DataBaseManager.getLoggedInUser();
-        if (stayedUser == null) {
-            App.setActiveAdventure(new Adventure());
-        }
-
-        if (stayedUser != null) {
-            App.setActiveUser(stayedUser);
-            App.setActiveAdventure(new Adventure());
-            System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
-            App.setAllUsers(DataBaseManager.getAllUsers());
-        }
-
+//        DailyResetListener dailyResetListener = new DailyResetListener();
+//        User stayedUser = DataBaseManager.getLoggedInUser();
+//        if (stayedUser == null) {
+//            App.setActiveAdventure(new Adventure());
+//        }
+//
+//        if (stayedUser != null) {
+//            System.out.println(stayedUser.getUsername());
+//            App.setActiveUser(stayedUser);
+//            App.setActiveAdventure(new Adventure());
+//            System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
+//            App.setAllUsers(DataBaseManager.getAllUsers());
+//        }
         AssetManager am = AssetLoader.getInstance().getAssetManager();
-
-
         am.finishLoading();
-
         AudioManager.getInstance().init(am);
     }
 

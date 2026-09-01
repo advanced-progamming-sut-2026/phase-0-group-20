@@ -9,6 +9,8 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
+import io.java.pvz.models.entities.zombies.dismemberment.DismembermentData;
+import io.java.pvz.models.entities.zombies.dismemberment.DismembermentLoader;
 import io.java.pvz.models.entities.zombies.behavior.effect.RageEffect;
 import io.java.pvz.models.entities.zombies.behavior.move.BarrelRollerMove;
 import io.java.pvz.models.entities.zombies.zomboss.MammothFreezingColumn;
@@ -29,10 +31,14 @@ public class ZombieRenderer {
     private static final String CLIP_WALK = "walk";
     private static final float DESPAWN_LINGER_SECONDS = 0.5f;
     private static final float DESPAWN_FADE_SECONDS = 0.25f;
+    private static final float HEAD_FALL_LEAD_TIME = 0.25f;
 
     private final Group zombieLayer;
     private final Map<Zombie, PamAnimatedActor> zombieActors = new HashMap<>();
     private final Map<Zombie, ZombieType> zombieActorTypes = new HashMap<>();
+
+    private final Map<Zombie, Integer> armStagesSpawned = new HashMap<>();
+    private final Set<Zombie> headDropSpawned = new HashSet<>();
 
     public ZombieRenderer(Group zombieLayer) {
         this.zombieLayer = zombieLayer;
@@ -65,8 +71,24 @@ public class ZombieRenderer {
                     spawnAshEffect(zombie);
                     actor.remove();
                 } else {
+                    boolean headDropped = trySpawnHeadDrop(zombie, actor);
+                    float headLeadTime = headDropped ? HEAD_FALL_LEAD_TIME : 0f;
+
                     String deathClip = resolveZombieClip(zombie);
-                    actor.setClip(deathClip);
+                    Runnable startDeathFall = () -> {
+                        actor.setClip(deathClip);
+                        actor.setPaused(false);
+                    };
+
+                    if (headLeadTime > 0f) {
+                        actor.setPaused(true);
+                        actor.addAction(Actions.sequence(
+                            Actions.delay(headLeadTime),
+                            Actions.run(startDeathFall)
+                        ));
+                    } else {
+                        startDeathFall.run();
+                    }
 
                     float lingerTime = DESPAWN_LINGER_SECONDS;
                     AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
@@ -75,9 +97,11 @@ public class ZombieRenderer {
                     if (zombie instanceof Zomboss)
                         lingerTime = Math.max(lingerTime, 4.0f);
 
-                    despawn(actor, lingerTime - 0.5f);
+                    despawn(actor, headLeadTime + lingerTime - 0.5f);
                 }
                 zombieActorTypes.remove(zombie);
+                armStagesSpawned.remove(zombie);
+                headDropSpawned.remove(zombie);
                 it.remove();
             }
         }
@@ -104,7 +128,9 @@ public class ZombieRenderer {
     }
 
     private void updateZombieActor(Zombie zombie, PamAnimatedActor actor) {
-        actor.setClip(resolveZombieClip(zombie));
+        if (!zombie.isDead()) {
+            actor.setClip(resolveZombieClip(zombie));
+        }
 
         float yOffset = 0f;
         if (!(zombie instanceof Zomboss boss)) {
@@ -141,9 +167,29 @@ public class ZombieRenderer {
 
         if (!zombie.isDead()) {
             updateZombieArmorVisuals(zombie, actor);
+            trySpawnArmDrop(zombie, actor);
         } else {
-            actor.setVisibilityMap(null);
+            applyDeathVisibility(zombie, actor);
         }
+    }
+
+    private void applyDeathVisibility(Zombie zombie, PamAnimatedActor actor) {
+        if (!zombie.isArmLost()) {
+            actor.setVisibilityMap(null);
+            return;
+        }
+
+        DismembermentData data = DismembermentLoader.getInstance().get(zombie.getType().name());
+        if (data == null || !data.hasArmStages()) {
+            actor.setVisibilityMap(null);
+            return;
+        }
+
+        Map<String, Boolean> visibilityMap = new HashMap<>();
+        for (String part : data.getArmPartsUpToStage(zombie.getArmStagesLost())) {
+            visibilityMap.put(part, false);
+        }
+        actor.setVisibilityMap(visibilityMap);
     }
 
     private String resolveZombieClip(Zombie zombie) {
@@ -360,7 +406,66 @@ public class ZombieRenderer {
                 }
             }
         }
+
+        if (zombie.isArmLost()) {
+            DismembermentData data = DismembermentLoader.getInstance().get(zombie.getType().name());
+            if (data != null && data.hasArmStages()) {
+                for (String part : data.getArmPartsUpToStage(zombie.getArmStagesLost())) {
+                    visibilityMap.put(part, false);
+                }
+            }
+        }
+
         zombieActor.setVisibilityMap(visibilityMap);
+    }
+
+    private void trySpawnArmDrop(Zombie zombie, PamAnimatedActor actor) {
+        int targetStage = zombie.getArmStagesLost();
+        if (targetStage <= 0) return;
+
+        int spawnedStage = armStagesSpawned.getOrDefault(zombie, 0);
+        if (targetStage <= spawnedStage) return;
+
+        DismembermentData data = DismembermentLoader.getInstance().get(zombie.getType().name());
+        if (data == null || !data.hasArmStages()) return;
+
+        List<DismembermentData.ArmStage> stages = data.getArmStages();
+        float groundY = groundYFor(actor);
+
+        for (int i = spawnedStage; i < targetStage && i < stages.size(); i++) {
+            DetachedPartActor part = DetachedPartActor.spawnFrom(actor, stages.get(i).getParts(), groundY);
+            if (part != null) zombieLayer.addActor(part);
+        }
+
+        armStagesSpawned.put(zombie, targetStage);
+    }
+
+    private boolean trySpawnHeadDrop(Zombie zombie, PamAnimatedActor actor) {
+        if (headDropSpawned.contains(zombie)) return false;
+        headDropSpawned.add(zombie);
+
+        DismembermentData data = DismembermentLoader.getInstance().get(zombie.getType().name());
+        if (data == null || !data.hasHeadParts()) return false;
+
+        Map<String, Boolean> visibility = new HashMap<>();
+
+        if (zombie.isArmLost() && data.hasArmStages()) {
+            for (String part : data.getArmPartsUpToStage(zombie.getArmStagesLost())) {
+                visibility.put(part, false);
+            }
+        }
+
+        for (String part : data.getHeadParts()) visibility.put(part, false);
+        actor.setVisibilityMap(visibility);
+
+        float groundY = groundYFor(actor);
+        DetachedPartActor part = DetachedPartActor.spawnFrom(actor, data.getHeadParts(), groundY);
+        if (part != null) zombieLayer.addActor(part);
+        return part != null;
+    }
+
+    private float groundYFor(PamAnimatedActor actor) {
+        return actor.getY();
     }
 
     private boolean zombieHasBarrel(Zombie zombie) {
@@ -451,6 +556,8 @@ public class ZombieRenderer {
     public void clear() {
         zombieActors.clear();
         zombieActorTypes.clear();
+        armStagesSpawned.clear();
+        headDropSpawned.clear();
         zombieLayer.clearChildren();
     }
 }
