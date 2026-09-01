@@ -98,7 +98,7 @@ public class Zombie implements Ticker {
             return;
         }
 
-        if (spawnEffect == SpawnEffect.SANDSTORM) { //  || spawnEffect == SpawnEffect.WATER_SPLASH
+        if (spawnEffect == SpawnEffect.SANDSTORM) {
             updateTile();
             return;
         }

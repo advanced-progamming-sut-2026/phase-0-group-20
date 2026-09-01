@@ -30,7 +30,12 @@ public class NetworkStateSyncer {
         int diff = serverSun - session.getCurrentSun();
         if (diff != 0) session.addSun(diff);
 
-        List<Map<String, Object>> zombiesData = (List<Map<String, Object>>) snapshot.get("zombies");
+        syncZombies(arena, (List<Map<String, Object>>) snapshot.get("zombies"));
+        syncPlants(arena, (List<Map<String, Object>>) snapshot.get("plants"));
+        syncSuns(arena, (List<Map<String, Object>>) snapshot.get("suns"));
+    }
+
+    private static void syncZombies(Arena arena, List<Map<String, Object>> zombiesData) {
         if (zombiesData != null) {
             for (Map<String, Object> zData : zombiesData) {
                 String zId = (String) zData.get("id");
@@ -61,8 +66,9 @@ public class NetworkStateSyncer {
                 }
             }
         }
+    }
 
-        List<Map<String, Object>> plantsData = (List<Map<String, Object>>) snapshot.get("plants");
+    private static void syncPlants(Arena arena, List<Map<String, Object>> plantsData) {
         if (plantsData != null) {
             for (Map<String, Object> pData : plantsData) {
                 String pId = (String) pData.get("id");
@@ -76,8 +82,9 @@ public class NetworkStateSyncer {
                 }
             }
         }
+    }
 
-        List<Map<String, Object>> sunsData = (List<Map<String, Object>>) snapshot.get("suns");
+    private static void syncSuns(Arena arena, List<Map<String, Object>> sunsData) {
         if (sunsData != null) {
             java.util.Set<String> serverSunIds = new java.util.HashSet<>();
 
