@@ -202,6 +202,9 @@ public final class Ids {
 
     public static final class ArenaEffects {
         public static final String GRAVE = "768/INITIAL/GRAVESTONES/EGYPT_HIEROGLYPH/EGYPT_HIEROGLYPH.PAM";
+        public static final String DARK_NOOP = "768/FULL/GRAVESTONES/DARK_NOOP/DARK_NOOP.PAM";
+        public static final String DARK_SUN = "768/FULL/GRAVESTONES/DARK_SUN/DARK_SUN.PAM";
+        public static final String DARK_PLANT = "768/FULL/GRAVESTONES/DARK_PLANTFOOD/DARK_PLANTFOOD.PAM";
         public static final String TILESLIDER_DOWN =
             "768/FULL/EFFECTS/TILESLIDER_ICEAGE_DOWN/TILESLIDER_ICEAGE_DOWN.PAM";
         public static final String TILESLIDER_UP = "768/FULL/EFFECTS/TILESLIDER_ICEAGE_UP/TILESLIDER_ICEAGE_UP.PAM";

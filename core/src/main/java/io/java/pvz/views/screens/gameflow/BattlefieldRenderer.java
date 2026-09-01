@@ -5,12 +5,14 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import io.java.pvz.models.entities.obstacle.PushableObstacle;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.effect.ChillEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.FreezeEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.PoisonEffect;
 import io.java.pvz.models.entities.zombies.behavior.effect.ZombieEffect;
+import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventListener;
@@ -19,12 +21,13 @@ import io.java.pvz.models.game.events.GameEventPayload;
 import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class BattlefieldRenderer implements GameEventListener {
 
     private final Group masterGroup = new Group();
-    private final Group environmentLayer = new Group();
+    private final Group environmentLayer;
     private final Group highlightLayer = new Group();
     private final Group mowerLayer = new Group();
     private final Group boardLayer;
@@ -44,11 +47,13 @@ public class BattlefieldRenderer implements GameEventListener {
     private final Map<Zombie, Float> zombieFlashTimers = new HashMap<>();
     private final Map<Plant, Integer> plantLastHp = new HashMap<>();
     private final Map<Plant, Float> plantFlashTimers = new HashMap<>();
+    private final Map<String, Float> coordFlashTimers = new HashMap<>();
 
     public BattlefieldRenderer() {
         initShader();
 
-        boardLayer = getBoardLayer();
+        environmentLayer = getShaderGroup();
+        boardLayer = getShaderGroup();
 
         masterGroup.addActor(environmentLayer);
         masterGroup.addActor(highlightLayer);
@@ -71,7 +76,7 @@ public class BattlefieldRenderer implements GameEventListener {
         GameEventMessenger.getInstance().addListener(GameEvent.EFFECTS, this);
     }
 
-    private @NonNull Group getBoardLayer() {
+    private @NonNull Group getShaderGroup() {
         return new Group() {
             @Override
             public void drawChildren(Batch batch, float parentAlpha) {
@@ -93,12 +98,20 @@ public class BattlefieldRenderer implements GameEventListener {
                             isSpawningZombie = true;
                             groundClipY = zombie.getPosition().getY() - 50f;
                         }
-
+                    } else if (userObj instanceof Tile tile) {
+                        float flash =
+                            coordFlashTimers.getOrDefault(tile.getRow() + "," + tile.getCol(), 0f) > 0 ? 0.5f : 0f;
+                        entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
+                        entityShader.setUniformf("u_damageFlash", flash);
+                    } else if (userObj instanceof PushableObstacle obs) {
+                        float flash =
+                            coordFlashTimers.getOrDefault(obs.getRow() + "," + obs.getCol(), 0f) > 0 ? 0.5f : 0f;
+                        entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
+                        entityShader.setUniformf("u_damageFlash", flash);
                     } else {
                         entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
                         entityShader.setUniformf("u_damageFlash", 0f);
                     }
-
                     if (isSpawningZombie) {
                         batch.flush();
                         if (clipBegin(child.getX() - 150f, groundClipY, child.getWidth() + 300f,
@@ -107,9 +120,7 @@ public class BattlefieldRenderer implements GameEventListener {
                             batch.flush();
                             clipEnd();
                         }
-                    } else
-                        child.draw(batch, parentAlpha);
-
+                    } else child.draw(batch, parentAlpha);
                 }
                 batch.setShader(null);
             }
@@ -186,9 +197,7 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     public void sync(Arena arena) {
-        if (arena == null) {
-            return;
-        }
+        if (arena == null) return;
         float delta = Gdx.graphics.getDeltaTime();
 
         for (Zombie z : arena.getActiveZombies()) {
@@ -224,6 +233,17 @@ public class BattlefieldRenderer implements GameEventListener {
             float yB = b.getY() - (b.getUserObject() instanceof Zombie ? 3f : 0f);
             return Float.compare(yB, yA);
         });
+
+        Iterator<Map.Entry<String, Float>> coordIt = coordFlashTimers.entrySet().iterator();
+        while (coordIt.hasNext()) {
+            Map.Entry<String, Float> entry = coordIt.next();
+            float timer = entry.getValue() - delta;
+            if (timer > 0) {
+                entry.setValue(timer);
+            } else {
+                coordIt.remove();
+            }
+        }
     }
 
     public void clear() {
@@ -237,6 +257,7 @@ public class BattlefieldRenderer implements GameEventListener {
         zombieFlashTimers.clear();
         plantLastHp.clear();
         plantFlashTimers.clear();
+        coordFlashTimers.clear();
     }
 
     @Override
@@ -259,6 +280,12 @@ public class BattlefieldRenderer implements GameEventListener {
 
         if (payload.getPlant() != null) {
             plantFlashTimers.put(payload.getPlant(), 0.15f);
+        }
+
+        if (payload.getMessage() != null && payload.getMessage().startsWith("OBSTACLE_HIT")) {
+            String[] parts = payload.getMessage().split(",");
+            if (parts.length == 3)
+                coordFlashTimers.put(parts[1] + "," + parts[2], 0.15f);
         }
     }
 
