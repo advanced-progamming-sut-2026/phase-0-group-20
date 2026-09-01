@@ -126,10 +126,17 @@ public class LevelResultTable extends BorderedTable {
     }
 
     private void handleContinueAction() {
+        boolean popAgain = false;
+        if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel &&
+            !MatchController.getInstance().isCouchPlay() &&
+            !MatchController.getInstance().isOnlineMatch()) {
+            popAgain = true;
+        }
         GameSession.destroyInstance();
         remove();
         ScreenManager.getInstance().popScreen();
         ScreenManager.getInstance().popScreen();
+        if (popAgain) ScreenManager.getInstance().popScreen();
 
         if (ScreenManager.getInstance().getCurrentScreen() instanceof ChapterSelectionScreen) {
             ScreenManager.getInstance().popScreen();

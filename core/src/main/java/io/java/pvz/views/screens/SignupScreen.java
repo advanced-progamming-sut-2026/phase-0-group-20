@@ -58,14 +58,12 @@ public class SignupScreen extends BaseScreen {
 
         TextButton registerBtn = new TextButton("Register", skin, "purple");
         ButtonAnimator.applyHoverAndClickEffect(registerBtn, 1.1f, 0.9f, () -> {
-
             String user = usernameField.getText().trim();
             String pass = passwordField.getText();
             String repeatPass = repeatPasswordField.getText();
             String nick = nicknameField.getText().trim();
             String mail = emailField.getText().trim();
             String gender = genderField.getText().trim();
-
             NetworkController.getInstance().register(user, pass, repeatPass, nick, mail, gender, response -> {
                 Gdx.app.postRunnable(() -> {
                     if (response != null && response.isSuccess()) {
@@ -76,19 +74,18 @@ public class SignupScreen extends BaseScreen {
                         String errorMsg = response != null ? response.getErrorMessage() : "Network error";
                         System.out.println("Registration Failed: " + errorMsg);
                         GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                            new GameEventPayload.Builder(GameEvent.NOTIFY).message("Registration Failed: " + errorMsg).build());
+                            new GameEventPayload.Builder(GameEvent.NOTIFY)
+                                .message("Registration Failed: " + errorMsg).build());
                     }
                 });
             });
         });
         baseTable.add(registerBtn).height(70).padTop(15).row();
-
         TextButton backBtn = UiFactory.textButton("Already have account? Login", skin,
             "green_small", 1.05f, 0.95f, () -> {
                 ScreenManager.getInstance().pushScreen(new LoginScreen(game));
             });
         baseTable.add(backBtn).height(50).padTop(5).row();
-
         mainLayer.add(baseTable).expand().center();
     }
 
@@ -205,7 +202,8 @@ public class SignupScreen extends BaseScreen {
 
         TextButton submitBtn = new TextButton("Submit Registration", skin, "purple");
         ButtonAnimator.applyHoverAndClickEffect(submitBtn, 1.1f, 0.9f, () -> {
-            NetworkController.getInstance().pickSecurityQuestion(qNumber, answerField.getText(), confirmField.getText(), response -> {
+            NetworkController.getInstance().pickSecurityQuestion(qNumber, answerField.getText(),
+                confirmField.getText(), response -> {
                 Gdx.app.postRunnable(() -> {
                     if (response != null && response.isSuccess()) {
                         System.out.println("Account completely set up on server.");

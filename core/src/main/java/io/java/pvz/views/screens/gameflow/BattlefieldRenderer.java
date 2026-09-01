@@ -101,7 +101,8 @@ public class BattlefieldRenderer implements GameEventListener {
 
                     if (isSpawningZombie) {
                         batch.flush();
-                        if (clipBegin(child.getX() - 150f, groundClipY, child.getWidth() + 300f, child.getHeight() + 200f)) {
+                        if (clipBegin(child.getX() - 150f, groundClipY, child.getWidth() + 300f,
+                            child.getHeight() + 200f)) {
                             child.draw(batch, parentAlpha);
                             batch.flush();
                             clipEnd();

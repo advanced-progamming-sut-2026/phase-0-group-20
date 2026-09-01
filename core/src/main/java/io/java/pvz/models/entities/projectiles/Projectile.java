@@ -146,6 +146,7 @@ public class Projectile implements Ticker {
         if (type == ProjectileType.PUFF_SPORE ||
             (plant.getName().equalsIgnoreCase("Pea Pod") && !plant.isBoosted()))
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 3);
+        if (type == ProjectileType.PUFF_SPORE) position.moveY(15);
         if (type == ProjectileType.SEA_SHROOM)
             position.moveY(-PhysicalConstants.TILE_HEIGHT / 4);
 

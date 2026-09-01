@@ -379,6 +379,7 @@ public class GameFlowScreen extends BaseScreen {
             .setSkin(AssetLoader.getInstance().getSkin())
             .setShowProgressBar(false)
             .setShowLevel(false)
+            .setLockIncluded(false)
             .build();
 
         plantButton.addListener(new ClickListener() {
@@ -396,6 +397,10 @@ public class GameFlowScreen extends BaseScreen {
         super.dispose();
         if (shapeRenderer != null) shapeRenderer.dispose();
         if (debugFont != null) debugFont.dispose();
+
+        MatchController.getInstance().setOnMatchEnd(null);
+        MatchController.getInstance().setOnlineMatch(false);
+
         GameEventMessenger.getInstance().removeListener(GameEvent.WAVE_STARTED_PLAYTIME,gameHUD.getAnnounceListener());
         GameEventMessenger.getInstance().removeListener(GameEvent.FINAL_WAVE_STARTED, gameHUD.getAnnounceListener());
         GameEventMessenger.getInstance().removeListener(GameEvent.GARGANTUAR_MOVES, cameraListener);
