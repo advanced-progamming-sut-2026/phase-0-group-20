@@ -38,7 +38,7 @@ public class MammothZomboss extends Zomboss {
         MissileImpactBehavior iceImpact = targetTile -> {
             if (targetTile != null) {
                 for (Plant p : new ArrayList<>(targetTile.getPlants())) {
-                    p.takeDamage(150);
+                    p.takeDamage(p.getCurrentHp());
                 }
             }
             GameEventMessenger.getInstance().dispatch(GameEvent.SPAWN_EFFECT,

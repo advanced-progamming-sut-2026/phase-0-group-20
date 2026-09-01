@@ -2,6 +2,7 @@ package io.java.pvz.models.game.events;
 
 import io.java.pvz.models.App;
 import io.java.pvz.models.entities.zombies.Zombie;
+import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.greenhouse.GreenHouse;
 import io.java.pvz.models.greenhouse.Pot;
 import io.java.pvz.models.greenhouse.PotCondition;
@@ -35,9 +36,13 @@ public class ZombieDropListener implements GameEventListener {
             }
             case DIAMOND -> {
                 user.earnDiamond(1);
+                GameSession.notify("A zombie dropped a diamond!");
+
+
             }
             case COIN -> {
                 user.earnCoin(50);
+                GameSession.notify("A zombie dropped 50 coins!");
             }
         }
     }
@@ -61,6 +66,9 @@ public class ZombieDropListener implements GameEventListener {
                     }
                 }
             }
+        }
+        if (unlockedOne) {
+            GameSession.notify("A zombie drop unlocked a new pot!");
         }
     }
 

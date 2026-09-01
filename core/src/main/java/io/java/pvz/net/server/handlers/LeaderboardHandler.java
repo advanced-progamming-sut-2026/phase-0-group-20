@@ -37,7 +37,7 @@ public class LeaderboardHandler {
             int totalMinigameLevels = u.getUnlockedMinigames().values().stream().mapToInt(Integer::intValue).sum();
             row.put("minigameLevelsUnlocked", totalMinigameLevels);
 
-            row.put("questsCompleted", u.getQuestManager().getCompletedQuestsCount());
+            row.put("questsCompleted", u.getQuestManager().getLeaderBoardResult());
             rows.add(row);
         }
 
