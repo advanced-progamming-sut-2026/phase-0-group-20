@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -87,7 +88,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
             }
 
             final boolean finalOnline = online;
-            com.badlogic.gdx.Gdx.app.postRunnable(() -> {
+            Gdx.app.postRunnable(() -> {
                 showIdleState(finalOnline);
             });
         }, "ServerPingThread").start();
