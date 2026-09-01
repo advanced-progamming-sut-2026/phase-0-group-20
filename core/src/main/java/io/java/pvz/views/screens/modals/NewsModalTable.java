@@ -3,6 +3,7 @@ package io.java.pvz.views.screens.modals;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.java.pvz.controllers.GameController.NewsController;
@@ -12,13 +13,11 @@ import pvz.skin.BorderedTable;
 public class NewsModalTable extends BorderedTable {
     private final NewsController controller = new NewsController();
     private Actor blocker;
+
     public NewsModalTable(Skin skin) {
         super();
-
         pad(40, 35, 35, 35);
-
         buildContent(skin);
-
         setSize(700, 900);
     }
 
@@ -40,7 +39,7 @@ public class NewsModalTable extends BorderedTable {
         Table contentTable = new Table();
         contentTable.top().pad(10);
 
-        buildNewsList(skin, contentTable);
+        buildNewsList(skin, contentTable, true);
 
         ScrollPane scrollPane = new ScrollPane(contentTable, skin);
         scrollPane.setFadeScrollBars(false);
@@ -49,12 +48,14 @@ public class NewsModalTable extends BorderedTable {
         add(scrollPane).grow().row();
     }
 
-    private void buildNewsList(Skin skin, Table contentTable) {
-        String plantNews = controller.showUnreadPlantNews();
-        String zombieNews = controller.showUnreadZombieNews();
-        String seasonNews = controller.showUnreadSeasonNews();
-        String minigameNews = controller.showUnreadMinigameNews();
-        String levelNews = controller.showUnreadLevelNews();
+    private void buildNewsList(Skin skin, Table contentTable, boolean unreadOnly) {
+        contentTable.clearChildren();
+
+        String plantNews = controller.showPlantNews(unreadOnly);
+        String zombieNews = controller.showZombieNews(unreadOnly);
+        String seasonNews = controller.showSeasonNews(unreadOnly);
+        String minigameNews = controller.showMinigameNews(unreadOnly);
+        String levelNews = controller.showLevelNews(unreadOnly);
 
         addNewsCategory(contentTable, skin, "Unlocked Plants", plantNews);
         addNewsCategory(contentTable, skin, "Unlocked Zombies", zombieNews);
@@ -63,11 +64,29 @@ public class NewsModalTable extends BorderedTable {
         addNewsCategory(contentTable, skin, "New Level", levelNews);
 
         if (!contentTable.hasChildren()) {
-            Label emptyLabel = new Label("There is no unread message", skin);
+            Table emptyContainer = new Table();
+            emptyContainer.top();
+
+            String messageText = unreadOnly ? "There is no unread messages" : "Inbox is empty";
+            Label emptyLabel = new Label(messageText, skin);
             emptyLabel.setColor(Color.BROWN);
-            emptyLabel.setFontScale(2.5f);
+            emptyLabel.setFontScale(1.8f);
             emptyLabel.setAlignment(Align.center);
-            contentTable.add(emptyLabel).expand().center();
+            emptyContainer.add(emptyLabel).padBottom(25).row();
+
+            if (unreadOnly) {
+                TextButton showAllBtn = new TextButton("Show All News", skin,"brown");
+                showAllBtn.getLabel().setFontScale(1.1f);
+                showAllBtn.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        buildNewsList(skin, contentTable, false);
+                    }
+                });
+                emptyContainer.add(showAllBtn).size(220, 60).center();
+            }
+
+            contentTable.add(emptyContainer).expand().center();
         }
     }
 
@@ -77,14 +96,15 @@ public class NewsModalTable extends BorderedTable {
         }
 
         Label headerLabel = new Label(headerTitle, skin);
-        headerLabel.setFontScale(1.2f);
+        headerLabel.setFontScale(1.5f);
         headerLabel.setColor(Color.valueOf("#684222"));
 
         table.add(headerLabel).left().padTop(15).padBottom(5).row();
 
-        Label messageLabel = new Label(newsText, skin);
-        messageLabel.setColor(Color.BROWN);
+        Label messageLabel = new Label(newsText, skin, "medium_outline");
+        messageLabel.setColor(Color.valueOf("#FBF8EB"));
         messageLabel.setWrap(true);
+        messageLabel.setFontScale(0.7f);
         messageLabel.setAlignment(Align.topLeft);
 
         table.add(messageLabel).growX().padLeft(25).padBottom(25).row();

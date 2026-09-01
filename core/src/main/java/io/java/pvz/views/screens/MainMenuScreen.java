@@ -3,6 +3,8 @@ package io.java.pvz.views.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -16,11 +18,14 @@ import io.java.pvz.controllers.MenuController.MainMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
+import io.java.pvz.models.news.Message;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.views.screens.modals.*;
 import pvz.libpvz.textures.TextureBank;
 import pvz.skin.BorderedTable;
+
+import java.util.ArrayList;
 
 public class MainMenuScreen extends BaseScreen {
 
@@ -78,7 +83,7 @@ public class MainMenuScreen extends BaseScreen {
         nameEntryTable.add(nameField).expandX().fillX().padRight(15);
         nameEntryTable.add(profileIcon).left().size(40, 40).pad(15);
 
-        center.add(nameEntryTable).width(360).height(65).padBottom(30).row();
+        center.add(nameEntryTable).width(360).height(65).padBottom(20).row();
 
         mainLayer.add(buildBottomButtons(textures, skin, center)).growX().padBottom(60).bottom();
     }
@@ -125,54 +130,118 @@ public class MainMenuScreen extends BaseScreen {
     }
 
     private Table buildBottomButtons(TextureBank textures, Skin skin, Table center) {
+        buildCenterButtons(skin, center);
 
+        Table bottomContainer = new Table();
+        Stack newsBtn = buildNewsButton(textures, skin);
+        Stack leaderboardBtn = buildLeaderboardButton(textures, skin);
+        Stack settingsBtn = buildSettingsButton(textures, skin);
+
+        bottomContainer.add(newsBtn).padLeft(50).padRight(50).bottom();
+        bottomContainer.add().bottom();
+        bottomContainer.add(center).expandX().padBottom(50).center().bottom();
+        bottomContainer.add(settingsBtn).padRight(50).bottom();
+        bottomContainer.add(leaderboardBtn).padRight(50).bottom();
+
+        return bottomContainer;
+    }
+
+    private void buildCenterButtons(Skin skin, Table center) {
         TextButton playBtn = new TextButton("Play", skin, "purple");
         playBtn.getLabel().setFontScale(1.5f);
         ButtonAnimator.applyHoverAndClickEffect(playBtn, 1.1f, 0.9f, () -> {
             System.out.println("Play Button clicked!");
             ScreenManager.getInstance().pushScreen(new GameMenuScreen(game));
-
         });
-        center.add(playBtn).prefSize(110).width(200).height(90).row();
 
-        Table bottomContainer = new Table();
+        center.add(playBtn).prefSize(110).width(200).height(80).padBottom(15).row();
 
-        Stack newsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON, 100, 100,
-            () -> {
-                System.out.println("News Icon Clicked!");
-                new NewsModalTable(skin).show(modalLayer,viewport);
-            });
-        Stack leaderboardBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON, 100, 100,
-            () -> {
-                System.out.println("Leader Board Clicked!");
-                modalLayer.clear();
+        TextButton exitBtn = new TextButton("Exit", skin, "brown");
+        exitBtn.getLabel().setFontScale(1.2f);
+        ButtonAnimator.applyHoverAndClickEffect(exitBtn, 1.1f, 0.9f, () -> {
+            System.out.println("Exit Button clicked!");
+            Gdx.app.exit();
+        });
 
-                Table leaderboardTable = LeaderboardMenu.build(
-                    new MenuScreenController(modalLayer) {
-                        @Override
-                        public void goBack() {
-                            modalLayer.clear();
-                        }
-                    },
-                    textures,
-                    skin
-                );
+        center.add(exitBtn).prefSize(90).width(160).height(60).row();
+    }
 
-                modalLayer.addActor(leaderboardTable);
-            });
-        Stack settingsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON, 100, 100,
-            () -> {
-                System.out.println("Settings button clicked");
-                new SettingModalTable(skin).show(modalLayer, viewport);
-            });
+    private Stack buildNewsButton(TextureBank textures, Skin skin) {
+        Stack newsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON, 100, 100, () -> {
+            System.out.println("News Icon Clicked!");
+            new NewsModalTable(skin).show(modalLayer, viewport);
+        });
 
-        bottomContainer.add(newsBtn).padLeft(50).padRight(50).bottom();
-        bottomContainer.add().bottom();
-        bottomContainer.add(center).expandX().padBottom(70).center().bottom();
-        bottomContainer.add(settingsBtn).padRight(50).bottom();
-        bottomContainer.add(leaderboardBtn).padRight(50).bottom();
+        newsBtn.add(buildBadgeTable());
+        return newsBtn;
+    }
 
-        return bottomContainer;
+    private Table buildBadgeTable() {
+        Image redBadge = createRedBadgeImage();
+
+        Table badgeTable = new Table() {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                this.setVisible(hasUnreadMessages());
+            }
+        };
+
+        badgeTable.setFillParent(true);
+        badgeTable.top().left();
+        badgeTable.add(redBadge).size(24, 24).padTop(-5).padLeft(-5);
+
+        return badgeTable;
+    }
+
+    private Image createRedBadgeImage() {
+        Pixmap pixmap = new Pixmap(24, 24, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.RED);
+        pixmap.fillCircle(12, 12, 12);
+
+        Texture redBadgeTexture = new Texture(pixmap);
+        pixmap.dispose();
+
+        return new Image(redBadgeTexture);
+    }
+
+    private boolean hasUnreadMessages() {
+        ArrayList<Message> inbox = App.getActiveUser().getInbox();
+        if (inbox != null) {
+            for (Message msg : inbox) {
+                if (msg.isUnread()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private Stack buildLeaderboardButton(TextureBank textures, Skin skin) {
+        return UiFactory.iconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON, 100, 100, () -> {
+            System.out.println("Leader Board Clicked!");
+            modalLayer.clear();
+
+            Table leaderboardTable = LeaderboardMenu.build(
+                new MenuScreenController(modalLayer) {
+                    @Override
+                    public void goBack() {
+                        modalLayer.clear();
+                    }
+                },
+                textures,
+                skin
+            );
+
+            modalLayer.addActor(leaderboardTable);
+        });
+    }
+
+    private Stack buildSettingsButton(TextureBank textures, Skin skin) {
+        return UiFactory.iconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON, 100, 100, () -> {
+            System.out.println("Settings button clicked");
+            new SettingModalTable(skin).show(modalLayer, viewport);
+        });
     }
 
     @Override

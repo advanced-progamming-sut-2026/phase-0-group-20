@@ -29,6 +29,7 @@ import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.BossLevel;
 import io.java.pvz.models.game.adventure.levels.Level;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
+import io.java.pvz.models.game.adventure.levels.speciallevels.LovePlants;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventListener;
 import io.java.pvz.models.game.events.GameEventMessenger;
@@ -82,6 +83,7 @@ public class GameHUD {
     private ProgressBar waveProgressBar;
     private Image progressHeadIcon;
     private float visualWaveProgress = 0f;
+    private Label lovePlantsRemainingLabel;
 
     private Table seedBankTable;
     private Table zombieTopBar;
@@ -119,6 +121,7 @@ public class GameHUD {
         setupPlantSelectionMenu();
         setupIndicators();
         setupActionButtons();
+        setupLovePlantsIndicator();
 
         buildProgressBarForCurrentMode();
 
@@ -144,6 +147,28 @@ public class GameHUD {
         } else if (showsWaveProgress) {
             buildNormalProgressBar();
         }
+    }
+
+    private void setupLovePlantsIndicator() {
+        lovePlantsRemainingLabel = new Label("", skin,"medium_outline") {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                if (GameSession.getInstance() != null
+                    && GameSession.getInstance().getCurrentMode() instanceof LovePlants love) {
+                    setVisible(true);
+                    setText("Remaining: " + love.getRemainingPlants());
+                } else {
+                    setVisible(false);
+                }
+            }
+        };
+        lovePlantsRemainingLabel.setAlignment(Align.center);
+        lovePlantsRemainingLabel.setFontScale(1.2f);
+        lovePlantsRemainingLabel.setWidth(viewport.getWorldWidth());
+        lovePlantsRemainingLabel.setPosition(0f, 100f);
+        lovePlantsRemainingLabel.setVisible(false);
+        mainLayer.addActor(lovePlantsRemainingLabel);
     }
 
     private void buildNormalProgressBar() {

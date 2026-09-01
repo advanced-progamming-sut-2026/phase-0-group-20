@@ -175,7 +175,7 @@ public class LeaderboardMenu extends Table {
         return switch (sortType) {
             case "season" -> "Ch " + asInt(row.get("chapter")) + " - Lv " + asInt(row.get("level"));
             case "minigame" -> asInt(row.get("minigameLevelsUnlocked")) + " levels";
-            case "quests" -> asInt(row.get("questsCompleted")) + " quests";
+            case "quests" -> row.get("questsCompleted") + " quests";
             default -> "Score: " + asInt(row.get("myPoint"));
         };
     }
