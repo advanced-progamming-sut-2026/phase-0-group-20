@@ -129,84 +129,12 @@ public class MainMenuScreen extends BaseScreen {
     }
 
     private Table buildBottomButtons(TextureBank textures, Skin skin, Table center) {
-
-        TextButton playBtn = new TextButton("Play", skin, "purple");
-        playBtn.getLabel().setFontScale(1.5f);
-        ButtonAnimator.applyHoverAndClickEffect(playBtn, 1.1f, 0.9f, () -> {
-            System.out.println("Play Button clicked!");
-            ScreenManager.getInstance().pushScreen(new GameMenuScreen(game));
-        });
-        center.add(playBtn).prefSize(110).width(200).height(80).padBottom(15).row();
-
-        TextButton exitBtn = new TextButton("Exit", skin , "brown");
-        exitBtn.getLabel().setFontScale(1.2f);
-        ButtonAnimator.applyHoverAndClickEffect(exitBtn, 1.1f, 0.9f, () -> {
-            System.out.println("Exit Button clicked!");
-            Gdx.app.exit();
-        });
-        center.add(exitBtn).prefSize(90).width(160).height(60).row();
+        buildCenterButtons(skin, center);
 
         Table bottomContainer = new Table();
-
-        Stack newsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON, 100, 100,
-            () -> {
-                System.out.println("News Icon Clicked!");
-                new NewsModalTable(skin).show(modalLayer,viewport);
-            });
-
-        Pixmap pixmap = new Pixmap(24, 24, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.RED);
-        pixmap.fillCircle(12, 12, 12);
-        Texture redBadgeTexture = new Texture(pixmap);
-        pixmap.dispose();
-        Image redBadge = new Image(redBadgeTexture);
-
-        Table badgeTable = new Table() {
-            @Override
-            public void act(float delta) {
-                super.act(delta);
-                boolean hasUnread = false;
-                ArrayList<Message> inbox = App.getActiveUser().getInbox();
-                if (inbox != null) {
-                    for (Message msg : inbox) {
-
-                        if (msg.isUnread()) {
-                            hasUnread = true;
-                            break;
-                        }
-                    }
-                }
-                this.setVisible(hasUnread);
-            }
-        };
-        badgeTable.setFillParent(true);
-        badgeTable.top().left();
-        badgeTable.add(redBadge).size(24, 24).padTop(-5).padLeft(-5);
-        newsBtn.add(badgeTable);
-
-        Stack leaderboardBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON, 100, 100,
-            () -> {
-                System.out.println("Leader Board Clicked!");
-                modalLayer.clear();
-
-                Table leaderboardTable = LeaderboardMenu.build(
-                    new MenuScreenController(modalLayer) {
-                        @Override
-                        public void goBack() {
-                            modalLayer.clear();
-                        }
-                    },
-                    textures,
-                    skin
-                );
-
-                modalLayer.addActor(leaderboardTable);
-            });
-        Stack settingsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON, 100, 100,
-            () -> {
-                System.out.println("Settings button clicked");
-                new SettingModalTable(skin).show(modalLayer, viewport);
-            });
+        Stack newsBtn = buildNewsButton(textures, skin);
+        Stack leaderboardBtn = buildLeaderboardButton(textures, skin);
+        Stack settingsBtn = buildSettingsButton(textures, skin);
 
         bottomContainer.add(newsBtn).padLeft(50).padRight(50).bottom();
         bottomContainer.add().bottom();
@@ -215,6 +143,104 @@ public class MainMenuScreen extends BaseScreen {
         bottomContainer.add(leaderboardBtn).padRight(50).bottom();
 
         return bottomContainer;
+    }
+
+    private void buildCenterButtons(Skin skin, Table center) {
+        TextButton playBtn = new TextButton("Play", skin, "purple");
+        playBtn.getLabel().setFontScale(1.5f);
+        ButtonAnimator.applyHoverAndClickEffect(playBtn, 1.1f, 0.9f, () -> {
+            System.out.println("Play Button clicked!");
+            ScreenManager.getInstance().pushScreen(new GameMenuScreen(game));
+        });
+
+        center.add(playBtn).prefSize(110).width(200).height(80).padBottom(15).row();
+
+        TextButton exitBtn = new TextButton("Exit", skin, "brown");
+        exitBtn.getLabel().setFontScale(1.2f);
+        ButtonAnimator.applyHoverAndClickEffect(exitBtn, 1.1f, 0.9f, () -> {
+            System.out.println("Exit Button clicked!");
+            Gdx.app.exit();
+        });
+
+        center.add(exitBtn).prefSize(90).width(160).height(60).row();
+    }
+
+    private Stack buildNewsButton(TextureBank textures, Skin skin) {
+        Stack newsBtn = UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON, 100, 100, () -> {
+            System.out.println("News Icon Clicked!");
+            new NewsModalTable(skin).show(modalLayer, viewport);
+        });
+
+        newsBtn.add(buildBadgeTable());
+        return newsBtn;
+    }
+
+    private Table buildBadgeTable() {
+        Image redBadge = createRedBadgeImage();
+
+        Table badgeTable = new Table() {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                this.setVisible(hasUnreadMessages());
+            }
+        };
+
+        badgeTable.setFillParent(true);
+        badgeTable.top().left();
+        badgeTable.add(redBadge).size(24, 24).padTop(-5).padLeft(-5);
+
+        return badgeTable;
+    }
+
+    private Image createRedBadgeImage() {
+        Pixmap pixmap = new Pixmap(24, 24, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.RED);
+        pixmap.fillCircle(12, 12, 12);
+
+        Texture redBadgeTexture = new Texture(pixmap);
+        pixmap.dispose();
+
+        return new Image(redBadgeTexture);
+    }
+
+    private boolean hasUnreadMessages() {
+        ArrayList<Message> inbox = App.getActiveUser().getInbox();
+        if (inbox != null) {
+            for (Message msg : inbox) {
+                if (msg.isUnread()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private Stack buildLeaderboardButton(TextureBank textures, Skin skin) {
+        return UiFactory.iconButton(textures, skin, Ids.MainMenu.LEADERBOARD_ICON, 100, 100, () -> {
+            System.out.println("Leader Board Clicked!");
+            modalLayer.clear();
+
+            Table leaderboardTable = LeaderboardMenu.build(
+                new MenuScreenController(modalLayer) {
+                    @Override
+                    public void goBack() {
+                        modalLayer.clear();
+                    }
+                },
+                textures,
+                skin
+            );
+
+            modalLayer.addActor(leaderboardTable);
+        });
+    }
+
+    private Stack buildSettingsButton(TextureBank textures, Skin skin) {
+        return UiFactory.iconButton(textures, skin, Ids.MainMenu.SETTINGS_ICON, 100, 100, () -> {
+            System.out.println("Settings button clicked");
+            new SettingModalTable(skin).show(modalLayer, viewport);
+        });
     }
 
     @Override
