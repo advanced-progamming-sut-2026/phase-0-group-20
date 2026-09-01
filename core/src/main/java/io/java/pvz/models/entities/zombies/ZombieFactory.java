@@ -153,7 +153,8 @@ public class ZombieFactory {
             case FISHERMAN, KING -> new StationaryMove(zombie);
 
             case ZOMBOTANY_PEASHOOTER -> {
-                RangedAttack shootAction = new RangedAttack(zombie, ProjectileType.PEA, ProjectileType.NORMAL_PEA_DAMAGE);
+                RangedAttack shootAction =
+                    new RangedAttack(zombie, ProjectileType.PEA, ProjectileType.NORMAL_PEA_DAMAGE);
                 yield new PeriodicActionMove(zombie, 1.5f, true, () -> {
                     if (zombie.getCol() <= 8) {
                         shootAction.execute();

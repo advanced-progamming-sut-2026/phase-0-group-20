@@ -415,7 +415,8 @@ public class GameInputHandler {
         if (plantOnTile != null) {
             selectedGridPos = new Vector2(col, row);
 
-            PamAnimatedActor animActor = PamAnimatedActor.createPlantIdle(UiFactory.getAnimationName(plantOnTile).toUpperCase());
+            PamAnimatedActor animActor = PamAnimatedActor
+                .createPlantIdle(UiFactory.getAnimationName(plantOnTile).toUpperCase());
             if (animActor != null) {
                 floatingPlantImage = createFloatingAnimatedActor(animActor, 80);
             }

@@ -73,7 +73,6 @@ public class ZombieInfoScreen extends BaseScreen {
         informationLabel.setFontScale(1.8f);
         informationLabel.setAlignment(Align.center);
         statsTable.add(informationLabel).colspan(2).padTop(50).padBottom(cellPadding * 2).row();
-
         float padX = 35f;
         float padY = 15f;
         statsTable.add(createStatBlock(textures,
