@@ -35,7 +35,7 @@ public class NewsController {
 
         for (Message message : activeUser.getInbox()) {
             if (message.isUnread() && message.getMessageType() == targetType) {
-                stringBuilder.append(message.getText()).append("\n");
+                stringBuilder.append(message.getText()).append("\n\n");
                 message.setUnread(false);
             }
         }

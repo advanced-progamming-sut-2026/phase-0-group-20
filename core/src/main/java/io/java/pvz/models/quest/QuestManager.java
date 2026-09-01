@@ -95,6 +95,22 @@ public class QuestManager implements GameEventListener {
         return count;
     }
 
+    @JsonIgnore
+    public String getLeaderBoardResult() {
+        int completedDailyQuests = 0;
+        int completedButNotDailyQuests = 0;
+        for (Quest quest : activeQuests) {
+            if (quest.isCompleted()) {
+                if (quest.getCategory() == QuestCategory.DAILY) {
+                    completedDailyQuests++;
+                }else  {
+                    completedButNotDailyQuests++;
+                }
+            }
+        }
+        return "Daily: "+completedDailyQuests+"-- General: "+completedButNotDailyQuests;
+    }
+
 
     public List<Quest> getActiveQuests() {
         return activeQuests;

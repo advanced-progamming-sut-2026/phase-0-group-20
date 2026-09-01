@@ -90,11 +90,6 @@ public class GameMenuScreen extends BaseScreen {
             () -> ScreenManager.getInstance().pushScreenWithTransition(() -> new ZenGarden(game), 1.5f)
         )).padRight(30);
 
-        group.add(UiFactory.iconButton(textures, skin, Ids.MainMenu.NEWS_ICON, 100, 100, () -> {
-            System.out.println("News Clicked");
-            new NewsModalTable(skin).show(modalLayer, viewport);
-        })).padRight(30);
-
         return group;
     }
 

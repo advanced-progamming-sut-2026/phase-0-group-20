@@ -77,14 +77,15 @@ public class NewsModalTable extends BorderedTable {
         }
 
         Label headerLabel = new Label(headerTitle, skin);
-        headerLabel.setFontScale(1.2f);
+        headerLabel.setFontScale(1.5f);
         headerLabel.setColor(Color.valueOf("#684222"));
 
         table.add(headerLabel).left().padTop(15).padBottom(5).row();
 
-        Label messageLabel = new Label(newsText, skin);
-        messageLabel.setColor(Color.BROWN);
+        Label messageLabel = new Label(newsText, skin,"medium_outline");
+        messageLabel.setColor(Color.valueOf("#FBF8EB"));
         messageLabel.setWrap(true);
+        messageLabel.setFontScale(0.7f);
         messageLabel.setAlignment(Align.topLeft);
 
         table.add(messageLabel).growX().padLeft(25).padBottom(25).row();

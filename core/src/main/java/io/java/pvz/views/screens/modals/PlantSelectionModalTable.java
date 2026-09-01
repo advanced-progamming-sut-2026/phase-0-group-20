@@ -260,7 +260,8 @@ public class PlantSelectionModalTable extends Table {
 
         Table rightContentTable = new Table();
 
-        String desc = "Cost: " + clickedPlant.getCost() + " | Recharge: " + clickedPlant.getRecharge();
+        String desc = "Cost: " + clickedPlant.getCost() + " | Recharge: " + clickedPlant.getRecharge()+" | Category: "+
+            clickedPlant.getCategory().getName();
         Label descLabel = new Label(desc, skin, "medium");
         descLabel.setColor(Color.valueOf("#4A3018"));
         descLabel.setWrap(true);

@@ -459,7 +459,8 @@ public class GameInputHandler {
     }
 
     public void updatePlantingHighlights() {
-        if (isShovelSelected || isPlantFoodSelected || selectedPlantToPlace != null || selectedGridPos != null) {
+        if (isShovelSelected || isPlantFoodSelected || selectedPlantToPlace != null || selectedGridPos != null
+        ||selectedZombieToPlace != null) {
             Vector2 gridPos = getGridPosition();
             if (gridPos != null) {
                 int col = (int) gridPos.x;

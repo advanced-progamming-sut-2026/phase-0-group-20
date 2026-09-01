@@ -36,4 +36,8 @@ public class LovePlants extends SpecialLevel {
     public String toString() {
         return "Don't Let Zombies Eat Your Brain-Don't Lose Over " + limit + " Plants.";
     }
+
+    public int getRemainingPlants() {
+        return this.loseCondition.getRemaining();
+    }
 }
