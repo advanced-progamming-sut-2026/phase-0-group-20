@@ -1,0 +1,961 @@
+[
+  {
+    "zombieType": "NORMAL",
+    "headParts": [
+      "zombie_skull",
+      "zombie_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "CONE",
+    "headParts": [
+      "zombie_skull",
+      "zombie_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "BUCKET",
+    "headParts": [
+      "zombie_skull",
+      "zombie_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "BRICK",
+    "headParts": [
+      "zombie_skull",
+      "zombie_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "DARK_ARMOR",
+    "headParts": [
+      "zombie_skull",
+      "zombie_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "GARGANTUAR",
+    "headParts": [
+      "Zombie_gargantuar_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "Zombie_gargantuar_outerarm_hand"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "Zombie_gargantuar_outerarm_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "Zombie_gargantuar_outerarm_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "IMP",
+    "headParts": [
+      "zombie_imp_skull",
+      "zombie_imp_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_imp_hand_outer"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_imp_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_imp_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "ALL_STAR",
+    "headParts": [
+      "zombie_modern_allstar_skull",
+      "zombie_modern_allstar_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_modern_allstar_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_modern_allstar_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_modern_allstar_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "ARCADE",
+    "headParts": [
+      "zombie_80s_arcade_skull",
+      "zombie_80s_arcade_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_80s_arcade_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_80s_arcade_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_80s_arcade_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "JANE",
+    "headParts": [
+      "zombie_lostcity_jane_skull",
+      "zombie_lostcity_jane_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_lostcity_jane_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_lostcity_jane_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_lostcity_jane_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "CRYSTAL_SKULL",
+    "headParts": [
+      "zombie_lostcity_crystalskull_skull",
+      "zombie_lostcity_crystalskull_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_lostcity_crystalskull_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_lostcity_crystalskull_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_lostcity_crystalskull_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "PROSPECTOR",
+    "headParts": [
+      "zombie_prospector_skull",
+      "zombie_prospector_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_prospector_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_prospector_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_prospector_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "PIANIST",
+    "headParts": [
+      "zombie_piano_skull",
+      "zombie_piano_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_piano_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_piano_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_piano_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "NEWSPAPER",
+    "headParts": [
+      "zombie_modern_newspaper_skull",
+      "zombie_modern_newspaper_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_modern_newspaper_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_modern_newspaper_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_modern_newspaper_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "BARREL_ROLLER",
+    "headParts": [
+      "zombie_pirate_barrel_pusher_skull",
+      "zombie_pirate_barrel_pusher_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_pirate_barrel_pusher_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_pirate_barrel_pusher_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_pirate_barrel_pusher_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "RA",
+    "headParts": [
+      "zombie_egypt_ra_skull",
+      "zombie_egypt_ra_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_egypt_ra_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_egypt_ra_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_egypt_ra_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "EXPLORER",
+    "headParts": [
+      "zombie_explorer_skull",
+      "zombie_explorer_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_explorer_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_explorer_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_explorer_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "TOMB_RAISER",
+    "headParts": [
+      "zombie_egypt_tombraiser_skull",
+      "zombie_egypt_tombraiser_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_egypt_tombraiser_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_egypt_tombraiser_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_egypt_tombraiser_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "DODO",
+    "headParts": [
+      "zombie_iceage_dodorider_skull",
+      "zombie_iceage_dodorider_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_iceage_dodorider_hand_outer"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_iceage_dodorider_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_iceage_dodorider_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "HUNTER",
+    "headParts": [
+      "zombie_iceage_hunter_skull",
+      "zombie_iceage_hunter_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_iceage_hunter_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_iceage_hunter_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_iceage_hunter_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "TROGLOBITE",
+    "headParts": [
+      "zombie_iceage_troglobite_skull",
+      "zombie_iceage_troglobite_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_iceage_troglobite_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_iceage_troglobite_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_iceage_troglobite_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "FISHERMAN",
+    "headParts": [
+      "zombie_beach_fisherman_skull",
+      "zombie_beach_fisherman_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_beach_fisherman_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_beach_fisherman_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_beach_fisherman_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "OCTOPUS",
+    "headParts": [
+      "zombie_beach_octopus_skull",
+      "zombie_beach_octopus_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_beach_octopus_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_beach_octopus_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_beach_octopus_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "SNORKEL",
+    "headParts": [
+      "zombie_beach_snorkeler_skull",
+      "zombie_beach_snorkeler_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_beach_snorkeler_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_beach_snorkeler_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_beach_snorkeler_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "JUGGLER",
+    "headParts": [
+      "zombie_dark_jester_skull",
+      "zombie_dark_jester_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_dark_jester_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_dark_jester_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_dark_jester_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "WIZARD",
+    "headParts": [
+      "zombie_dark_wizard_skull",
+      "zombie_dark_wizard_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_dark_wizard_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_dark_wizard_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_dark_wizard_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "KING",
+    "headParts": [
+      "zombie_dark_king_skull",
+      "zombie_dark_king_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_dark_king_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_dark_king_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_dark_king_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "IMP_DRAGON",
+    "headParts": [
+      "zombie_dark_imp_dragon_skull",
+      "zombie_dark_imp_dragon_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_dark_imp_dragon_hand_outer"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_dark_imp_dragon_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_dark_imp_dragon_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "ZOMBOTANY_PEASHOOTER",
+    "headParts": [
+      "zombie_skull",
+      "zombie_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "ZOMBOTANY_WALLNUT",
+    "headParts": [
+      "zombie_skull",
+      "zombie_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "ZOMBOTANY_JALAPENO",
+    "headParts": [
+      "zombie_skull",
+      "zombie_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  },
+  {
+    "zombieType": "ZOMBOTANY_SQUASH",
+    "headParts": [
+      "zombie_skull",
+      "zombie_jaw"
+    ],
+    "armStages": [
+      {
+        "parts": [
+          "zombie_hand_outer_01"
+        ],
+        "healthPercent": 80,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arm_outer_lower"
+        ],
+        "healthPercent": 55,
+        "chancePercent": 100
+      },
+      {
+        "parts": [
+          "zombie_arms_outer_upper"
+        ],
+        "healthPercent": 30,
+        "chancePercent": 100
+      }
+    ]
+  }
+]

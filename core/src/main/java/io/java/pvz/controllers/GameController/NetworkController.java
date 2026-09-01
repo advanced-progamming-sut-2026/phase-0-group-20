@@ -36,14 +36,13 @@ public class NetworkController {
         return authenticated && isConnected();
     }
 
-    public void login(String username, String password, Consumer<NetworkMessage> callback) {
-        System.out.println("hiii");
+    public void login(String username, String password, boolean stayLogin, Consumer<NetworkMessage> callback) {
         runAsync(() -> {
             NetworkClient client = connectIfNeeded();
             NetworkMessage request = NetworkMessage.request(MessageType.LOGIN);
             request.put("username", username);
             request.put("password", password);
-            request.put("stayLoggedIn", false);
+            request.put("stayLoggedIn", stayLogin);
             return client.sendAndWait(request, 10);
         }, response -> {
             if (response != null && response.isSuccess()) {

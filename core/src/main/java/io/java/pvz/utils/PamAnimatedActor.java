@@ -16,6 +16,7 @@ public class PamAnimatedActor extends Actor {
     private float stateTime = 0f;
     private boolean isLoaded = false;
     private Map<String, Boolean> visibilityMap = null;
+    private boolean paused = false;
 
     public PamAnimatedActor(PamPlayer player, String clipName, String... pamPaths) {
         this.player = player;
@@ -120,6 +121,14 @@ public class PamAnimatedActor extends Actor {
         this.stateTime = 0f;
     }
 
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
     public String getClip() {
         return clipName;
     }
@@ -128,10 +137,30 @@ public class PamAnimatedActor extends Actor {
         return isLoaded;
     }
 
+    public PamPlayer getPlayer() {
+        return player;
+    }
+
+    public String getPamPath() {
+        return successfulPath;
+    }
+
+    public float getStateTime() {
+        return stateTime;
+    }
+
+    public float getDrawX() {
+        return getX() + (getWidth() / 2f);
+    }
+
+    public float getDrawY() {
+        return getY();
+    }
+
     @Override
     public void act(float delta) {
         super.act(delta);
-        if (isLoaded) {
+        if (isLoaded && !paused) {
             stateTime += delta;
         }
     }

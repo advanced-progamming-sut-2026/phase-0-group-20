@@ -37,9 +37,13 @@ public class UserRepository extends JsonRepository<User, String> {
     }
 
     public Optional<User> authenticate(String username, String password) {
-        String inputHash = PasswordUtils.hashPassword(password);
-        return findByUsername(username)
-            .filter(user -> user.getPasswordHash().equals(inputHash));
+        if (isLikelySha256(password)) {
+            return findByUsername(username).filter(user -> user.getPasswordHash().equals(password));
+        } else {
+            String inputHash = PasswordUtils.hashPassword(password);
+            return findByUsername(username)
+                .filter(user -> user.getPasswordHash().equals(inputHash));
+        }
     }
 
     public Optional<User> findForRecovery(String username, String email) {
@@ -52,5 +56,12 @@ public class UserRepository extends JsonRepository<User, String> {
             user.setStayLoggedIn(false);
             save(user);
         });
+    }
+
+    public static boolean isLikelySha256(String text) {
+        if (text == null) {
+            return false;
+        }
+        return text.matches("^[a-fA-F0-9]{64}$");
     }
 }

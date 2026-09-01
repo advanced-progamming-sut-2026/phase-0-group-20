@@ -1,6 +1,7 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.GameInitializer;
+import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
@@ -21,6 +23,8 @@ import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
 import io.java.pvz.models.users.User;
+import io.java.pvz.net.client.NetworkClient;
+import io.java.pvz.net.client.ServerConfig;
 import io.java.pvz.utils.Ids;
 import pvz.libpvz.textures.TextureBank;
 
@@ -35,6 +39,8 @@ public class AssetLoaderScreen extends BaseScreen {
     private boolean isInitStarted = false;
     private boolean isInitFinished = false;
     private float virtualProgress = 0f;
+
+    private boolean isTransitioning = false;
 
     public AssetLoaderScreen(Game game) {
         super(game);
@@ -91,7 +97,8 @@ public class AssetLoaderScreen extends BaseScreen {
         progressBar.setValue(virtualProgress);
 
 
-        if (isInitFinished && virtualProgress >= 1f) {
+        if (isInitFinished && virtualProgress >= 1f && !isTransitioning) {
+            isTransitioning = true;
             User stayedUser = DataBaseManager.getLoggedInUser();
             GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_MENUS,
                 new GameEventPayload.Builder(GameEvent.ENTERED_MENUS).build());
@@ -99,12 +106,42 @@ public class AssetLoaderScreen extends BaseScreen {
                 App.setActiveAdventure(new Adventure());
                 ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
             } else {
-                App.setActiveUser(stayedUser);
-                App.setActiveMenu(Menu.MAIN_MENU);
-                App.setActiveAdventure(new Adventure());
-                System.out.println("Welcome back, " + stayedUser.getUsername() + "!");
-                App.setAllUsers(DataBaseManager.getAllUsers());
-                ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
+
+                new Thread(() -> {
+                   try {
+                       if (!NetworkClient.getInstance().isConnected()) {
+                           NetworkClient.getInstance().connect(ServerConfig.DEFAULT_HOST, ServerConfig.DEFAULT_PORT);
+                       }
+
+                       NetworkController.getInstance().login(
+                           stayedUser.getUsername(),
+                           stayedUser.getPassword(),
+                           true,
+                           response -> {
+                               Gdx.app.postRunnable(() -> {
+                                   if (response != null && response.isSuccess()) {
+                                       App.setActiveUser(stayedUser);
+                                       App.setActiveMenu(Menu.MAIN_MENU);
+                                       App.setActiveAdventure(new Adventure());
+                                       App.setAllUsers(DataBaseManager.getAllUsers());
+                                       ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
+                                   } else {
+                                       String error = response != null ? response.getErrorMessage() : "Error";
+                                       ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
+                                       GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                                           new GameEventPayload.Builder(GameEvent.NOTIFY).message("Error in auto login: " + error).build());
+                                   }
+                               });
+                           }
+                       );
+                   } catch (Exception e) {
+                       Gdx.app.postRunnable(() -> {
+                           ScreenManager.getInstance().setRootScreen(new LoginScreen(game));
+                           GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                               new GameEventPayload.Builder(GameEvent.NOTIFY).message("Server is Not Run").build());
+                       });
+                   }
+                }).start();
             }
         }
         stage.act(delta);
