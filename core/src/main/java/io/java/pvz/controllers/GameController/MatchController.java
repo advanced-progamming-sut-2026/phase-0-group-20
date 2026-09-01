@@ -54,6 +54,7 @@ public class MatchController {
             currentRole = null;
         }));
         client.onPush(MessageType.MATCH_ACTION_BROADCAST, message -> Gdx.app.postRunnable(() -> {
+            if (GameSession.getInstance() == null) return;
             String action = message.getString("action");
             int col = message.getInt("col");
             int row = message.getInt("row");
@@ -61,33 +62,28 @@ public class MatchController {
             if ("PLACE_PLANT".equals(action)) {
                 String plantName = message.getString("plantName");
                Plant template = App.findPlantByName(plantName);
-                if (template != null) {
+                if (template != null)
                     new GameFlowController().plantPlant(template, String.valueOf(col), String.valueOf(row));
-                }
             }
             else if ("RELEASE_ZOMBIE".equals(action)) {
                 String zombieAlias = message.getString("zombieAlias");
                 new MiniGameController().handlePutZombie(zombieAlias, String.valueOf(col), String.valueOf(row));
             }
-            else if ("COLLECT_SUN".equals(action)) {
+            else if ("COLLECT_SUN".equals(action))
                 new GameFlowController().collectSun(col, row);
-            }
-            else if ("PLUCK_PLANT".equals(action)) {
+            else if ("PLUCK_PLANT".equals(action))
                 new GameFlowController().pluckPlant(String.valueOf(col), String.valueOf(row));
-            }
         }));
 
         client.onPush(MessageType.MATCH_PAUSE_STATE, message -> Gdx.app.postRunnable(() -> {
             boolean paused = Boolean.TRUE.equals(message.getBoolean("paused"));
 
             if (GameSession.getInstance() != null) {
-                if (paused) {
+                if (paused)
                     GameSession.getInstance().pauseGame();
-                } else {
+                else
                     GameSession.getInstance().resumeGame();
-                }
             }
-
             if (onPauseStateChanged != null) onPauseStateChanged.accept(message);
         }));
     }

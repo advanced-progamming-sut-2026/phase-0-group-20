@@ -89,11 +89,11 @@ public class LoginScreen extends BaseScreen {
 
     private void buildButtons(Table baseTable, TextField usernameField, TextField passwordField) {
 
-        CheckBox stayLoggedIn = new CheckBox(" Stay logged in", skin);
-        stayLoggedIn.getLabel().setFontScale(2);
-        stayLoggedIn.getLabel().setColor(Color.BROWN);
-        stayLoggedIn.setScale(2);
-        baseTable.add(stayLoggedIn).left().padTop(15).padBottom(15).row();
+//        CheckBox stayLoggedIn = new CheckBox(" Stay logged in", skin);
+//        stayLoggedIn.getLabel().setFontScale(2);
+//        stayLoggedIn.getLabel().setColor(Color.BROWN);
+//        stayLoggedIn.setScale(2);
+//        baseTable.add(stayLoggedIn).left().padTop(15).padBottom(15).row();
 
         TextButton loginBtn = UiFactory.textButton("Login", skin, "purple", 1.05f, 0.95f, () -> {
             String user = usernameField.getText();
@@ -115,7 +115,7 @@ public class LoginScreen extends BaseScreen {
         });
         loginBtn.getLabel().setFontScale(1.2f);
 
-        baseTable.add(loginBtn).width(300).height(70).padTop(10).row();
+        baseTable.add(loginBtn).width(300).height(70).padTop(70).row(); // stay logged in : pad top=10
 
         TextButton forgotBtn = UiFactory.textButton("Forgot Password?", skin, "green_small",
             1.05f, 0.95f, this::showForgotPasswordStep1);
@@ -294,7 +294,6 @@ public class LoginScreen extends BaseScreen {
         popup.add(passField).height(65).width(350).padBottom(10).row();
         popup.add(repeatPassField).height(65).width(350).padBottom(20).row();
         popup.add(changeBtn).height(70).width(250).row();
-
         modalLayer.add(popup).center();
     }
 

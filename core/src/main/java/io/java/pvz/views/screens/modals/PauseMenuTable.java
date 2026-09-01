@@ -17,6 +17,7 @@ import io.java.pvz.models.App;
 import io.java.pvz.models.Result;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.minigame.IZombieLevel;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.views.screens.gameflow.GameFlowScreen;
 import pvz.skin.BorderedTable;
@@ -126,10 +127,17 @@ public class PauseMenuTable extends BorderedTable {
         System.out.println("Quitting to Plant Selection...");
 
         Runnable proceedToExit = () -> app.postRunnable(() -> {
+            boolean popAgain = false;
+            if (GameSession.getInstance().getCurrentMode() instanceof IZombieLevel &&
+                !MatchController.getInstance().isCouchPlay() &&
+            !MatchController.getInstance().isOnlineMatch()) {
+                popAgain =  true;
+            }
             GameSession.destroyInstance();
             App.setActiveMenu(Menu.PLANTSELLECTION_MENU);
             ScreenManager.getInstance().popScreen();
             ScreenManager.getInstance().popScreen();
+            if (popAgain) ScreenManager.getInstance().popScreen();
         });
 
         if (MatchController.getInstance().isOnlineMatch()) {

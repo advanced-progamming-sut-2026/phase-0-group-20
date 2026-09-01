@@ -116,7 +116,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
-                    String mapId = new GameMenuController().getCurrentMapTextureId();
+                    String mapId = Ids.GameMap.MINI_GAME_MAIN;
                     ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
                 }
             }, 2.0f);
@@ -197,7 +197,7 @@ public class MultiplayerLobbyScreen extends BaseScreen {
 
         Level izombie = MiniGameFactory.createLevel(MiniGameType.I_ZOMBIE, 2);
         GameSession.startMiniGame(izombie, null);
-        String mapId = new GameMenuController().getCurrentMapTextureId();
+        String mapId = Ids.GameMap.MINI_GAME_MAIN;
         ScreenManager.getInstance().pushScreen(new GameFlowScreen(game, mapId));
     }
 
