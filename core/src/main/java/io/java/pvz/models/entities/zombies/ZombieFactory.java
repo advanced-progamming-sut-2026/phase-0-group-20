@@ -5,6 +5,7 @@ import io.java.pvz.models.Settings;
 import io.java.pvz.models.entities.obstacle.ArcadeMachine;
 import io.java.pvz.models.entities.obstacle.Barrel;
 import io.java.pvz.models.entities.obstacle.Piano;
+import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
 import io.java.pvz.models.entities.zombies.armour.ArmorData;
 import io.java.pvz.models.entities.zombies.armour.ArmorLoader;
@@ -14,7 +15,6 @@ import io.java.pvz.models.entities.zombies.behavior.defense.*;
 import io.java.pvz.models.entities.zombies.behavior.effect.*;
 import io.java.pvz.models.entities.zombies.behavior.move.*;
 import io.java.pvz.models.enums.PhysicalConstants;
-import io.java.pvz.models.entities.projectiles.ProjectileType;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.timeManager.TimeManager;
 
@@ -61,7 +61,7 @@ public class ZombieFactory {
     private static void assignProspector(Zombie zombie) {
         ProspectorContext ctx = new ProspectorContext();
         zombie.setMoveBehavior(new ProspectorMove(zombie, ctx));
-        zombie.setDefenseBehavior(new ProspectorDefense( ctx));
+        zombie.setDefenseBehavior(new ProspectorDefense(ctx));
         zombie.setAttackBehavior(new ProspectorAttack(zombie));
     }
 
@@ -152,8 +152,14 @@ public class ZombieFactory {
             case DODO -> new DodoMove(zombie);
             case FISHERMAN, KING -> new StationaryMove(zombie);
 
-            case ZOMBOTANY_PEASHOOTER -> new PeriodicActionMove(zombie, 1.5f, true,
-                    () -> zombie.getAttackBehavior().execute());
+            case ZOMBOTANY_PEASHOOTER -> {
+                RangedAttack shootAction = new RangedAttack(zombie, ProjectileType.PEA, ProjectileType.NORMAL_PEA_DAMAGE);
+                yield new PeriodicActionMove(zombie, 1.5f, true, () -> {
+                    if (zombie.getCol() <= 8) {
+                        shootAction.execute();
+                    }
+                });
+            }
 
             default -> new NormalMove(zombie);
         };
@@ -168,7 +174,6 @@ public class ZombieFactory {
             case KING -> new KingAttack(zombie);
             case DODO -> new DodoAttack(zombie);
             case ZOMBOTANY_SQUASH -> new SquashSuicideAttack(zombie);
-            case ZOMBOTANY_PEASHOOTER -> new RangedAttack(zombie, ProjectileType.PEA, ProjectileType.NORMAL_PEA_DAMAGE);
             default -> new NormalAttack(zombie);
         };
     }

@@ -139,7 +139,8 @@ public class CollisionManager {
             }
             if (octopusPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {
                 octopusPlantInTile.damageOctopus(proj.getDamage());
-                proj.setDestroyed(true); continue;
+                proj.setDestroyed(true);
+                continue;
             }
             if (proj.isFiredByZombie()) checkProjectileForPlantCollision(proj);
             else {
@@ -304,9 +305,8 @@ public class CollisionManager {
         int row = z.getRow();
         int targetCol = z.getCol();
 
-        Tile targetTile = arena.getTile(row, targetCol);
-
-        if (targetCol >= 0) {
+        if (targetCol >= 0 && targetCol < arena.getCols()) {
+            Tile targetTile = arena.getTile(row, targetCol);
             handleZombieEat(z, targetTile);
         } else if (targetCol < 0) {
             LawnMower lawnMower = arena.getLawnMowers()[row];

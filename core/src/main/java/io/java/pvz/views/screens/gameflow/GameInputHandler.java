@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -21,6 +23,7 @@ import io.java.pvz.models.Result;
 import io.java.pvz.models.entities.plants.Plant;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
+import io.java.pvz.models.enums.PhysicalConstants;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.GameSession;
 import io.java.pvz.models.game.adventure.levels.speciallevels.ConveyorBelt;
@@ -51,7 +54,7 @@ public class GameInputHandler {
     private Zombie selectedZombieToPlace = null;
     private Plant selectedPlantToPlace = null;
     private DroppedSeedPacket selectedPacketToPlace = null;
-    private Image floatingPlantImage = null;
+    private Actor floatingPlantImage = null;
 
     private boolean isShovelSelected = false;
     private Image floatingShovelImage = null;
@@ -72,7 +75,8 @@ public class GameInputHandler {
     private int couchZombieCol = 7;
     private int couchSelectedZombieIndex = -1;
 
-    private Image couchFloatingZombieImage = null;
+    private Actor couchFloatingZombieImage = null;
+
     private int lastCouchFloatingZombieIndex = -1;
     private final Group highlightLayer;
 
@@ -136,21 +140,42 @@ public class GameInputHandler {
         return image;
     }
 
-    private Image createCouchGridFollowerImage(Drawable drawable, float size) {
-        Image image = new Image(drawable) {
+    private PamAnimatedActor createFloatingAnimatedActor(PamAnimatedActor actor, float size) {
+        actor.setSize(size, size);
+        actor.setTouchable(Touchable.disabled);
+
+        actor.addAction(new Action() {
             @Override
-            public void act(float delta) {
-                super.act(delta);
+            public boolean act(float delta) {
+                Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                viewport.unproject(mousePos);
+                actor.setPosition(mousePos.x - actor.getWidth() / 2f,
+                    mousePos.y - actor.getHeight() / 2f + TILE_HEIGHT/2 + 25);
+                return false;
+            }
+        });
+
+        mainLayer.addActor(actor);
+        return actor;
+    }
+
+    private PamAnimatedActor createCouchFloatingAnimatedActor(PamAnimatedActor actor, float size) {
+        actor.setSize(size, size * 1.6f);
+        actor.setTouchable(Touchable.disabled);
+        actor.getColor().a = 0.8f;
+
+        actor.addAction(new Action() {
+            @Override
+            public boolean act(float delta) {
                 float tileX = GRID_START_X + (couchZombieCol * TILE_WIDTH) + (TILE_WIDTH / 2f);
                 float tileY = GRID_START_Y + (couchZombieRow * TILE_HEIGHT) + (TILE_HEIGHT / 2f);
-                setPosition(tileX - getWidth() / 2f, tileY - getHeight() / 2f);
+                actor.setPosition(tileX - actor.getWidth() / 2f, tileY - actor.getHeight() / 2f + TILE_HEIGHT/2 + 25);
+                return false;
             }
-        };
-        image.setSize(size, size * 1.6f);
-        image.setTouchable(Touchable.disabled);
-        image.getColor().a = 0.8f;
-        mainLayer.addActor(image);
-        return image;
+        });
+
+        mainLayer.addActor(actor);
+        return actor;
     }
 
     public void onZombieCardClicked(Zombie zombie, Image zombieIcon) {
@@ -160,7 +185,10 @@ public class GameInputHandler {
 
         clearAllSelections();
         selectedZombieToPlace = zombie;
-        floatingPlantImage = createFloatingImage(zombieIcon.getDrawable(), 80);
+
+        PamAnimatedActor animActor = PamAnimatedActor.createZombieIdle(zombie.getType());
+        animActor.applyZombieArmor(zombie);
+        floatingPlantImage = createFloatingAnimatedActor(animActor, 80);
     }
 
     public void onPlantCardClicked(Plant plant, Image plantIcon) {
@@ -170,14 +198,18 @@ public class GameInputHandler {
 
         clearAllSelections();
         selectedPlantToPlace = plant;
-        floatingPlantImage = createFloatingImage(plantIcon.getDrawable(), 80);
+
+        PamAnimatedActor animActor = PamAnimatedActor.createPlantIdle(UiFactory.getAnimationName(plant).toUpperCase());
+        floatingPlantImage = createFloatingAnimatedActor(animActor, 80);
     }
 
     public void onDroppedPacketClicked(Plant plant, DroppedSeedPacket packet, Image plantIcon) {
         clearAllSelections();
         selectedPlantToPlace = plant;
         selectedPacketToPlace = packet;
-        floatingPlantImage = createFloatingImage(plantIcon.getDrawable(), 80);
+
+        PamAnimatedActor animActor = PamAnimatedActor.createPlantIdle(UiFactory.getAnimationName(plant).toUpperCase());
+        floatingPlantImage = createFloatingAnimatedActor(animActor, 80);
     }
 
     public void onBeghouledUpgradeClicked(String plantName) {
@@ -383,12 +415,9 @@ public class GameInputHandler {
         if (plantOnTile != null) {
             selectedGridPos = new Vector2(col, row);
 
-            TextureBank textures = AssetLoader.getInstance().getTextures();
-            String plantTextureKey = "IMAGE_UI_PACKETS_" + UiFactory.getAtlasName(plantOnTile).toUpperCase();
-            Image plantIcon = UiFactory.imageFor(textures, plantTextureKey);
-
-            if (plantIcon != null) {
-                floatingPlantImage = createFloatingImage(plantIcon.getDrawable(), 80);
+            PamAnimatedActor animActor = PamAnimatedActor.createPlantIdle(UiFactory.getAnimationName(plantOnTile).toUpperCase());
+            if (animActor != null) {
+                floatingPlantImage = createFloatingAnimatedActor(animActor, 80);
             }
         }
     }
@@ -546,10 +575,9 @@ public class GameInputHandler {
         ZombieType type = availableZombies.get(couchSelectedZombieIndex);
         Zombie sampleZombie = InGameEntityGenerator.getZombieForGame(type, 0);
 
-        TextureBank textures = AssetLoader.getInstance().getTextures();
-        String zombiePath = "IMAGE_UI_ALMANAC_PACKETS_ZOMBIES_" + UiFactory.getZombieAddress(sampleZombie);
-        Image zombieIcon = UiFactory.imageFor(textures, zombiePath);
-        couchFloatingZombieImage = createCouchGridFollowerImage(zombieIcon.getDrawable(), 80);
+        PamAnimatedActor animActor = PamAnimatedActor.createZombieIdle(type);
+        animActor.applyZombieArmor(sampleZombie);
+        couchFloatingZombieImage = createCouchFloatingAnimatedActor(animActor, 80);
 
         lastCouchFloatingZombieIndex = couchSelectedZombieIndex;
     }

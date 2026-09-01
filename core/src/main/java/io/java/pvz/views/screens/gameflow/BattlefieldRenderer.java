@@ -140,7 +140,7 @@ public class BattlefieldRenderer implements GameEventListener {
     }
 
     private void applyPlantShaderUniforms(Plant plant) {
-        float flash = plantFlashTimers.getOrDefault(plant, 0f) > 0 ? 1f : 0f;
+        float flash = plantFlashTimers.getOrDefault(plant, 0f) > 0 ? 0.7f : 0f;
         entityShader.setUniformf("u_tintColor", 1f, 1f, 1f, 0f);
         entityShader.setUniformf("u_damageFlash", flash);
     }

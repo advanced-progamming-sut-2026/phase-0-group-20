@@ -115,7 +115,7 @@ public class LoginScreen extends BaseScreen {
         });
         loginBtn.getLabel().setFontScale(1.2f);
 
-        baseTable.add(loginBtn).width(300).height(70).padTop(70).row(); // stay logged in : pad top=10
+        baseTable.add(loginBtn).width(300).height(70).padTop(10).row();
 
         TextButton forgotBtn = UiFactory.textButton("Forgot Password?", skin, "green_small",
             1.05f, 0.95f, this::showForgotPasswordStep1);

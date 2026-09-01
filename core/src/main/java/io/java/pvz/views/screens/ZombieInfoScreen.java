@@ -59,6 +59,7 @@ public class ZombieInfoScreen extends BaseScreen {
         rootTable.add(titleLabel).padBottom(20).row();
         Table contentTable = new Table();
         PamAnimatedActor zombieActor = PamAnimatedActor.createZombieIdle(zombie.getType());
+        zombieActor.applyZombieArmor(zombie);
         contentTable.add(zombieActor).size(200, 200).expand().bottom().padBottom(300).padLeft(350);
 
         BorderedTable statsTable = new BorderedTable();
