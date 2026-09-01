@@ -189,15 +189,27 @@ public class ProfileModalTable extends BorderedTable {
             return;
         }
 
-        if (!newNickname.isEmpty()) {
+        User currentUser = App.getActiveUser();
+        if (currentUser == null) return;
+
+        boolean isChanged = false;
+
+        if (!newNickname.isEmpty() && !newNickname.equals(currentUser.getNickname())) {
             networkController.updateNickname(newNickname, response -> handleNetworkResponse("Nickname", response));
+            isChanged = true;
         }
-        if (!newEmail.isEmpty()) {
+
+        if (!newEmail.isEmpty() && !newEmail.equals(currentUser.getEmail())) {
             networkController.updateEmail(newEmail, response -> handleNetworkResponse("Email", response));
+            isChanged = true;
         }
-        if (!newUsername.isEmpty()) {
+
+        if (!newUsername.isEmpty() && !newUsername.equals(currentUser.getUsername())) {
             networkController.updateUsername(newUsername, response -> handleNetworkResponse("Username", response));
+            isChanged = true;
         }
+        if (!isChanged)
+            dispatchMessage("No changes were made to your profile");
     }
 
     private void buildPasswordSection(Table parent) {

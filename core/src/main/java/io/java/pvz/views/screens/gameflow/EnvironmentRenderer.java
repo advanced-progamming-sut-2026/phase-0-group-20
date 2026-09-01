@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.entities.obstacle.GraveHolder;
+import io.java.pvz.models.entities.obstacle.GraveStone;
 import io.java.pvz.models.fields.tiles.*;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
@@ -163,9 +164,12 @@ public class EnvironmentRenderer {
         if (tile instanceof GraveHolder gh && gh.getGraveStone() != null) {
             activeGraves.add(tile);
             PamAnimatedActor actor = graveActors.computeIfAbsent(tile, t -> {
+                String graveTextureId = resolveGraveTexture(gh.getGraveStone());
+
                 PamAnimatedActor animatedActor = PamAnimatedActor.createEffectAnimated(
-                    Ids.ArenaEffects.GRAVE, "undamaged");
+                    graveTextureId, "undamaged");
                 animatedActor.setScale(0.85f);
+                animatedActor.setUserObject(tile);
                 layerGroup.addActor(animatedActor);
                 return animatedActor;
             });
@@ -257,10 +261,24 @@ public class EnvironmentRenderer {
     }
 
     private String resolveGraveClip(int currentHp) {
-        if (currentHp > 525) return "undamaged";
-        if (currentHp > 350) return "damage1";
-        if (currentHp > 175) return "damage2";
-        return "damage3";
+        boolean isDarkAges = false;
+        GameSession session = GameSession.getInstance();
+
+        if (session != null && session.getCurrentMode() instanceof Level level)
+            isDarkAges = (level.getSeason() == SeasonType.DARK_AGES);
+
+        if (isDarkAges) {
+            if (currentHp > 560) return "undamaged";
+            if (currentHp > 420) return "damage1";
+            if (currentHp > 280) return "damage2";
+            if (currentHp > 140) return "damage3";
+            return "damage4";
+        } else {
+            if (currentHp > 525) return "undamaged";
+            if (currentHp > 350) return "damage1";
+            if (currentHp > 175) return "damage2";
+            return "damage3";
+        }
     }
 
     private void despawnMissingTiles(Map<Tile, PamAnimatedActor> actorMap, Set<Tile> activeTiles) {
@@ -287,5 +305,22 @@ public class EnvironmentRenderer {
 
     private void centerOnPoint(PamAnimatedActor actor, float pixelX, float pixelY) {
         actor.setPosition(pixelX - actor.getWidth() / 2f, pixelY - actor.getHeight() / 2f);
+    }
+
+    private String resolveGraveTexture(GraveStone graveStone) {
+        boolean isDarkAges = false;
+        GameSession session = GameSession.getInstance();
+
+        if (session != null && session.getCurrentMode() instanceof Level level) {
+            isDarkAges = (level.getSeason() == SeasonType.DARK_AGES);
+        }
+
+        if (isDarkAges) {
+            if (graveStone.hasSun()) return Ids.ArenaEffects.DARK_SUN;
+            if (graveStone.hasPlantFood()) return Ids.ArenaEffects.DARK_PLANT;
+            return Ids.ArenaEffects.DARK_NOOP;
+        }
+
+        return Ids.ArenaEffects.GRAVE;
     }
 }

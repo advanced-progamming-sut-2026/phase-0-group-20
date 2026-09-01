@@ -3,12 +3,13 @@ package io.java.pvz.models.entities.projectiles;
 import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.behavior.effect.ChillEffect;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.List;
 
 public class IceSplashEffect implements ProjectileEffect {
     private static final double SPLASH_RADIUS = 1.5;
-    private static final int CHILL_DURATION_TICKS = 200;
+    private static final int CHILL_DURATION_TICKS = 20 * TimeManager.TICKS_PER_SECOND;
     private final int splashDamage;
 
     public IceSplashEffect(int splashDamage) {

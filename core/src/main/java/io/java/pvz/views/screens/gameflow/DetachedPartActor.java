@@ -138,7 +138,7 @@ public class DetachedPartActor extends Actor {
                 player.drawPart(batch, pamPath, clip, frozenTime, getX(), getY(), part);
             }
         } catch (Exception e) {
-            System.err.println("❌ Rendering error for detached part " + partNames + ": " + e.getMessage());
+            System.err.println("Rendering error for detached part " + partNames + ": " + e.getMessage());
         } finally {
             batch.setTransformMatrix(original);
             batch.setColor(originalColor);

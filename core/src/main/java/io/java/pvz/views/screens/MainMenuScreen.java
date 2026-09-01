@@ -30,6 +30,7 @@ import java.util.ArrayList;
 public class MainMenuScreen extends BaseScreen {
 
     private TextureRegion backgroundRegion;
+    private TextField nameField;
 
     public MainMenuScreen(Game game) {
         super(game);
@@ -76,7 +77,7 @@ public class MainMenuScreen extends BaseScreen {
 
         customFieldStyle.font = skin.getFont("FBUSV8C5EI_1");
 
-        TextField nameField = new TextField(App.getActiveUser().getNickname(), customFieldStyle);
+        nameField = new TextField(App.getActiveUser().getNickname(), customFieldStyle);
         nameField.setAlignment(Align.center);
 
         nameEntryTable.add(nameField).expandX().fillX().padRight(15);
@@ -248,6 +249,10 @@ public class MainMenuScreen extends BaseScreen {
         clearScreen(0.05f, 0.05f, 0.1f, 1f);
 
         AssetLoader.getInstance().updateTextures();
+
+        if (nameField != null && App.getActiveUser() != null)
+            if (!nameField.getText().equals(App.getActiveUser().getNickname()))
+                nameField.setText(App.getActiveUser().getNickname());
 
         if (backgroundRegion != null) {
             batch.begin();

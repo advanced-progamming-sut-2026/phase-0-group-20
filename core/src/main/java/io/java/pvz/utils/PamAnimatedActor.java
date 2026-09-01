@@ -4,9 +4,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import io.java.pvz.loader.AssetLoader;
+import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieType;
+import io.java.pvz.models.entities.zombies.armour.Armor;
 import pvz.libpvz.pam.PamPlayer;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class PamAnimatedActor extends Actor {
@@ -201,5 +204,26 @@ public class PamAnimatedActor extends Actor {
     public static PamAnimatedActor createEffectAnimated(String pamPath, String clipName) {
         PamPlayer player = AssetLoader.getInstance().getPlayer();
         return new PamAnimatedActor(player, clipName, pamPath);
+    }
+
+    public void applyZombieArmor(Zombie zombie) {
+        Map<String, Boolean> currentVisibility = new HashMap<>();
+
+        if (zombie.getArmorPieces() != null) {
+            for (Armor armor : zombie.getArmorPieces()) {
+                if (!armor.isDestroyed()) {
+                    int damageLayer = armor.getDamageLayer();
+                    String state = armor.getData().getArmorLayer(damageLayer);
+                    if (state != null) currentVisibility.put(state, true);
+
+                    String group = armor.getData().getArmorLayerGroup();
+                    if (group != null) currentVisibility.put(group, true);
+                }
+            }
+        }
+
+        if (!currentVisibility.isEmpty()) {
+            this.setVisibilityMap(currentVisibility);
+        }
     }
 }

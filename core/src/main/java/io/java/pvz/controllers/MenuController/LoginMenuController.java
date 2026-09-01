@@ -36,7 +36,7 @@ public class LoginMenuController {
         App.setActiveMenu(Menu.MAIN_MENU);
         App.setAllUsers(DataBaseManager.getAllUsers());
 
-        System.out.printf("ajfdlak");
+//        System.out.printf("ajfdlak");
 
         return new Result(true, "welcome " + user.getNickname());
     }
