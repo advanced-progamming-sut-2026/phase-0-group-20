@@ -521,13 +521,19 @@ public class Projectile implements Ticker {
                 Random rand = new Random();
                 if (speedY == 0) speedY = rand.nextBoolean() ? Math.abs(speedX) : -Math.abs(speedX);
                 else speedY = -speedY;
+                GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
+                    new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
+                        .projectileType(this.type)
+                        .coordinate(tile.getRow(), tile.getCol())
+                        .message("OBSTACLE_HIT," + tile.getRow() + "," + tile.getCol())
+                        .build());
                 return;
             } else if (type == ProjectileType.EXPLODE_NUT_BOWL) {
                 GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
                     new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
-                        .pixelCoordinate(this.getX(), this.getY())
                         .projectileType(this.type)
                         .coordinate(tile.getRow(), tile.getCol())
+                        .message("OBSTACLE_HIT," + tile.getRow() + "," + tile.getCol())
                         .build());
                 List<Zombie> targets = GameSession.getInstance().getArena()
                     .getZombiesInRadius(position.getCol(), position.getRow(), 1.8);
@@ -553,9 +559,9 @@ public class Projectile implements Ticker {
             }
             GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
                 new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
-                    .pixelCoordinate(this.getX(), this.getY())
                     .projectileType(this.type)
                     .coordinate(tile.getRow(), tile.getCol())
+                    .message("OBSTACLE_HIT," + tile.getRow() + "," + tile.getCol())
                     .build());
         }
     }

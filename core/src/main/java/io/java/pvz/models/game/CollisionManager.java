@@ -247,26 +247,10 @@ public class CollisionManager {
         if (currentTile instanceof GraveHolder graveHolder && graveHolder.getGraveStone() != null) {
             graveHolder.takeDamage(proj.getDamage(), projectileRow, projectileCol);
             proj.onHitObstacle(currentTile);
-
-            GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
-                new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
-                    .projectileType(proj.getType())
-                    .pixelCoordinate(proj.getX(), proj.getY())
-                    .message("OBSTACLE_HIT," + projectileRow + "," + projectileCol)
-                    .build());
-
             return true;
         } else if (currentTile instanceof IceHolder iceHolder && iceHolder.hasIceBlock()) {
             iceHolder.takeIceDamage(proj.getDamage());
             proj.onHitObstacle(currentTile);
-
-            GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
-                new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
-                    .projectileType(proj.getType())
-                    .pixelCoordinate(proj.getX(), proj.getY())
-                    .message("OBSTACLE_HIT," + projectileRow + "," + projectileCol)
-                    .build());
-
             return true;
         }
 

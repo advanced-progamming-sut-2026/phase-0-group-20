@@ -33,6 +33,7 @@ public class BossLevel extends ConveyorBelt {
     @Override
     public void onLevelStart(GameSession session) {
         super.onLevelStart(session);
+        getBelt().clear();
 
         int middleRow = session.getArena().getRows() / 2 - 1;
 
@@ -44,10 +45,10 @@ public class BossLevel extends ConveyorBelt {
             default -> new SpiderZomboss(middleRow);
         };
 
-
         session.getArena().addZombie(zomboss);
         session.getTimeManager().registerNewTicker(zomboss);
 
+        this.winConditions.clear();
         this.addWinCondition(new BossWinCondition(zomboss));
 
         notify("Dr. Zomboss has arrived! Defeat him to win!");
