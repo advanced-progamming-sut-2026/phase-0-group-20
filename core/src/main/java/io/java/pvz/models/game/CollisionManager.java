@@ -133,8 +133,7 @@ public class CollisionManager {
             Plant octopusPlantInTile = null;
             for (Plant p : currentTile.getPlants()) {
                 if (p.hasOctopus()) {
-                    octopusPlantInTile = p;
-                    break;
+                    octopusPlantInTile = p;break;
                 }
             }
             if (octopusPlantInTile != null && !ProjectileType.isLobbed(proj.getType())) {

@@ -111,10 +111,13 @@ public class GameHUD {
                     createAnnounce("FINAL WAVE",0f,true);
                 else if (event == GameEvent.WAVE_STARTED_PLAYTIME)
                     showBigAnnouncementText("Ready!!!-GO!");
+                else if (event == GameEvent.BIG_ANNOUNCEMENT)
+                    createAnnounce(payload.getMessage(), 0f, false);
             }
         };
         GameEventMessenger.getInstance().addListener(GameEvent.WAVE_STARTED_PLAYTIME, announceListener);
         GameEventMessenger.getInstance().addListener(GameEvent.FINAL_WAVE_STARTED, announceListener);
+        GameEventMessenger.getInstance().addListener(GameEvent.BIG_ANNOUNCEMENT, announceListener);
     }
 
     public void buildUI() {

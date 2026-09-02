@@ -9,6 +9,10 @@ import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.fields.tiles.WaterTile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -25,6 +29,9 @@ public class BigWaveModifier implements SeasonModifier {
     private final Random rand = new Random();
     private boolean isInitialized = false;
     private int currentWaterCols = PERMANENT_WATER_COLS;
+    private boolean hasNotifiedThisWave = false;
+
+    List<LowShoreTile> allLowShores = new ArrayList<>();
 
     @Override
     public void onCurrentLevelStart() {
@@ -35,6 +42,7 @@ public class BigWaveModifier implements SeasonModifier {
 
     @Override
     public void onWaveStart(Wave wave) {
+        hasNotifiedThisWave = false;
         Arena arena = GameSession.getInstance().getArena();
         changeTide(arena); // an incoming zombie wave always shifts the water level
     }
@@ -56,8 +64,38 @@ public class BigWaveModifier implements SeasonModifier {
         zombie.setRow(shore.getRow());
         zombie.setCol(shore.getCol());
 
-        zombie.startSpawning(3 * TimeManager.TICKS_PER_SECOND, Zombie.SpawnEffect.WATER_SPLASH);
+        arena.getActiveZombies().remove(zombie);
+        GameSession.getInstance().getTimeManager().unregisterTicker(zombie);
+        GameSession.getInstance().getTimeManager().registerNewTicker(new Ticker() {
+            int announceDelay = 6 * TimeManager.TICKS_PER_SECOND;
 
+            @Override
+            public void onTick(int currentTick) {
+                announceDelay--;
+                if (announceDelay <= 0) {
+                    if (!hasNotifiedThisWave) {
+                        GameEventMessenger.getInstance().dispatch(GameEvent.BIG_ANNOUNCEMENT,
+                            new GameEventPayload.Builder(GameEvent.BIG_ANNOUNCEMENT)
+                                .message("LOW TIDE!").build());
+                        hasNotifiedThisWave = true;
+                    }
+                    GameSession.getInstance().getTimeManager().unregisterTicker(this);
+                    GameSession.getInstance().getTimeManager().registerNewTicker(new Ticker() {
+                        int spawnDelay = 3 * TimeManager.TICKS_PER_SECOND;
+                        @Override
+                        public void onTick(int currentTick) {
+                            spawnDelay--;
+                            if (spawnDelay <= 0) {
+                                zombie.startSpawning(3 * TimeManager.TICKS_PER_SECOND, Zombie.SpawnEffect.WATER_SPLASH);
+                                arena.addZombie(zombie);
+                                GameSession.getInstance().getTimeManager().registerNewTicker(zombie);
+                                GameSession.getInstance().getTimeManager().unregisterTicker(this);
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 
     @Override
@@ -76,9 +114,21 @@ public class BigWaveModifier implements SeasonModifier {
             for (int c = cols - col; c < cols; c++) {
                 if (c >= cols - PERMANENT_WATER_COLS)
                     arena.changeTile(r, c, new WaterTile(r, c));
-                else
-                    arena.changeTile(r, c, new LowShoreTile(r, c));
+                else {
+                    LowShoreTile lowTile = new LowShoreTile(r, c);
+                    arena.changeTile(r, c, lowTile);
+                    allLowShores.add(lowTile);
+                }
             }
+        }
+
+        int emergeableCount = new Random().nextInt(3) + getCurrentLevelNumber() + 2;
+
+        for (int i = 0; i < emergeableCount; i++) {
+            if (allLowShores.isEmpty()) break;
+            int randomIndex = rand.nextInt(allLowShores.size());
+            LowShoreTile selectedTile = allLowShores.remove(randomIndex);
+            selectedTile.setEmergeable(true);
         }
     }
 
