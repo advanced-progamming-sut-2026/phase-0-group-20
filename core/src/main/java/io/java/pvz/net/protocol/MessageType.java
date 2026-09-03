@@ -6,6 +6,7 @@ public enum MessageType {
     ERROR,
 
     LOGIN,
+    AUTO_LOGIN,
     LOGOUT,
     SIGNUP_REGISTER,
     SIGNUP_PICK_QUESTION,

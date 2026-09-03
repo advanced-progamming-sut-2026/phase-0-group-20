@@ -53,6 +53,29 @@ public class AuthHandler {
         return response;
     }
 
+    public NetworkMessage autoLogin(NetworkMessage request, ClientConnection connection) {
+        User stayedUser = DataBaseManager.getLoggedInUser();
+
+        if (stayedUser == null) {
+            return NetworkMessage.failure(request, "no user is currently marked to stay logged in");
+        }
+
+        if (sessionRegistry.isOnline(stayedUser.getUsername())) {
+            return NetworkMessage.failure(request, "this account is already logged in from another session");
+        }
+
+        connection.setAuthenticatedUser(stayedUser);
+        App.setActiveUser(stayedUser);
+
+        NetworkMessage response = NetworkMessage.success(request);
+        response.put("user", stayedUser);
+        response.put("nickname", stayedUser.getNickname());
+        response.put("coin", stayedUser.getCoin());
+        response.put("diamond", stayedUser.getDiamond());
+        response.put("plantFoodCount", stayedUser.getPlantFoodCount());
+        return response;
+    }
+
     public NetworkMessage logout(NetworkMessage request, ClientConnection connection) {
         User user = connection.getAuthenticatedUser();
         if (user != null) {
