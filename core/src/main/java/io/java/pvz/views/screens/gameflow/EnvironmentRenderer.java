@@ -129,7 +129,7 @@ public class EnvironmentRenderer {
 
     private void syncDarkTile(Tile tile, Set<Tile> activeDarkTiles, float pixelX, float pixelY) {
         boolean shouldBeDark = tile instanceof NecromanceTile ||
-            (tile instanceof LowShoreTile lt && !lt.isFlooded());
+            (tile instanceof LowShoreTile lt && lt.isEmergeable());
 
         if (shouldBeDark) {
             activeDarkTiles.add(tile);

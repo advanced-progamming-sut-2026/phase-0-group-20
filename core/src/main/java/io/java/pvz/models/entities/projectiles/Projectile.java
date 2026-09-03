@@ -253,14 +253,10 @@ public class Projectile implements Ticker {
     }
 
     public void move() {
-        if (isArcTrajectory) {
-            moveAlongArc();
-            return;
-        }
+        if (isArcTrajectory) { moveAlongArc();return; }
         if (target != null) {
             if (target.isDead()) {
-                target = null;
-                isDestroyed = true;
+                target = null;isDestroyed = true;
                 canPassObstacles = false;
                 speedX = baseSpeed > 0 ? baseSpeed :
                     (ProjectileTuning.LOST_TARGET_FALLBACK_SPEED_TILES_PER_SEC * PhysicalConstants.SPEED_SCALE_RATIO);
@@ -293,18 +289,14 @@ public class Projectile implements Ticker {
         if (bouncesLeft > 0) {
             boolean bounced = false;
             if (position.getCol() >= (GameSession.getInstance().getArena().getCols() + 4) && speedX > 0) {
-                speedX = -speedX;
-                bounced = true;
+                speedX = -speedX;bounced = true;
             } else if (position.getCol() < 0 && speedX < 0) {
-                speedX = -speedX;
-                bounced = true;
+                speedX = -speedX;bounced = true;
             }
             if (position.getRow() >= GameSession.getInstance().getArena().getRows() && speedY > 0) {
-                speedY = -speedY;
-                bounced = true;
+                speedY = -speedY;bounced = true;
             } else if (position.getRow() < 0 && speedY < 0) {
-                speedY = -speedY;
-                bounced = true;
+                speedY = -speedY;bounced = true;
             }
             if (bounced) bouncesLeft--;
         }
@@ -525,16 +517,14 @@ public class Projectile implements Ticker {
                     new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
                         .projectileType(this.type)
                         .coordinate(tile.getRow(), tile.getCol())
-                        .message("OBSTACLE_HIT," + tile.getRow() + "," + tile.getCol())
-                        .build());
+                        .message("OBSTACLE_HIT," + tile.getRow() + "," + tile.getCol()).build());
                 return;
             } else if (type == ProjectileType.EXPLODE_NUT_BOWL) {
                 GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
                     new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
                         .projectileType(this.type)
                         .coordinate(tile.getRow(), tile.getCol())
-                        .message("OBSTACLE_HIT," + tile.getRow() + "," + tile.getCol())
-                        .build());
+                        .message("OBSTACLE_HIT," + tile.getRow() + "," + tile.getCol()).build());
                 List<Zombie> targets = GameSession.getInstance().getArena()
                     .getZombiesInRadius(position.getCol(), position.getRow(), 1.8);
                 for (Zombie target : targets) {
@@ -546,17 +536,14 @@ public class Projectile implements Ticker {
                 }
                 isDestroyed = true;
                 return;
-            } else if (type == ProjectileType.GIANT_NUT_BOWL) {
-                return;
-            }
+            } else return;
         }
         if (!canPassObstacles || (isArcTrajectory && getArcProgress() >= 1f)) {
             if (piercing && !canPassObstacles) {
                 pierceCount--;
                 if (pierceCount <= 0) isDestroyed = true;
-            } else {
+            } else
                 isDestroyed = true;
-            }
             GameEventMessenger.getInstance().dispatch(GameEvent.PROJECTILE_HIT,
                 new GameEventPayload.Builder(GameEvent.PROJECTILE_HIT)
                     .projectileType(this.type)

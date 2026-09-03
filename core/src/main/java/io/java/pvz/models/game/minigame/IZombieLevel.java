@@ -176,6 +176,7 @@ IZombieLevel extends Level implements IMinigame, RedLineCapable {
             !plantName.equals("jalapeno") &&
             !plantName.equals("doom-shroom") &&
             !plantName.equals("ice-shroom") &&
+            !plantName.equals("imitater") &&
             !plantName.equals("grapeshot");
     }
 

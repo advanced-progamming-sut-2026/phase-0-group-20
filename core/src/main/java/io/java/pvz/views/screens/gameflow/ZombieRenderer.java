@@ -9,10 +9,10 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.entities.zombies.ZombieType;
 import io.java.pvz.models.entities.zombies.armour.Armor;
-import io.java.pvz.models.entities.zombies.dismemberment.DismembermentData;
-import io.java.pvz.models.entities.zombies.dismemberment.DismembermentLoader;
 import io.java.pvz.models.entities.zombies.behavior.effect.RageEffect;
 import io.java.pvz.models.entities.zombies.behavior.move.BarrelRollerMove;
+import io.java.pvz.models.entities.zombies.dismemberment.DismembermentData;
+import io.java.pvz.models.entities.zombies.dismemberment.DismembermentLoader;
 import io.java.pvz.models.entities.zombies.zomboss.MammothFreezingColumn;
 import io.java.pvz.models.entities.zombies.zomboss.MammothZomboss;
 import io.java.pvz.models.entities.zombies.zomboss.SpiderZomboss;
@@ -48,7 +48,6 @@ public class ZombieRenderer {
         for (Zombie zombie : liveZombies) {
             PamAnimatedActor actor = zombieActors.get(zombie);
             ZombieType lastRenderedType = zombieActorTypes.get(zombie);
-
             if (actor == null || lastRenderedType != zombie.getType()) {
                 if (actor != null) actor.remove();
                 actor = spawnZombie(zombie);
@@ -58,7 +57,6 @@ public class ZombieRenderer {
             if (zombie.getCurrentSpeed() < 0) actor.setScaleX(-1);
             updateZombieActor(zombie, actor);
         }
-
         Set<Zombie> stillAlive = new HashSet<>(liveZombies);
         Iterator<Map.Entry<Zombie, PamAnimatedActor>> it = zombieActors.entrySet().iterator();
 
@@ -73,30 +71,20 @@ public class ZombieRenderer {
                 } else {
                     boolean headDropped = trySpawnHeadDrop(zombie, actor);
                     float headLeadTime = headDropped ? HEAD_FALL_LEAD_TIME : 0f;
-
                     String deathClip = resolveZombieClip(zombie);
                     Runnable startDeathFall = () -> {
                         actor.setClip(deathClip);
                         actor.setPaused(false);
                     };
-
                     if (headLeadTime > 0f) {
                         actor.setPaused(true);
-                        actor.addAction(Actions.sequence(
-                            Actions.delay(headLeadTime),
-                            Actions.run(startDeathFall)
-                        ));
-                    } else {
-                        startDeathFall.run();
-                    }
+                        actor.addAction(Actions.sequence(Actions.delay(headLeadTime), Actions.run(startDeathFall)));
+                    } else startDeathFall.run();
 
                     float lingerTime = DESPAWN_LINGER_SECONDS;
                     AnimationCatalog.EntityAnimation anim = AnimationCatalog.getZombieAnimation(zombie);
-                    if (anim != null && anim.hasClip(deathClip))
-                        lingerTime = anim.getDuration(deathClip);
-                    if (zombie instanceof Zomboss)
-                        lingerTime = Math.max(lingerTime, 4.0f);
-
+                    if (anim != null && anim.hasClip(deathClip)) lingerTime = anim.getDuration(deathClip);
+                    if (zombie instanceof Zomboss) lingerTime = Math.max(lingerTime, 4.0f);
                     despawn(actor, headLeadTime + lingerTime - 0.5f);
                 }
                 zombieActorTypes.remove(zombie);
@@ -105,7 +93,6 @@ public class ZombieRenderer {
                 it.remove();
             }
         }
-
     }
 
     private PamAnimatedActor spawnZombie(Zombie zombie) {
@@ -245,8 +232,8 @@ public class ZombieRenderer {
                 case BOSS_SHARK -> "spawn";
                 case STUNNED -> pickClip(anim, "idle", "stun_loop", "stun");
                 case BOSS_IDLE -> "idle";
-                case ZOMBOSS_WALK_DOWN -> (zomboss instanceof SpiderZomboss)? "walk_down" : "idle";
-                case ZOMBOSS_WALK_UP -> (zomboss instanceof SpiderZomboss)? "walk_up" : "idle";
+                case ZOMBOSS_WALK_DOWN -> (zomboss instanceof SpiderZomboss) ? "walk_down" : "idle";
+                case ZOMBOSS_WALK_UP -> (zomboss instanceof SpiderZomboss) ? "walk_up" : "idle";
                 default -> pickClip(anim, "idle", "idle");
             };
             return new Result(true, clip);
@@ -278,7 +265,8 @@ public class ZombieRenderer {
     private Result resolveEarlyStateClip(Zombie zombie, AnimationCatalog.EntityAnimation anim) {
         if (zombie.isDead()) return new Result(true, pickClip(anim, CLIP_WALK, "die"));
         if (zombie.getState() == ZombieState.TOSS) return new Result(true, pickClip(anim, CLIP_IDLE, "toss"));
-        if (zombie.getState() == ZombieState.INTRO) return new Result(true, pickClip(anim, "idle", "intro"));
+        if (zombie.getState() == ZombieState.INTRO)
+            return new Result(true, pickClip(anim, "idle", "intro", "idle_newspaper"));
         return new Result(false, null);
     }
 

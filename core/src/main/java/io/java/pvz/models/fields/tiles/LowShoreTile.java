@@ -7,6 +7,7 @@ import io.java.pvz.models.game.GameSession;
 
 public class LowShoreTile extends Tile {
     private boolean isFlooded = false;
+    private boolean isEmergeable = false;
 
     public LowShoreTile(int row, int col) {
         super(row, col);
@@ -18,17 +19,15 @@ public class LowShoreTile extends Tile {
     }
 
     public boolean canZombieEmerge() {
-        return isFlooded;
+        return isFlooded && isEmergeable;
     }
 
-    public void spawnZombieFromBelow(Zombie zombie) {
-        if (zombie == null) return;
+    public boolean isEmergeable() {
+        return isEmergeable;
+    }
 
-        zombie.setRow(position.getRow());
-        zombie.setCol(position.getCol());
-        GameSession session = GameSession.getInstance();
-        session.getArena().addZombie(zombie);
-        session.getTimeManager().registerNewTicker(zombie);
+    public void setEmergeable(boolean emergeable) {
+        isEmergeable = emergeable;
     }
 
     @Override

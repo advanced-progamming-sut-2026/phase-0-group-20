@@ -7,6 +7,7 @@ import io.java.pvz.models.entities.zombies.Zombie;
 import io.java.pvz.models.entities.zombies.ZombieState;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.minigame.IZombieLevel;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class NetworkStateSyncer {
         if (session == null || session.getArena() == null) return;
         Arena arena = session.getArena();
 
-        if (session.getCurrentMode() instanceof io.java.pvz.models.game.minigame.IZombieLevel iZombieLevel) {
+        if (session.getCurrentMode() instanceof IZombieLevel iZombieLevel) {
             Number redLineColValue = (Number) snapshot.get("redLineCol");
             if (redLineColValue != null) {
                 iZombieLevel.setRedLineCol(redLineColValue.intValue());

@@ -11,6 +11,10 @@ import io.java.pvz.models.fields.tiles.NormalTile;
 import io.java.pvz.models.fields.tiles.Tile;
 import io.java.pvz.models.game.Arena;
 import io.java.pvz.models.game.GameSession;
+import io.java.pvz.models.game.events.GameEvent;
+import io.java.pvz.models.game.events.GameEventMessenger;
+import io.java.pvz.models.game.events.GameEventPayload;
+import io.java.pvz.models.timeManager.Ticker;
 import io.java.pvz.models.timeManager.TimeManager;
 
 import java.util.ArrayList;
@@ -140,12 +144,46 @@ public class DarkAgesModifier implements SeasonModifier {
                 if (tile instanceof NecromanceTile necromanceTile && necromanceTile.canZombieEmerge())
                     hauntedTiles.add(necromanceTile);
 
-        for (NecromanceTile tile : hauntedTiles) {
-            if (rand.nextDouble() < 0.5) {
-                Zombie zombie = ZombieFactory.create(ZombieType.NORMAL, tile.getRow());
-                zombie.startSpawning(3 * TimeManager.TICKS_PER_SECOND, Zombie.SpawnEffect.GRAVE_RISE);
-                tile.spawnZombieFromBelow(zombie);
+        if (hauntedTiles.isEmpty()) return;
+
+        GameSession.getInstance().getTimeManager().registerNewTicker(new Ticker() {
+            int announceDelay = 6 * TimeManager.TICKS_PER_SECOND;
+
+            @Override
+            public void onTick(int currentTick) {
+                announceDelay--;
+                if (announceDelay <= 0) {
+                    List<NecromanceTile> tilesToSpawn = new ArrayList<>();
+                    for (NecromanceTile tile : hauntedTiles)
+                        if (rand.nextDouble() < 0.5)
+                            tilesToSpawn.add(tile);
+                    if (tilesToSpawn.isEmpty()) {
+                        GameSession.getInstance().getTimeManager().unregisterTicker(this);
+                        return;
+                    }
+                    GameEventMessenger.getInstance().dispatch(GameEvent.BIG_ANNOUNCEMENT,
+                        new GameEventPayload.Builder(GameEvent.BIG_ANNOUNCEMENT)
+                            .message("NECROMANCY!").build());
+
+                    GameSession.getInstance().getTimeManager().unregisterTicker(this);
+                    GameSession.getInstance().getTimeManager().registerNewTicker(new Ticker() {
+                        int spawnDelay = 3 * TimeManager.TICKS_PER_SECOND;
+                        @Override
+                        public void onTick(int currentTick) {
+                            spawnDelay--;
+                            if (spawnDelay <= 0) {
+                                for (NecromanceTile tile : tilesToSpawn) {
+                                    Zombie zombie = ZombieFactory.create(ZombieType.NORMAL, tile.getRow());
+                                    zombie.startSpawning(3 * TimeManager.TICKS_PER_SECOND,
+                                        Zombie.SpawnEffect.GRAVE_RISE);
+                                    tile.spawnZombieFromBelow(zombie);
+                                }
+                                GameSession.getInstance().getTimeManager().unregisterTicker(this);
+                            }
+                        }
+                    });
+                }
             }
-        }
+        });
     }
 }

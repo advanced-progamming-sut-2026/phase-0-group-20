@@ -64,6 +64,31 @@ public class NetworkController {
         });
     }
 
+    public void autoLogin(Consumer<NetworkMessage> callback) {
+        runAsync(() -> {
+            NetworkClient client = connectIfNeeded();
+            NetworkMessage request = NetworkMessage.request(MessageType.AUTO_LOGIN);
+            return client.sendAndWait(request, 10);
+        }, response -> {
+            if (response != null && response.isSuccess()) {
+                authenticated = true;
+
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    if (response.getData().containsKey("user")) {
+                        User loggedInUser = mapper.convertValue(response.get("user"), User.class);
+                        authenticatedUsername = loggedInUser.getUsername();
+                        App.setActiveUser(loggedInUser);
+                        App.setActiveAdventure(new Adventure());
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error parsing user data on client: " + e.getMessage());
+                }
+            }
+            if (callback != null) callback.accept(response);
+        });
+    }
+
     public void register(String username, String password, String repeatPassword, String nickname,
                          String email, String gender, Consumer<NetworkMessage> callback) {
         sendAsync(() -> {
