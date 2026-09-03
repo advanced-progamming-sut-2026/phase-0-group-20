@@ -15,14 +15,12 @@ import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
-import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.game.events.AudioListener;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
-import io.java.pvz.models.users.User;
 import io.java.pvz.net.client.NetworkClient;
 import io.java.pvz.net.client.ServerConfig;
 import io.java.pvz.net.protocol.NetworkMessage;
@@ -124,14 +122,7 @@ public class AssetLoaderScreen extends BaseScreen {
         if (isInitFinished && virtualProgress >= 1f && !isTransitioning) {
             isTransitioning = true;
             dispatchMenusEvent();
-
-            User stayedUser = DataBaseManager.getLoggedInUser();
-            if (stayedUser == null) {
-                App.setActiveAdventure(new Adventure());
-                ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
-            } else {
-                performAutoLogin(stayedUser);
-            }
+            performAutoLogin();
         }
     }
 
@@ -142,18 +133,15 @@ public class AssetLoaderScreen extends BaseScreen {
         );
     }
 
-    private void performAutoLogin(User stayedUser) {
+    private void performAutoLogin() {
         new Thread(() -> {
             try {
                 connectClientIfNeeded();
-                NetworkController.getInstance().login(
-                    stayedUser.getUsername(),
-                    stayedUser.getPassword(),
-                    true,
-                    response -> Gdx.app.postRunnable(() -> handleLoginResponse(response, stayedUser))
+                NetworkController.getInstance().autoLogin(
+                    response -> Gdx.app.postRunnable(() -> handleAutoLoginResponse(response))
                 );
             } catch (Exception e) {
-                Gdx.app.postRunnable(this::handleLoginFailure);
+                Gdx.app.postRunnable(this::handleConnectionFailure);
             }
         }).start();
     }
@@ -164,21 +152,18 @@ public class AssetLoaderScreen extends BaseScreen {
         }
     }
 
-    private void handleLoginResponse(NetworkMessage response, User stayedUser) {
+    private void handleAutoLoginResponse(NetworkMessage response) {
         if (response != null && response.isSuccess()) {
-            App.setActiveUser(stayedUser);
             App.setActiveMenu(Menu.MAIN_MENU);
             App.setActiveAdventure(new Adventure());
-            App.setAllUsers(DataBaseManager.getAllUsers());
             ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
         } else {
-            String error = response != null ? response.getErrorMessage() : "Error";
+            NetworkClient.getInstance().disconnect();
             ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
-            dispatchNotification("Error in auto login: " + error);
         }
     }
 
-    private void handleLoginFailure() {
+    private void handleConnectionFailure() {
         ScreenManager.getInstance().setRootScreen(new LoginScreen(game));
         dispatchNotification("Server is Not Run");
     }

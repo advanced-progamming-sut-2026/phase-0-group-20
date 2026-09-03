@@ -40,6 +40,7 @@ public class GameServer {
     private void registerDefaultHandlers() {
         AuthHandler authHandler = new AuthHandler(sessionRegistry);
         dispatcher.register(MessageType.LOGIN, authHandler::login);
+        dispatcher.register(MessageType.AUTO_LOGIN, authHandler::autoLogin);
         dispatcher.register(MessageType.LOGOUT, authHandler::logout);
         dispatcher.register(MessageType.SIGNUP_REGISTER, authHandler::signupRegister);
         dispatcher.register(MessageType.SIGNUP_PICK_QUESTION, authHandler::signupPickQuestion);
