@@ -18,7 +18,10 @@ import io.java.pvz.controllers.MenuController.MainMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
+import io.java.pvz.models.Result;
+import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.news.Message;
+import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import io.java.pvz.utils.UiFactory;
 import io.java.pvz.views.screens.modals.*;
@@ -106,21 +109,20 @@ public class MainMenuScreen extends BaseScreen {
         ButtonAnimator.applyHoverAndClickEffect(borderedLogoutBtn, 1.1f, 0.9f, () -> {
             System.out.println("Logout Request Sent!");
 
-            NetworkController.getInstance().logout(response -> {
-                Gdx.app.postRunnable(() -> {
-                    if (response != null && response.isSuccess()) {
-                        System.out.println("Logout Confirmed by Server!");
+            User user = App.getActiveUser();
+            if (user != null) {
+                DataBaseManager.logoutUser(user.getId());
+            }
 
-                        new MainMenuController().logout();
+            Result res = new MainMenuController().logout();
 
-                        ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
-                        ScreenManager.getInstance().pushScreen(new LoginScreen(game));
-                    } else {
-                        String error = response != null ? response.getErrorMessage() : "Server unreachable";
-                        System.out.println("Logout Failed: " + error);
-                    }
-                });
-            });
+            if (res.isSuccessful()) {
+                new MainMenuController().logout();
+                ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
+                ScreenManager.getInstance().pushScreen(new LoginScreen(game));
+            } else {
+                System.out.println("Logout Failed");
+            }
         });
 
         topContainer.add(center).expandX().padBottom(70).center().bottom();
