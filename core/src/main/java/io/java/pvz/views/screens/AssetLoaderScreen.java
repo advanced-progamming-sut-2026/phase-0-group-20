@@ -1,7 +1,6 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -11,19 +10,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import io.java.pvz.GameInitializer;
-import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
 import io.java.pvz.models.App;
+import io.java.pvz.models.database.DataBaseManager;
 import io.java.pvz.models.enums.Menu;
 import io.java.pvz.models.game.adventure.Adventure;
 import io.java.pvz.models.game.events.AudioListener;
 import io.java.pvz.models.game.events.GameEvent;
 import io.java.pvz.models.game.events.GameEventMessenger;
 import io.java.pvz.models.game.events.GameEventPayload;
-import io.java.pvz.net.client.NetworkClient;
-import io.java.pvz.net.client.ServerConfig;
-import io.java.pvz.net.protocol.NetworkMessage;
+import io.java.pvz.models.users.User;
 import io.java.pvz.utils.Ids;
 import pvz.libpvz.textures.TextureBank;
 
@@ -134,38 +131,16 @@ public class AssetLoaderScreen extends BaseScreen {
     }
 
     private void performAutoLogin() {
-        new Thread(() -> {
-            try {
-                connectClientIfNeeded();
-                NetworkController.getInstance().autoLogin(
-                    response -> Gdx.app.postRunnable(() -> handleAutoLoginResponse(response))
-                );
-            } catch (Exception e) {
-                Gdx.app.postRunnable(this::handleConnectionFailure);
-            }
-        }).start();
-    }
-
-    private void connectClientIfNeeded() throws Exception {
-        if (!NetworkClient.getInstance().isConnected()) {
-            NetworkClient.getInstance().connect(ServerConfig.DEFAULT_HOST, ServerConfig.DEFAULT_PORT);
-        }
-    }
-
-    private void handleAutoLoginResponse(NetworkMessage response) {
-        if (response != null && response.isSuccess()) {
+        User user = DataBaseManager.getLoggedInUser();
+        if (user != null) {
+            App.setActiveUser(user);
             App.setActiveMenu(Menu.MAIN_MENU);
             App.setActiveAdventure(new Adventure());
+            App.setAllUsers(DataBaseManager.getAllUsers());
             ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
         } else {
-            NetworkClient.getInstance().disconnect();
-            ScreenManager.getInstance().setRootScreen(new SignupScreen(game));
+            ScreenManager.getInstance().setRootScreen(new LoginScreen(game));
         }
-    }
-
-    private void handleConnectionFailure() {
-        ScreenManager.getInstance().setRootScreen(new LoginScreen(game));
-        dispatchNotification("Server is Not Run");
     }
 
     private void dispatchNotification(String message) {

@@ -1,13 +1,11 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
-import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.MenuController.LoginMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
@@ -29,6 +27,8 @@ public class LoginScreen extends BaseScreen {
 
     private String pendingForgotUser;
     private String pendingForgotEmail;
+
+    private final LoginMenuController loginMenuController = new LoginMenuController();
 
     public LoginScreen(Game game) {
         super(game);
@@ -99,19 +99,15 @@ public class LoginScreen extends BaseScreen {
             String user = usernameField.getText();
             String pass = passwordField.getText();
 
-            NetworkController.getInstance().login(user, pass, stayLoggedIn.isChecked() ,response -> {
-                Gdx.app.postRunnable(() -> {
-                    if (response != null && response.isSuccess()) {
-                        System.out.println("Connected to game server as " + user);
-                        dispatchMessage("Login Success!");
-                        ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
-                    } else {
-                        String error = response != null ? response.getErrorMessage() : "Server unreachable";
-                        System.out.println("Login Failed: " + error);
-                        dispatchMessage("Login Failed: " + error);
-                    }
-                });
-            });
+            Result result = loginMenuController.login(user, pass, stayLoggedIn.isChecked());
+            if (result.isSuccessful()) {
+                System.out.println("Logged in as " + user);
+                dispatchMessage("Login Success!");
+                ScreenManager.getInstance().setRootScreen(new MainMenuScreen(game));
+            } else {
+                System.out.println("Login Failed: " + result.message());
+                dispatchMessage("Login Failed: " + result.message());
+            }
         });
         loginBtn.getLabel().setFontScale(1.2f);
 
@@ -178,17 +174,13 @@ public class LoginScreen extends BaseScreen {
         emailField.setAlignment(Align.center);
 
         TextButton nextBtn = UiFactory.textButton("Next", skin, "green_small", 1.05f, 0.95f, () -> {
-            NetworkController.getInstance().forgotPasswordStep1(userField.getText(), emailField.getText(), response -> {
-                Gdx.app.postRunnable(() -> {
-                    if (response != null && response.isSuccess()) {
-                        pendingForgotUser = userField.getText();
-                        showForgotPasswordStep2(response.getString("securityQuestion"));
-                    } else {
-                        String error = response != null ? response.getErrorMessage() : "Network error";
-                        dispatchMessage("Error: " + error);
-                    }
-                });
-            });
+            Result result = loginMenuController.forgetPassword(userField.getText(), emailField.getText());
+            if (result.isSuccessful()) {
+                pendingForgotUser = userField.getText();
+                showForgotPasswordStep2(result.message());
+            } else {
+                dispatchMessage("Error: " + result.message());
+            }
         });
         nextBtn.getLabel().setFontScale(1.2f);
 
@@ -227,16 +219,12 @@ public class LoginScreen extends BaseScreen {
         answerField.setAlignment(Align.center);
 
         TextButton verifyBtn = UiFactory.textButton("Verify", skin, "green_small", 1.05f, 0.95f, () -> {
-            NetworkController.getInstance().forgotPasswordStep2(pendingForgotUser, answerField.getText(), response -> {
-                Gdx.app.postRunnable(() -> {
-                    if (response != null && response.isSuccess()) {
-                        showForgotPasswordStep3();
-                    } else {
-                        String error = response != null ? response.getErrorMessage() : "Network error";
-                        dispatchMessage("Wrong Answer: " + error);
-                    }
-                });
-            });
+            Result result = loginMenuController.checkSecurityQuestion(answerField.getText());
+            if (result.isSuccessful()) {
+                showForgotPasswordStep3();
+            } else {
+                dispatchMessage("Wrong Answer: " + result.message());
+            }
         });
         verifyBtn.getLabel().setFontScale(1.2f);
 
@@ -276,18 +264,14 @@ public class LoginScreen extends BaseScreen {
                 return;
             }
 
-            NetworkController.getInstance().forgotPasswordStep3(pendingForgotUser, passField.getText(), response -> {
-                Gdx.app.postRunnable(() -> {
-                    if (response != null && response.isSuccess()) {
-                        dispatchMessage("Password changed successfully!");
-                        modalLayer.clearChildren();
-                        buildUI();
-                    } else {
-                        String error = response != null ? response.getErrorMessage() : "Network error";
-                        dispatchMessage("Error: " + error);
-                    }
-                });
-            });
+            Result result = loginMenuController.resetPassword(passField.getText(), repeatPassField.getText());
+            if (result.isSuccessful()) {
+                dispatchMessage("Password changed successfully!");
+                modalLayer.clearChildren();
+                buildUI();
+            } else {
+                dispatchMessage("Error: " + result.message());
+            }
         });
         changeBtn.getLabel().setFontScale(1.2f);
 

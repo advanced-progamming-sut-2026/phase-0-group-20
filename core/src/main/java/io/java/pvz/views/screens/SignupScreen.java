@@ -1,14 +1,12 @@
 package io.java.pvz.views.screens;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import io.java.pvz.controllers.ButtonAnimator;
-import io.java.pvz.controllers.GameController.NetworkController;
 import io.java.pvz.controllers.MenuController.SignupMenuController;
 import io.java.pvz.controllers.ScreenManager;
 import io.java.pvz.loader.AssetLoader;
@@ -29,6 +27,8 @@ public class SignupScreen extends BaseScreen {
 
     private String pendingUsername;
     private String pendingPassword;
+
+    private final SignupMenuController signupMenuController = new SignupMenuController();
 
     public SignupScreen(Game game) {
         super(game);
@@ -64,21 +64,17 @@ public class SignupScreen extends BaseScreen {
             String nick = nicknameField.getText().trim();
             String mail = emailField.getText().trim();
             String gender = genderField.getText().trim();
-            NetworkController.getInstance().register(user, pass, repeatPass, nick, mail, gender, response -> {
-                Gdx.app.postRunnable(() -> {
-                    if (response != null && response.isSuccess()) {
-                        pendingUsername = user;
-                        pendingPassword = pass;
-                        showSecurityQuestionsList();
-                    } else {
-                        String errorMsg = response != null ? response.getErrorMessage() : "Network error";
-                        System.out.println("Registration Failed: " + errorMsg);
-                        GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
-                            new GameEventPayload.Builder(GameEvent.NOTIFY)
-                                .message("Registration Failed: " + errorMsg).build());
-                    }
-                });
-            });
+            Result result = signupMenuController.register(user, pass, repeatPass, nick, mail, gender);
+            if (result.isSuccessful()) {
+                pendingUsername = user;
+                pendingPassword = pass;
+                showSecurityQuestionsList();
+            } else {
+                System.out.println("Registration Failed: " + result.message());
+                GameEventMessenger.getInstance().dispatch(GameEvent.NOTIFY,
+                    new GameEventPayload.Builder(GameEvent.NOTIFY)
+                        .message("Registration Failed: " + result.message()).build());
+            }
         });
         baseTable.add(registerBtn).height(70).padTop(15).row();
         TextButton backBtn = UiFactory.textButton("Already have account? Login", skin,
@@ -202,19 +198,14 @@ public class SignupScreen extends BaseScreen {
 
         TextButton submitBtn = new TextButton("Submit Registration", skin, "purple");
         ButtonAnimator.applyHoverAndClickEffect(submitBtn, 1.1f, 0.9f, () -> {
-            NetworkController.getInstance().pickSecurityQuestion(qNumber, answerField.getText(),
-                confirmField.getText(), response -> {
-                Gdx.app.postRunnable(() -> {
-                    if (response != null && response.isSuccess()) {
-                        System.out.println("Account completely set up on server.");
-                        dispatchMessage("Registration successful!");
-                        ScreenManager.getInstance().pushScreen(new LoginScreen(game));
-                    } else {
-                        String errorMsg = response != null ? response.getErrorMessage() : "Network error";
-                        dispatchMessage("Error: " + errorMsg);
-                    }
-                });
-            });
+            Result result = signupMenuController.pickQuestion(qNumber, answerField.getText(), confirmField.getText());
+            if (result.isSuccessful()) {
+                System.out.println("Account created locally.");
+                dispatchMessage("Registration successful!");
+                ScreenManager.getInstance().pushScreen(new LoginScreen(game));
+            } else {
+                dispatchMessage("Error: " + result.message());
+            }
         });
 
         popup.add(answerField).height(50).width(350).padBottom(10).row();
